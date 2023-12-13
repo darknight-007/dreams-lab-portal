@@ -1,0 +1,43 @@
+/* Define your dark theme styles in static/styles.css */
+body {
+    background-color: #1a1a1a; /* Dark background for the body */
+    color: #e6e6e6; /* Light text color for contrast */
+    font-family: Arial, sans-serif;
+    background-image: url('images/planetary_background.jpg'); /* Planetary background image */
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    font-size: 18px; /* Increased font size for overall readability */
+}
+
+h1, h2, h3 {
+    color: #f2f2f2;
+}
+
+.research-area, #publication, #people, #outreach {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+.research-area ul {
+    list-style-type: none; /* Remove default list bullets */
+    padding-left: 20px;
+}
+
+.research-area li {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+#logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 100px;
+    height: 100px;
+}
+
