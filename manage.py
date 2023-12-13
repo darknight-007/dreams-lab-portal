@@ -2,11 +2,16 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+from django.conf import settings
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dreams_laboratory.settings')
+    print("DEBUG:", settings.DEBUG)
+    print("STATIC_URL:", settings.STATIC_URL)
+    print("STATICFILES_DIRS:", settings.STATICFILES_DIRS)
+    print("STATIC_ROOT:", settings.STATIC_ROOT)
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

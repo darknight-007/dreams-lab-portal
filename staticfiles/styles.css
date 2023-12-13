@@ -3,27 +3,31 @@ body {
     background-color: #1a1a1a; /* Dark background for the body */
     color: #e6e6e6; /* Light text color for contrast */
     font-family: Arial, sans-serif;
-    background-image: url('images/planetary_background.jpg'); /* Planetary background image */
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
-    font-size: 18px; /* Increased font size for overall readability */
 }
 
 h1, h2, h3 {
     color: #f2f2f2;
 }
 
-.research-area, #publication, #people, #outreach {
+/* Adding a planetary background image */
+body {
+    background-image: url('images/planetary_background.jpg'); /* Adjust './images/planetary_background.jpg' path as necessary */
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.research-area, #people, #outreach {
     background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
     padding: 15px;
     margin: 10px 0;
     border-radius: 8px;
 }
 
+/* Style for lists of projects to make them stand out */
 .research-area ul {
     list-style-type: none; /* Remove default list bullets */
-    padding-left: 20px;
+    padding-left: 20px; /* Add padding to align with other contents */
 }
 
 .research-area li {
@@ -33,11 +37,45 @@ h1, h2, h3 {
     border-radius: 5px;
 }
 
-#logo {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 100px;
-    height: 100px;
+/* Ensure images in 'People' section are correctly styled */
+.profile-pic {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%; /* Circular Profile Pictures */
+    margin-right: 10px;
 }
 
+#logo {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 300px;
+}
+
+/* Add to your static/styles.css file to style the publications section */
+#publications {
+  padding: 15px;
+}
+
+.publications-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.publication-item {
+  background-color: rgba(0, 0, 0, 0.6); /* Adjust the color/transparency to your liking */
+  padding: 10px;
+  border-radius: 8px;
+  color: white; /* Or another color that stands out against the dark background */
+}
+
+/* Styles for hyperlinks to make them stand out against the dark background */
+.publication-item a {
+  color: #0096e6; /* Consider changing the color to something that stands out */
+  text-decoration: none; /* No underline */
+}
+
+.publication-item a:hover {
+  text-decoration: underline; /* Underline on hover for better user experience */
+}

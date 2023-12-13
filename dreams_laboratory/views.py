@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import People, Research, Publication, Project, Asset
+from .models import People, Research, Publication, Project, Asset, FundingSource
 
 
 def home_view(request):
@@ -9,6 +9,7 @@ def home_view(request):
     publications = Publication.objects.exclude(title__iexact='Generic')    
     projects = Project.objects.all()
     assets = Asset.objects.all()
+    funding_source = FundingSource.objects.all()
     # Pass data to the template
     context = {
         'people': people,
@@ -17,6 +18,7 @@ def home_view(request):
         'projects': projects,
         'research_areas': research_areas,
         'assets': assets,
+        'funding_source': funding_source,
 
     }
     return render(request, 'home.html', context)

@@ -5,7 +5,7 @@ class People(models.Model):
   first_name = models.CharField(max_length=100)
   last_name = models.CharField(max_length=100)
   email = models.EmailField()
-  profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+  profile_pic = models.URLField(max_length=300)
   bio = models.TextField(blank=True)
   role = models.ForeignKey('Role', on_delete=models.SET_NULL, null=True, blank=True)
   affiliation = models.CharField(max_length=200, blank=True, null=True)  # New field for affiliation
@@ -53,8 +53,10 @@ class Publication(models.Model):
   def __str__(self):
       return self.title
 
+
 class FundingSource(models.Model):
   source_name = models.CharField(max_length=255)
+  photo_url = models.URLField(max_length=300, blank=True, null=True)  # Added photo URL field
 
   def __str__(self):
       return self.source_name
