@@ -96,7 +96,7 @@
 
   <section id="assets">
       <h2>Assets</h2>
-      <table class="assets-table">
+      <table class="assets-table" style="border: 1px solid #000;">
           <thead>
               <tr>
                   <th>Name</th>
@@ -107,7 +107,7 @@
           </thead>
         <tbody>
             {% for asset in assets %}
-            <tr style="padding: 25px 10;"> <!-- Added vertical padding to asset rows -->
+            <tr style="padding: 25px 10px; border: 1px solid lightgrey;"> <!-- Added vertical padding and light border to asset rows -->
                 <td>{{ asset.asset_name }}</td>
                 <td>{{ asset.description }}</td>
                 <td>
