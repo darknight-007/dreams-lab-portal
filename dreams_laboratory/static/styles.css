@@ -1,14 +1,3 @@
-/* Define your dark theme styles in static/styles.css */
-body {
-    background-color: #1a1a1a; /* Dark background for the body */
-    color: #e6e6e6; /* Light text color for contrast */
-    font-family: Arial, sans-serif;
-}
-
-h1, h2, h3 {
-    color: #f2f2f2;
-}
-
 /* Adding a planetary background image */
 body {
     background-image: url('images/planetary_background.jpg'); /* Adjust './images/planetary_background.jpg' path as necessary */
@@ -18,7 +7,6 @@ body {
 }
 
 .research-area, #people, #outreach {
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
     padding: 15px;
     margin: 10px 0;
     border-radius: 8px;
@@ -31,7 +19,6 @@ body {
 }
 
 .research-area li {
-    background-color: rgba(255, 255, 255, 0.1);
     padding: 5px;
     margin-bottom: 5px;
     border-radius: 5px;
@@ -64,15 +51,12 @@ body {
 }
 
 .publication-item {
-  background-color: rgba(0, 0, 0, 0.6); /* Adjust the color/transparency to your liking */
   padding: 10px;
   border-radius: 8px;
-  color: white; /* Or another color that stands out against the dark background */
 }
 
 /* Styles for hyperlinks to make them stand out against the dark background */
 .publication-item a {
-  color: #0096e6; /* Consider changing the color to something that stands out */
   text-decoration: none; /* No underline */
 }
 
