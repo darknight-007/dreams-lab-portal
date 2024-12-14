@@ -5,63 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stereo Camera Configurator</title>
     <style>
-    .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100px;
-        margin: 20px 0;
-    }
-
-    .loading-text {
-        font-size: 18px;
-        font-weight: bold;
-        margin-left: 10px;
-    }
-
-    .spinner {
-        width: 24px;
-        height: 24px;
-        border: 3px solid #ccc;
-        border-top: 3px solid #007bff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin: 20px 0;
         }
-        100% {
-            transform: rotate(360deg);
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 10px;
         }
-    }
-</style>
-<style>
-    .container button {
-        font-size: 20px;
-        font-weight: bold;
-        padding: 15px 30px;
-        color: #fff;
-        background-color: #007bff; /* Attractive blue color */
-        border: none;
-        border-radius: 8px; /* Rounded corners */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-        cursor: pointer;
-        transition: all 0.3s ease; /* Smooth transition for hover effect */
-    }
 
-    .container button:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
-        transform: translateY(-2px); /* Slight lift on hover */
-    }
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ccc;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-    .container button:active {
-        transform: translateY(0); /* Reset lift when clicked */
-        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); /* Reduce shadow when clicked */
-    }
-</style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <style>
+        .container button {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 30px;
+            color: #fff;
+            background-color: #007bff; /* Attractive blue color */
+            border: none;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            cursor: pointer;
+            transition: all 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        .container button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+
+        .container button:active {
+            transform: translateY(0); /* Reset lift when clicked */
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); /* Reduce shadow when clicked */
+        }
+    </style>
 
     <style>
         body {
@@ -71,144 +71,180 @@
             flex-wrap: wrap;
             height: 100vh;
         }
+
         .column {
             flex: 1;
             margin: 10px;
             display: flex;
             flex-direction: column;
         }
+
         .widget {
             max-width: 100%;
             overflow-y: auto;
         }
+
         .svg-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
         }
+
         svg {
             width: 100%;
             height: 100%;
             border: 1px solid #ccc;
         }
+
         .results {
             margin-top: 20px;
         }
+
         .results div {
             margin-bottom: 10px;
         }
+
         .container {
             margin-bottom: 15px;
         }
+
         label span {
             font-weight: bold;
             margin-left: 5px;
         }
+
         input[type="number"] {
             width: 100px;
         }
     </style>
+    <style>
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .container label {
+        flex: 1; /* Label takes a fixed amount of space */
+        margin-right: 10px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .container input[type="range"] {
+        flex: 2; /* Slider takes more space */
+        margin-right: 10px;
+    }
+
+    .container input[type="number"] {
+        flex: 1; /* Number input takes a smaller space */
+        width: 60px; /* Fixed width for stable alignment */
+    }
+</style>
+
 </head>
 <body>
-    <div class="column widget">
-        <h1>Stereo Camera Configurator</h1>
-        <div class="loading-container" id="loadingIndicator" style="display: none;">
-    <div class="spinner"></div>
-    <div class="loading-text">Computing...</div>
+<div class="column widget">
+    <h1>Stereo Camera Configurator</h1>
+    <div class="loading-container" id="loadingIndicator" style="display: none;">
+        <div class="spinner"></div>
+        <div class="loading-text">Computing...</div>
+    </div>
+
+    <div class="container">
+    <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
+    <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
+    <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
 </div>
 
-        <div class="container">
-            <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
-            <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
-            <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
-        </div>
-
-        <div class="container">
-            <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel">19.71</span></label>
-            <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
-            <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
-        </div>
-
-        <div class="container">
-            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
-            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="45.0" oninput="syncValues('fieldOfView')">
-            <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
-        </div>
-
-        <div class="container">
-            <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
-            <input type="range" id="baseline" min="50" max="500" step="0.1" value="240" oninput="syncValues('baseline')">
-            <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
-        </div>
-
-        <div class="container">
-            <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
-            <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5" oninput="syncValues('distance')">
-            <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
-        </div>
-
-        <div class="container">
-            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
-            <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="0" oninput="syncValues('toeInAngle')">
-            <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
-        </div>
 <div class="container">
-    <button onclick="runBlender()">Render Blender Digital Twin Results</button>
+    <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel">19.71</span></label>
+    <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
+    <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
 </div>
 
-        <div class="results">
-            <h2>Calculated Results</h2>
-            <div id="focalLengthPixels">Focal Length (px): 0.0</div>
-            <div id="disparity">Disparity: 0.0 px</div>
-            <div id="zmin">Minimum Depth Resolution (zmin): 0.0 m</div>
-            <div id="zmax">Maximum Depth Resolution (zmax): 0.0 m</div>
-        </div>
-        <div class="rendered_images">
-            <h2>Rendered Images</h2>
+<div class="container">
+    <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
+    <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="45.0" oninput="syncValues('fieldOfView')">
+    <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
+</div>
 
-        </div>
+<div class="container">
+    <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
+    <input type="range" id="baseline" min="50" max="500" step="0.1" value="240" oninput="syncValues('baseline')">
+    <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
+</div>
+
+<div class="container">
+    <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
+    <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5" oninput="syncValues('distance')">
+    <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
+</div>
+
+<div class="container">
+    <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
+    <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="0" oninput="syncValues('toeInAngle')">
+    <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
+</div>
+
+    <div class="container">
+        <button onclick="runBlender()">Render Blender Digital Twin Results</button>
     </div>
 
-    <div class="column svg-container">
-        <h1>2D Camera Setup Visualization</h1>
-        <svg id="cameraView" viewBox="0 0 600 400" preserveAspectRatio="xMidYMax meet">
-            <polygon id="leftCameraFOV" fill="rgba(255, 0, 0, 0.6)"></polygon>
-            <polygon id="rightCameraFOV" fill="rgba(0, 255, 0, 0.6)"></polygon>
-            <line id="baselineLine" stroke="black" stroke-width="2" />
-        </svg>
+    <div class="results">
+        <h2>Calculated Results</h2>
+        <div id="focalLengthPixels">Focal Length (px): 0.0</div>
+        <div id="disparity">Disparity: 0.0 px</div>
+        <div id="zmin">Minimum Depth Resolution (zmin): 0.0 m</div>
+        <div id="zmax">Maximum Depth Resolution (zmax): 0.0 m</div>
     </div>
+    <div class="rendered_images">
+        <h2>Rendered Images</h2>
+
+    </div>
+</div>
+
+<div class="column svg-container">
+    <h1>2D Camera Setup Visualization</h1>
+    <svg id="cameraView" viewBox="0 0 600 400" preserveAspectRatio="xMidYMax meet">
+        <polygon id="leftCameraFOV" fill="rgba(255, 0, 0, 0.6)"></polygon>
+        <polygon id="rightCameraFOV" fill="rgba(0, 255, 0, 0.6)"></polygon>
+        <line id="baselineLine" stroke="black" stroke-width="2"/>
+    </svg>
+</div>
 
 <script>
-async function runBlender() {
-    // Show the loading indicator
-    document.getElementById("loadingIndicator").style.display = "flex";
+    async function runBlender() {
+        // Show the loading indicator
+        document.getElementById("loadingIndicator").style.display = "flex";
 
-    // Collect parameters from the sliders
-    const data = {
-        sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
-        focalLength: parseFloat(document.getElementById("focalLength").value),
-        baseline: parseFloat(document.getElementById("baseline").value),
-        distance: parseFloat(document.getElementById("distance").value),
-        toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
-    };
+        // Collect parameters from the sliders
+        const data = {
+            sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
+            focalLength: parseFloat(document.getElementById("focalLength").value),
+            baseline: parseFloat(document.getElementById("baseline").value),
+            distance: parseFloat(document.getElementById("distance").value),
+            toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
+        };
 
-    try {
-        const response = await fetch("/run_blender/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+        try {
+            const response = await fetch("/run_blender/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (result.status === "success") {
-            console.log("Blender script executed successfully.");
+            if (result.status === "success") {
+                console.log("Blender script executed successfully.");
 
-            // Display images
-            document.querySelector(".rendered_images").innerHTML += `
+                // Display images
+                document.querySelector(".rendered_images").innerHTML += `
                 <div>
                     <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
                     <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
@@ -218,19 +254,19 @@ async function runBlender() {
                     <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
                 </div>
             `;
-        } else {
-            console.error("Error:", result.details);
+            } else {
+                console.error("Error:", result.details);
+            }
+        } catch (error) {
+            console.error("Error executing Blender script:", error);
+        } finally {
+            // Hide the loading indicator
+            document.getElementById("loadingIndicator").style.display = "none";
         }
-    } catch (error) {
-        console.error("Error executing Blender script:", error);
-    } finally {
-        // Hide the loading indicator
-        document.getElementById("loadingIndicator").style.display = "none";
     }
-}
 
 </script>
-    <script>
+<script>
     const scalingFactor = 50;
 
     function syncValues(id) {
@@ -266,37 +302,37 @@ async function runBlender() {
         }
     }
 
-   function updateValues() {
-    const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
-    const focalLength = parseFloat(document.getElementById('focalLength').value);
-    const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
-    const distance = parseFloat(document.getElementById('distance').value);
-    const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
-    const toeInAngle = parseFloat(document.getElementById('toeInAngle').value) * (Math.PI / 180); // Convert to radians
-    const resolutionHorizontal = 2448; // Example resolution
+    function updateValues() {
+        const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
+        const focalLength = parseFloat(document.getElementById('focalLength').value);
+        const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
+        const distance = parseFloat(document.getElementById('distance').value);
+        const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
+        const toeInAngle = parseFloat(document.getElementById('toeInAngle').value) * (Math.PI / 180); // Convert to radians
+        const resolutionHorizontal = 2448; // Example resolution
 
-    // Focal length in pixels
-    const focalLengthPixels = focalLength * resolutionHorizontal / sensorWidth;
+        // Focal length in pixels
+        const focalLengthPixels = focalLength * resolutionHorizontal / sensorWidth;
 
-    // Minimum Depth Resolution (zmin)
-    const zmin = baseline / (2 * Math.tan(toeInAngle + (fieldOfView * Math.PI / 360)));
+        // Minimum Depth Resolution (zmin)
+        const zmin = baseline / (2 * Math.tan(toeInAngle + (fieldOfView * Math.PI / 360)));
 
-    // Disparity
-    const disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInAngle));
+        // Disparity
+        const disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInAngle));
 
-    // Maximum Depth Resolution (zmax)
-    const theta = 175e-6; // Pixel angular resolution in radians
-    const zmax = baseline / (theta * Math.cos(toeInAngle));
+        // Maximum Depth Resolution (zmax)
+        const theta = 175e-6; // Pixel angular resolution in radians
+        const zmax = baseline / (theta * Math.cos(toeInAngle));
 
-    // Update the results in the UI
-    document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
-    document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
-    document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
-    document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+        // Update the results in the UI
+        document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
+        document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
+        document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
+        document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
 
-    // Update visualization
-    updateSvg(baseline, distance, fieldOfView, toeInAngle);
-}
+        // Update visualization
+        updateSvg(baseline, distance, fieldOfView, toeInAngle);
+    }
 
 
     function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
@@ -336,6 +372,6 @@ async function runBlender() {
     }
 
     updateValues();
-    </script>
+</script>
 </body>
 </html>
