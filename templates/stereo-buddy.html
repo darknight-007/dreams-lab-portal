@@ -87,7 +87,7 @@
 
         <div class="container">
             <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
-            <input type="range" id="toeInAngle" min="-45" max="45" step="0.1" value="0" oninput="syncValues('toeInAngle')">
+            <input type="range" id="toeInAngle" min="-45" max="45" step="0.01" value="0" oninput="syncValues('toeInAngle')">
             <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
         </div>
 
@@ -97,6 +97,10 @@
             <div id="disparity">Disparity: 0.0 px</div>
             <div id="zmin">Minimum Depth Resolution (zmin): 0.0 m</div>
             <div id="zmax">Maximum Depth Resolution (zmax): 0.0 m</div>
+        </div>
+        <div class="rendered_images">
+            <h2>Rendered Images</h2>
+
         </div>
     </div>
 
@@ -138,7 +142,7 @@ async function runBlender() {
 
 
     // Correct image paths
-    document.querySelector(".results").innerHTML += `
+    document.querySelector(".rendered_images").innerHTML += `
         <div>
             <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
             <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
@@ -192,15 +196,38 @@ async function runBlender() {
         }
     }
 
-    function updateValues() {
-        const focalLength = parseFloat(document.getElementById('focalLength').value);
-        const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
-        const distance = parseFloat(document.getElementById('distance').value);
-        const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
-        const toeInAngle = parseFloat(document.getElementById('toeInAngle').value);
+   function updateValues() {
+    const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
+    const focalLength = parseFloat(document.getElementById('focalLength').value);
+    const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
+    const distance = parseFloat(document.getElementById('distance').value);
+    const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
+    const toeInAngle = parseFloat(document.getElementById('toeInAngle').value) * (Math.PI / 180); // Convert to radians
+    const resolutionHorizontal = 2448; // Example resolution
 
-        updateSvg(baseline, distance, fieldOfView, toeInAngle);
-    }
+    // Focal length in pixels
+    const focalLengthPixels = focalLength * resolutionHorizontal / sensorWidth;
+
+    // Minimum Depth Resolution (zmin)
+    const zmin = baseline / (2 * Math.tan(toeInAngle + (fieldOfView * Math.PI / 360)));
+
+    // Disparity
+    const disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInAngle));
+
+    // Maximum Depth Resolution (zmax)
+    const theta = 175e-6; // Pixel angular resolution in radians
+    const zmax = baseline / (theta * Math.cos(toeInAngle));
+
+    // Update the results in the UI
+    document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
+    document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
+    document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
+    document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+
+    // Update visualization
+    updateSvg(baseline, distance, fieldOfView, toeInAngle);
+}
+
 
     function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
         const baselinePixels = baseline * scalingFactor;
@@ -215,7 +242,7 @@ async function runBlender() {
 
         const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
 
-        const toeInRadians = (toeInAngle * Math.PI) / 180;
+        const toeInRadians = toeInAngle;
 
         // Adjust FOV points for toe-in angle
         const leftFOVPoints = `
