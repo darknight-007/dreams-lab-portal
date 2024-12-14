@@ -5,6 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stereo Camera Configurator</title>
     <style>
+    .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        margin: 20px 0;
+    }
+
+    .loading-text {
+        font-size: 18px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    .spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid #ccc;
+        border-top: 3px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<style>
+    .container button {
+        font-size: 20px;
+        font-weight: bold;
+        padding: 15px 30px;
+        color: #fff;
+        background-color: #007bff; /* Attractive blue color */
+        border: none;
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        cursor: pointer;
+        transition: all 0.3s ease; /* Smooth transition for hover effect */
+    }
+
+    .container button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+        transform: translateY(-2px); /* Slight lift on hover */
+    }
+
+    .container button:active {
+        transform: translateY(0); /* Reset lift when clicked */
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); /* Reduce shadow when clicked */
+    }
+</style>
+
+    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -54,6 +113,10 @@
 <body>
     <div class="column widget">
         <h1>Stereo Camera Configurator</h1>
+        <div class="loading-container" id="loadingIndicator" style="display: none;">
+    <div class="spinner"></div>
+    <div class="loading-text">Computing...</div>
+</div>
 
         <div class="container">
             <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
@@ -69,27 +132,30 @@
 
         <div class="container">
             <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
-            <input type="range" id="fieldOfView" min="10" max="120" step="0.1" value="45.0" oninput="syncValues('fieldOfView')">
+            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="45.0" oninput="syncValues('fieldOfView')">
             <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
         </div>
 
         <div class="container">
             <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
-            <input type="range" id="baseline" min="50" max="500" step="1" value="240" oninput="syncValues('baseline')">
+            <input type="range" id="baseline" min="50" max="500" step="0.1" value="240" oninput="syncValues('baseline')">
             <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
         </div>
 
         <div class="container">
             <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
-            <input type="range" id="distance" min="0.5" max="50" step="0.1" value="5" oninput="syncValues('distance')">
+            <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5" oninput="syncValues('distance')">
             <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
         </div>
 
         <div class="container">
             <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
-            <input type="range" id="toeInAngle" min="-45" max="45" step="0.01" value="0" oninput="syncValues('toeInAngle')">
+            <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="0" oninput="syncValues('toeInAngle')">
             <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
         </div>
+<div class="container">
+    <button onclick="runBlender()">Render Blender Digital Twin Results</button>
+</div>
 
         <div class="results">
             <h2>Calculated Results</h2>
@@ -112,12 +178,12 @@
             <line id="baselineLine" stroke="black" stroke-width="2" />
         </svg>
     </div>
-<div class="container">
-    <button onclick="runBlender()">Run Blender</button>
-</div>
 
 <script>
 async function runBlender() {
+    // Show the loading indicator
+    document.getElementById("loadingIndicator").style.display = "flex";
+
     // Collect parameters from the sliders
     const data = {
         sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
@@ -137,28 +203,32 @@ async function runBlender() {
         });
 
         const result = await response.json();
-       if (result.status === "success") {
-    console.log("Blender script executed successfully.");
 
+        if (result.status === "success") {
+            console.log("Blender script executed successfully.");
 
-    // Correct image paths
-    document.querySelector(".rendered_images").innerHTML += `
-        <div>
-            <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
-            <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
-        </div>
-        <div>
-            <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
-            <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
-        </div>
-    `;
-}else {
+            // Display images
+            document.querySelector(".rendered_images").innerHTML += `
+                <div>
+                    <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
+                    <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
+                </div>
+                <div>
+                    <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
+                    <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
+                </div>
+            `;
+        } else {
             console.error("Error:", result.details);
         }
     } catch (error) {
         console.error("Error executing Blender script:", error);
+    } finally {
+        // Hide the loading indicator
+        document.getElementById("loadingIndicator").style.display = "none";
     }
 }
+
 </script>
     <script>
     const scalingFactor = 50;
