@@ -5,161 +5,242 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-   <style>
-     /* Styles for clarity and readability with white background and black font */
-     body {
-       font-size: 18px; /* Increased font size for overall readability */
-       background-color: #ffffff; /* White background for the body */
-       color: #000000; /* Black color for the text */
-       font-family: 'Arial', sans-serif; /* Arial font for clarity and readability */
-     }
-     a {
-       color: #0096e6; /* Light blue color for better readability */
-       text-decoration: none; /* Removes underline from hyperlinks */
-     }
-     a:hover {
-       text-decoration: underline; /* Adds underline on hover for better user experience */
-     }
-     img {
-       padding: 5px; /* Added padding around all images */
-     }
-     td {
-       padding: 10px; /* Added padding around all text cells */
-     }
-   </style>
     <title>ASU DREAMS Laboratory</title>
+    <style>
+        body {
+            font-size: 22px;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        a {
+            color: #0096e6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        img {
+            padding: 0;
+            max-width: 100%;
+            height: auto;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4, h5 {
+            margin-top: 1.5em;
+        }
+        .research-project-photo-set, .project-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .photo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: auto;
+        }
+        .project-photo {
+            height: 250px;
+            width: auto;
+        }
+        .photo-caption {
+            text-align: center;
+            margin-top: 5px;
+            color: #555;
+            font-style: italic;
+            max-width: 100%; /* Make sure the caption doesn't exceed the width of the photo */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .grid-container {
+            display: grid;
+            gap: 20px;
+        }
+        .grid-item {
+            padding: 15px;
+            border: 2px solid #ddd;
+        }
+        .funding-source-logo {
+            height: 200px;
+            width: auto;
+        }
+        .centered-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .funding-sources-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Add some space between logos */
+        }
+    </style>
 </head>
 <body>
-    <h1>DREAMS Laboratory</h1>
-    <img id="logo" src="https://lh3.googleusercontent.com/pw/ADCreHdq_ZVhL3PV4Kb4nqHFrg_FFk5iv2fPw-8YXk5LfCWLQpBN7YkyrsuWt6mpER-mTGW340r8UnSNUVupXmGjahBYhZb6cty8JLVN1xT3tbgqBt1MEP-wFrLF2yFloFRi7LzF0g8N6fIF2PccI7zsHGc_yA=w737-h721-s-no?authuser=0" alt="DREAMS Lab Logo" width="300" height="300">
-  
-  <p>The Distributed Robotic Exploration and Mapping Systems (DREAMS) Laboratory specializes in the research and development of autonomous robotic systems. These systems are designed for advanced mapping and sampling across diverse environments—terrestrial, aquatic, and extraterrestrial. DREAMS Lab is composed of a multidisciplinary team of experts in engineering and science, passionate about pushing the boundaries of exploration and discovery.</p>
-  <p>As part of Arizona State University, the DREAMS Lab is affiliated with the <a href="https://sese.asu.edu">School of Earth and Space Exploration</a>, the <a href="https://gdcs.asu.edu" target="_blank">Center for Global Discovery and Conservation Science</a>, and the DreamScape Discovery Initiative. Located in the heart of innovation at ASU's <a href="https://cfo.asu.edu/ISTB7" target="_blank">Walton Center for Planetary Health (WCPH)</a>, the lab welcomes everyone interested in pioneering research and scholarship.</p>
+    <div class="container">
+        <div class="centered-content">
+            <h1>DREAMS Laboratory</h1>
+            <img id="logo" src="https://lh3.googleusercontent.com/pw/AP1GczNPyI0kgpiaTxXRFmjMFGZR31shMfq5qIB4hhaLBTiri7hQbc33fVASZ4xusXyRfzZjfkz_Zr0Y2eOov6v5pekTGvZjd0fdVQFG-wdbQ8I0pG3xpEKKtaUv-QiBODdAS_XLWn5jECL6xFo9rxLsDKQG=w732-h717-s-no?authuser=0" alt="DREAMS Lab Logo" width="300" height="300">
+        </div>
 
-  
+        <p>The Distributed Robotic Exploration and Mapping Systems (DREAMS) Laboratory specializes in the research and development of autonomous robotic systems and cyber-physical twins, for advanced mapping, sampling, and analysis in diverse environments — terrestrial, aquatic, and extraterrestrial. DREAMS Lab is composed of a multidisciplinary team of researchers in engineering and science, passionate about pushing the boundaries of exploration and discovery.</p>
+        <p>As part of Arizona State University, the DREAMS Lab is affiliated with the <a href="https://sese.asu.edu">School of Earth and Space Exploration</a>, the <a href="https://globalfutures.asu.edu/">Global Futures Laboratory</a>, and the <a href="https://gdcs.asu.edu" target="_blank">Center for Global Discovery and Conservation Science (GDCS)</a>. Located in the heart of innovation at ASU's <a href="https://cfo.asu.edu/ISTB7" target="_blank">Walton Center for Planetary Health (WCPH)</a>, the lab welcomes everyone interested in pioneering research and scholarship.</p>
 
-    <section id="research-areas">
-        <h2>Focus Areas</h2>
-        <div class="research-areas-container grid-container">
-            {% for area in research_areas %}
-                <div class="research-area grid-item" style="padding: 15px; border: 2px solid #ddd;">
-                    <h3>{{ area.title }}</h3>
-                    <p>{{ area.description }}</p>
-                    <div class="research-projects">
-                        <h4>Projects</h4>
-                        <div class="research-project-photo-set horizontal-wrap">
-                            {% for project in area.projects.all %}
-                            <div class="project-entry" style="padding: 15px; border: 1px solid #ddd;">
-                                <h5>{{ project.title }}</h5>
-                                <div class="project-photos">
-                                    {% for photo in project.photo_set.all %}
-                                    <img src="{{ photo.photo_url }}" alt="Project Image" class="project-photo" style="height: 150px; width: auto; padding: 5px;">
-                                    {% endfor %}
-                                </div>
+        <section id="research-areas">
+            <h2>Focus Areas</h2>
+            <div class="research-areas-container grid-container">
+                {% for area in research_areas %}
+                    <div class="research-area grid-item">
+                        <h3>{{ area.title }}</h3>
+                        <p>{{ area.description }}</p>
+                        <div class="research-projects">
+                            <h4>Projects</h4>
+                            <div class="research-project-photo-set">
+                                {% for project in area.projects.all %}
+                                    <div class="project-entry grid-item">
+                                        <h5>
+                                            {% if project.website_url %}
+                                                <a href="{{ project.website_url }}" target="_blank">{{ project.title }}</a>
+                                            {% else %}
+                                                {{ project.title }}
+                                            {% endif %}
+                                        </h5>
+                                        <div class="project-photos">
+                                            {% for photo in project.photo_set.all %}
+                                                <div class="photo-container">
+                                                    <a href="{{ photo.photo_url }}" target="_blank">
+                                                        <img src="{{ photo.photo_url }}" alt="Project Image" class="project-photo">
+                                                    </a>
+                                                    <div class="photo-caption">
+                                                        {% if photo.caption %}
+                                                            {{ photo.caption|safe }}
+                                                        {% else %}
+                                                            <span style="color: #aaa;">No caption available</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-           
-    </section>
-
-<section id="people">
-    <h2>People</h2>
-    <table class="people-table" style="text-align: left; border: 1px solid #ddd; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th style="padding-left: 10px; border: 1px solid #ddd;">Photo</th>
-                <th style="padding-left: 10px; border: 1px solid #ddd;">Name</th>
-                <th style="padding-left: 10px; border: 1px solid #ddd;">Position</th>
-                <th style="padding-left: 10px; border: 1px solid #ddd;">Affiliation</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for person in people %}
-            <tr style="border: 1px solid #ddd;">
-                <td style="padding-left: 10px; border: 1px solid #ddd;">
-                    {% if person.profile_pic %}
-                        <img src="{{ person.profile_pic }}" alt="{{ person.first_name }} {{ person.last_name }}" class="person-photo" style="height: 100px; width: auto;">
-                    {% else %}
-                        No photo
-                    {% endif %}
-                </td>
-                <td style="padding-left: 10px; border: 1px solid #ddd;">{{ person.first_name }} {{ person.last_name }}</td>
-                <td style="padding-left: 10px; border: 1px solid #ddd;">{{ person.role }}</td>
-                <td style="padding-left: 10px; border: 1px solid #ddd;">{{ person.affiliation }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" style="padding-left: 10px; border: 1px solid #ddd;">No people found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
-
-  <section id="assets">
-      <h2>Assets</h2>
-      <table class="assets-table" style="border: 1px solid #ddd; border-collapse: collapse;">
-          <thead>
-              <tr>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Name</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Description</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Photo</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Project</th>
-              </tr>
-          </thead>
-        <tbody>
-            {% for asset in assets %}
-            <tr style="border: 1px solid #ddd; padding: 25px 10px;"> <!-- Added vertical padding to asset rows -->
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ asset.asset_name }}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ asset.description }}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">
-                  <img src="{{ asset.photo_set.first.photo_url }}" alt="Asset Image" style="height: 120px; width: auto;">
-                </td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ asset.project.title }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" style="border: 1px solid #ddd; padding: 8px;">No assets found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-      </table>
-  </section>
-
-
-    <section id="publications">
-        <h2>Publications</h2>
-        <div class="publications-container grid-container" style="border: 1px solid #ddd; padding: 15px;">
-            {% for publication in publications|dictsortreversed:"publication_date" %}
-            <div class="publication-item grid-item" style="border: 1px solid #ddd; padding: 10px;">
-                <p>
-                    ({{ publication.publication_date|date:"Y" }}).
-                    <em>{{ publication.title }}</em>
-                    {% if publication.link %}
-                    . <a href="{{ publication.link }}" target="_blank">Access</a>
-                    {% endif %}
-                </p>
+                {% endfor %}
             </div>
-            {% empty %}
-            <p>No publications found.</p>
-            {% endfor %}
-        </div>
-    </section>
+        </section>
 
-  
-    <section id="funding-sources">
-        <h2>Funding Sources</h2>
-        <div class="funding-sources-container horizontal-wrap" style="text-align: center;">
-            {% for source in funding_source %}
-            <img src="{{ source.photo_url }}" alt="{{ . }}" style="height: 70px; width: auto;"{% if not source.photo_url %} style="display: none;"{% endif %}>
-            {% empty %}
-            <p>No funding sources found.</p>
-            {% endfor %}
-        </div>
-    </section>
+        <section id="people">
+            <h2>People</h2>
+            <table class="people-table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Affiliation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in people %}
+                        {% if person.role != 'Alumni' %}
+                            <tr>
+                                <td>
+                                    {% if person.profile_pic %}
+                                        <img src="{{ person.profile_pic }}" alt="{{ person.first_name }} {{ person.last_name }}" class="person-photo" style="width: 200px; height: auto;">
+                                    {% else %}
+                                        No photo
+                                    {% endif %}
+                                </td>
+                                <td>{{ person.first_name }} {{ person.last_name }}</td>
+                                <td>{{ person.role }}</td>
+                                <td>{{ person.affiliation }}</td>
+                            </tr>
+                        {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No people found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section id="assets">
+            <h2>Assets</h2>
+            <table class="assets-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Photo</th>
+                        <th>Project</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in assets %}
+                        <tr>
+                            <td>{{ asset.asset_name }}</td>
+                            <td>{{ asset.description }}</td>
+                            <td>
+                                <img src="{{ asset.photo_set.first.photo_url }}" alt="Asset Image" style="width: 300px; height: auto;">
+                            </td>
+                            <td>{{ asset.project.title }}</td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No assets found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section id="publications">
+            <h2>Publications</h2>
+            <div class="publications-container grid-container">
+                {% for publication in publications|dictsortreversed:"publication_date" %}
+                    <div class="publication-item grid-item">
+                        <p>
+                            ({{ publication.publication_date|date:"Y" }}).
+                            <em>{{ publication.title }}</em>
+                            {% if publication.link %}
+                                . <a href="{{ publication.link }}" target="_blank">Access</a>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% empty %}
+                    <p>No publications found.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section id="funding-sources">
+            <h2>Sponsors and Partners</h2>
+            <div class="funding-sources-container">
+                {% for source in funding_source %}
+                    <img src="{{ source.photo_url }}" alt="{{ source.name }}" class="funding-source-logo">
+                {% empty %}
+                    <p>No funding sources found.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 </body>
 </html>

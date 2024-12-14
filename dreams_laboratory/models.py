@@ -67,6 +67,7 @@ class Project(models.Model):
     team_members = models.ManyToManyField(People, related_name='projects')
     publications = models.ManyToManyField(Publication, related_name='projects')
     research_areas = models.ManyToManyField(Research, related_name='projects')
+    website_url = models.URLField(max_length=300, blank=True, null=True)  # Added URL field for project website
 
     def __str__(self):
         return self.title
@@ -87,6 +88,7 @@ class Photo(models.Model):
   researches = models.ManyToManyField(Research, blank=True)
   assets = models.ManyToManyField(Asset, blank=True)
   photo_url = models.URLField(max_length=300)
+  caption = models.TextField(blank=True, default=' ')
 
   def __str__(self):
       return self.photo_url  # Or any other string representation you prefer.

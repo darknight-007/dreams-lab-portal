@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dreams_laboratory.views import home_view
+from dreams_laboratory.views import home_view, stereo_buddy_view, run_blender
 from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),
+    path("run_blender/", run_blender, name="run_blender"),
+    path('stereo-buddy/', stereo_buddy_view, name='stereo_buddy'), 
 ]
 
 if settings.DEBUG:
   urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+  urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
