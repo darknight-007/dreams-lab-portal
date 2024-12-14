@@ -123,7 +123,12 @@ async function runBlender() {
         toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
     };
 
+    // Clear previous results and show "Computing..."
+    const resultsDiv = document.querySelector(".results");
+    resultsDiv.innerHTML = `<h2>Calculated Results</h2><div>Computing...</div>`;
+
     try {
+        // Fetch data from the backend
         const response = await fetch("/run_blender/", {
             method: "POST",
             headers: {
@@ -133,112 +138,130 @@ async function runBlender() {
         });
 
         const result = await response.json();
-       if (result.status === "success") {
-    console.log("Blender script executed successfully.");
 
+        if (result.status === "success") {
+            console.log("Blender script executed successfully.");
 
-    // Correct image paths
-    document.querySelector(".results").innerHTML += `
-        <div>
-            <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
-            <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
-        </div>
-        <div>
-            <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
-            <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
-        </div>
-    `;
-}else {
+            // Clear previous images
+            resultsDiv.innerHTML = `<h2>Calculated Results</h2>`;
+
+            // Add new images to results
+            resultsDiv.innerHTML += `
+                <div>
+                    <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
+                    <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
+                </div>
+                <div>
+                    <img src="/media/render_outputs/depth_map.png" alt="Depth Map" width="300" />
+                    <img src="/media/render_outputs/disparity_map.png" alt="Disparity Map" width="300" />
+                </div>
+            `;
+        } else {
             console.error("Error:", result.details);
+            resultsDiv.innerHTML = `<h2>Calculated Results</h2><div>Error: ${result.details}</div>`;
         }
     } catch (error) {
         console.error("Error executing Blender script:", error);
+        resultsDiv.innerHTML = `<h2>Calculated Results</h2><div>Error executing Blender script: ${error}</div>`;
     }
 }
-</script>
-    <script>
-    const scalingFactor = 50;
 
-    function syncValues(id) {
-        const range = document.getElementById(id);
-        const number = document.getElementById(id + 'Value');
-        number.value = range.value;
-        updateLabel(id);
+function syncValues(id) {
+    const range = document.getElementById(id);
+    const number = document.getElementById(id + "Value");
+    number.value = range.value;
+    updateLabel(id);
 
-        if (id === 'focalLength' || id === 'fieldOfView') {
-            updateDependentValues(id);
-        }
-        updateValues();
+    if (id === "focalLength" || id === "fieldOfView") {
+        updateDependentValues(id);
     }
-
-    function updateLabel(id) {
-        const value = document.getElementById(id).value;
-        document.getElementById(`${id}Label`).textContent = value;
-    }
-
-    function updateDependentValues(changedId) {
-        const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
-
-        if (changedId === 'focalLength') {
-            const focalLength = parseFloat(document.getElementById('focalLength').value);
-            const fieldOfView = (2 * Math.atan(sensorWidth / (2 * focalLength)) * 180) / Math.PI;
-            document.getElementById('fieldOfView').value = fieldOfView.toFixed(1);
-            document.getElementById('fieldOfViewValue').value = fieldOfView.toFixed(1);
-        } else if (changedId === 'fieldOfView') {
-            const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
-            const focalLength = sensorWidth / (2 * Math.tan((fieldOfView * Math.PI) / 360));
-            document.getElementById('focalLength').value = focalLength.toFixed(2);
-            document.getElementById('focalLengthValue').value = focalLength.toFixed(2);
-        }
-    }
-
-    function updateValues() {
-        const focalLength = parseFloat(document.getElementById('focalLength').value);
-        const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
-        const distance = parseFloat(document.getElementById('distance').value);
-        const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
-        const toeInAngle = parseFloat(document.getElementById('toeInAngle').value);
-
-        updateSvg(baseline, distance, fieldOfView, toeInAngle);
-    }
-
-    function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
-        const baselinePixels = baseline * scalingFactor;
-        const centerX = 300; // Center of the SVG
-        const centerY = 360; // Position cameras at 90% height of SVG
-
-        const leftCameraX = centerX - baselinePixels / 2;
-        const rightCameraX = centerX + baselinePixels / 2;
-
-        const distancePixels = distance * scalingFactor;
-        const fovRadians = (fieldOfView * Math.PI) / 180;
-
-        const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
-
-        const toeInRadians = (toeInAngle * Math.PI) / 180;
-
-        // Adjust FOV points for toe-in angle
-        const leftFOVPoints = `
-            ${leftCameraX},${centerY}
-            ${leftCameraX + Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
-            ${leftCameraX + Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
-        `;
-        const rightFOVPoints = `
-            ${rightCameraX},${centerY}
-            ${rightCameraX - Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
-            ${rightCameraX - Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
-        `;
-
-        document.getElementById('leftCameraFOV').setAttribute('points', leftFOVPoints);
-        document.getElementById('rightCameraFOV').setAttribute('points', rightFOVPoints);
-
-        document.getElementById('baselineLine').setAttribute('x1', leftCameraX);
-        document.getElementById('baselineLine').setAttribute('y1', centerY);
-        document.getElementById('baselineLine').setAttribute('x2', rightCameraX);
-        document.getElementById('baselineLine').setAttribute('y2', centerY);
-    }
-
     updateValues();
-    </script>
+}
+
+function updateLabel(id) {
+    const value = document.getElementById(id).value;
+    document.getElementById(`${id}Label`).textContent = value;
+}
+
+function updateDependentValues(changedId) {
+    const sensorWidth = parseFloat(document.getElementById("sensorWidth").value);
+
+    if (changedId === "focalLength") {
+        const focalLength = parseFloat(document.getElementById("focalLength").value);
+        const fieldOfView = (2 * Math.atan(sensorWidth / (2 * focalLength)) * 180) / Math.PI;
+        document.getElementById("fieldOfView").value = fieldOfView.toFixed(1);
+        document.getElementById("fieldOfViewValue").value = fieldOfView.toFixed(1);
+    } else if (changedId === "fieldOfView") {
+        const fieldOfView = parseFloat(document.getElementById("fieldOfView").value);
+        const focalLength = sensorWidth / (2 * Math.tan((fieldOfView * Math.PI) / 360));
+        document.getElementById("focalLength").value = focalLength.toFixed(2);
+        document.getElementById("focalLengthValue").value = focalLength.toFixed(2);
+    }
+}
+
+function updateValues() {
+    const sensorWidth = parseFloat(document.getElementById("sensorWidth").value);
+    const focalLength = parseFloat(document.getElementById("focalLength").value);
+    const baseline = parseFloat(document.getElementById("baseline").value) / 1000; // mm to meters
+    const distance = parseFloat(document.getElementById("distance").value);
+    const fieldOfView = parseFloat(document.getElementById("fieldOfView").value);
+
+    // Calculate focal length in pixels
+    const focalLengthPx = (focalLength / sensorWidth) * 640; // Assuming 640px width
+    document.getElementById("focalLengthPixels").textContent = `Focal Length (px): ${focalLengthPx.toFixed(2)}`;
+
+    // Calculate disparity
+    const disparity = (baseline * focalLengthPx) / distance; // Simplified formula
+    document.getElementById("disparity").textContent = `Disparity: ${disparity.toFixed(2)} px`;
+
+    // Calculate zmin and zmax
+    const zmin = baseline / Math.tan((fieldOfView / 2) * (Math.PI / 180)); // Minimum depth
+    const zmax = zmin + distance; // Maximum depth
+    document.getElementById("zmin").textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
+    document.getElementById("zmax").textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+
+    updateSvg(baseline, distance, fieldOfView, 0); // Assume 0 for toe-in angle for visualization
+}
+
+function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
+    const scalingFactor = 50;
+    const baselinePixels = baseline * scalingFactor;
+    const centerX = 300; // Center of the SVG
+    const centerY = 360; // Position cameras at 90% height of SVG
+
+    const leftCameraX = centerX - baselinePixels / 2;
+    const rightCameraX = centerX + baselinePixels / 2;
+
+    const distancePixels = distance * scalingFactor;
+    const fovRadians = (fieldOfView * Math.PI) / 180;
+
+    const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
+
+    const toeInRadians = (toeInAngle * Math.PI) / 180;
+
+    // Adjust FOV points for toe-in angle
+    const leftFOVPoints = `
+        ${leftCameraX},${centerY}
+        ${leftCameraX + Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
+        ${leftCameraX + Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
+    `;
+    const rightFOVPoints = `
+        ${rightCameraX},${centerY}
+        ${rightCameraX - Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
+        ${rightCameraX - Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
+    `;
+
+    document.getElementById("leftCameraFOV").setAttribute("points", leftFOVPoints);
+    document.getElementById("rightCameraFOV").setAttribute("points", rightFOVPoints);
+
+    document.getElementById("baselineLine").setAttribute("x1", leftCameraX);
+    document.getElementById("baselineLine").setAttribute("y1", centerY);
+    document.getElementById("baselineLine").setAttribute("x2", rightCameraX);
+    document.getElementById("baselineLine").setAttribute("y2", centerY);
+}
+
+updateValues();
+</script>
+
 </body>
 </html>

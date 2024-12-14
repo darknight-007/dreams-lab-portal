@@ -13,16 +13,14 @@ import matplotlib.pyplot as plt
 
 import time
 
-def setup_scene():
-    """Set up the Blender scene with a perturbed geodesic sphere and two cameras."""
+def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance):
+    """Set up the Blender scene with a perturbed geodesic sphere and two cameras using configurator parameters."""
     # Clear all existing objects
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
-    # Add a small delay to ensure Blender processes the cleanup
-    time.sleep(1)
-
-    # Create a perturbed geodesic sphere
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=1, location=(0, 5, 0))
+    # Create a perturbed geodesic sphere at the specified distance
+    sphere_location = (0, distance, 0)  # Place the sphere `distance` meters in front of the cameras
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=1, location=sphere_location)
     sphere = bpy.context.view_layer.objects.active  # Get the created object
     if sphere is None:
         raise RuntimeError("Failed to create geodesic sphere.")
@@ -35,19 +33,29 @@ def setup_scene():
     displacement.strength = 0.5
     bpy.ops.object.shade_smooth()
 
+    # Compute camera positions based on baseline (in meters)
+    baseline_m = baseline / 1000  # Convert mm to meters
+    left_camera_position = (-baseline_m / 2, 0, 0)
+    right_camera_position = (baseline_m / 2, 0, 0)
+
     # Add left camera
-    bpy.ops.object.camera_add(location=(-0.12, 0, 0), rotation=(np.radians(90), 0, 0))
+    bpy.ops.object.camera_add(location=left_camera_position, rotation=(np.radians(90), 0, np.radians(toe_in_angle)))
     left_camera = bpy.context.view_layer.objects.active
     if left_camera is None:
         raise RuntimeError("Failed to create the left camera.")
     left_camera.name = "LeftCamera"
 
     # Add right camera
-    bpy.ops.object.camera_add(location=(0.12, 0, 0), rotation=(np.radians(90), 0, 0))
+    bpy.ops.object.camera_add(location=right_camera_position, rotation=(np.radians(90), 0, -np.radians(toe_in_angle)))
     right_camera = bpy.context.view_layer.objects.active
     if right_camera is None:
         raise RuntimeError("Failed to create the right camera.")
     right_camera.name = "RightCamera"
+
+    # Set camera sensor width and focal length
+    for camera in [left_camera, right_camera]:
+        camera.data.lens = focal_length  # Set focal length in mm
+        camera.data.sensor_width = sensor_width  # Set sensor width in mm
 
     # Add light source
     bpy.ops.object.light_add(type='POINT', location=(0, 0, 8))
@@ -59,13 +67,14 @@ def setup_scene():
     return left_camera, right_camera
 
 
+
 def setup_render_settings():
     """Set render settings to output RGB images."""
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 128
-    scene.render.resolution_x = 2448
-    scene.render.resolution_y = 2048
+    scene.render.resolution_x = 1440
+    scene.render.resolution_y = 900
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = "PNG"
 
@@ -160,8 +169,8 @@ def visualize_results(left_img_path, right_img_path, disparity_path, depth_path)
 
 
 def main(sensor_width, focal_length, baseline, distance, toe_in_angle, output_folder):
-    # Set up the Blender scene
-    left_camera, right_camera = setup_scene()
+    # Set up the Blender scene with parameters
+    left_camera, right_camera = setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance)
 
     # Set render settings
     setup_render_settings()
@@ -173,7 +182,7 @@ def main(sensor_width, focal_length, baseline, distance, toe_in_angle, output_fo
     render_image(right_camera, right_img_path)
 
     # Camera parameters
-    focal_length_px = (focal_length / sensor_width) * 640  # Assuming 640px image width
+    focal_length_px = (focal_length / sensor_width) * bpy.context.scene.render.resolution_x
     baseline_m = baseline / 1000  # mm to meters
 
     # Compute disparity and depth
@@ -182,6 +191,8 @@ def main(sensor_width, focal_length, baseline, distance, toe_in_angle, output_fo
 
     # Save disparity and depth maps
     save_disparity_and_depth(disparity, depth, output_folder)
+
+
 
 if __name__ == "__main__":
     # Parse command-line arguments
