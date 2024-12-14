@@ -69,14 +69,27 @@ def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance):
 
 
 def setup_render_settings():
-    """Set render settings to output RGB images."""
+    """Set render settings to use GPU and configure Cycles."""
     scene = bpy.context.scene
-    scene.render.engine = "CYCLES"
-    scene.cycles.samples = 128
-    scene.render.resolution_x = 1440
-    scene.render.resolution_y = 900
+    scene.render.engine = "CYCLES"  # Use Cycles render engine
+
+    # Enable GPU rendering
+    bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'  # For NVIDIA GPUs
+    # Uncomment below for AMD GPUs
+    # bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'HIP'
+
+    # Enable all GPU devices
+    bpy.context.preferences.addons['cycles'].preferences.get_devices()
+    for device in bpy.context.preferences.addons['cycles'].preferences.devices:
+        device.use = True
+
+    scene.cycles.device = "GPU"  # Use GPU for rendering
+    scene.cycles.samples = 1280  # Set the number of samples
+    scene.render.resolution_x = 1440  # Horizontal resolution
+    scene.render.resolution_y = 900   # Vertical resolution
     scene.render.resolution_percentage = 100
-    scene.render.image_settings.file_format = "PNG"
+    scene.render.image_settings.file_format = "PNG"  # Save renders as PNG
+
 
 
 def render_image(camera, output_path):
