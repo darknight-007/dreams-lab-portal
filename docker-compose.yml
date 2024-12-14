@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: .
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all  # Use all GPUs
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility  # Required for nvidia-smi
+      - SECRET_KEY=dreamslab2024
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=dreams_laboratory.settings
+    volumes:
+      - .:/app
+      - ./db.sqlite3:/app/db.sqlite3
+    ports:
+      - "8000:8000"

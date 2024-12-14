@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stereo Camera Configurator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            height: 100vh;
+        }
+        .column {
+            flex: 1;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .widget {
+            max-width: 100%;
+            overflow-y: auto;
+        }
+        .svg-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .results div {
+            margin-bottom: 10px;
+        }
+        .container {
+            margin-bottom: 15px;
+        }
+        label span {
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        input[type="number"] {
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="column widget">
+        <h1>Stereo Camera Configurator</h1>
+
+        <div class="container">
+            <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
+            <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
+            <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
+        </div>
+
+        <div class="container">
+            <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel">19.71</span></label>
+            <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
+            <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
+        </div>
+
+        <div class="container">
+            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
+            <input type="range" id="fieldOfView" min="10" max="120" step="0.1" value="45.0" oninput="syncValues('fieldOfView')">
+            <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
+        </div>
+
+        <div class="container">
+            <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
+            <input type="range" id="baseline" min="50" max="500" step="1" value="240" oninput="syncValues('baseline')">
+            <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
+        </div>
+
+        <div class="container">
+            <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
+            <input type="range" id="distance" min="0.5" max="50" step="0.1" value="5" oninput="syncValues('distance')">
+            <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
+        </div>
+
+        <div class="container">
+            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
+            <input type="range" id="toeInAngle" min="-45" max="45" step="0.1" value="0" oninput="syncValues('toeInAngle')">
+            <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
+        </div>
+
+        <div class="results">
+            <h2>Calculated Results</h2>
+            <div id="focalLengthPixels">Focal Length (px): 0.0</div>
+            <div id="disparity">Disparity: 0.0 px</div>
+            <div id="zmin">Minimum Depth Resolution (zmin): 0.0 m</div>
+            <div id="zmax">Maximum Depth Resolution (zmax): 0.0 m</div>
+        </div>
+    </div>
+
+    <div class="column svg-container">
+        <h1>2D Camera Setup Visualization</h1>
+        <svg id="cameraView" viewBox="0 0 600 400" preserveAspectRatio="xMidYMax meet">
+            <polygon id="leftCameraFOV" fill="rgba(255, 0, 0, 0.6)"></polygon>
+            <polygon id="rightCameraFOV" fill="rgba(0, 255, 0, 0.6)"></polygon>
+            <line id="baselineLine" stroke="black" stroke-width="2" />
+        </svg>
+    </div>
+<div class="container">
+    <button onclick="runBlender()">Run Blender</button>
+</div>
+
+<script>
+async function runBlender() {
+    // Collect parameters from the sliders
+    const data = {
+        sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
+        focalLength: parseFloat(document.getElementById("focalLength").value),
+        baseline: parseFloat(document.getElementById("baseline").value),
+        distance: parseFloat(document.getElementById("distance").value),
+        toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
+    };
+
+    try {
+        const response = await fetch("/run_blender/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+       if (result.status === "success") {
+    console.log("Blender script executed successfully.");
+
+
+    // Correct image paths
+    document.querySelector(".results").innerHTML += `
+        <div>
+            <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
+            <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
+        </div>
+        <div>
+            <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
+            <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
+        </div>
+    `;
+}else {
+            console.error("Error:", result.details);
+        }
+    } catch (error) {
+        console.error("Error executing Blender script:", error);
+    }
+}
+</script>
+    <script>
+    const scalingFactor = 50;
+
+    function syncValues(id) {
+        const range = document.getElementById(id);
+        const number = document.getElementById(id + 'Value');
+        number.value = range.value;
+        updateLabel(id);
+
+        if (id === 'focalLength' || id === 'fieldOfView') {
+            updateDependentValues(id);
+        }
+        updateValues();
+    }
+
+    function updateLabel(id) {
+        const value = document.getElementById(id).value;
+        document.getElementById(`${id}Label`).textContent = value;
+    }
+
+    function updateDependentValues(changedId) {
+        const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
+
+        if (changedId === 'focalLength') {
+            const focalLength = parseFloat(document.getElementById('focalLength').value);
+            const fieldOfView = (2 * Math.atan(sensorWidth / (2 * focalLength)) * 180) / Math.PI;
+            document.getElementById('fieldOfView').value = fieldOfView.toFixed(1);
+            document.getElementById('fieldOfViewValue').value = fieldOfView.toFixed(1);
+        } else if (changedId === 'fieldOfView') {
+            const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
+            const focalLength = sensorWidth / (2 * Math.tan((fieldOfView * Math.PI) / 360));
+            document.getElementById('focalLength').value = focalLength.toFixed(2);
+            document.getElementById('focalLengthValue').value = focalLength.toFixed(2);
+        }
+    }
+
+    function updateValues() {
+        const focalLength = parseFloat(document.getElementById('focalLength').value);
+        const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
+        const distance = parseFloat(document.getElementById('distance').value);
+        const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
+        const toeInAngle = parseFloat(document.getElementById('toeInAngle').value);
+
+        updateSvg(baseline, distance, fieldOfView, toeInAngle);
+    }
+
+    function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
+        const baselinePixels = baseline * scalingFactor;
+        const centerX = 300; // Center of the SVG
+        const centerY = 360; // Position cameras at 90% height of SVG
+
+        const leftCameraX = centerX - baselinePixels / 2;
+        const rightCameraX = centerX + baselinePixels / 2;
+
+        const distancePixels = distance * scalingFactor;
+        const fovRadians = (fieldOfView * Math.PI) / 180;
+
+        const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
+
+        const toeInRadians = (toeInAngle * Math.PI) / 180;
+
+        // Adjust FOV points for toe-in angle
+        const leftFOVPoints = `
+            ${leftCameraX},${centerY}
+            ${leftCameraX + Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
+            ${leftCameraX + Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
+        `;
+        const rightFOVPoints = `
+            ${rightCameraX},${centerY}
+            ${rightCameraX - Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
+            ${rightCameraX - Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
+        `;
+
+        document.getElementById('leftCameraFOV').setAttribute('points', leftFOVPoints);
+        document.getElementById('rightCameraFOV').setAttribute('points', rightFOVPoints);
+
+        document.getElementById('baselineLine').setAttribute('x1', leftCameraX);
+        document.getElementById('baselineLine').setAttribute('y1', centerY);
+        document.getElementById('baselineLine').setAttribute('x2', rightCameraX);
+        document.getElementById('baselineLine').setAttribute('y2', centerY);
+    }
+
+    updateValues();
+    </script>
+</body>
+</html>
