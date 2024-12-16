@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D SLAM Tutorial with Factor Graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+        h1 { text-align: center; }
+        .controls {
+            margin: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #0056b3; }
+        #factorGraph {
+            width: 800px;
+            height: 600px;
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+        .tutorial {
+            margin: 20px;
+            max-width: 800px;
+            text-align: justify;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>2D SLAM Tutorial with Factor Graph Visualization</h1>
+
+    <div class="controls">
+        <button onclick="moveRobot()">Move Robot</button>
+        <button onclick="addLandmark()">Add Landmark</button>
+        <button onclick="resetGraph()">Reset</button>
+    </div>
+
+    <svg id="factorGraph"></svg>
+
+    <div class="tutorial">
+        <h2>What is SLAM?</h2>
+        <p>
+            SLAM (Simultaneous Localization and Mapping) is the process of building a map of an environment
+            while simultaneously estimating the robot's position within that map. The key mathematical model for SLAM is:
+        </p>
+        <div>
+            \[
+            x_t = f(x_{t-1}, u_t) + w_t, \quad z_t = h(x_t, l_i) + v_t
+            \]
+        </div>
+        <ul>
+            <li>\(x_t\): Robot pose at time \(t\)</li>
+            <li>\(u_t\): Control input</li>
+            <li>\(z_t\): Measurement of a landmark \(l_i\)</li>
+            <li>\(w_t\) and \(v_t\): Process and observation noise</li>
+        </ul>
+        <h3>Factor Graph Representation</h3>
+        <p>
+            Factor graphs model the SLAM problem with nodes for robot poses and landmarks, connected by edges representing
+            motion constraints and measurements.
+        </p>
+    </div>
+
+    <script>
+        const svg = document.getElementById("factorGraph");
+        const graphWidth = 800, graphHeight = 600;
+        const poses = [];
+        const landmarks = [];
+        const observations = [];
+        let currentX = 100, currentY = 300; // Initial robot position
+
+        // Function to draw the graph
+        function drawGraph() {
+            svg.innerHTML = ""; // Clear the SVG content
+
+            // Draw poses
+            poses.forEach((pose, i) => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", pose.x);
+                circle.setAttribute("cy", pose.y);
+                circle.setAttribute("r", 8);
+                circle.setAttribute("fill", "blue");
+                svg.appendChild(circle);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", pose.x + 10);
+                text.setAttribute("y", pose.y);
+                text.textContent = `Pose ${i}`;
+                svg.appendChild(text);
+            });
+
+            // Draw landmarks
+            landmarks.forEach((landmark, i) => {
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", landmark.x - 5);
+                rect.setAttribute("y", landmark.y - 5);
+                rect.setAttribute("width", 10);
+                rect.setAttribute("height", 10);
+                rect.setAttribute("fill", "red");
+                svg.appendChild(rect);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", landmark.x + 10);
+                text.setAttribute("y", landmark.y);
+                text.textContent = `Landmark ${i}`;
+                svg.appendChild(text);
+            });
+
+            // Draw observations (edges)
+            observations.forEach(obs => {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", obs.pose.x);
+                line.setAttribute("y1", obs.pose.y);
+                line.setAttribute("x2", obs.landmark.x);
+                line.setAttribute("y2", obs.landmark.y);
+                line.setAttribute("stroke", "green");
+                svg.appendChild(line);
+            });
+        }
+
+        function moveRobot() {
+            currentX += Math.random() * 50 + 10; // Move robot forward
+            currentY += Math.random() * 20 - 10; // Slight deviation
+            poses.push({ x: currentX, y: currentY });
+            drawGraph();
+        }
+
+        function addLandmark() {
+            const landmarkX = Math.random() * graphWidth;
+            const landmarkY = Math.random() * graphHeight;
+            landmarks.push({ x: landmarkX, y: landmarkY });
+            observations.push({ pose: poses[poses.length - 1], landmark: landmarks[landmarks.length - 1] });
+            drawGraph();
+        }
+
+        function resetGraph() {
+            poses.length = 0;
+            landmarks.length = 0;
+            observations.length = 0;
+            currentX = 100;
+            currentY = 300;
+            drawGraph();
+        }
+
+        // Initialize graph with the first pose
+        poses.push({ x: currentX, y: currentY });
+        drawGraph();
+    </script>
+</body>
+</html>

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from dreams_laboratory.views import (home_view, stereo_buddy_view, run_blender, get_models, initiate_login,
                                      verify_login, initiate_login_view, verify_login_view, cart_pole_buddy_view,
-                                     gaussian_processes_buddy_view, param_estimation_buddy_view, image_buddy_view)
+                                     gaussian_processes_buddy_view, param_estimation_buddy_view, image_buddy_view, slam_buddy_view)
 from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
@@ -28,6 +28,8 @@ urlpatterns = [
     path('', home_view, name='home'),
     path("run_blender/", run_blender, name="run_blender"),
     path('stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
+    path('slam-buddy/', slam_buddy_view, name='slam_buddy'),
+
     path('cart-pole-buddy/', cart_pole_buddy_view, name='cart_pole_buddy'),
     path('gaussian-processes-buddy/', gaussian_processes_buddy_view, name='gaussian_processes_buddy'),
     path('param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),

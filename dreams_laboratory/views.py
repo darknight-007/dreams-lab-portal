@@ -252,4 +252,8 @@ def param_estimation_buddy_view(request):
 
 def image_buddy_view(request):
     return render(request, 'image-buddy.html')
+
+
+def slam_buddy_view(request):
+    return render(request, 'slam-buddy.html')
 # views.py
