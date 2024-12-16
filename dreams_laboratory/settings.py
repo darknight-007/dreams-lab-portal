@@ -57,6 +57,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'dreams_laboratory.urls'
+AUTH_USER_MODEL = 'dreams_laboratory.CustomUser'
+AUTHENTICATION_BACKENDS = [
+    'dreams_laboratory.authentication.PhoneNumberBackend',  # Path to your custom backend
+    'django.contrib.auth.backends.ModelBackend',  # Default backend as fallback
+]
 
 TEMPLATES = [
     {

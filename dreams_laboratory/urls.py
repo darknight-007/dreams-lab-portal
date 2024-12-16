@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dreams_laboratory.views import home_view, stereo_buddy_view, run_blender, get_models
+from dreams_laboratory.views import home_view, stereo_buddy_view, run_blender, get_models, initiate_login, verify_login, initiate_login_view, verify_login_view
 from django.conf.urls.static import static
 from django.conf import settings
+from django.urls import path
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +28,12 @@ urlpatterns = [
     path('stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
     # Add route for fetching available rock models
     path('get_models/', get_models, name='get_models'),
+    path('initiate-login/', initiate_login, name='initiate_login'),
+    path('verify-login/', verify_login, name='verify_login'),
+    path('initiate-login-form/', initiate_login_view, name='initiate_login_form'),
+    path('initiate-login/', views.initiate_login, name='initiate_login'),
+    path('verify-login/', views.verify_login, name='verify_login'),
+    path('verify-login-form/', views.verify_login_view, name='verify_login_form'),
 ]
 
 if settings.DEBUG:

@@ -29,10 +29,15 @@ def load_rock_model(model_path, location=(0, 5, 1)):
         obj.location = location
     return imported_objects
 
-def create_gazebo_world(cameras, model_path, world_output_path):
+def create_gazebo_world(cameras, rock_location, model_path, world_output_path):
     """
     Create a Gazebo .world file based on the Blender setup.
     """
+    # Extract camera and rock positions
+    left_camera_pos = cameras[0].location
+    right_camera_pos = cameras[1].location
+    rock_pos = rock_location
+
     # Gazebo template for a world file
     gazebo_world_template = f"""<?xml version="1.0" ?>
 <sdf version="1.6">
@@ -49,8 +54,8 @@ def create_gazebo_world(cameras, model_path, world_output_path):
 
         <!-- Rock Model -->
         <model name="rock_model">
-                    <static>true</static>
-            <pose>{cameras[0].location[0]} {cameras[0].location[1]} {cameras[0].location[2]} 0 0 0</pose>
+            <static>true</static>
+            <pose>{rock_pos[0]:.3f} {rock_pos[1]:.3f} {rock_pos[2]:.3f} 0 0 0</pose>
             <link name="link">
                 <visual name="visual">
                     <geometry>
@@ -62,10 +67,10 @@ def create_gazebo_world(cameras, model_path, world_output_path):
             </link>
         </model>
 
-        <!-- Cameras -->
+        <!-- Left Camera -->
         <model name="left_camera">
-                    <static>true</static>
-            <pose>{cameras[0].location[0]} {cameras[0].location[1]} {cameras[0].location[2]} 0 0 0</pose>
+            <static>true</static>
+            <pose>{left_camera_pos[0]:.3f} {left_camera_pos[1]:.3f} {left_camera_pos[2]:.3f} 0 0 0</pose>
             <link name="link">
                 <sensor name="camera" type="camera">
                     <camera>
@@ -83,9 +88,10 @@ def create_gazebo_world(cameras, model_path, world_output_path):
             </link>
         </model>
 
+        <!-- Right Camera -->
         <model name="right_camera">
-                    <static>true</static>
-            <pose>{cameras[1].location[0]} {cameras[1].location[1]} {cameras[1].location[2]} 0 0 0</pose>
+            <static>true</static>
+            <pose>{right_camera_pos[0]:.3f} {right_camera_pos[1]:.3f} {right_camera_pos[2]:.3f} 0 0 0</pose>
             <link name="link">
                 <sensor name="camera" type="camera">
                     <camera>
@@ -111,7 +117,6 @@ def create_gazebo_world(cameras, model_path, world_output_path):
 
     print(f"Gazebo world file saved to: {world_output_path}")
 
-
 def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, model_path, subdivisions=30, displacement_strength=2.0):
     """Set up the Blender scene with a rock model and two cameras."""
     clear_scene()
@@ -129,10 +134,12 @@ def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, mo
     cameras = []
     for position, angle, name in [(left_camera_position, toe_in_angle, "LeftCamera"),
                                   (right_camera_position, -toe_in_angle, "RightCamera")]:
-        camera = bpy.data.objects.new(name, bpy.data.cameras.new(name))
+        camera_data = bpy.data.cameras.new(name)
+        camera = bpy.data.objects.new(name, camera_data)
         camera.location = position
         camera.rotation_euler = (np.radians(90), 0, np.radians(angle))
-        bpy.context.collection.objects.link(camera)
+        bpy.context.scene.collection.objects.link(camera)
+
         cameras.append(camera)
 
     # Set camera sensor width and focal length
@@ -140,15 +147,16 @@ def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, mo
         camera.data.lens = focal_length
         camera.data.sensor_width = sensor_width
 
-    # Add light source
-    light = bpy.data.objects.new("PointLight", bpy.data.lights.new("PointLight", type='POINT'))
-    light.location = (0, 1, 3)
-    light.data.energy = 3000
-    bpy.context.collection.objects.link(light)
+    # Add light source to emulate low-angle sunlight
+    light = bpy.data.objects.new("SunLight", bpy.data.lights.new("SunLight", type='SUN'))
+    light.location = (0, -10, 0.5)  # Position the light low and behind the cameras
+    light.rotation_euler = (np.radians(90), 0, 0)  # Direct light toward the object
+    light.data.energy = 10  # Adjust intensity to emulate sunlight
+    light.data.angle = np.radians(1)  # Narrow light angle for directional effect
+    bpy.context.scene.collection.objects.link(light)
 
-    return cameras
-
-
+    left_camera, right_camera = cameras  # Explicitly unpack the cameras list
+    return left_camera, right_camera, sphere_location
 
 
 def setup_render_settings():
@@ -156,7 +164,7 @@ def setup_render_settings():
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.device = "GPU"  # Use GPU rendering
-    scene.cycles.samples = 1024  # Reduce samples for faster renders
+    scene.cycles.samples = 128  # Reduce samples for faster renders
     scene.cycles.use_adaptive_sampling = True  # Adaptive sampling for efficiency
     scene.cycles.max_bounces = 4  # Reduce bounces to speed up rendering
     scene.cycles.use_denoising = True  # Use denoising to clean up renders
@@ -176,7 +184,9 @@ def setup_render_settings():
 
 
 def render_image(camera, output_path):
-    """Render an image from the given camera."""
+    if not isinstance(camera, bpy.types.Object):
+        raise TypeError(f"Expected a single Blender camera object, got {type(camera).__name__}")
+
     bpy.context.scene.camera = camera
     bpy.context.scene.render.filepath = output_path
     bpy.ops.render.render(write_still=True)
@@ -243,10 +253,16 @@ def save_blend_file(output_path):
     Save the current Blender scene as a .blend file.
     """
     try:
+        # Ensure the directory exists
+        output_dir = os.path.dirname(output_path)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         bpy.ops.wm.save_as_mainfile(filepath=output_path)
         print(f"Blender file saved to: {output_path}")
     except Exception as e:
         print(f"Failed to save Blender file: {e}")
+
 
 def save_disparity_and_depth(disparity, depth, output_folder):
     """Save and visualize disparity and depth images with a color map."""
@@ -284,12 +300,18 @@ def save_disparity_and_depth(disparity, depth, output_folder):
 
 
 def main(sensor_width, focal_length, baseline, distance, toe_in_angle, model_path, output_folder):
-    # Set up the Blender scene with parameters
+    # Ensure the output folder exists
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
     print("model_path:", model_path)
 
-    left_camera, right_camera = setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, model_path)
+    # Set up the Blender scene with parameters
+    left_camera, right_camera, sphere_location = setup_scene(
+        sensor_width, focal_length, baseline, toe_in_angle, distance, model_path
+    )
 
-    # Save the Blender .blend file
+    # Save the Blender .blend file before rendering or exporting
     blend_file_path = os.path.join(output_folder, "scene.blend")
     save_blend_file(blend_file_path)
 
@@ -315,7 +337,7 @@ def main(sensor_width, focal_length, baseline, distance, toe_in_angle, model_pat
 
     # Generate a Gazebo world
     world_output_path = os.path.join(output_folder, "scene.world")
-    create_gazebo_world([left_camera, right_camera], model_path, world_output_path)
+    create_gazebo_world([left_camera, right_camera], sphere_location, model_path, world_output_path)
 
 
 

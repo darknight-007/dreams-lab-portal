@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .container input, .container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .container button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .container button:hover {
+            background-color: #218838;
+        }
+    </style>
+    <script>
+        async function verifyCode(event) {
+            event.preventDefault();
+
+            // Get input values
+            const phoneNumber = localStorage.getItem("phone_number");  // Assume phone number is saved earlier
+            const code = document.getElementById("code").value;
+            const firstName = document.getElementById("first_name").value;
+            const lastName = document.getElementById("last_name").value;
+
+            // Send the POST request to verify code
+            const response = await fetch('/verify-login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    phone_number: phoneNumber,
+                    code: code,
+                    first_name: firstName,
+                    last_name: lastName
+                })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Login successful! Welcome, " + result.first_name + " " + result.last_name);
+                window.location.href = "/"; // Redirect to home page
+            } else {
+                alert(result.error || "Failed to verify code.");
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Verify Code</h1>
+        <form id="verify_form" onsubmit="verifyCode(event)">
+            <label for="code">Verification Code:</label>
+            <input type="text" id="code" placeholder="Enter the code sent to your phone" required>
+
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" placeholder="Enter your first name" required>
+
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" placeholder="Enter your last name" required>
+
+            <button type="submit">Verify and Register</button>
+        </form>
+    </div>
+</body>
+</html>

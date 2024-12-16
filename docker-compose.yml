@@ -11,8 +11,12 @@ services:
       - SECRET_KEY=dreamslab2024
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=dreams_laboratory.settings
+      - TWILIO_ACCOUNT_SID=AC5be58a4a05112be1a26ec526942adad2
+      - TWILIO_AUTH_TOKEN=a9b7fa76c5349b8aa57200e744de7788
+      - TWILIO_VERIFY_SERVICE_SID=VAcde9507455a127fe315ac3fed55d5b19
+
     volumes:
       - .:/app
       - ./db.sqlite3:/app/db.sqlite3
     ports:
-      - "8000:8000"
+      - "8080:8000"

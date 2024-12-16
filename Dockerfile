@@ -20,6 +20,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive  apt-get install -y --no-in
     libxi6 \
     libxxf86vm1 \
     libopenal1 \
+    curl \
+sqlite \
     python3-pip && \
     apt-get clean
 

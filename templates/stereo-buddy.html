@@ -159,102 +159,270 @@
         white-space: pre-wrap;
     }
 </style>
+    <style>
+    /* Add styling for the wrap figure */
+    .wrap-figure {
+        float: right;
+        width: 45%; /* Adjust width for the figure */
+        margin: 0 0 10px 20px; /* Add spacing between the text and figure */
+    }
+
+    .wrap-figure svg {
+        width: 100%; /* SVG scales to fit within the figure container */
+        height: auto; /* Maintain aspect ratio */
+        border: 1px solid #ccc; /* Optional border for clarity */
+        display: block; /* Prevent inline SVG alignment issues */
+    }
+
+    .equation-text {
+        text-align: justify;
+    }
+</style>
+    <style>
+    /* Flexbox container for two-column layout */
+    .two-column-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px; /* Spacing between the two columns */
+    }
+
+    /* Individual column styling */
+    .slider-column, .results-column {
+        flex: 1; /* Equal width columns */
+        padding: 10px;
+        border: 1px solid #ccc; /* Optional border for clarity */
+        border-radius: 8px; /* Rounded corners for visual appeal */
+        background-color: #f9f9f9; /* Light background for separation */
+    }
+
+    /* Results column specific styling */
+    .results {
+        margin-top: 0;
+    }
+</style>
+    <style>
+    /* Flexbox container for the dropdown and button */
+    .dropdown-button-container {
+        display: flex;
+        align-items: center; /* Align items vertically center */
+        gap: 20px; /* Space between dropdown and button */
+    }
+
+    /* Ensure the dropdown and button are styled appropriately */
+    .dropdown-button-container select {
+        flex: 1; /* Allow the dropdown to take up space */
+        max-width: 300px; /* Limit the maximum width of the dropdown */
+    }
+
+    .dropdown-button-container button {
+        flex: 0; /* Prevent button from growing */
+        padding: 10px 20px; /* Adjust button padding */
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .dropdown-button-container button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
+  <script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+
+</script>
 
 </head>
 <body>
+<div class="widget">
+    <h1>Stereo Camera Configurator and Tutorial</h1>
+
+    <div class="equation-text">
+        <h2>Background</h2>
+        <p>
+            We formalize the configuration and parameter optimization of a multi-camera system for planetary surface mapping, such as Martian or Lunar terrain. This includes a stereo camera setup and derives parameter relationships, extending to multi-camera setups.
+        </p>
+
+        <!-- Wrap figure container -->
+        <div class="wrap-figure">
+            <svg id="cameraView" preserveAspectRatio="xMidYMid meet">
+                <!-- Axis lines -->
+                <line id="xAxis" stroke="black" stroke-width="2" />
+                <line id="yAxis" stroke="black" stroke-width="2" />
+                <!-- Axis labels -->
+                <text id="xAxisLabel" text-anchor="middle" font-size="12"></text>
+                <text id="yAxisLabel" text-anchor="middle" font-size="12"></text>
+                <!-- Camera setup -->
+                <polygon id="leftCameraFOV" fill="rgba(255, 0, 0, 0.6)"></polygon>
+                <polygon id="rightCameraFOV" fill="rgba(0, 255, 0, 0.6)"></polygon>
+                <line id="baselineLine" stroke="black" stroke-width="2" />
+                <!-- Converging lines to object -->
+                <line id="leftLineToObject" stroke="blue" stroke-width="2" />
+                <line id="rightLineToObject" stroke="blue" stroke-width="2" />
+                <!-- Object point -->
+                <circle id="objectPoint" r="5" fill="black" />
+            </svg>
+        </div>
+
+        <h2>Stereo Camera Configuration</h2>
+        <p>The stereo camera parameters include:</p>
+        <ul>
+            <li>\(f_{\text{mm}}\): Focal length in mm</li>
+            <li>\(\theta\): Pixel angular resolution (rad/pixel)</li>
+            <li>\(\phi_H\): Horizontal Field of View (FoV)</li>
+            <li>\(z\): Depth of the object</li>
+            <li>\(f_{\text{pixels}}\): Focal length in pixels</li>
+            <li>\(B\): Baseline (distance between cameras) in meters</li>
+            <li>\(d\): Disparity (pixels)</li>
+            <li>\(\alpha\): Toe-in angle (radians)</li>
+        </ul>
+
+        <h3>Equations</h3>
+        <p>The following key equations define the system's functionality:</p>
+
+        <p>Focal length in pixels:</p>
+        \[
+        f_{\text{pixels}} = f_{\text{mm}} \cdot \frac{\text{Resolution}_{\text{horizontal}}}{\text{Detector Width}_{\text{mm}}}
+        \]
+
+        <p>Minimum distance for depth resolution:</p>
+        \[
+        z_{\text{min}} = \frac{B}{2 \cdot \tan\left(\alpha + \frac{\phi_H}{2}\right)}
+        \]
+
+        <p>Pixel spatial resolution at distance \(z\):</p>
+        \[
+        \Delta x = z \cdot \theta
+        \]
+
+        <p>Disparity at distance:</p>
+        \[
+        d = f_{\text{pixels}} \cdot \frac{B}{z \cdot \cos\alpha}
+        \]
+
+        <p>Maximum distance for depth estimation:</p>
+        \[
+        z_{\text{max}} = \frac{B}{\theta \cdot \cos\alpha}
+        \]
+    </div>
+</div>
+
 <div class="column widget">
-    <h1>Stereo Camera Configurator</h1>
-    <div class="loading-container" id="loadingIndicator" style="display: none;">
+   <div class="two-column-container">
+    <!-- Sliders Column -->
+    <div class="slider-column">
+        <h1>Stereo Camera Configurator</h1>
+        <div class="container">
+            <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
+            <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
+            <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
+        </div>
+        <div class="container">
+            <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel">19.71</span></label>
+            <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
+            <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
+        </div>
+        <div class="container">
+            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
+            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="45.0" oninput="syncValues('fieldOfView')">
+            <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
+        </div>
+        <div class="container">
+            <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
+            <input type="range" id="baseline" min="50" max="500" step="0.1" value="240" oninput="syncValues('baseline')">
+            <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
+        </div>
+        <div class="container">
+            <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
+            <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5" oninput="syncValues('distance')">
+            <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
+        </div>
+        <div class="container">
+            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
+            <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="0" oninput="syncValues('toeInAngle')">
+            <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
+        </div>
+    </div>
+
+    <!-- Results Column -->
+    <div class="results-column">
+        <h2>Calculated Results</h2>
+        <div id="focalLengthPixels">Focal Length (px): 1234.56</div>
+        <div id="disparity">Disparity: 45.67 px</div>
+        <div id="zmin">Minimum Depth Resolution (zmin): 0.12 m</div>
+        <div id="zmax">Maximum Depth Resolution (zmax): 10.23 m</div>
+        <div id="depthResolution">Depth Resolution at Distance: 0.0023 m</div>
+    </div>
+</div>
+    <div class="rendered_images">
+        <h2>Digital Twin</h2>
+
+    </div>
+
+<style>
+    /* Flexbox container for the dropdown and button */
+    .dropdown-button-container {
+        display: flex;
+        align-items: center; /* Align items vertically center */
+        gap: 20px; /* Space between dropdown and button */
+    }
+
+    /* Ensure the dropdown and button are styled appropriately */
+    .dropdown-button-container select {
+        flex: 1; /* Allow the dropdown to take up space */
+        max-width: 300px; /* Limit the maximum width of the dropdown */
+    }
+
+    .dropdown-button-container button {
+        flex: 0; /* Prevent button from growing */
+        padding: 10px 20px; /* Adjust button padding */
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .dropdown-button-container button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
+
+<div class="dropdown-button-container">
+    <!-- Dropdown for Rock Model -->
+    <label for="rockModel"><strong>Select Rock Model:</strong></label>
+    <select id="rockModel">
+
+    </select>
+
+    <!-- Button for Blender Scene Synthesis -->
+        <button onclick="runBlender()">Run Blender Scene Synthesis</button>
+</div>
+
+     <div class="loading-container" id="loadingIndicator" style="display: none;">
         <div class="spinner"></div>
         <div class="loading-text">Computing...</div>
     </div>
 
-    <div class="container">
-    <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
-    <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
-    <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
-</div>
-
-<div class="container">
-    <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel">19.71</span></label>
-    <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
-    <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
-</div>
-
-<div class="container">
-    <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
-    <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="45.0" oninput="syncValues('fieldOfView')">
-    <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
-</div>
-
-<div class="container">
-    <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
-    <input type="range" id="baseline" min="50" max="500" step="0.1" value="240" oninput="syncValues('baseline')">
-    <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
-</div>
-
-<div class="container">
-    <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
-    <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5" oninput="syncValues('distance')">
-    <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
-</div>
-
-<div class="container">
-    <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
-    <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="0" oninput="syncValues('toeInAngle')">
-    <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
-</div>
-
-    <div class="container">
-        <button onclick="runBlender()">Render Blender Digital Twin Results</button>
-    </div>
-
-    <div class="results">
-        <h2>Calculated Results</h2>
-        <div id="focalLengthPixels">Focal Length (px): 0.0</div>
-        <div id="disparity">Disparity: 0.0 px</div>
-        <div id="zmin">Minimum Depth Resolution (zmin): 0.0 m</div>
-        <div id="zmax">Maximum Depth Resolution (zmax): 0.0 m</div>
-    </div>
-    <div class="rendered_images">
-        <h2>Rendered Images</h2>
-
-    </div>
-</div>
-
-<div class="column svg-container">
-    <h1>2D Camera Setup Visualization</h1>
-    <svg id="cameraView" preserveAspectRatio="xMidYMid meet">
-        <!-- Axis lines -->
-        <line id="xAxis" stroke="black" stroke-width="2" />
-        <line id="yAxis" stroke="black" stroke-width="2" />
-        <!-- Axis labels -->
-        <text id="xAxisLabel" text-anchor="middle" font-size="12"></text>
-        <text id="yAxisLabel" text-anchor="middle" font-size="12"></text>
-        <!-- Camera setup -->
-        <polygon id="leftCameraFOV" fill="rgba(255, 0, 0, 0.6)"></polygon>
-        <polygon id="rightCameraFOV" fill="rgba(0, 255, 0, 0.6)"></polygon>
-        <line id="baselineLine" stroke="black" stroke-width="2" />
-        <!-- Converging lines to object -->
-        <line id="leftLineToObject" stroke="blue" stroke-width="2" />
-        <line id="rightLineToObject" stroke="blue" stroke-width="2" />
-        <!-- Object point -->
-        <circle id="objectPoint" r="5" fill="black" />
-    </svg>
-</div>
-
-<div class="container">
-    <label for="rockModel">Select Rock Model:</label>
-    <select id="rockModel">
-        <!-- Dynamically populate with available models -->
-    </select>
-</div>
-<div class="debug-container">
-    <h2>Debug Messages</h2>
-    <div id="debugOutput"></div>
-</div>
 <div class="rendered_files" id="renderedFiles" style="display: none;">
-    <h2>Download Generated Files</h2>
+    <h2>Download Generated Scene</h2>
     <div>
         <a id="blendFileLink" href="#" download="scene.blend">
             <button>Download Blender Scene (.blend)</button>
@@ -266,6 +434,12 @@
         </a>
     </div>
 </div>
+    <div class="debug-container">
+    <h2>Debug Messages</h2>
+    <div id="debugOutput"></div>
+</div>
+</div>
+
 
 <script>
    async function loadModels() {
@@ -389,101 +563,199 @@ else {
         }
     }
 
-    function updateValues() {
-        const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
-        const focalLength = parseFloat(document.getElementById('focalLength').value);
-        const baseline = parseFloat(document.getElementById('baseline').value) / 1000; // mm to meters
-        const distance = parseFloat(document.getElementById('distance').value);
-        const fieldOfView = parseFloat(document.getElementById('fieldOfView').value);
-        const toeInAngle = parseFloat(document.getElementById('toeInAngle').value) * (Math.PI / 180); // Convert to radians
-        const resolutionHorizontal = 2448; // Example resolution
 
-        // Focal length in pixels
-        const focalLengthPixels = focalLength * resolutionHorizontal / sensorWidth;
+   function updateValues() {
+    const sensorWidth = parseFloat(document.getElementById("sensorWidth").value);
+    const focalLength = parseFloat(document.getElementById("focalLength").value);
+    const baseline = parseFloat(document.getElementById("baseline").value) / 1000; // mm to meters
+    const distance = parseFloat(document.getElementById("distance").value);
+    const fieldOfView = parseFloat(document.getElementById("fieldOfView").value);
+    const toeInAngle = parseFloat(document.getElementById("toeInAngle").value) * (Math.PI / 180); // Convert to radians
+    const resolutionHorizontal = 2448; // Example horizontal resolution
 
-        // Minimum Depth Resolution (zmin)
-        const zmin = baseline / (2 * Math.tan(toeInAngle + (fieldOfView * Math.PI / 360)));
+    // Focal length in pixels
+    const focalLengthPixels = (focalLength / sensorWidth) * resolutionHorizontal;
 
-        // Disparity
-        const disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInAngle));
+    // Minimum Depth Resolution (zmin)
+    const zmin = baseline / (2 * Math.tan(toeInAngle + (fieldOfView * Math.PI / 360)));
 
-        // Maximum Depth Resolution (zmax)
-        const theta = 175e-6; // Pixel angular resolution in radians
-        const zmax = baseline / (theta * Math.cos(toeInAngle));
+    // Disparity at the distance to the object
+    const disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInAngle));
 
-        // Update the results in the UI
-        document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
-        document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
-        document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
-        document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+    // Depth Resolution at Distance
+    const depthResolution = (distance * distance) / (focalLengthPixels * baseline); // Depth resolution at distance in meters
+    const depthResolutionMM = depthResolution * 1000; // Convert depth resolution to millimeters
 
-        // Update visualization
-        updateSvg(baseline, distance, fieldOfView, toeInAngle);
+    // Maximum Depth Resolution (zmax)
+    const theta = 175e-6; // Pixel angular resolution in radians
+    const zmax = baseline / (theta * Math.cos(toeInAngle));
+
+    // Update the results in the UI
+    document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
+    document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
+    document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
+    document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+
+    // Add depth resolution at the distance to the object in millimeters
+    const depthResolutionDiv = document.getElementById("depthResolution");
+    if (!depthResolutionDiv) {
+        const newDepthResolutionDiv = document.createElement("div");
+        newDepthResolutionDiv.id = "depthResolution";
+        newDepthResolutionDiv.textContent = `Depth Resolution at Distance: ${depthResolutionMM.toFixed(2)} mm`;
+        document.querySelector(".results").appendChild(newDepthResolutionDiv);
+    } else {
+        depthResolutionDiv.textContent = `Depth Resolution at Distance: ${depthResolutionMM.toFixed(2)} mm`;
     }
+
+    // Update visualization
+    updateSvg(baseline, distance, fieldOfView, toeInAngle);
+}
 
 
   function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
-    const svg = document.getElementById("cameraView");
+   const svg = document.getElementById("cameraView");
     const scalingFactor = 100; // 100 pixels = 1 meter
     const sideLength = distance * scalingFactor * 2; // Double distance for visualization padding
 
     // Adjust SVG size
-    svg.setAttribute("viewBox", `-${sideLength / 2} -${sideLength / 2} ${sideLength} ${sideLength}`);
+    svg.setAttribute("viewBox", `-${sideLength / 2} -${sideLength -150} ${sideLength} ${sideLength}`);
     svg.setAttribute("width", sideLength);
     svg.setAttribute("height", sideLength);
-
-    const centerX = 0; // Center of the SVG (world origin)
-    const centerY = 0;
 
     const baselinePixels = baseline * scalingFactor;
     const leftCameraX = -baselinePixels / 2;
     const rightCameraX = baselinePixels / 2;
-
+    const centerY = 0; // Camera Y position
     const distancePixels = distance * scalingFactor;
+
+    // Clear old ticks
+    document.querySelectorAll(".tick").forEach(tick => tick.remove());
+
+    // Add X-axis ticks
+    const xAxisInterval = scalingFactor; // 1 meter per tick
+    for (let x = -sideLength / 2; x <= sideLength / 2; x += xAxisInterval) {
+        // Tick line
+        const xTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        xTick.setAttribute("x1", x);
+        xTick.setAttribute("y1", -5); // Small line above the axis
+        xTick.setAttribute("x2", x);
+        xTick.setAttribute("y2", 5); // Small line below the axis
+        xTick.setAttribute("stroke", "black");
+        xTick.setAttribute("stroke-width", "1");
+        xTick.setAttribute("class", "tick");
+        svg.appendChild(xTick);
+
+        // Tick label
+        const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xLabel.setAttribute("x", x);
+        xLabel.setAttribute("y", 20); // Offset below the axis
+        xLabel.setAttribute("text-anchor", "middle");
+        xLabel.setAttribute("font-size", "18");
+        xLabel.setAttribute("class", "tick");
+        xLabel.textContent = (x / scalingFactor).toFixed(1); // Convert to meters
+        svg.appendChild(xLabel);
+    }
+
+    // Add Y-axis ticks
+    const yAxisInterval = scalingFactor; // 1 meter per tick
+    for (let y = -sideLength / 2; y <= sideLength / 2; y += yAxisInterval) {
+        // Tick line
+        const yTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        yTick.setAttribute("x1", -5); // Small line left of the axis
+        yTick.setAttribute("y1", y);
+        yTick.setAttribute("x2", 5); // Small line right of the axis
+        yTick.setAttribute("y2", y);
+        yTick.setAttribute("stroke", "black");
+        yTick.setAttribute("stroke-width", "1");
+        yTick.setAttribute("class", "tick");
+        svg.appendChild(yTick);
+
+        // Tick label
+        const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        yLabel.setAttribute("x", -20); // Offset left of the axis
+        yLabel.setAttribute("y", y + 5); // Adjust vertical alignment
+        yLabel.setAttribute("text-anchor", "end");
+        yLabel.setAttribute("font-size", "18");
+        yLabel.setAttribute("class", "tick");
+        yLabel.textContent = (-y / scalingFactor).toFixed(1); // Convert to meters
+        svg.appendChild(yLabel);
+    }
+
+    // Draw axes
+    document.getElementById("xAxis").setAttribute("x1", -sideLength / 2);
+    document.getElementById("xAxis").setAttribute("y1", 0);
+    document.getElementById("xAxis").setAttribute("x2", sideLength / 2);
+    document.getElementById("xAxis").setAttribute("y2", 0);
+
+    document.getElementById("yAxis").setAttribute("x1", 0);
+    document.getElementById("yAxis").setAttribute("y1", -sideLength / 2);
+    document.getElementById("yAxis").setAttribute("x2", 0);
+    document.getElementById("yAxis").setAttribute("y2", sideLength / 2);
+
+    // Add axis labels
+    document.getElementById("xAxisLabel").setAttribute("x", sideLength / 2 - 40);
+    document.getElementById("xAxisLabel").setAttribute("y", 20);
+    document.getElementById("xAxisLabel").textContent = "X (m)";
+
+    document.getElementById("yAxisLabel").setAttribute("x", -20);
+    document.getElementById("yAxisLabel").setAttribute("y", -sideLength / 2 + 20);
+    document.getElementById("yAxisLabel").textContent = "Y (m)";
+
+    // Convert toe-in angles to radians
+    const leftToeInRadians = toeInAngle;
+    const rightToeInRadians = -toeInAngle; // Symmetrical toe-in for the right camera
+
+    // Optical axis lengths (extend these lines from the cameras)
+    const opticalAxisLength = distancePixels * 1.5;
+
+    // Calculate endpoints for the blue lines (optical axes)
+    const leftOpticalAxisX = leftCameraX + Math.sin(leftToeInRadians) * opticalAxisLength;
+    const leftOpticalAxisY = centerY - Math.cos(leftToeInRadians) * opticalAxisLength;
+
+    const rightOpticalAxisX = rightCameraX + Math.sin(rightToeInRadians) * opticalAxisLength;
+    const rightOpticalAxisY = centerY - Math.cos(rightToeInRadians) * opticalAxisLength;
+
+    // Draw the optical axes (blue lines)
+    document.getElementById("leftLineToObject").setAttribute("x1", leftCameraX);
+    document.getElementById("leftLineToObject").setAttribute("y1", centerY);
+    document.getElementById("leftLineToObject").setAttribute("x2", leftOpticalAxisX);
+    document.getElementById("leftLineToObject").setAttribute("y2", leftOpticalAxisY);
+
+    document.getElementById("rightLineToObject").setAttribute("x1", rightCameraX);
+    document.getElementById("rightLineToObject").setAttribute("y1", centerY);
+    document.getElementById("rightLineToObject").setAttribute("x2", rightOpticalAxisX);
+    document.getElementById("rightLineToObject").setAttribute("y2", rightOpticalAxisY);
+
+    // Draw the object point (for reference)
+    const objectX = 0; // World origin for simplicity
+    const objectY = -distancePixels;
+    document.getElementById("objectPoint").setAttribute("cx", objectX);
+    document.getElementById("objectPoint").setAttribute("cy", objectY);
+
+    // Adjust FOV polygons based on toe-in angles
     const fovRadians = (fieldOfView * Math.PI) / 180;
     const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
-    const toeInRadians = toeInAngle ;
 
-    // Object position
-    const objectX = centerX;
-    const objectY = -distancePixels;
-
-    // Adjust FOV points for toe-in angle
     const leftFOVPoints = `
         ${leftCameraX},${centerY}
-        ${leftCameraX + Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${-distancePixels}
-        ${leftCameraX + Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${-distancePixels}
-    `;
-    const rightFOVPoints = `
-        ${rightCameraX},${centerY}
-        ${rightCameraX - Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${-distancePixels}
-        ${rightCameraX - Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${-distancePixels}
+        ${leftCameraX + Math.sin(leftToeInRadians) * distancePixels - fovHalfWidth},${centerY - Math.cos(leftToeInRadians) * distancePixels}
+        ${leftCameraX + Math.sin(leftToeInRadians) * distancePixels + fovHalfWidth},${centerY - Math.cos(leftToeInRadians) * distancePixels}
     `;
 
-    // Draw FOV polygons
+    const rightFOVPoints = `
+        ${rightCameraX},${centerY}
+        ${rightCameraX + Math.sin(rightToeInRadians) * distancePixels - fovHalfWidth},${centerY - Math.cos(rightToeInRadians) * distancePixels}
+        ${rightCameraX + Math.sin(rightToeInRadians) * distancePixels + fovHalfWidth},${centerY - Math.cos(rightToeInRadians) * distancePixels}
+    `;
+
     document.getElementById("leftCameraFOV").setAttribute("points", leftFOVPoints);
     document.getElementById("rightCameraFOV").setAttribute("points", rightFOVPoints);
 
-    // Draw baseline
+    // Draw the baseline between the two cameras
     document.getElementById("baselineLine").setAttribute("x1", leftCameraX);
     document.getElementById("baselineLine").setAttribute("y1", centerY);
     document.getElementById("baselineLine").setAttribute("x2", rightCameraX);
     document.getElementById("baselineLine").setAttribute("y2", centerY);
-
-    // Draw converging lines to the object
-    document.getElementById("leftLineToObject").setAttribute("x1", leftCameraX);
-    document.getElementById("leftLineToObject").setAttribute("y1", centerY);
-    document.getElementById("leftLineToObject").setAttribute("x2", objectX);
-    document.getElementById("leftLineToObject").setAttribute("y2", objectY);
-
-    document.getElementById("rightLineToObject").setAttribute("x1", rightCameraX);
-    document.getElementById("rightLineToObject").setAttribute("y1", centerY);
-    document.getElementById("rightLineToObject").setAttribute("x2", objectX);
-    document.getElementById("rightLineToObject").setAttribute("y2", objectY);
-
-    // Draw object point
-    document.getElementById("objectPoint").setAttribute("cx", objectX);
-    document.getElementById("objectPoint").setAttribute("cy", objectY);
 
     // Draw axes
     document.getElementById("xAxis").setAttribute("x1", -sideLength / 2);
@@ -505,6 +777,7 @@ else {
     document.getElementById("yAxisLabel").setAttribute("y", -sideLength / 2 + 20);
     document.getElementById("yAxisLabel").textContent = "Y (m)";
 }
+
 
 
 
