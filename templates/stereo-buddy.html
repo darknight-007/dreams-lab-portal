@@ -143,6 +143,22 @@
         width: 60px; /* Fixed width for stable alignment */
     }
 </style>
+<style>
+    .debug-container {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        font-family: monospace;
+        font-size: 14px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    #debugOutput {
+        white-space: pre-wrap;
+    }
+</style>
 
 </head>
 <body>
@@ -214,37 +230,64 @@
         <line id="baselineLine" stroke="black" stroke-width="2"/>
     </svg>
 </div>
+<div class="container">
+    <label for="rockModel">Select Rock Model:</label>
+    <select id="rockModel">
+        <!-- Dynamically populate with available models -->
+    </select>
+</div>
+<div class="debug-container">
+    <h2>Debug Messages</h2>
+    <div id="debugOutput"></div>
+</div>
 
 <script>
-    async function runBlender() {
-        // Show the loading indicator
-        document.getElementById("loadingIndicator").style.display = "flex";
+   async function loadModels() {
+    const response = await fetch("/get_models/");
+    const models = await response.json();
 
-        // Collect parameters from the sliders
-        const data = {
-            sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
-            focalLength: parseFloat(document.getElementById("focalLength").value),
-            baseline: parseFloat(document.getElementById("baseline").value),
-            distance: parseFloat(document.getElementById("distance").value),
-            toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
-        };
+    const dropdown = document.getElementById("rockModel");
+    dropdown.innerHTML = ""; // Clear previous options
+    models.forEach(model => {
+        const option = document.createElement("option");
+        option.value = model.path;  // Store relative path
+        option.textContent = model.name;  // Display name
+        dropdown.appendChild(option);
+    });
+}
 
-        try {
-            const response = await fetch("/run_blender/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
+   async function runBlender() {
+    document.getElementById("loadingIndicator").style.display = "flex"; // Show loading spinner
 
-            const result = await response.json();
+    const dropdown = document.getElementById("rockModel");
+    const selectedModel = dropdown.options[dropdown.selectedIndex].value; // Correctly fetch selected model
 
-            if (result.status === "success") {
-                console.log("Blender script executed successfully.");
+    // Debug message
+    const debugDiv = document.getElementById("debugOutput");
+    debugDiv.textContent = `Selected model: ${selectedModel}`; // Update the debug div
 
-                // Display images
-                document.querySelector(".rendered_images").innerHTML += `
+    const data = {
+        sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
+        focalLength: parseFloat(document.getElementById("focalLength").value),
+        baseline: parseFloat(document.getElementById("baseline").value),
+        distance: parseFloat(document.getElementById("distance").value),
+        toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
+        selectedModel: selectedModel, // Include selected model path
+        modelPath: selectedModel,
+    };
+
+    try {
+        const response = await fetch("/run_blender/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            debugDiv.textContent += `\nBlender script executed successfully.`;
+            document.querySelector(".rendered_images").innerHTML += `
                 <div>
                     <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
                     <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
@@ -252,20 +295,23 @@
                 <div>
                     <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
                     <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
-                </div>
-            `;
-            } else {
-                console.error("Error:", result.details);
-            }
-        } catch (error) {
-            console.error("Error executing Blender script:", error);
-        } finally {
-            // Hide the loading indicator
-            document.getElementById("loadingIndicator").style.display = "none";
+                </div>`;
+        } else {
+            debugDiv.textContent += `\nError: ${result.details}`;
         }
+    } catch (error) {
+        debugDiv.textContent += `\nError executing Blender script: ${error}`;
+    } finally {
+        document.getElementById("loadingIndicator").style.display = "none"; // Hide loading spinner
     }
+}
 
+
+
+
+    loadModels();
 </script>
+
 <script>
     const scalingFactor = 50;
 

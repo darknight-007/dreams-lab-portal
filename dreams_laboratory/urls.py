@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dreams_laboratory.views import home_view, stereo_buddy_view, run_blender
+from dreams_laboratory.views import home_view, stereo_buddy_view, run_blender, get_models
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -23,7 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),
     path("run_blender/", run_blender, name="run_blender"),
-    path('stereo-buddy/', stereo_buddy_view, name='stereo_buddy'), 
+    path('stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
+    # Add route for fetching available rock models
+    path('get_models/', get_models, name='get_models'),
 ]
 
 if settings.DEBUG:

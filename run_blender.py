@@ -1,10 +1,11 @@
 import sys
-import bpy
 import os
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import time
+
+import bpy
 
 
 def clear_scene():
@@ -12,27 +13,31 @@ def clear_scene():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete()
 
+def load_rock_model(model_path, location=(0, 5, 1)):
+    """Load the selected rock model into Blender."""
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file not found: {model_path}")
 
-def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, subdivisions=30, displacement_strength=2.0):
-    """Set up the Blender scene with a perturbed geodesic sphere and two cameras."""
+    print(f"Loading model: {model_path}")
+
+    # Import the .obj file
+    bpy.ops.wm.obj_import(filepath=model_path)
+
+    # Set the location of the imported object
+    imported_objects = bpy.context.selected_objects
+    for obj in imported_objects:
+        obj.location = location
+    return imported_objects
+
+
+
+def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, model_path, subdivisions=30, displacement_strength=2.0):
+    """Set up the Blender scene with a rock model and two cameras."""
     clear_scene()
 
-    # Create a perturbed geodesic sphere at the specified distance
-    sphere_location = (0, distance, 0)  # Place the sphere `distance` meters in front of the cameras
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=10, radius=1, location=sphere_location)
-    sphere = bpy.context.view_layer.objects.active  # Get the created object
-    if sphere is None:
-        raise RuntimeError("Failed to create geodesic sphere.")
-
-    # Add displacement modifier
-    bpy.ops.object.modifier_add(type='DISPLACE')
-    displacement = sphere.modifiers[-1]
-    displacement.texture = bpy.data.textures.new("DisplacementTexture", 'CLOUDS')
-    displacement.texture.noise_scale = 0.3
-    displacement.strength = 0.5
-    bpy.ops.object.shade_smooth()
-
-
+    # Load the rock model at the specified distance
+    sphere_location = (0, distance, 0)  # Place the model `distance` meters in front of the cameras
+    load_rock_model(model_path, location=sphere_location)
 
     # Compute camera positions
     baseline_m = baseline / 1000  # Convert mm to meters
@@ -56,11 +61,12 @@ def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, su
 
     # Add light source
     light = bpy.data.objects.new("PointLight", bpy.data.lights.new("PointLight", type='POINT'))
-    light.location = (0, 0, 5)
+    light.location = (0, 1, 3)
     light.data.energy = 3000
     bpy.context.collection.objects.link(light)
 
     return cameras
+
 
 
 
@@ -187,9 +193,11 @@ def save_disparity_and_depth(disparity, depth, output_folder):
 
 
 
-def main(sensor_width, focal_length, baseline, distance, toe_in_angle, output_folder):
+def main(sensor_width, focal_length, baseline, distance, toe_in_angle, model_path, output_folder):
     # Set up the Blender scene with parameters
-    left_camera, right_camera = setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance)
+    print("model_path:", model_path)
+
+    left_camera, right_camera = setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, model_path)
 
     # Set render settings
     setup_render_settings()
@@ -219,6 +227,7 @@ if __name__ == "__main__":
     baseline = float(args[2])
     distance = float(args[3])
     toe_in_angle = float(args[4])
-    output_folder = args[5]
-
-    main(sensor_width, focal_length, baseline, distance, toe_in_angle, output_folder)
+    model_path = args[5]  # Ensure the model path is passed
+    output_folder = args[6]  # Ensure the output folder is passed
+    print("model_path:", model_path)
+    main(sensor_width, focal_length, baseline, distance, toe_in_angle, model_path, output_folder)

@@ -7,43 +7,64 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
 
+from django.http import JsonResponse
+import logging
+
+# Get the logger for your app
+logger = logging.getLogger('myapp')
+
+@csrf_exempt
 
 @csrf_exempt
 def run_blender(request):
     if request.method == "POST":
         # Parse parameters from the frontend
         data = json.loads(request.body)
-        sensor_width = data.get("sensorWidth", 8.44)
-        focal_length = data.get("focalLength", 19.71)
-        baseline = data.get("baseline", 240)
-        distance = data.get("distance", 5)
-        toe_in_angle = data.get("toeInAngle", 0)
+        selected_model = data.get("selectedModel", "")
+        logger.info(selected_model)
+
+        # Construct the full file path for the selected model
+        model_path = os.path.join(settings.BASE_DIR, "moon-rocks", selected_model)
+
+        # Validate file existence
+        if not os.path.exists(model_path):
+            return JsonResponse({"status": "error", "details": f"Model not found: {model_path}"}, status=404)
 
         # Paths for output
         output_folder = os.path.join(settings.MEDIA_ROOT, "render_outputs")
         os.makedirs(output_folder, exist_ok=True)
-        print(output_folder)
+
         try:
             # Run Blender script with arguments
             blender_script_path = os.path.join(os.getcwd(), "run_blender.py")
             subprocess.run(
                 [
                     "blender", "--background", "--python", blender_script_path,
-                    "--", str(sensor_width), str(focal_length), str(baseline),
-                    str(distance), str(toe_in_angle), output_folder
+                    "--", str(data["sensorWidth"]), str(data["focalLength"]),
+                    str(data["baseline"]), str(data["distance"]), str(data["toeInAngle"]),
+                    model_path, output_folder
                 ],
                 check=True
             )
 
-            # Return the paths to rendered images
-            return JsonResponse({
-                "status": "success",
-
-            })
+            return JsonResponse({"status": "success"})
         except subprocess.CalledProcessError as e:
             return JsonResponse({"status": "error", "details": str(e)}, status=500)
     else:
         return JsonResponse({"status": "error", "details": "Invalid request method."}, status=400)
+
+
+def get_models(request):
+    models_dir = os.path.join(settings.BASE_DIR, "moon-rocks")
+    models = []
+
+    for root, _, files in os.walk(models_dir):
+        for file in files:
+            if file.endswith(".obj"):  # Only include .obj files
+                rel_path = os.path.relpath(os.path.join(root, file), models_dir)
+                models.append({"name": file, "path": rel_path})
+
+    return JsonResponse(models, safe=False)
 
 
 def home_view(request):
