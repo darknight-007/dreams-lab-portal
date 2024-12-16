@@ -238,6 +238,15 @@ def compute_depth(disparity, focal_length_px, baseline_m):
         depth = (focal_length_px * baseline_m) / (disparity + 1e-6)  # Add small value to avoid division by zero
     return depth
 
+def save_blend_file(output_path):
+    """
+    Save the current Blender scene as a .blend file.
+    """
+    try:
+        bpy.ops.wm.save_as_mainfile(filepath=output_path)
+        print(f"Blender file saved to: {output_path}")
+    except Exception as e:
+        print(f"Failed to save Blender file: {e}")
 
 def save_disparity_and_depth(disparity, depth, output_folder):
     """Save and visualize disparity and depth images with a color map."""
@@ -279,6 +288,10 @@ def main(sensor_width, focal_length, baseline, distance, toe_in_angle, model_pat
     print("model_path:", model_path)
 
     left_camera, right_camera = setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, model_path)
+
+    # Save the Blender .blend file
+    blend_file_path = os.path.join(output_folder, "scene.blend")
+    save_blend_file(blend_file_path)
 
     # Set render settings
     setup_render_settings()

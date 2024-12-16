@@ -222,6 +222,7 @@
     </div>
 </div>
 
+
 <div class="column svg-container">
     <h1>2D Camera Setup Visualization</h1>
     <svg id="cameraView" viewBox="0 0 600 400" preserveAspectRatio="xMidYMax meet">
@@ -239,6 +240,19 @@
 <div class="debug-container">
     <h2>Debug Messages</h2>
     <div id="debugOutput"></div>
+</div>
+<div class="rendered_files" id="renderedFiles" style="display: none;">
+    <h2>Download Generated Files</h2>
+    <div>
+        <a id="blendFileLink" href="#" download="scene.blend">
+            <button>Download Blender Scene (.blend)</button>
+        </a>
+    </div>
+    <div>
+        <a id="worldFileLink" href="#" download="scene.world">
+            <button>Download Gazebo World (.world)</button>
+        </a>
+    </div>
 </div>
 
 <script>
@@ -285,18 +299,33 @@
 
         const result = await response.json();
 
-        if (result.status === "success") {
-            debugDiv.textContent += `\nBlender script executed successfully.`;
-            document.querySelector(".rendered_images").innerHTML += `
-                <div>
-                    <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
-                    <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
-                </div>
-                <div>
-                    <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
-                    <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
-                </div>`;
-        } else {
+       if (result.status === "success") {
+    debugDiv.textContent += `\nBlender script executed successfully.`;
+// Clear previous images and debug messages
+document.querySelector(".rendered_images").innerHTML = ""; // Clear rendered images
+debugDiv.textContent = ""; // Clear debug messages
+
+    // Rendered Images
+    document.querySelector(".rendered_images").innerHTML += `
+        <div>
+            <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
+            <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
+        </div>
+        <div>
+            <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
+            <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
+        </div>`;
+
+    // Download Links for .blend and .world files
+    const blendFilePath = "/media/render_outputs/scene.blend"; // Replace with actual server path
+    const worldFilePath = "/media/render_outputs/scene.world"; // Replace with actual server path
+
+    document.getElementById("blendFileLink").href = blendFilePath;
+    document.getElementById("worldFileLink").href = worldFilePath;
+
+    document.getElementById("renderedFiles").style.display = "block"; // Show the download links
+}
+else {
             debugDiv.textContent += `\nError: ${result.details}`;
         }
     } catch (error) {
