@@ -222,15 +222,27 @@
     </div>
 </div>
 
-
 <div class="column svg-container">
     <h1>2D Camera Setup Visualization</h1>
-    <svg id="cameraView" viewBox="0 0 600 400" preserveAspectRatio="xMidYMax meet">
+    <svg id="cameraView" preserveAspectRatio="xMidYMid meet">
+        <!-- Axis lines -->
+        <line id="xAxis" stroke="black" stroke-width="2" />
+        <line id="yAxis" stroke="black" stroke-width="2" />
+        <!-- Axis labels -->
+        <text id="xAxisLabel" text-anchor="middle" font-size="12"></text>
+        <text id="yAxisLabel" text-anchor="middle" font-size="12"></text>
+        <!-- Camera setup -->
         <polygon id="leftCameraFOV" fill="rgba(255, 0, 0, 0.6)"></polygon>
         <polygon id="rightCameraFOV" fill="rgba(0, 255, 0, 0.6)"></polygon>
-        <line id="baselineLine" stroke="black" stroke-width="2"/>
+        <line id="baselineLine" stroke="black" stroke-width="2" />
+        <!-- Converging lines to object -->
+        <line id="leftLineToObject" stroke="blue" stroke-width="2" />
+        <line id="rightLineToObject" stroke="blue" stroke-width="2" />
+        <!-- Object point -->
+        <circle id="objectPoint" r="5" fill="black" />
     </svg>
 </div>
+
 <div class="container">
     <label for="rockModel">Select Rock Model:</label>
     <select id="rockModel">
@@ -410,41 +422,91 @@ else {
     }
 
 
-    function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
-        const baselinePixels = baseline * scalingFactor;
-        const centerX = 300; // Center of the SVG
-        const centerY = 360; // Position cameras at 90% height of SVG
+  function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
+    const svg = document.getElementById("cameraView");
+    const scalingFactor = 100; // 100 pixels = 1 meter
+    const sideLength = distance * scalingFactor * 2; // Double distance for visualization padding
 
-        const leftCameraX = centerX - baselinePixels / 2;
-        const rightCameraX = centerX + baselinePixels / 2;
+    // Adjust SVG size
+    svg.setAttribute("viewBox", `-${sideLength / 2} -${sideLength / 2} ${sideLength} ${sideLength}`);
+    svg.setAttribute("width", sideLength);
+    svg.setAttribute("height", sideLength);
 
-        const distancePixels = distance * scalingFactor;
-        const fovRadians = (fieldOfView * Math.PI) / 180;
+    const centerX = 0; // Center of the SVG (world origin)
+    const centerY = 0;
 
-        const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
+    const baselinePixels = baseline * scalingFactor;
+    const leftCameraX = -baselinePixels / 2;
+    const rightCameraX = baselinePixels / 2;
 
-        const toeInRadians = toeInAngle;
+    const distancePixels = distance * scalingFactor;
+    const fovRadians = (fieldOfView * Math.PI) / 180;
+    const fovHalfWidth = Math.tan(fovRadians / 2) * distancePixels;
+    const toeInRadians = toeInAngle ;
 
-        // Adjust FOV points for toe-in angle
-        const leftFOVPoints = `
-            ${leftCameraX},${centerY}
-            ${leftCameraX + Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
-            ${leftCameraX + Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
-        `;
-        const rightFOVPoints = `
-            ${rightCameraX},${centerY}
-            ${rightCameraX - Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${centerY - distancePixels}
-            ${rightCameraX - Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${centerY - distancePixels}
-        `;
+    // Object position
+    const objectX = centerX;
+    const objectY = -distancePixels;
 
-        document.getElementById('leftCameraFOV').setAttribute('points', leftFOVPoints);
-        document.getElementById('rightCameraFOV').setAttribute('points', rightFOVPoints);
+    // Adjust FOV points for toe-in angle
+    const leftFOVPoints = `
+        ${leftCameraX},${centerY}
+        ${leftCameraX + Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${-distancePixels}
+        ${leftCameraX + Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${-distancePixels}
+    `;
+    const rightFOVPoints = `
+        ${rightCameraX},${centerY}
+        ${rightCameraX - Math.tan(toeInRadians) * distancePixels - fovHalfWidth},${-distancePixels}
+        ${rightCameraX - Math.tan(toeInRadians) * distancePixels + fovHalfWidth},${-distancePixels}
+    `;
 
-        document.getElementById('baselineLine').setAttribute('x1', leftCameraX);
-        document.getElementById('baselineLine').setAttribute('y1', centerY);
-        document.getElementById('baselineLine').setAttribute('x2', rightCameraX);
-        document.getElementById('baselineLine').setAttribute('y2', centerY);
-    }
+    // Draw FOV polygons
+    document.getElementById("leftCameraFOV").setAttribute("points", leftFOVPoints);
+    document.getElementById("rightCameraFOV").setAttribute("points", rightFOVPoints);
+
+    // Draw baseline
+    document.getElementById("baselineLine").setAttribute("x1", leftCameraX);
+    document.getElementById("baselineLine").setAttribute("y1", centerY);
+    document.getElementById("baselineLine").setAttribute("x2", rightCameraX);
+    document.getElementById("baselineLine").setAttribute("y2", centerY);
+
+    // Draw converging lines to the object
+    document.getElementById("leftLineToObject").setAttribute("x1", leftCameraX);
+    document.getElementById("leftLineToObject").setAttribute("y1", centerY);
+    document.getElementById("leftLineToObject").setAttribute("x2", objectX);
+    document.getElementById("leftLineToObject").setAttribute("y2", objectY);
+
+    document.getElementById("rightLineToObject").setAttribute("x1", rightCameraX);
+    document.getElementById("rightLineToObject").setAttribute("y1", centerY);
+    document.getElementById("rightLineToObject").setAttribute("x2", objectX);
+    document.getElementById("rightLineToObject").setAttribute("y2", objectY);
+
+    // Draw object point
+    document.getElementById("objectPoint").setAttribute("cx", objectX);
+    document.getElementById("objectPoint").setAttribute("cy", objectY);
+
+    // Draw axes
+    document.getElementById("xAxis").setAttribute("x1", -sideLength / 2);
+    document.getElementById("xAxis").setAttribute("y1", 0);
+    document.getElementById("xAxis").setAttribute("x2", sideLength / 2);
+    document.getElementById("xAxis").setAttribute("y2", 0);
+
+    document.getElementById("yAxis").setAttribute("x1", 0);
+    document.getElementById("yAxis").setAttribute("y1", -sideLength / 2);
+    document.getElementById("yAxis").setAttribute("x2", 0);
+    document.getElementById("yAxis").setAttribute("y2", sideLength / 2);
+
+    // Add axis labels
+    document.getElementById("xAxisLabel").setAttribute("x", sideLength / 2 - 40);
+    document.getElementById("xAxisLabel").setAttribute("y", 20);
+    document.getElementById("xAxisLabel").textContent = "X (m)";
+
+    document.getElementById("yAxisLabel").setAttribute("x", -20);
+    document.getElementById("yAxisLabel").setAttribute("y", -sideLength / 2 + 20);
+    document.getElementById("yAxisLabel").textContent = "Y (m)";
+}
+
+
 
     updateValues();
 </script>
