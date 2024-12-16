@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Estimation Buddy</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto;
+            gap: 20px;
+        }
+
+        .widget {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        input[type="number"],
+        input[type="range"],
+        textarea {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="title widget">
+        <h1>Parameter Estimation Buddy</h1>
+    </div>
+
+    <div class="widget">
+        <h2>Introduction</h2>
+        <p>
+            Learn about parameter estimation using the Least Squares (LS) method and its connection to Maximum Likelihood Estimation (MLE). We assume Gaussian noise for all scenarios.
+        </p>
+    </div>
+
+    <div class="widget">
+        <h2>Least Squares Estimation</h2>
+        <p>
+            Given observations $y$ and model $y = X\beta + \epsilon$, where $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$, the goal is to estimate the parameter vector $\beta$.
+        </p>
+        <p>
+            The Least Squares solution minimizes the residual sum of squares:
+        </p>
+        <p>
+            \[
+            \hat{\beta} = \text{argmin}_{\beta} \|y - X\beta\|^2 = (X^TX)^{-1}X^Ty
+            \]
+        </p>
+    </div>
+
+    <div class="widget">
+        <h2>Connection to Maximum Likelihood</h2>
+        <p>
+            Assuming Gaussian noise, the likelihood function is:
+        </p>
+        <p>
+            \[
+            \mathcal{L}(\beta) = \frac{1}{(2\pi\sigma^2)^{n/2}}\exp\left(-\frac{1}{2\sigma^2}\|y - X\beta\|^2\right)
+            \]
+        </p>
+        <p>
+            Taking the log and maximizing with respect to $\beta$, we recover the Least Squares formulation:
+        </p>
+        <p>
+            \[
+            \text{argmax}_{\beta} \log \mathcal{L}(\beta) \equiv \text{argmin}_{\beta} \|y - X\beta\|^2
+            \]
+        </p>
+    </div>
+
+    <div class="widget">
+        <h2>Input Parameters</h2>
+        <div>
+            <label for="numData">Number of Data Points:</label>
+            <input type="number" id="numData" value="100" min="10" max="1000" step="10" oninput="updateEstimation()">
+        </div>
+        <div>
+            <label for="noiseStd">Noise Standard Deviation (\(\sigma\)):</label>
+            <input type="number" id="noiseStd" value="1" step="0.1" oninput="updateEstimation()">
+        </div>
+        <div>
+            <label for="trueBeta">True Parameters (\(\beta\)):</label>
+            <textarea id="trueBeta" rows="2" oninput="updateEstimation()">1, 2, 3</textarea>
+        </div>
+    </div>
+
+    <div class="widget">
+        <h2>Results</h2>
+        <p>Estimated Parameters (\(\hat{\beta}\)): <span id="estimatedBeta">--</span></p>
+    </div>
+
+    <div class="widget">
+        <h2>Visualize</h2>
+        <canvas id="plotCanvas" width="800" height="400"></canvas>
+    </div>
+
+    <script>
+        const plotCanvas = document.getElementById('plotCanvas');
+        const ctx = plotCanvas.getContext('2d');
+
+        function generateGaussianNoise(mean = 0, stdDev = 1) {
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            return z0 * stdDev + mean;
+        }
+
+        function updateEstimation() {
+            const numData = parseInt(document.getElementById('numData').value);
+            const noiseStd = parseFloat(document.getElementById('noiseStd').value);
+            const trueBeta = document.getElementById('trueBeta').value.split(',').map(Number);
+
+            // Generate data
+            const X = Array.from({ length: numData }, () => [1, Math.random() * 10, Math.random() * 10]);
+            const y = X.map(row =>
+                row.reduce((sum, xi, i) => sum + xi * trueBeta[i], 0) + generateGaussianNoise(0, noiseStd)
+            );
+
+            // Compute Least Squares solution
+            const XT = math.transpose(X);
+            const XTX = math.multiply(XT, X);
+            const XTy = math.multiply(XT, y);
+            const betaHat = math.multiply(math.inv(XTX), XTy);
+
+            document.getElementById('estimatedBeta').innerText = betaHat.map(b => b.toFixed(2)).join(', ');
+
+            // Plotting
+            ctx.clearRect(0, 0, plotCanvas.width, plotCanvas.height);
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(50, 350);
+            ctx.lineTo(750, 350); // x-axis
+            ctx.moveTo(50, 50);
+            ctx.lineTo(50, 350); // y-axis
+            ctx.stroke();
+
+            // Plot data points
+            ctx.fillStyle = 'blue';
+            y.forEach((yi, i) => {
+                const xi = X[i][1]; // Use the first feature for x-axis
+                ctx.beginPath();
+                ctx.arc(50 + xi * 70, 350 - yi * 10, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Plot regression line
+            ctx.strokeStyle = 'red';
+            ctx.beginPath();
+            for (let x = 0; x <= 10; x += 0.1) {
+                const yPred = betaHat[0] + betaHat[1] * x + betaHat[2] * x; // Assuming 3 parameters
+                const canvasX = 50 + x * 70;
+                const canvasY = 350 - yPred * 10;
+                if (x === 0) ctx.moveTo(canvasX, canvasY);
+                else ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+        }
+
+        // Initial run
+        updateEstimation();
+    </script>
+</body>
+</html>

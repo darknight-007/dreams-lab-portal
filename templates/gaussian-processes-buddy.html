@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaussian Processes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, auto);
+            gap: 20px;
+        }
+
+        .widget {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="title widget">
+        <h1>Gaussian Processes: 2D Sensor Placement</h1>
+    </div>
+
+    <div class="introduction widget">
+        <h2>Introduction</h2>
+        <p>
+            Gaussian Processes (GP) are powerful tools for spatial data modeling. This example demonstrates optimal sensor placement for temperature prediction in a 2D environment.
+        </p>
+        <p>
+            The GP model is defined as:
+        </p>
+        <div style="text-align: left;">
+            $$
+            f(x) \sim \mathcal{GP}(m(x), k(x, x'))
+            $$
+            <p>Where:</p>
+            <ul>
+                <li>$m(x)$ is the mean function (assumed to be 0 here).</li>
+                <li>$k(x, x')$ is the kernel function, typically a squared exponential kernel:
+                    $$k(x, x') = \sigma^2 \exp\left(-\frac{\|x - x'\|^2}{2l^2}\right)$$
+                    where $\sigma^2$ is the variance, and $l$ is the length scale.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="parameters widget">
+        <h2>Configure Parameters</h2>
+        <div>
+            <label for="numSensors">Number of Sensors:</label>
+            <input type="number" id="numSensors" value="5" min="1" max="20">
+        </div>
+        <div>
+            <label for="noiseLevel">Noise Level:</label>
+            <input type="number" id="noiseLevel" value="0.1" step="0.01" min="0">
+        </div>
+        <div>
+            <label for="kernelLength">Kernel Length Scale:</label>
+            <input type="number" id="kernelLength" value="1.0" step="0.1" min="0.1">
+        </div>
+        <button id="runGP">Run Gaussian Process</button>
+    </div>
+
+    <div class="results widget">
+        <h2>Results</h2>
+        <p>Mean Temperature Map:</p>
+        <canvas id="meanCanvas" width="400" height="400"></canvas>
+        <p>Variance Map:</p>
+        <canvas id="varianceCanvas" width="400" height="400"></canvas>
+        <p>Sensor Placement:</p>
+        <canvas id="sensorCanvas" width="400" height="400"></canvas>
+    </div>
+
+    <script>
+        const meanCanvas = document.getElementById('meanCanvas');
+        const varianceCanvas = document.getElementById('varianceCanvas');
+        const sensorCanvas = document.getElementById('sensorCanvas');
+        const meanCtx = meanCanvas.getContext('2d');
+        const varianceCtx = varianceCanvas.getContext('2d');
+        const sensorCtx = sensorCanvas.getContext('2d');
+
+        function generateRandomField(width, height) {
+            // Create a field as a mixture of Gaussians
+            const field = Array.from({ length: width }, () => Array(height).fill(0));
+            const numGaussians = 5;
+
+            for (let i = 0; i < numGaussians; i++) {
+                const centerX = Math.random() * width;
+                const centerY = Math.random() * height;
+                const amplitude = Math.random() * 2 - 1; // Random amplitude
+                const variance = Math.random() * 100 + 50; // Random spread
+
+                for (let x = 0; x < width; x++) {
+                    for (let y = 0; y < height; y++) {
+                        const distanceSquared = (x - centerX) ** 2 + (y - centerY) ** 2;
+                        field[x][y] += amplitude * Math.exp(-distanceSquared / (2 * variance));
+                    }
+                }
+            }
+
+            return field;
+        }
+
+        function drawField(ctx, field) {
+            const width = field.length;
+            const height = field[0].length;
+            const imageData = ctx.createImageData(width, height);
+
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    const value = Math.min(Math.max((field[x][y] + 1) / 2 * 255, 0), 255); // Normalize to [0, 255]
+                    const index = (y * width + x) * 4;
+                    imageData.data[index] = value;
+                    imageData.data[index + 1] = value;
+                    imageData.data[index + 2] = 255 - value;
+                    imageData.data[index + 3] = 255;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function drawSensors(ctx, sensors) {
+            ctx.clearRect(0, 0, sensorCanvas.width, sensorCanvas.height);
+            ctx.fillStyle = 'red';
+            sensors.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+
+        function placeSensors(numSensors, width, height) {
+            const sensors = [];
+            for (let i = 0; i < numSensors; i++) {
+                sensors.push([
+                    Math.random() * width,
+                    Math.random() * height
+                ]);
+            }
+            return sensors;
+        }
+
+        document.getElementById('runGP').addEventListener('click', () => {
+            const width = 400;
+            const height = 400;
+            const numSensors = parseInt(document.getElementById('numSensors').value);
+
+            const randomField = generateRandomField(width, height);
+            drawField(meanCtx, randomField);
+
+            // Placeholder variance map
+            const varianceField = Array.from({ length: width }, () => Array(height).fill(0.5));
+            drawField(varianceCtx, varianceField);
+
+            const sensors = placeSensors(numSensors, width, height);
+            drawSensors(sensorCtx, sensors);
+        });
+    </script>
+</body>
+</html>

@@ -191,4 +191,11 @@ def stereo_buddy_view(request):
 
 def cart_pole_buddy_view(request):
     return render(request, 'cart-pole-buddy.html')
+
+
+def gaussian_processes_buddy_view(request):
+    return render(request, 'gaussian-processes-buddy.html')
+
+def param_estimation_buddy_view(request):
+    return render(request, 'param-estimation-buddy.html')
 # views.py
