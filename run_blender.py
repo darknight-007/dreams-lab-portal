@@ -29,6 +29,87 @@ def load_rock_model(model_path, location=(0, 5, 1)):
         obj.location = location
     return imported_objects
 
+def create_gazebo_world(cameras, model_path, world_output_path):
+    """
+    Create a Gazebo .world file based on the Blender setup.
+    """
+    # Gazebo template for a world file
+    gazebo_world_template = f"""<?xml version="1.0" ?>
+<sdf version="1.6">
+    <world name="default">
+        <!-- Include Ground Plane -->
+        <include>
+            <uri>model://ground_plane</uri>
+        </include>
+
+        <!-- Include Sun -->
+        <include>
+            <uri>model://sun</uri>
+        </include>
+
+        <!-- Rock Model -->
+        <model name="rock_model">
+                    <static>true</static>
+            <pose>{cameras[0].location[0]} {cameras[0].location[1]} {cameras[0].location[2]} 0 0 0</pose>
+            <link name="link">
+                <visual name="visual">
+                    <geometry>
+                        <mesh>
+                            <uri>file://{model_path}</uri>
+                        </mesh>
+                    </geometry>
+                </visual>
+            </link>
+        </model>
+
+        <!-- Cameras -->
+        <model name="left_camera">
+                    <static>true</static>
+            <pose>{cameras[0].location[0]} {cameras[0].location[1]} {cameras[0].location[2]} 0 0 0</pose>
+            <link name="link">
+                <sensor name="camera" type="camera">
+                    <camera>
+                        <horizontal_fov>1.047</horizontal_fov>
+                        <image>
+                            <width>1920</width>
+                            <height>1080</height>
+                        </image>
+                        <clip>
+                            <near>0.1</near>
+                            <far>100</far>
+                        </clip>
+                    </camera>
+                </sensor>
+            </link>
+        </model>
+
+        <model name="right_camera">
+                    <static>true</static>
+            <pose>{cameras[1].location[0]} {cameras[1].location[1]} {cameras[1].location[2]} 0 0 0</pose>
+            <link name="link">
+                <sensor name="camera" type="camera">
+                    <camera>
+                        <horizontal_fov>1.047</horizontal_fov>
+                        <image>
+                            <width>1920</width>
+                            <height>1080</height>
+                        </image>
+                        <clip>
+                            <near>0.1</near>
+                            <far>100</far>
+                        </clip>
+                    </camera>
+                </sensor>
+            </link>
+        </model>
+    </world>
+</sdf>
+"""
+    # Write the world file
+    with open(world_output_path, "w") as world_file:
+        world_file.write(gazebo_world_template)
+
+    print(f"Gazebo world file saved to: {world_output_path}")
 
 
 def setup_scene(sensor_width, focal_length, baseline, toe_in_angle, distance, model_path, subdivisions=30, displacement_strength=2.0):
@@ -218,6 +299,11 @@ def main(sensor_width, focal_length, baseline, distance, toe_in_angle, model_pat
 
     # Save disparity and depth maps
     save_disparity_and_depth(disparity, depth, output_folder)
+
+    # Generate a Gazebo world
+    world_output_path = os.path.join(output_folder, "scene.world")
+    create_gazebo_world([left_camera, right_camera], model_path, world_output_path)
+
 
 
 if __name__ == "__main__":
