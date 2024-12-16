@@ -292,32 +292,50 @@
         </ul>
 
         <h3>Equations</h3>
-        <p>The following key equations define the system's functionality:</p>
+<p>The following key equations define the system's functionality:</p>
 
-        <p>Focal length in pixels:</p>
-        \[
-        f_{\text{pixels}} = f_{\text{mm}} \cdot \frac{\text{Resolution}_{\text{horizontal}}}{\text{Detector Width}_{\text{mm}}}
-        \]
+<p>(1) Focal length in pixels:</p>
+<div style="text-align: left;">
+\[
+f_{\text{pixels}} = f_{\text{mm}} \cdot \frac{\text{Resolution}_{\text{horizontal}}}{\text{Detector Width}_{\text{mm}}}
+\]
+</div>
 
-        <p>Minimum distance for depth resolution:</p>
-        \[
-        z_{\text{min}} = \frac{B}{2 \cdot \tan\left(\alpha + \frac{\phi_H}{2}\right)}
-        \]
+<p>(2) Minimum distance for depth resolution:</p>
+<div style="text-align: left;">
+\[
+z_{\text{min}} = \frac{B}{2 \cdot \tan\left(\alpha + \frac{\phi_H}{2}\right)}
+\]
+</div>
 
-        <p>Pixel spatial resolution at distance \(z\):</p>
-        \[
-        \Delta x = z \cdot \theta
-        \]
+<p>(3) Pixel spatial resolution at distance \(z\):</p>
+<div style="text-align: left;">
+\[
+\Delta x = z \cdot \theta
+\]
+</div>
 
-        <p>Disparity at distance:</p>
-        \[
-        d = f_{\text{pixels}} \cdot \frac{B}{z \cdot \cos\alpha}
-        \]
+<p>(4) Disparity at distance:</p>
+<div style="text-align: left;">
+\[
+d = f_{\text{pixels}} \cdot \frac{B}{z \cdot \cos\alpha}
+\]
+</div>
 
-        <p>Maximum distance for depth estimation:</p>
-        \[
-        z_{\text{max}} = \frac{B}{\theta \cdot \cos\alpha}
-        \]
+<p>(5) Maximum distance for depth resolution:</p>
+<div style="text-align: left;">
+\[
+z_{\text{max}} = \frac{B}{\theta \cdot \cos\alpha}
+\]
+</div>
+
+<p>(6) Convergence point of the optical axes:</p>
+<div style="text-align: left;">
+\[
+z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
+\]
+</div>
+
     </div>
 </div>
 
@@ -337,9 +355,9 @@
             <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
         </div>
         <div class="container">
-            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">45.0</span></label>
-            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="45.0" oninput="syncValues('fieldOfView')">
-            <input type="number" id="fieldOfViewValue" value="45.0" step="0.1" oninput="syncValues('fieldOfView')">
+            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">25.5</span></label>
+            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="25.5" oninput="syncValues('fieldOfView')">
+            <input type="number" id="fieldOfViewValue" value="25.5" step="0.1" oninput="syncValues('fieldOfView')">
         </div>
         <div class="container">
             <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
@@ -352,9 +370,9 @@
             <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
         </div>
         <div class="container">
-            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">0</span></label>
-            <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="0" oninput="syncValues('toeInAngle')">
-            <input type="number" id="toeInAngleValue" value="0" step="0.1" oninput="syncValues('toeInAngle')">
+            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">1.15</span></label>
+            <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="1.15" oninput="syncValues('toeInAngle')">
+            <input type="number" id="toeInAngleValue" value="1.15" step="0.1" oninput="syncValues('toeInAngle')">
         </div>
     </div>
 
@@ -366,6 +384,8 @@
         <div id="zmin">Minimum Depth Resolution (zmin): 0.12 m</div>
         <div id="zmax">Maximum Depth Resolution (zmax): 10.23 m</div>
         <div id="depthResolution">Depth Resolution at Distance: 0.0023 m</div>
+        <div id="convergencePoint">Convergence Point (zconvergence): -- m</div>
+
     </div>
 </div>
     <div class="rendered_images">
@@ -572,6 +592,8 @@ else {
     const fieldOfView = parseFloat(document.getElementById("fieldOfView").value);
     const toeInAngle = parseFloat(document.getElementById("toeInAngle").value) * (Math.PI / 180); // Convert to radians
     const resolutionHorizontal = 2448; // Example horizontal resolution
+// Calculate convergence point (z)
+const convergencePoint = baseline / (2 * Math.tan(toeInAngle));
 
     // Focal length in pixels
     const focalLengthPixels = (focalLength / sensorWidth) * resolutionHorizontal;
@@ -590,12 +612,12 @@ else {
     const theta = 175e-6; // Pixel angular resolution in radians
     const zmax = baseline / (theta * Math.cos(toeInAngle));
 
-    // Update the results in the UI
-    document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
-    document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
-    document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
-    document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
-
+   // Update the results in the UI
+document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
+document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
+document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
+document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+document.getElementById('convergencePoint').textContent = `Convergence Point (zconvergence): ${convergencePoint.toFixed(2)} m`;
     // Add depth resolution at the distance to the object in millimeters
     const depthResolutionDiv = document.getElementById("depthResolution");
     if (!depthResolutionDiv) {

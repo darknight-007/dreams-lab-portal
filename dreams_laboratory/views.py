@@ -2,38 +2,14 @@ from django.shortcuts import render
 from .models import People, Research, Publication, Project, Asset, FundingSource
 import subprocess
 import os
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from .utils.twilio_verify import TwilioVerify
-
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-
-from django.http import JsonResponse
 import logging
-from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+from django.contrib.auth import authenticate, login, get_user_model
+from django.conf import settings
 from .utils.twilio_verify import TwilioVerify
 
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-
-from django.contrib.auth import get_user_model, login
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .utils.twilio_verify import TwilioVerify
-import json
 
 User = get_user_model()
 twilio_client = TwilioVerify()
@@ -210,4 +186,9 @@ def home_view(request):
 
 def stereo_buddy_view(request):
     return render(request, 'stereo-buddy.html')
+
+
+
+def cart_pole_buddy_view(request):
+    return render(request, 'cart-pole-buddy.html')
 # views.py

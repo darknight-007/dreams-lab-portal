@@ -19,4 +19,4 @@ services:
       - .:/app
       - ./db.sqlite3:/app/db.sqlite3
     ports:
-      - "8080:8000"
+      - "6080:8000"
