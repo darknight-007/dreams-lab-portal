@@ -1,22 +1,72 @@
-from django.shortcuts import render
-from .models import People, Research, Publication, Project, Asset, FundingSource
-import subprocess
 import os
 import json
 import logging
+import numpy as np
+import io
+import matplotlib.pyplot as plt
+from scipy.ndimage import gaussian_filter
+from scipy.signal import convolve2d  # Correct import for convolve2d
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login, get_user_model
-from django.conf import settings
-from .utils.twilio_verify import TwilioVerify
-
-
-User = get_user_model()
-twilio_client = TwilioVerify()
-
 from django.shortcuts import render
-import logging
+from django.views.decorators.csrf import csrf_exempt
+from matplotlib.backends.backend_svg import FigureCanvasSVG
 
+# Set up logging
+logger = logging.getLogger(__name__)
+@csrf_exempt
+def image_buddy_view(request):
+    """Render the Image Buddy interface."""
+    return render(request, "image_buddy.html")
+
+
+@csrf_exempt
+def apply_filters(request):
+    """
+    Apply filters and transformations to a synthetic image and return SVG data.
+    """
+    if request.method == "POST":
+        try:
+            # Parse the POST data
+            data = json.loads(request.body)
+            brightness = float(data.get("brightness", 1.0))
+            contrast = float(data.get("contrast", 1.0))
+            filter_type = data.get("filterType", "none")
+
+            # Generate a synthetic gradient image
+            x = np.linspace(0, 1, 256)
+            synthetic_image = np.outer(x, x)
+
+            # Apply brightness and contrast adjustments
+            transformed_image = synthetic_image * contrast + (brightness - 1)
+            transformed_image = np.clip(transformed_image, 0, 1)  # Ensure pixel values are valid
+
+            # Apply filters based on user selection
+            if filter_type == "blur":
+                transformed_image = gaussian_filter(transformed_image, sigma=3)
+            elif filter_type == "sharpen":
+                kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+                transformed_image = convolve2d(transformed_image, kernel, mode="same", boundary="symm")
+            elif filter_type == "edge_detect":
+                kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+                transformed_image = convolve2d(transformed_image, kernel, mode="same", boundary="symm")
+
+            # Generate SVG visualization using matplotlib
+            fig, ax = plt.subplots(figsize=(6, 3), dpi=100)
+            ax.imshow(transformed_image, cmap="gray", interpolation="nearest")
+            ax.axis("off")
+            output = io.StringIO()
+            FigureCanvasSVG(fig).print_svg(output)
+
+            return JsonResponse({"svg": output.getvalue()})
+
+        except Exception as e:
+            logger.error(f"Error in apply_filters: {e}")
+            return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+
+@csrf_exempt
 def initiate_login_view(request):
     """Render the initiate login template."""
     return render(request, 'initiate_login.html')
@@ -198,4 +248,8 @@ def gaussian_processes_buddy_view(request):
 
 def param_estimation_buddy_view(request):
     return render(request, 'param-estimation-buddy.html')
+
+
+def image_buddy_view(request):
+    return render(request, 'image-buddy.html')
 # views.py
