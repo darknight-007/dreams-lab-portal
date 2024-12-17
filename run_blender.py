@@ -177,8 +177,8 @@ def setup_render_settings():
         device.use = True
 
     # Set resolution and output settings
-    scene.render.resolution_x = 1920
-    scene.render.resolution_y = 1080
+    scene.render.resolution_x = 2592
+    scene.render.resolution_y = 1944
     scene.render.resolution_percentage = 50  # Lower resolution percentage for test renders
     scene.render.image_settings.file_format = "PNG"
 

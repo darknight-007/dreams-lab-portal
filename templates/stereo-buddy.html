@@ -345,34 +345,36 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
     <div class="slider-column">
         <h1>Stereo Camera Configurator</h1>
         <div class="container">
-            <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel">8.44</span></label>
+            <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel"></span></label>
             <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
             <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
         </div>
         <div class="container">
-            <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel">19.71</span></label>
+            <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel"></span></label>
             <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
             <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
         </div>
         <div class="container">
-            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel">25.5</span></label>
+            <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel"></span></label>
             <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="25.5" oninput="syncValues('fieldOfView')">
             <input type="number" id="fieldOfViewValue" value="25.5" step="0.1" oninput="syncValues('fieldOfView')">
         </div>
         <div class="container">
-            <label for="baseline">Baseline (mm): <span id="baselineLabel">240</span></label>
-            <input type="range" id="baseline" min="50" max="500" step="0.1" value="240" oninput="syncValues('baseline')">
-            <input type="number" id="baselineValue" value="240" step="1" oninput="syncValues('baseline')">
+            <label for="baseline">Baseline (mm): <span id="baselineLabel"></span></label>
+            <input type="range" id="baseline" min="50" max="500" step="0.1" value="290" oninput="syncValues('baseline')">
+            <input type="number" id="baselineValue" value="290" step="1" oninput="syncValues('baseline')">
         </div>
+
         <div class="container">
-            <label for="distance">Distance to Object (z) (m): <span id="distanceLabel">5</span></label>
-            <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5" oninput="syncValues('distance')">
-            <input type="number" id="distanceValue" value="5" step="0.1" oninput="syncValues('distance')">
+            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">1.51</span></label>
+            <input type="range" id="toeInAngle" min="0.1" max="15" step="0.001" value="1.51" oninput="syncValues('toeInAngle')">
+            <input type="number" id="toeInAngleValue" value="1.51" step="0.001" oninput="syncValues('toeInAngle')">
         </div>
+
         <div class="container">
-            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">1.15</span></label>
-            <input type="range" id="toeInAngle" min="-45" max="45" step="0.001" value="1.15" oninput="syncValues('toeInAngle')">
-            <input type="number" id="toeInAngleValue" value="1.15" step="0.1" oninput="syncValues('toeInAngle')">
+            <label for="distance">Convergence point (z) (m): <span id="distanceLabel"> </span></label>
+            <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5.43" oninput="syncValues('distance')">
+            <input type="number" id="distanceValue" value="5.43" step="0.1" oninput="syncValues('distance')">
         </div>
     </div>
 
@@ -383,8 +385,8 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
         <div id="disparity">Disparity: 45.67 px</div>
         <div id="zmin">Minimum Depth Resolution (zmin): 0.12 m</div>
         <div id="zmax">Maximum Depth Resolution (zmax): 10.23 m</div>
-        <div id="depthResolution">Depth Resolution at Distance: 0.0023 m</div>
         <div id="convergencePoint">Convergence Point (zconvergence): -- m</div>
+        <div id="depthResolution">Depth Resolution at convergence point: 0.0023 m</div>
 
     </div>
 </div>
@@ -463,18 +465,25 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
 
 <script>
    async function loadModels() {
-    const response = await fetch("/get_models/");
-    const models = await response.json();
+    try {
+        const response = await fetch("/get_models/");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const models = await response.json();
+        console.log(models); // Log the models for debugging
 
-    const dropdown = document.getElementById("rockModel");
-    dropdown.innerHTML = ""; // Clear previous options
-    models.forEach(model => {
-        const option = document.createElement("option");
-        option.value = model.path;  // Store relative path
-        option.textContent = model.name;  // Display name
-        dropdown.appendChild(option);
-    });
+        const dropdown = document.getElementById("rockModel");
+        dropdown.innerHTML = ""; // Clear previous options
+        models.forEach(model => {
+            const option = document.createElement("option");
+            option.value = model.path;  // Store relative path
+            option.textContent = model.name;  // Display name
+            dropdown.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading models:", error);
+    }
 }
+
 
    async function runBlender() {
     document.getElementById("loadingIndicator").style.display = "flex"; // Show loading spinner
@@ -584,16 +593,22 @@ else {
     }
 
 
-   function updateValues() {
+  function updateValues() {
     const sensorWidth = parseFloat(document.getElementById("sensorWidth").value);
     const focalLength = parseFloat(document.getElementById("focalLength").value);
     const baseline = parseFloat(document.getElementById("baseline").value) / 1000; // mm to meters
-    const distance = parseFloat(document.getElementById("distance").value);
     const fieldOfView = parseFloat(document.getElementById("fieldOfView").value);
     const toeInAngle = parseFloat(document.getElementById("toeInAngle").value) * (Math.PI / 180); // Convert to radians
-    const resolutionHorizontal = 2448; // Example horizontal resolution
-// Calculate convergence point (z)
-const convergencePoint = baseline / (2 * Math.tan(toeInAngle));
+    const resolutionHorizontal = 2592; // Example horizontal resolution
+
+    // Calculate convergence point (z_convergence)
+    const convergencePoint = baseline / (2 * Math.tan(toeInAngle));
+
+    // Update Distance to Object (z) to match the convergence point
+    const distance = convergencePoint;
+    document.getElementById("distance").value = distance.toFixed(2);
+    document.getElementById("distanceValue").value = distance.toFixed(2);
+    document.getElementById("distanceLabel").textContent = distance.toFixed(2);
 
     // Focal length in pixels
     const focalLengthPixels = (focalLength / sensorWidth) * resolutionHorizontal;
@@ -612,12 +627,13 @@ const convergencePoint = baseline / (2 * Math.tan(toeInAngle));
     const theta = 175e-6; // Pixel angular resolution in radians
     const zmax = baseline / (theta * Math.cos(toeInAngle));
 
-   // Update the results in the UI
-document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
-document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
-document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
-document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
-document.getElementById('convergencePoint').textContent = `Convergence Point (zconvergence): ${convergencePoint.toFixed(2)} m`;
+    // Update the results in the UI
+    document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
+    document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
+    document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
+    document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
+    document.getElementById('convergencePoint').textContent = `Convergence Point (zconvergence): ${convergencePoint.toFixed(2)} m`;
+
     // Add depth resolution at the distance to the object in millimeters
     const depthResolutionDiv = document.getElementById("depthResolution");
     if (!depthResolutionDiv) {
@@ -632,6 +648,7 @@ document.getElementById('convergencePoint').textContent = `Convergence Point (zc
     // Update visualization
     updateSvg(baseline, distance, fieldOfView, toeInAngle);
 }
+
 
 
   function updateSvg(baseline, distance, fieldOfView, toeInAngle) {

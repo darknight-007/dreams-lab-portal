@@ -6,10 +6,14 @@ import io
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 from scipy.signal import convolve2d  # Correct import for convolve2d
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from matplotlib.backends.backend_svg import FigureCanvasSVG
+from django.conf import settings
+import subprocess
+import os
+from .models import People, Research, Publication, Project, Asset, FundingSource
+from django.http import JsonResponse
 
 # Set up logging
 logger = logging.getLogger(__name__)
