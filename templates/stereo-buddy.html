@@ -366,9 +366,9 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
         </div>
 
         <div class="container">
-            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel">1.51</span></label>
-            <input type="range" id="toeInAngle" min="0.1" max="15" step="0.001" value="1.51" oninput="syncValues('toeInAngle')">
-            <input type="number" id="toeInAngleValue" value="1.51" step="0.001" oninput="syncValues('toeInAngle')">
+            <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel"></span></label>
+            <input type="range" id="toeInAngle" min="0.1" max="15" step="0.001" value="1.25" oninput="syncValues('toeInAngle')">
+            <input type="number" id="toeInAngleValue" value="1.25" step="0.001" oninput="syncValues('toeInAngle')">
         </div>
 
         <div class="container">
@@ -438,10 +438,21 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
         <button onclick="runBlender()">Run Blender Scene Synthesis</button>
 </div>
 
+    <div class="container" style="margin-top: 20px;">
+    <button id="generateReportButton" onclick="generateBatchReport()">
+        Generate Full Report
+    </button>
+</div>
+
      <div class="loading-container" id="loadingIndicator" style="display: none;">
         <div class="spinner"></div>
         <div class="loading-text">Computing...</div>
     </div>
+
+
+<div class="rendered_images" id="renderedImagesContainer">
+    <h2>Report Results</h2>
+</div>
 
 <div class="rendered_files" id="renderedFiles" style="display: none;">
     <h2>Download Generated Scene</h2>
@@ -484,6 +495,57 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
     }
 }
 
+async function generateBatchReport() {
+    const debugOutput = document.getElementById("debugOutput");
+    const renderedImagesContainer = document.getElementById("renderedImagesContainer");
+
+    // Clear previous results
+    renderedImagesContainer.innerHTML = "<h2>Report Results</h2>";
+    debugOutput.textContent = "";
+
+    try {
+        // Show spinner
+        document.getElementById("loadingIndicator").style.display = "flex";
+
+        const response = await fetch("/generate_batch_report/", { method: "POST" });
+        const result = await response.json();
+
+        if (result.status === "completed") {
+            debugOutput.textContent = "Full report generated successfully.";
+
+            // Display generated images and results for each model
+            result.report.forEach(modelResult => {
+                if (modelResult.status === "success") {
+                    renderedImagesContainer.innerHTML += `
+                        <div>
+                            <h3>Model: ${modelResult.model}</h3>
+                            <img src="${modelResult.images.left_camera}" alt="Left Camera Image" width="300" />
+                            <img src="${modelResult.images.right_camera}" alt="Right Camera Image" width="300" />
+                            <img src="${modelResult.images.disparity_map}" alt="Disparity Map" width="300" />
+                            <img src="${modelResult.images.depth_map}" alt="Depth Map" width="300" />
+                        </div>
+                        <hr>
+                    `;
+                } else {
+                    renderedImagesContainer.innerHTML += `
+                        <div>
+                            <h3>Error with Model: ${modelResult.model}</h3>
+                            <p>${modelResult.details}</p>
+                        </div>
+                        <hr>
+                    `;
+                }
+            });
+        } else {
+            debugOutput.textContent = "Error generating report: " + result.details;
+        }
+    } catch (error) {
+        debugOutput.textContent = `Error: ${error}`;
+    } finally {
+        // Hide spinner
+        document.getElementById("loadingIndicator").style.display = "none";
+    }
+}
 
    async function runBlender() {
     document.getElementById("loadingIndicator").style.display = "flex"; // Show loading spinner
@@ -651,72 +713,48 @@ else {
 
 
 
-  function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
-   const svg = document.getElementById("cameraView");
-    const scalingFactor = 100; // 100 pixels = 1 meter
-    const sideLength = distance * scalingFactor * 2; // Double distance for visualization padding
+ function updateSvg(baseline, distance, fieldOfView, toeInAngle) {
+    const svg = document.getElementById("cameraView");
+    const scalingFactor = 50; // 100 pixels = 1 meter
+    const maxYLimitMeters = 10; // Set Y-axis max limit at 10 meters
+    const maxYPixels = maxYLimitMeters * scalingFactor;
 
-    // Adjust SVG size
-    svg.setAttribute("viewBox", `-${sideLength / 2} -${sideLength -150} ${sideLength} ${sideLength}`);
+    const sideLength = maxYPixels * 2; // Double Y-axis for symmetry
+
+    // Adjust SVG size with fixed Y max limit
+    svg.setAttribute("viewBox", `-${sideLength / 2} -${maxYPixels+400} ${sideLength} ${(maxYPixels * 2)-100}`);
     svg.setAttribute("width", sideLength);
-    svg.setAttribute("height", sideLength);
+    svg.setAttribute("height", maxYPixels * 2);
 
     const baselinePixels = baseline * scalingFactor;
     const leftCameraX = -baselinePixels / 2;
     const rightCameraX = baselinePixels / 2;
     const centerY = 0; // Camera Y position
-    const distancePixels = distance * scalingFactor;
+    const distancePixels = Math.min(distance * scalingFactor, maxYPixels); // Limit distance visualization to max Y
 
     // Clear old ticks
     document.querySelectorAll(".tick").forEach(tick => tick.remove());
 
-    // Add X-axis ticks
-    const xAxisInterval = scalingFactor; // 1 meter per tick
-    for (let x = -sideLength / 2; x <= sideLength / 2; x += xAxisInterval) {
-        // Tick line
-        const xTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        xTick.setAttribute("x1", x);
-        xTick.setAttribute("y1", -5); // Small line above the axis
-        xTick.setAttribute("x2", x);
-        xTick.setAttribute("y2", 5); // Small line below the axis
-        xTick.setAttribute("stroke", "black");
-        xTick.setAttribute("stroke-width", "1");
-        xTick.setAttribute("class", "tick");
-        svg.appendChild(xTick);
-
-        // Tick label
-        const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        xLabel.setAttribute("x", x);
-        xLabel.setAttribute("y", 20); // Offset below the axis
-        xLabel.setAttribute("text-anchor", "middle");
-        xLabel.setAttribute("font-size", "18");
-        xLabel.setAttribute("class", "tick");
-        xLabel.textContent = (x / scalingFactor).toFixed(1); // Convert to meters
-        svg.appendChild(xLabel);
-    }
-
-    // Add Y-axis ticks
+    // Add Y-axis ticks within the max Y range
     const yAxisInterval = scalingFactor; // 1 meter per tick
-    for (let y = -sideLength / 2; y <= sideLength / 2; y += yAxisInterval) {
-        // Tick line
+    for (let y = -maxYPixels; y <= maxYPixels; y += yAxisInterval) {
         const yTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        yTick.setAttribute("x1", -5); // Small line left of the axis
+        yTick.setAttribute("x1", -5);
         yTick.setAttribute("y1", y);
-        yTick.setAttribute("x2", 5); // Small line right of the axis
+        yTick.setAttribute("x2", 5);
         yTick.setAttribute("y2", y);
         yTick.setAttribute("stroke", "black");
         yTick.setAttribute("stroke-width", "1");
         yTick.setAttribute("class", "tick");
         svg.appendChild(yTick);
 
-        // Tick label
         const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        yLabel.setAttribute("x", -20); // Offset left of the axis
-        yLabel.setAttribute("y", y + 5); // Adjust vertical alignment
+        yLabel.setAttribute("x", -20);
+        yLabel.setAttribute("y", y + 5);
         yLabel.setAttribute("text-anchor", "end");
         yLabel.setAttribute("font-size", "18");
         yLabel.setAttribute("class", "tick");
-        yLabel.textContent = (-y / scalingFactor).toFixed(1); // Convert to meters
+        yLabel.textContent = (-y / scalingFactor).toFixed(1);
         svg.appendChild(yLabel);
     }
 
@@ -815,6 +853,7 @@ else {
     document.getElementById("yAxisLabel").setAttribute("x", -20);
     document.getElementById("yAxisLabel").setAttribute("y", -sideLength / 2 + 20);
     document.getElementById("yAxisLabel").textContent = "Y (m)";
+
 }
 
 

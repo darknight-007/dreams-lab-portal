@@ -14,6 +14,16 @@ import subprocess
 import os
 from .models import People, Research, Publication, Project, Asset, FundingSource
 from django.http import JsonResponse
+import json
+import os
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import subprocess
+import tempfile
+
+from django.conf import settings
+from urllib.parse import urljoin
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -114,6 +124,77 @@ def verify_login_view(request):
     """Render the verify login template."""
     return render(request, 'verify_login.html')
 
+
+
+
+@csrf_exempt
+def generate_batch_report(request):
+    """
+    Generate calculations and renders for all models, and return a summary report.
+    """
+    if request.method == "POST":
+        try:
+            # Load all models
+            models_dir = os.path.join(settings.BASE_DIR, "moon-rocks")
+            output_dir = os.path.join(settings.MEDIA_ROOT, "batch_outputs")
+            os.makedirs(output_dir, exist_ok=True)
+
+            models = []
+
+            # Collect models
+            for root, _, files in os.walk(models_dir):
+                for file in files:
+                    if file.endswith(".obj"):  # Only include .obj files
+                        full_path = os.path.join(root, file)
+                        models.append({"name": file, "path": full_path})
+
+            report = []
+
+            # Process each model
+            for model in models:
+                model_name = model["name"]
+                model_path = model["path"]
+                output_folder = os.path.join(output_dir, model_name.replace(".obj", ""))
+
+                # Ensure output folder exists
+                os.makedirs(output_folder, exist_ok=True)
+
+                # Run Blender script for the current model
+                try:
+                    subprocess.run([
+                        "blender", "--background", "--python", os.path.join(settings.BASE_DIR, "run_blender.py"),
+                        "--", "8.44", "19.71", "290", "5.43", "1.25", model_path, output_folder
+                    ], check=True)
+
+                    # Correctly generate image URLs using MEDIA_URL
+                    rendered_images = {
+                        "left_camera": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/left_camera.png"),
+                        "right_camera": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/right_camera.png"),
+                        "disparity_map": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/disparity_map.png"),
+                        "depth_map": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/depth_map.png"),
+                    }
+
+                    # Generate summary data
+                    summary = {
+                        "model": model_name,
+                        "images": rendered_images,
+                        "status": "success"
+                    }
+                    report.append(summary)
+
+                except subprocess.CalledProcessError as e:
+                    report.append({
+                        "model": model_name,
+                        "status": "error",
+                        "details": str(e)
+                    })
+
+            return JsonResponse({"status": "completed", "report": report})
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "details": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)
 
 @csrf_exempt
 def verify_login(request):
@@ -260,4 +341,5 @@ def image_buddy_view(request):
 
 def slam_buddy_view(request):
     return render(request, 'slam-buddy.html')
+
 # views.py
