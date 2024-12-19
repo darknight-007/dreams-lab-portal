@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from dreams_laboratory.views import (home_view, stereo_buddy_view, run_blender, get_models, initiate_login,
                                      verify_login, initiate_login_view, verify_login_view, cart_pole_buddy_view,
-                                     gaussian_processes_buddy_view, generate_batch_report, param_estimation_buddy_view, image_buddy_view, slam_buddy_view)
+                                     gaussian_processes_buddy_view, generate_batch_report,
+                                     param_estimation_buddy_view, image_buddy_view, slam_buddy_view,ses598_robotic_exploration_and_mapping_quiz)
 from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
@@ -35,6 +36,8 @@ urlpatterns = [
     path('param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
     path('generate_batch_report/', generate_batch_report, name='generate_batch_report'),
     path('image-buddy/', image_buddy_view, name='image_buddy'),
+    path('ses598_quiz/', ses598_robotic_exploration_and_mapping_quiz, name='ses598_robotic_exploration_and_mapping_quiz'),
+
     path("api/apply-filters/", views.apply_filters, name="apply_filters"),
     # Add route for fetching available rock models
     path('get_models/', get_models, name='get_models'),

@@ -27,6 +27,8 @@ from urllib.parse import urljoin
 
 # Set up logging
 logger = logging.getLogger(__name__)
+
+
 @csrf_exempt
 def image_buddy_view(request):
     """Render the Image Buddy interface."""
@@ -85,6 +87,7 @@ def initiate_login_view(request):
     """Render the initiate login template."""
     return render(request, 'initiate_login.html')
 
+
 @csrf_exempt
 def initiate_login(request):
     """Send a Twilio verification code to the phone number."""
@@ -119,12 +122,11 @@ def initiate_login(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
 
+
 @csrf_exempt
 def verify_login_view(request):
     """Render the verify login template."""
     return render(request, 'verify_login.html')
-
-
 
 
 @csrf_exempt
@@ -168,10 +170,14 @@ def generate_batch_report(request):
 
                     # Correctly generate image URLs using MEDIA_URL
                     rendered_images = {
-                        "left_camera": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/left_camera.png"),
-                        "right_camera": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/right_camera.png"),
-                        "disparity_map": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/disparity_map.png"),
-                        "depth_map": urljoin(settings.MEDIA_URL, f"batch_outputs/{model_name.replace('.obj', '')}/depth_map.png"),
+                        "left_camera": urljoin(settings.MEDIA_URL,
+                                               f"batch_outputs/{model_name.replace('.obj', '')}/left_camera.png"),
+                        "right_camera": urljoin(settings.MEDIA_URL,
+                                                f"batch_outputs/{model_name.replace('.obj', '')}/right_camera.png"),
+                        "disparity_map": urljoin(settings.MEDIA_URL,
+                                                 f"batch_outputs/{model_name.replace('.obj', '')}/disparity_map.png"),
+                        "depth_map": urljoin(settings.MEDIA_URL,
+                                             f"batch_outputs/{model_name.replace('.obj', '')}/depth_map.png"),
                     }
 
                     # Generate summary data
@@ -195,6 +201,7 @@ def generate_batch_report(request):
             return JsonResponse({"status": "error", "details": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method"}, status=400)
+
 
 @csrf_exempt
 def verify_login(request):
@@ -244,9 +251,10 @@ def verify_login(request):
             return JsonResponse({"error": "Invalid verification code."}, status=400)
 
     return JsonResponse({"error": "Invalid request method."}, status=400)
+
+
 @csrf_exempt
 def run_blender(request):
-
     if request.method == "POST":
         # Parse parameters from the frontend
 
@@ -323,13 +331,13 @@ def stereo_buddy_view(request):
     return render(request, 'stereo-buddy.html')
 
 
-
 def cart_pole_buddy_view(request):
     return render(request, 'cart-pole-buddy.html')
 
 
 def gaussian_processes_buddy_view(request):
     return render(request, 'gaussian-processes-buddy.html')
+
 
 def param_estimation_buddy_view(request):
     return render(request, 'param-estimation-buddy.html')
@@ -341,5 +349,9 @@ def image_buddy_view(request):
 
 def slam_buddy_view(request):
     return render(request, 'slam-buddy.html')
+
+
+def ses598_robotic_exploration_and_mapping_quiz(request):
+    return render(request, 'ses-598-robotic-exploration-and-mapping-quiz.html')
 
 # views.py
