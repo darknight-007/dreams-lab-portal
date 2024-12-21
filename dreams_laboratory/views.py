@@ -361,4 +361,18 @@ def ransac_buddy(request):
     """
     return render(request, 'ransac-buddy.html') 
 
+def multiview_geometry_view(request):
+    """
+    View function for the multi-view geometry tutorial page.
+    Can include computed matrices as context if needed.
+    """
+    context = {
+        'title': 'Multi-View Geometry Tutorial',
+        # Add any computed matrices to the context if needed
+        # 'essential_matrix': computed_essential_matrix,
+        # 'fundamental_matrix': computed_fundamental_matrix,
+        # 'camera_matrix': computed_camera_matrix,
+    }
+    return render(request, 'multiview-geometry.html', context)
+
 # views.py

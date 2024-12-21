@@ -19,11 +19,14 @@ from dreams_laboratory.views import (home_view, stereo_buddy_view, run_blender, 
                                      verify_login, initiate_login_view, verify_login_view, cart_pole_buddy_view,
                                      gaussian_processes_buddy_view, generate_batch_report,
                                      param_estimation_buddy_view, image_buddy_view, slam_buddy_view,
-                                     ses598_robotic_exploration_and_mapping_quiz, ransac_buddy)
+                                     ses598_robotic_exploration_and_mapping_quiz, ransac_buddy, multiview_geometry_view)
 from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
 from . import views
+
+def ses598_robotic_exploration_and_mapping(request):
+    return render(request, 'SES598_robotic_exploration_and_mapping.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -47,6 +50,12 @@ urlpatterns = [
     path('initiate-login-form/', initiate_login_view, name='initiate_login_form'),
     path('verify-login/', verify_login, name='verify_login'),
     path('verify-login-form/', verify_login_view, name='verify_login_form'),
+    path('multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
+    path('robotic-exploration-and-mapping/', views.ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
+
+    # Add any additional API endpoints needed for multiview functionality, for example:
+    # path('api/multiview/process-images/', views.process_multiview_images, name='process_multiview_images'),
+    # path('api/multiview/get-results/', views.get_multiview_results, name='get_multiview_results'),
 ]
 
 if settings.DEBUG:
