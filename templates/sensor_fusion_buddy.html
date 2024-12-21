@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Sensor Fusion Tutorial</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2>Kalman Filter Demonstration</h2>
+                    <svg id="sensorFusionSVG" width="600" height="400" class="border"></svg>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" id="startFusion">Start</button>
+                        <button class="btn btn-secondary" id="resetFusion">Reset</button>
+                        <button class="btn btn-info" id="togglePath">Toggle Paths</button>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            ● True Position &nbsp;
+                            <span class="text-danger">● GPS Reading</span> &nbsp;
+                            <span class="text-success">● IMU Path</span> &nbsp;
+                            <span class="text-primary">● Kalman Estimate</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Kalman Filter Explanation</h3>
+                    <p>The Kalman filter equations used in this demo:</p>
+                    <div class="math-block">
+                        <p>Prediction step:</p>
+                        <p>x̂ₖ₋ = Fₖx̂ₖ₋₁ + Bₖuₖ</p>
+                        <p>Pₖ₋ = FₖPₖ₋₁Fₖᵀ + Qₖ</p>
+                        
+                        <p>Update step:</p>
+                        <p>Kₖ = Pₖ₋Hₖᵀ(HₖPₖ₋Hₖᵀ + Rₖ)⁻¹</p>
+                        <p>x̂ₖ = x̂ₖ₋ + Kₖ(zₖ - Hₖx̂ₖ₋)</p>
+                        <p>Pₖ = (I - KₖHₖ)Pₖ₋</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Sensor Settings</h3>
+                    <div class="form-group">
+                        <label>GPS Noise (R)</label>
+                        <input type="range" class="form-control-range" id="gpsNoise" min="0" max="100" value="30">
+                        <small class="text-muted">Current: <span id="gpsNoiseValue">30</span></small>
+                    </div>
+                    <div class="form-group">
+                        <label>IMU Noise (Q)</label>
+                        <input type="range" class="form-control-range" id="imuNoise" min="0" max="100" value="10">
+                        <small class="text-muted">Current: <span id="imuNoiseValue">10</span></small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h3>Performance Metrics</h3>
+                    <div class="metrics-container">
+                        <p>Error (RMSE):</p>
+                        <p>GPS: <span id="gpsError">0.00</span></p>
+                        <p>Kalman: <span id="kalmanError">0.00</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="/static/js/kalman_filter.js"></script>
+<script src="/static/js/sensor_fusion_demo.js"></script>
+{% endblock %} 

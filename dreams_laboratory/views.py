@@ -313,16 +313,15 @@ def home_view(request):
     projects = Project.objects.all()
     assets = Asset.objects.all()
     funding_source = FundingSource.objects.all()
-    # Pass data to the template
+    
+    # Pass data to the template (removed duplicate research_areas)
     context = {
         'people': people,
         'research_areas': research_areas,
         'publications': publications,
         'projects': projects,
-        'research_areas': research_areas,
         'assets': assets,
         'funding_source': funding_source,
-
     }
     return render(request, 'home.html', context)
 
@@ -375,4 +374,28 @@ def multiview_geometry_view(request):
     }
     return render(request, 'multiview-geometry.html', context)
 
-# views.py
+
+def ses598_robotic_exploration_and_mapping(request):
+    return render(request, 'SES598_robotic_exploration_and_mapping.html')
+
+def particle_filter_buddy(request):
+    return render(request, 'particle_filter_buddy.html')
+
+def loop_closure_buddy(request):
+    return render(request, 'loop_closure_buddy.html')
+
+def sensor_fusion_buddy(request):
+    return render(request, 'sensor_fusion_buddy.html')
+
+def visual_odometry_buddy(request):
+    return render(request, 'visual_odometry_buddy.html')
+
+def point_cloud_buddy(request):
+    return render(request, 'point_cloud_buddy.html')
+
+def path_planning_buddy(request):
+    """
+    View function for the path planning tutorial page.
+    Covers algorithms like A*, RRT, and potential fields with interactive demonstrations.
+    """
+    return render(request, 'path_planning_buddy.html')
