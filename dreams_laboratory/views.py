@@ -439,37 +439,92 @@ def sample_points_on_curve(x, y, num_points=300):
     return x_random, y_random
 
 def ransac_demo_data(request):
-    """
-    View function to generate and return RANSAC demo data with a fixed number of iterations.
-    Returns:
-        JsonResponse containing:
-        - Original curve points
-        - Sample points
-        - Best fit model after fixed iterations
-    """
-    # Generate the base curve
-    x_coords, y_coords = generate_curved_line()
+    # Generate dense point sampling
+    n_points = 1000  # Increased for denser sampling
     
-    # Generate sample points with some noise
-    x_random, y_random = sample_points_on_curve(x_coords, y_coords, num_points=100)
+    # Generate x coordinates
+    x_coords = np.linspace(0, 100, 200)  # Base curve points
     
-    # Add some outliers (optional, to demonstrate RANSAC's robustness)
-    num_outliers = 20
-    outlier_indices = np.random.choice(len(x_random), num_outliers, replace=False)
-    y_random[outlier_indices] += np.random.normal(0, 2, num_outliers)
+    # Create ground profile with slight slope
+    base_ground = 10 + 0.05 * x_coords
     
-    # Simulate RANSAC results (best fit after fixed iterations)
-    num_iterations = 50  # Fixed number of RANSAC iterations
-    best_inliers = []
-    best_error = float('inf')
+    # Define the protruding boulder shape using a more circular profile
+    boulder_center_x = 50
+    boulder_radius = 15
+    boulder_height = 35
     
-    # ... RANSAC iteration logic here ...
+    # Create circular boulder profile
+    boulder_region = np.abs(x_coords - boulder_center_x) <= boulder_radius
+    x_relative = x_coords[boulder_region] - boulder_center_x
+    
+    # Generate circular profile using arc formula
+    boulder_profile = np.sqrt(boulder_radius**2 - x_relative**2)
+    # Scale and shift the profile
+    boulder_profile = boulder_profile * (boulder_height/boulder_radius)
+    
+    # Smooth connection to ground
+    transition_width = 5
+    left_edge = boulder_center_x - boulder_radius
+    right_edge = boulder_center_x + boulder_radius
+    
+    # Create smooth transitions at edges
+    left_transition = (x_coords >= left_edge - transition_width) & (x_coords < left_edge)
+    right_transition = (x_coords > right_edge) & (x_coords <= right_edge + transition_width)
+    
+    # Combine ground and boulder
+    y_coords = base_ground.copy()
+    y_coords[boulder_region] = base_ground[boulder_region] + boulder_profile
+    
+    # Smooth transitions
+    if np.any(left_transition):
+        transition_x = (x_coords[left_transition] - (left_edge - transition_width)) / transition_width
+        y_coords[left_transition] = base_ground[left_transition] + \
+            (transition_x**2) * (y_coords[boulder_region][0] - base_ground[left_transition])
+    
+    if np.any(right_transition):
+        transition_x = 1 - (x_coords[right_transition] - right_edge) / transition_width
+        y_coords[right_transition] = base_ground[right_transition] + \
+            (transition_x**2) * (y_coords[boulder_region][-1] - base_ground[right_transition])
+    
+    # Generate dense random sampling points
+    x_random = np.random.uniform(0, 100, n_points)
+    x_random.sort()
+    
+    # Interpolate to get base y values
+    y_random = np.interp(x_random, x_coords, y_coords)
+    
+    # Add realistic noise to points
+    noise_scale = 0.3  # Scale of the noise
+    y_random += np.random.normal(0, noise_scale, n_points)
+    
+    # Add extra points near surface for density
+    extra_points_x = []
+    extra_points_y = []
+    
+    # Add dense surface points with higher density on boulder
+    for i in range(len(x_random)):
+        # Higher probability of extra points on boulder
+        point_prob = 0.7 if abs(x_random[i] - boulder_center_x) <= boulder_radius else 0.4
+        if np.random.random() < point_prob:
+            num_extra = np.random.randint(2, 5)  # 2-4 extra points per location
+            for _ in range(num_extra):
+                x_offset = np.random.normal(0, 0.2)  # Small x variation
+                y_offset = np.random.normal(0, 0.2)  # Small y variation
+                extra_points_x.append(x_random[i] + x_offset)
+                extra_points_y.append(y_random[i] + y_offset)
+    
+    # Combine original and extra points
+    x_random = np.concatenate([x_random, np.array(extra_points_x)])
+    y_random = np.concatenate([y_random, np.array(extra_points_y)])
+    
+    # Sort points by x coordinate for cleaner visualization
+    sort_idx = np.argsort(x_random)
+    x_random = x_random[sort_idx]
+    y_random = y_random[sort_idx]
     
     return JsonResponse({
         'x_coords': x_coords.tolist(),
         'y_coords': y_coords.tolist(),
-        'x_samples': x_random.tolist(),
-        'y_samples': y_random.tolist(),
-        'num_iterations': num_iterations,
-        'best_inliers': best_inliers,
-    }) 
+        'x_random': x_random.tolist(),
+        'y_random': y_random.tolist()
+    })

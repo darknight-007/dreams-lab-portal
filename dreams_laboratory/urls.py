@@ -64,7 +64,7 @@ urlpatterns = [
     # Computer vision URLs
     path('ransac_buddy/', ransac_buddy, name='ransac-buddy'),
     path('multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
-    path('ransac-demo-data/', ransac_demo_data, name='ransac_demo_data'),
+    path('ransac-demo-data/', ransac_demo_data, name='ransac-demo-data'),
     
     # Tutorial URLs
     path('particle-filter/', particle_filter_buddy, name='particle_filter_buddy'),

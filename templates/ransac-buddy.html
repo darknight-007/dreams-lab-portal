@@ -539,18 +539,54 @@
             try {
                 const data = await initializeDemo();
                 let points = data.x_random.map((x, i) => ({x: x, y: data.y_random[i]}));
+                let iterationCount = 0;
+                const MAX_ITERATIONS = 100;
+                
+                // Track best model and its score
+                let bestModel = null;
+                let bestInliers = [];
+                let bestOutliers = [];
+                let bestScore = -Infinity;  // Using negative infinity so first model will be better
                 
                 function animate() {
-                    if (isConverged) return;
+                    if (isConverged || iterationCount >= MAX_ITERATIONS) {
+                        // Show best result at the end
+                        demoChart.data.datasets[1].data = bestInliers;
+                        demoChart.data.datasets[2].data = bestOutliers;
+                        demoChart.data.datasets[3].data = [];  // Clear selected points
+                        
+                        // Show best fit line
+                        const lineX = [Math.min(...data.x_random), Math.max(...data.x_random)];
+                        demoChart.data.datasets[4].data = lineX.map(x => ({
+                            x: x,
+                            y: bestModel.slope * x + bestModel.intercept
+                        }));
+                        
+                        demoChart.update();
+                        console.log(`RANSAC terminated after ${iterationCount} iterations`);
+                        return;
+                    }
                     
                     const {inliers, outliers, selected, model} = ransacIteration(points);
                     
-                    // Update chart datasets
+                    // Calculate score for this iteration
+                    // Score based on number of inliers and their fit quality
+                    const score = inliers.length + (1 / (1 + calculateError(inliers, model)));
+                    
+                    // Update best model if current is better
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestModel = model;
+                        bestInliers = inliers;
+                        bestOutliers = outliers;
+                    }
+                    
+                    // Show current iteration
                     demoChart.data.datasets[1].data = inliers;
                     demoChart.data.datasets[2].data = outliers;
                     demoChart.data.datasets[3].data = selected;
                     
-                    // Update ground fit line
+                    // Show current line
                     const lineX = [Math.min(...data.x_random), Math.max(...data.x_random)];
                     demoChart.data.datasets[4].data = lineX.map(x => ({
                         x: x,
@@ -558,8 +594,17 @@
                     }));
                     
                     demoChart.update();
+                    iterationCount++;
                     
                     animationId = requestAnimationFrame(animate);
+                }
+                
+                // Helper function to calculate error of fit
+                function calculateError(points, model) {
+                    return points.reduce((sum, p) => {
+                        const predicted = model.slope * p.x + model.intercept;
+                        return sum + Math.abs(p.y - predicted);
+                    }, 0) / (points.length || 1);
                 }
                 
                 animate();
