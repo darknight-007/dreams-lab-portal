@@ -4,6 +4,9 @@ from scipy.interpolate import interp1d
 from sklearn.linear_model import LinearRegression
 from matplotlib.animation import FuncAnimation
 from matplotlib.collections import PathCollection
+from flask import jsonify
+import io
+import base64
 
 # Blue dots for ground points
 # Red dots for potential rock points during the search phase

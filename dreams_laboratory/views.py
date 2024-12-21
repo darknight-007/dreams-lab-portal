@@ -21,6 +21,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import subprocess
 import tempfile
+from django.http import JsonResponse
+from django.shortcuts import render
+
+import numpy as np
+from scipy.interpolate import interp1d
 
 from django.conf import settings
 from urllib.parse import urljoin
@@ -399,3 +404,72 @@ def path_planning_buddy(request):
     Covers algorithms like A*, RRT, and potential fields with interactive demonstrations.
     """
     return render(request, 'path_planning_buddy.html')
+
+
+def generate_curved_line():
+    # Define points for the base ground line (slightly slanted)
+    x_ground = np.linspace(0, 20, 100)
+    y_ground = 0.1 * x_ground + 2  # Slight upward slope
+    
+    # Define points for the boulder bulge
+    x_boulder = np.linspace(8, 12, 50)
+    
+    # Create elongated circular bulge
+    boulder_height = 4
+    boulder_width = 2
+    y_boulder = y_ground[40:90] + boulder_height * np.sqrt(1 - ((x_boulder-10)/boulder_width)**2)
+    
+    # Smooth transition points
+    x = np.concatenate([x_ground[:40], x_boulder, x_ground[90:]])
+    y = np.concatenate([y_ground[:40], y_boulder, y_ground[90:]])
+    
+    return x, y
+
+def sample_points_on_curve(x, y, num_points=300):
+    # Create interpolation function
+    curve = interp1d(x, y, kind='linear')
+    
+    # Generate random x coordinates
+    x_random = np.random.uniform(min(x), max(x), num_points)
+    x_random.sort()  # Sort to maintain curve order
+    
+    # Get corresponding y coordinates
+    y_random = curve(x_random)
+    
+    return x_random, y_random
+
+def ransac_demo_data(request):
+    """
+    View function to generate and return RANSAC demo data with a fixed number of iterations.
+    Returns:
+        JsonResponse containing:
+        - Original curve points
+        - Sample points
+        - Best fit model after fixed iterations
+    """
+    # Generate the base curve
+    x_coords, y_coords = generate_curved_line()
+    
+    # Generate sample points with some noise
+    x_random, y_random = sample_points_on_curve(x_coords, y_coords, num_points=100)
+    
+    # Add some outliers (optional, to demonstrate RANSAC's robustness)
+    num_outliers = 20
+    outlier_indices = np.random.choice(len(x_random), num_outliers, replace=False)
+    y_random[outlier_indices] += np.random.normal(0, 2, num_outliers)
+    
+    # Simulate RANSAC results (best fit after fixed iterations)
+    num_iterations = 50  # Fixed number of RANSAC iterations
+    best_inliers = []
+    best_error = float('inf')
+    
+    # ... RANSAC iteration logic here ...
+    
+    return JsonResponse({
+        'x_coords': x_coords.tolist(),
+        'y_coords': y_coords.tolist(),
+        'x_samples': x_random.tolist(),
+        'y_samples': y_random.tolist(),
+        'num_iterations': num_iterations,
+        'best_inliers': best_inliers,
+    }) 

@@ -19,6 +19,12 @@
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     
+    <!-- Add this in the <head> section, before your other scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Make sure this comes before any script that uses Chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    
     <title>RANSAC Tutorial with Point Cloud Matching</title>
     
     <style>
@@ -130,6 +136,25 @@
             <li>Detect and validate loop closures</li>
             <li>Remove dynamic objects from static map building</li>
         </ul>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>RANSAC Ground-Rock Separation Demo</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="ransacDemo" width="800" height="400"></canvas>
+                        <div class="mt-2">
+                            <button id="startDemo" class="btn btn-primary">Start Demo</button>
+                            <button id="resetDemo" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -381,6 +406,179 @@
             weightSpaceSvg.selectAll(".weight-point, .final-params").remove();
             document.getElementById('lineParams').textContent = 'No line fitted yet';
         }
+
+        let demoChart;
+        let animationId;
+        let bestModel = null;
+        let bestScore = Infinity;
+        let isConverged = false;
+
+        async function initializeDemo() {
+            try {
+                // Wait for Chart.js to be loaded
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js not loaded');
+                }
+
+                const response = await fetch('/ransac-demo-data/');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                const ctx = document.getElementById('ransacDemo').getContext('2d');
+                
+                if (demoChart) {
+                    demoChart.destroy(); // Destroy existing chart if it exists
+                }
+                
+                demoChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Original Line',
+                                data: data.x_coords.map((x, i) => ({x: x, y: data.y_coords[i]})),
+                                showLine: true,
+                                borderColor: 'rgba(0,0,0,0.3)',
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Ground Points',
+                                data: [],
+                                backgroundColor: 'blue',
+                                pointRadius: 2
+                            },
+                            {
+                                label: 'Rock Points',
+                                data: [],
+                                backgroundColor: 'red',
+                                pointRadius: 2
+                            },
+                            {
+                                label: 'Selected Points',
+                                data: [],
+                                backgroundColor: 'yellow',
+                                pointRadius: 4
+                            },
+                            {
+                                label: 'Ground Fit',
+                                data: [],
+                                showLine: true,
+                                borderColor: 'green',
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        animation: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                
+                return data;
+            } catch (error) {
+                console.error('Error initializing demo:', error);
+                throw error;
+            }
+        }
+
+        function ransacIteration(points, nSamples=30, threshold=0.3) {
+            // Select random points with bias towards lower points
+            const weights = points.map(p => 1 / (1 + Math.abs(p.y - Math.min(...points.map(p => p.y)))));
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+            const normalizedWeights = weights.map(w => w / totalWeight);
+            
+            // Random sampling
+            const selected = [];
+            for(let i = 0; i < nSamples; i++) {
+                let r = Math.random();
+                let sum = 0;
+                for(let j = 0; j < points.length; j++) {
+                    sum += normalizedWeights[j];
+                    if(r <= sum) {
+                        selected.push(points[j]);
+                        break;
+                    }
+                }
+            }
+            
+            // Fit line to selected points using least squares
+            const sumX = selected.reduce((sum, p) => sum + p.x, 0);
+            const sumY = selected.reduce((sum, p) => sum + p.y, 0);
+            const sumXY = selected.reduce((sum, p) => sum + p.x * p.y, 0);
+            const sumX2 = selected.reduce((sum, p) => sum + p.x * p.x, 0);
+            const n = selected.length;
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            // Calculate residuals
+            const residuals = points.map(p => p.y - (slope * p.x + intercept));
+            
+            // Classify points
+            const inliers = points.filter((p, i) => residuals[i] < threshold);
+            const outliers = points.filter((p, i) => residuals[i] >= threshold);
+            
+            return {
+                inliers: inliers,
+                outliers: outliers,
+                selected: selected,
+                model: { slope, intercept }
+            };
+        }
+
+        // Add error handling to startDemo
+        async function startDemo() {
+            try {
+                const data = await initializeDemo();
+                let points = data.x_random.map((x, i) => ({x: x, y: data.y_random[i]}));
+                
+                function animate() {
+                    if (isConverged) return;
+                    
+                    const {inliers, outliers, selected, model} = ransacIteration(points);
+                    
+                    // Update chart datasets
+                    demoChart.data.datasets[1].data = inliers;
+                    demoChart.data.datasets[2].data = outliers;
+                    demoChart.data.datasets[3].data = selected;
+                    
+                    // Update ground fit line
+                    const lineX = [Math.min(...data.x_random), Math.max(...data.x_random)];
+                    demoChart.data.datasets[4].data = lineX.map(x => ({
+                        x: x,
+                        y: model.slope * x + model.intercept
+                    }));
+                    
+                    demoChart.update();
+                    
+                    animationId = requestAnimationFrame(animate);
+                }
+                
+                animate();
+            } catch (error) {
+                console.error('Error starting demo:', error);
+            }
+        }
+
+        // Make sure event listeners are added after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('startDemo').addEventListener('click', startDemo);
+            document.getElementById('resetDemo').addEventListener('click', () => {
+                if (animationId) cancelAnimationFrame(animationId);
+                isConverged = false;
+                bestModel = null;
+                bestScore = Infinity;
+                if (demoChart) demoChart.destroy();
+            });
+        });
     </script>
 </body>
 </html> 

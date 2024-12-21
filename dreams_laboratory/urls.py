@@ -26,16 +26,15 @@ from dreams_laboratory.views import (
     stereo_buddy_view, slam_buddy_view, cart_pole_buddy_view,
     gaussian_processes_buddy_view, param_estimation_buddy_view,
     image_buddy_view, generate_batch_report,
-    # Educational content views
-    ses598_robotic_exploration_and_mapping_quiz,
-    ses598_robotic_exploration_and_mapping,
     # Computer vision views
     ransac_buddy, multiview_geometry_view,
     # Tutorial views
     particle_filter_buddy, loop_closure_buddy, sensor_fusion_buddy,
-    visual_odometry_buddy, point_cloud_buddy, path_planning_buddy
+    visual_odometry_buddy, point_cloud_buddy, path_planning_buddy,
+    # API views
+    apply_filters, ransac_demo_data, ses598_robotic_exploration_and_mapping_quiz,
+    ses598_robotic_exploration_and_mapping
 )
-from . import views
 
 urlpatterns = [
     # Core URLs
@@ -58,15 +57,14 @@ urlpatterns = [
     path('param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
     path('image-buddy/', image_buddy_view, name='image_buddy'),
     path('generate_batch_report/', generate_batch_report, name='generate_batch_report'),
-    path("api/apply-filters/", views.apply_filters, name="apply_filters"),
-    
-    # Educational content URLs
+    path("api/apply-filters/", apply_filters, name="apply_filters"),
     path('ses598_quiz/', ses598_robotic_exploration_and_mapping_quiz, name='ses598_robotic_exploration_and_mapping_quiz'),
     path('robotic-exploration-and-mapping/', ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
-    
+  
     # Computer vision URLs
     path('ransac_buddy/', ransac_buddy, name='ransac-buddy'),
     path('multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
+    path('ransac-demo-data/', ransac_demo_data, name='ransac_demo_data'),
     
     # Tutorial URLs
     path('particle-filter/', particle_filter_buddy, name='particle_filter_buddy'),
