@@ -354,4 +354,11 @@ def slam_buddy_view(request):
 def ses598_robotic_exploration_and_mapping_quiz(request):
     return render(request, 'ses-598-robotic-exploration-and-mapping-quiz.html')
 
+def ransac_buddy(request):
+    """
+    View function for the RANSAC tutorial page.
+    Demonstrates RANSAC algorithm for point cloud matching and outlier rejection.
+    """
+    return render(request, 'ransac-buddy.html') 
+
 # views.py

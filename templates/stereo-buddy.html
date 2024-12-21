@@ -68,8 +68,12 @@
             font-family: Arial, sans-serif;
             margin: 20px;
             display: flex;
-            flex-wrap: wrap;
-            height: 100vh;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 1200px;  /* Optional: limit maximum width */
+            margin: 0 auto;     /* Center content */
+            padding: 20px;      /* Add padding */
         }
 
         .column {
@@ -119,6 +123,7 @@
         }
     </style>
     <style>
+    /* Combined container styles */
     .container {
         display: flex;
         align-items: center;
@@ -126,21 +131,35 @@
         margin-bottom: 15px;
     }
 
+    .container button {
+        font-size: 20px;
+        font-weight: bold;
+        padding: 15px 30px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    /* Combined input styles */
     .container label {
-        flex: 1; /* Label takes a fixed amount of space */
+        flex: 1;
         margin-right: 10px;
         font-size: 14px;
         font-weight: bold;
     }
 
     .container input[type="range"] {
-        flex: 2; /* Slider takes more space */
+        flex: 2;
         margin-right: 10px;
     }
 
     .container input[type="number"] {
-        flex: 1; /* Number input takes a smaller space */
-        width: 60px; /* Fixed width for stable alignment */
+        flex: 1;
+        width: 60px;
     }
 </style>
 <style>
@@ -182,41 +201,64 @@
     /* Flexbox container for two-column layout */
     .two-column-container {
         display: flex;
-        justify-content: space-between;
-        gap: 20px; /* Spacing between the two columns */
+        gap: 20px;
+        margin-top: 20px;
     }
 
-    /* Individual column styling */
-    .slider-column, .results-column {
-        flex: 1; /* Equal width columns */
-        padding: 10px;
-        border: 1px solid #ccc; /* Optional border for clarity */
-        border-radius: 8px; /* Rounded corners for visual appeal */
-        background-color: #f9f9f9; /* Light background for separation */
+    .slider-column {
+        flex: 1;
+        max-width: 50%;
     }
 
-    /* Results column specific styling */
-    .results {
-        margin-top: 0;
+    .results-column {
+        flex: 1;
+        max-width: 50%;
+        position: sticky;
+        top: 20px;
+    }
+
+    /* Ensure proper scrolling for long content */
+    .widget {
+        overflow-y: auto;
+        max-height: 100vh;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .tutorial-container,
+        .two-column-container {
+            flex-direction: column;
+        }
+
+        .tutorial-text,
+        .tutorial-viz,
+        .slider-column,
+        .results-column {
+            max-width: 100%;
+        }
+
+        .tutorial-viz {
+            position: static;
+            margin: 20px 0;
+        }
     }
 </style>
     <style>
-    /* Flexbox container for the dropdown and button */
+    /* Remove duplicate style block and keep only one instance */
     .dropdown-button-container {
         display: flex;
-        align-items: center; /* Align items vertically center */
-        gap: 20px; /* Space between dropdown and button */
+        align-items: center;
+        gap: 20px;
     }
 
-    /* Ensure the dropdown and button are styled appropriately */
     .dropdown-button-container select {
-        flex: 1; /* Allow the dropdown to take up space */
-        max-width: 300px; /* Limit the maximum width of the dropdown */
+        flex: 1;
+        max-width: 300px;
     }
 
     .dropdown-button-container button {
-        flex: 0; /* Prevent button from growing */
-        padding: 10px 20px; /* Adjust button padding */
+        flex: 0;
+        padding: 10px 20px;
         font-size: 16px;
         font-weight: bold;
         color: #fff;
@@ -228,7 +270,7 @@
     }
 
     .dropdown-button-container button:hover {
-        background-color: #0056b3; /* Darker blue on hover */
+        background-color: #0056b3;
     }
 </style>
   <script>
@@ -244,21 +286,140 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
 
-</script>
+    <style>
+        /* Increase font size for tutorial text and equations */
+        .equation-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .equation-text p, .equation-text ul {
+            font-size: 1.1em;
+        }
+
+        /* Increase size of MathJax equations */
+        .MathJax {
+            font-size: 120% !important;
+        }
+    </style>
+
+    <style>
+        .tutorial-container {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+            clear: both;      /* Clear float after tutorial */
+        }
+
+        .tutorial-text {
+            flex: 1;
+            max-width: 50%;
+        }
+
+        .tutorial-viz {
+            flex: 1;
+            max-width: 50%;
+        }
+    </style>
+
+    <style>
+        /* Fix widget visibility */
+        .widget {
+            width: 100%;
+            margin: 20px 0;
+            display: block;  /* Ensure widget is displayed */
+            clear: both;     /* Clear any floats */
+        }
+
+        /* Ensure column layout works */
+        .column {
+            flex: 1;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;  /* Give minimum height */
+        }
+
+        /* Fix two-column container layout */
+        .two-column-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%;      /* Ensure full width */
+            clear: both;      /* Clear any floats */
+        }
+
+        .slider-column,
+        .results-column {
+            flex: 1;
+            min-width: 300px; /* Ensure minimum width */
+        }
+    </style>
 
 </head>
 <body>
 <div class="widget">
     <h1>Stereo Camera Configurator and Tutorial</h1>
 
-    <div class="equation-text">
-        <h2>Background</h2>
-        <p>
-            We formalize the configuration and parameter optimization of a multi-camera system for planetary surface mapping, such as Martian or Lunar terrain. This includes a stereo camera setup and derives parameter relationships, extending to multi-camera setups.
-        </p>
+    <!-- New two-column container -->
+    <div class="tutorial-container">
+        <!-- Left column: Text content -->
+        <div class="tutorial-text">
+            <h2>Background</h2>
+            <p>
+                We formalize the configuration and parameter optimization of a multi-camera system for planetary surface mapping, such as Martian or Lunar terrain. This includes a stereo camera setup and derives parameter relationships, extending to multi-camera setups.
+            </p>
 
-        <!-- Wrap figure container -->
-        <div class="wrap-figure">
+            <h2>Stereo Camera Configuration</h2>
+            <p>The stereo camera parameters include:</p>
+            <ul>
+                <li>\(f_{\text{mm}}\): Focal length in mm</li>
+                <li>\(\theta\): Pixel angular resolution (rad/pixel)</li>
+                <li>\(\phi_H\): Horizontal Field of View (FoV)</li>
+                <li>\(z\): Depth of the object</li>
+                <li>\(f_{\text{pixels}}\): Focal length in pixels</li>
+                <li>\(B\): Baseline (distance between cameras) in meters</li>
+                <li>\(d\): Disparity (pixels)</li>
+                <li>\(\alpha\): Toe-in angle (radians)</li>
+            </ul>
+
+            <h3>Equations</h3>
+            <p>The following key equations define the system's functionality:</p>
+
+            <p>(1) Focal length in pixels:</p>
+            <div style="text-align: left;">
+                \[f_{\text{pixels}} = f_{\text{mm}} \cdot \frac{\text{Resolution}_{\text{horizontal}}}{\text{Detector Width}_{\text{mm}}}\]
+            </div>
+
+            <p>(2) Minimum distance for depth resolution:</p>
+            <div style="text-align: left;">
+                \[z_{\text{min}} = \frac{B}{2 \cdot \tan\left(\alpha + \frac{\phi_H}{2}\right)}\]
+            </div>
+
+            <p>(3) Pixel spatial resolution at distance \(z\):</p>
+            <div style="text-align: left;">
+                \[\Delta x = z \cdot \theta\]
+            </div>
+
+            <p>(4) Disparity at distance:</p>
+            <div style="text-align: left;">
+                \[d = f_{\text{pixels}} \cdot \frac{B}{z \cdot \cos\alpha}\]
+            </div>
+
+            <p>(5) Maximum distance for depth resolution:</p>
+            <div style="text-align: left;">
+                \[z_{\text{max}} = \frac{B}{\theta \cdot \cos\alpha}\]
+            </div>
+
+            <p>(6) Convergence point of the optical axes:</p>
+            <div style="text-align: left;">
+                \[z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}\]
+            </div>
+        </div>
+
+        <!-- Right column: SVG visualization -->
+        <div class="tutorial-viz">
             <svg id="cameraView" preserveAspectRatio="xMidYMid meet">
                 <!-- Axis lines -->
                 <line id="xAxis" stroke="black" stroke-width="2" />
@@ -277,65 +438,6 @@
                 <circle id="objectPoint" r="5" fill="black" />
             </svg>
         </div>
-
-        <h2>Stereo Camera Configuration</h2>
-        <p>The stereo camera parameters include:</p>
-        <ul>
-            <li>\(f_{\text{mm}}\): Focal length in mm</li>
-            <li>\(\theta\): Pixel angular resolution (rad/pixel)</li>
-            <li>\(\phi_H\): Horizontal Field of View (FoV)</li>
-            <li>\(z\): Depth of the object</li>
-            <li>\(f_{\text{pixels}}\): Focal length in pixels</li>
-            <li>\(B\): Baseline (distance between cameras) in meters</li>
-            <li>\(d\): Disparity (pixels)</li>
-            <li>\(\alpha\): Toe-in angle (radians)</li>
-        </ul>
-
-        <h3>Equations</h3>
-<p>The following key equations define the system's functionality:</p>
-
-<p>(1) Focal length in pixels:</p>
-<div style="text-align: left;">
-\[
-f_{\text{pixels}} = f_{\text{mm}} \cdot \frac{\text{Resolution}_{\text{horizontal}}}{\text{Detector Width}_{\text{mm}}}
-\]
-</div>
-
-<p>(2) Minimum distance for depth resolution:</p>
-<div style="text-align: left;">
-\[
-z_{\text{min}} = \frac{B}{2 \cdot \tan\left(\alpha + \frac{\phi_H}{2}\right)}
-\]
-</div>
-
-<p>(3) Pixel spatial resolution at distance \(z\):</p>
-<div style="text-align: left;">
-\[
-\Delta x = z \cdot \theta
-\]
-</div>
-
-<p>(4) Disparity at distance:</p>
-<div style="text-align: left;">
-\[
-d = f_{\text{pixels}} \cdot \frac{B}{z \cdot \cos\alpha}
-\]
-</div>
-
-<p>(5) Maximum distance for depth resolution:</p>
-<div style="text-align: left;">
-\[
-z_{\text{max}} = \frac{B}{\theta \cdot \cos\alpha}
-\]
-</div>
-
-<p>(6) Convergence point of the optical axes:</p>
-<div style="text-align: left;">
-\[
-z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
-\]
-</div>
-
     </div>
 </div>
 
@@ -347,34 +449,40 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
         <div class="container">
             <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel"></span></label>
             <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
-            <input type="number" id="sensorWidthValue" value="8.44" step="0.01" oninput="syncValues('sensorWidth')">
+            <input type="number" id="sensorWidthValue" value="8.44" step="0.01"
+                   onchange="syncValues('sensorWidth')">
         </div>
         <div class="container">
             <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel"></span></label>
             <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
-            <input type="number" id="focalLengthValue" value="19.71" step="0.1" oninput="syncValues('focalLength')">
+            <input type="number" id="focalLengthValue" value="19.71" step="0.1"
+                   onchange="syncValues('focalLength')">
         </div>
         <div class="container">
             <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel"></span></label>
             <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="25.5" oninput="syncValues('fieldOfView')">
-            <input type="number" id="fieldOfViewValue" value="25.5" step="0.1" oninput="syncValues('fieldOfView')">
+            <input type="number" id="fieldOfViewValue" value="25.5" step="0.1"
+                   onchange="syncValues('fieldOfView')">
         </div>
         <div class="container">
             <label for="baseline">Baseline (mm): <span id="baselineLabel"></span></label>
             <input type="range" id="baseline" min="50" max="500" step="0.1" value="290" oninput="syncValues('baseline')">
-            <input type="number" id="baselineValue" value="290" step="1" oninput="syncValues('baseline')">
+            <input type="number" id="baselineValue" value="290" step="1"
+                   onchange="syncValues('baseline')">
         </div>
 
         <div class="container">
             <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel"></span></label>
             <input type="range" id="toeInAngle" min="0.1" max="15" step="0.001" value="1.25" oninput="syncValues('toeInAngle')">
-            <input type="number" id="toeInAngleValue" value="1.25" step="0.001" oninput="syncValues('toeInAngle')">
+            <input type="number" id="toeInAngleValue" value="1.25" step="0.001"
+                   onchange="syncValues('toeInAngle')">
         </div>
 
         <div class="container">
-            <label for="distance">Convergence point (z) (m): <span id="distanceLabel"> </span></label>
-            <input type="range" id="distance" min="0.5" max="50" step="0.01" value="5.43" oninput="syncValues('distance')">
-            <input type="number" id="distanceValue" value="5.43" step="0.1" oninput="syncValues('distance')">
+            <label for="distance">Desired Convergence Distance (m): <span id="distanceLabel"></span></label>
+            <input type="range" id="distance" min="0.5" max="50" step="0.01" oninput="syncValues('distance')">
+            <input type="number" id="distanceValue" step="0.1"
+                   onchange="syncValues('distance')">
         </div>
     </div>
 
@@ -394,38 +502,6 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
         <h2>Digital Twin</h2>
 
     </div>
-
-<style>
-    /* Flexbox container for the dropdown and button */
-    .dropdown-button-container {
-        display: flex;
-        align-items: center; /* Align items vertically center */
-        gap: 20px; /* Space between dropdown and button */
-    }
-
-    /* Ensure the dropdown and button are styled appropriately */
-    .dropdown-button-container select {
-        flex: 1; /* Allow the dropdown to take up space */
-        max-width: 300px; /* Limit the maximum width of the dropdown */
-    }
-
-    .dropdown-button-container button {
-        flex: 0; /* Prevent button from growing */
-        padding: 10px 20px; /* Adjust button padding */
-        font-size: 16px;
-        font-weight: bold;
-        color: #fff;
-        background-color: #007bff;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .dropdown-button-container button:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-</style>
 
 <div class="dropdown-button-container">
     <!-- Dropdown for Rock Model -->
@@ -474,146 +550,155 @@ z_{\text{convergence}} = \frac{B}{2 \cdot \tan(\alpha)}
 </div>
 
 
-<script>
-   async function loadModels() {
-    try {
-        const response = await fetch("/get_models/");
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const models = await response.json();
-        console.log(models); // Log the models for debugging
+<script type="text/javascript">
+    async function loadModels() {
+        const debugOutput = document.getElementById("debugOutput");
+        try {
+            const response = await fetch("/get_models/");
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const models = await response.json();
 
-        const dropdown = document.getElementById("rockModel");
-        dropdown.innerHTML = ""; // Clear previous options
-        models.forEach(model => {
-            const option = document.createElement("option");
-            option.value = model.path;  // Store relative path
-            option.textContent = model.name;  // Display name
-            dropdown.appendChild(option);
-        });
-    } catch (error) {
-        console.error("Error loading models:", error);
-    }
-}
+            const dropdown = document.getElementById("rockModel");
+            if (!dropdown) {
+                throw new Error("Rock model dropdown not found");
+            }
 
-async function generateBatchReport() {
-    const debugOutput = document.getElementById("debugOutput");
-    const renderedImagesContainer = document.getElementById("renderedImagesContainer");
-
-    // Clear previous results
-    renderedImagesContainer.innerHTML = "<h2>Report Results</h2>";
-    debugOutput.textContent = "";
-
-    try {
-        // Show spinner
-        document.getElementById("loadingIndicator").style.display = "flex";
-
-        const response = await fetch("/generate_batch_report/", { method: "POST" });
-        const result = await response.json();
-
-        if (result.status === "completed") {
-            debugOutput.textContent = "Full report generated successfully.";
-
-            // Display generated images and results for each model
-            result.report.forEach(modelResult => {
-                if (modelResult.status === "success") {
-                    renderedImagesContainer.innerHTML += `
-                        <div>
-                            <h3>Model: ${modelResult.model}</h3>
-                            <img src="${modelResult.images.left_camera}" alt="Left Camera Image" width="300" />
-                            <img src="${modelResult.images.right_camera}" alt="Right Camera Image" width="300" />
-                            <img src="${modelResult.images.disparity_map}" alt="Disparity Map" width="300" />
-                            <img src="${modelResult.images.depth_map}" alt="Depth Map" width="300" />
-                        </div>
-                        <hr>
-                    `;
-                } else {
-                    renderedImagesContainer.innerHTML += `
-                        <div>
-                            <h3>Error with Model: ${modelResult.model}</h3>
-                            <p>${modelResult.details}</p>
-                        </div>
-                        <hr>
-                    `;
-                }
+            dropdown.innerHTML = "";
+            models.forEach(model => {
+                const option = document.createElement("option");
+                option.value = model.path;
+                option.textContent = model.name;
+                dropdown.appendChild(option);
             });
-        } else {
-            debugOutput.textContent = "Error generating report: " + result.details;
+        } catch (error) {
+            console.error("Error loading models:", error);
+            debugOutput.textContent = `Error loading models: ${error.message}`;
         }
-    } catch (error) {
-        debugOutput.textContent = `Error: ${error}`;
-    } finally {
-        // Hide spinner
-        document.getElementById("loadingIndicator").style.display = "none";
     }
-}
 
-   async function runBlender() {
-    document.getElementById("loadingIndicator").style.display = "flex"; // Show loading spinner
+    async function generateBatchReport() {
+        const debugOutput = document.getElementById("debugOutput");
+        const renderedImagesContainer = document.getElementById("renderedImagesContainer");
 
-    const dropdown = document.getElementById("rockModel");
-    const selectedModel = dropdown.options[dropdown.selectedIndex].value; // Correctly fetch selected model
+        // Clear previous results
+        renderedImagesContainer.innerHTML = "<h2>Report Results</h2>";
+        debugOutput.textContent = "";
 
-    // Debug message
-    const debugDiv = document.getElementById("debugOutput");
-    debugDiv.textContent = `Selected model: ${selectedModel}`; // Update the debug div
+        try {
+            // Show spinner
+            document.getElementById("loadingIndicator").style.display = "flex";
 
-    const data = {
-        sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
-        focalLength: parseFloat(document.getElementById("focalLength").value),
-        baseline: parseFloat(document.getElementById("baseline").value),
-        distance: parseFloat(document.getElementById("distance").value),
-        toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
-        selectedModel: selectedModel, // Include selected model path
-        modelPath: selectedModel,
-    };
+            const response = await fetch("/generate_batch_report/", { method: "POST" });
+            const result = await response.json();
 
-    try {
-        const response = await fetch("/run_blender/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        });
+            if (result.status === "completed") {
+                debugOutput.textContent = "Full report generated successfully.";
 
-        const result = await response.json();
-
-       if (result.status === "success") {
-    debugDiv.textContent += `\nBlender script executed successfully.`;
-// Clear previous images and debug messages
-document.querySelector(".rendered_images").innerHTML = ""; // Clear rendered images
-debugDiv.textContent = ""; // Clear debug messages
-
-    // Rendered Images
-    document.querySelector(".rendered_images").innerHTML += `
-        <div>
-            <img src="/media/render_outputs/left_camera.png" alt="Left Image" width="300" />
-            <img src="/media/render_outputs/right_camera.png" alt="Right Image" width="300" />
-        </div>
-        <div>
-            <img src="/media/render_outputs/depth_map.png" alt="Disparity Map" width="300" />
-            <img src="/media/render_outputs/disparity_map.png" alt="Depth Map" width="300" />
-        </div>`;
-
-    // Download Links for .blend and .world files
-    const blendFilePath = "/media/render_outputs/scene.blend"; // Replace with actual server path
-    const worldFilePath = "/media/render_outputs/scene.world"; // Replace with actual server path
-
-    document.getElementById("blendFileLink").href = blendFilePath;
-    document.getElementById("worldFileLink").href = worldFilePath;
-
-    document.getElementById("renderedFiles").style.display = "block"; // Show the download links
-}
-else {
-            debugDiv.textContent += `\nError: ${result.details}`;
+                // Display generated images and results for each model
+                result.report.forEach(modelResult => {
+                    if (modelResult.status === "success") {
+                        renderedImagesContainer.innerHTML += `
+                            <div>
+                                <h3>Model: ${modelResult.model}</h3>
+                                <img src="${modelResult.images.left_camera}" alt="Left Camera Image" width="300" />
+                                <img src="${modelResult.images.right_camera}" alt="Right Camera Image" width="300" />
+                                <img src="${modelResult.images.disparity_map}" alt="Disparity Map" width="300" />
+                                <img src="${modelResult.images.depth_map}" alt="Depth Map" width="300" />
+                            </div>
+                            <hr>
+                        `;
+                    } else {
+                        renderedImagesContainer.innerHTML += `
+                            <div>
+                                <h3>Error with Model: ${modelResult.model}</h3>
+                                <p>${modelResult.details}</p>
+                            </div>
+                            <hr>
+                        `;
+                    }
+                });
+            } else {
+                debugOutput.textContent = "Error generating report: " + result.details;
+            }
+        } catch (error) {
+            debugOutput.textContent = `Error: ${error}`;
+        } finally {
+            // Hide spinner
+            document.getElementById("loadingIndicator").style.display = "none";
         }
-    } catch (error) {
-        debugDiv.textContent += `\nError executing Blender script: ${error}`;
-    } finally {
-        document.getElementById("loadingIndicator").style.display = "none"; // Hide loading spinner
     }
-}
 
+    async function runBlender() {
+        const loadingIndicator = document.getElementById("loadingIndicator");
+        const debugDiv = document.getElementById("debugOutput");
+        const renderedImagesDiv = document.querySelector(".rendered_images");
+        const renderedFilesDiv = document.getElementById("renderedFiles");
 
+        try {
+            // Clear previous results
+            renderedImagesDiv.innerHTML = "<h2>Digital Twin</h2>";
+            renderedFilesDiv.style.display = "none";
+            debugDiv.textContent = "";
 
+            // Show loading indicator
+            loadingIndicator.style.display = "flex";
+
+            const dropdown = document.getElementById("rockModel");
+            const selectedModel = dropdown.options[dropdown.selectedIndex].value;
+
+            // Debug message
+            debugDiv.textContent = `Selected model: ${selectedModel}`;
+
+            const data = {
+                sensorWidth: parseFloat(document.getElementById("sensorWidth").value),
+                focalLength: parseFloat(document.getElementById("focalLength").value),
+                baseline: parseFloat(document.getElementById("baseline").value),
+                distance: parseFloat(document.getElementById("distance").value),
+                toeInAngle: parseFloat(document.getElementById("toeInAngle").value),
+                selectedModel: selectedModel,
+                modelPath: selectedModel,
+            };
+
+            const response = await fetch("/run_blender/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                debugDiv.textContent = "Blender script executed successfully.";
+
+                // Add timestamp to prevent browser caching
+                const timestamp = new Date().getTime();
+
+                // Rendered Images with cache-busting
+                renderedImagesDiv.innerHTML += `
+                    <div>
+                        <img src="/media/render_outputs/left_camera.png?t=${timestamp}" alt="Left Image" width="300" />
+                        <img src="/media/render_outputs/right_camera.png?t=${timestamp}" alt="Right Image" width="300" />
+                    </div>
+                    <div>
+                        <img src="/media/render_outputs/depth_map.png?t=${timestamp}" alt="Disparity Map" width="300" />
+                        <img src="/media/render_outputs/disparity_map.png?t=${timestamp}" alt="Depth Map" width="300" />
+                    </div>`;
+
+                // Update download links with cache-busting
+                document.getElementById("blendFileLink").href = `/media/render_outputs/scene.blend?t=${timestamp}`;
+                document.getElementById("worldFileLink").href = `/media/render_outputs/scene.world?t=${timestamp}`;
+                renderedFilesDiv.style.display = "block";
+            } else {
+                debugDiv.textContent = `Error: ${result.details}`;
+            }
+        } catch (error) {
+            debugDiv.textContent = `Error executing Blender script: ${error}`;
+        } finally {
+            loadingIndicator.style.display = "none";
+        }
+    }
 
     loadModels();
 </script>
@@ -621,22 +706,183 @@ else {
 <script>
     const scalingFactor = 50;
 
-    function syncValues(id) {
-        const range = document.getElementById(id);
-        const number = document.getElementById(id + 'Value');
-        number.value = range.value;
-        updateLabel(id);
+    // Global flag to prevent recursive updates
+    let isUpdating = false;
 
-        if (id === 'focalLength' || id === 'fieldOfView') {
-            updateDependentValues(id);
+    function initializeValues() {
+        if (isUpdating) return;
+        isUpdating = true;
+
+        try {
+            const baseline = parseFloat(document.getElementById('baseline').value) / 1000;
+            const toeInDegrees = parseFloat(document.getElementById('toeInAngle').value);
+            const toeInRadians = (toeInDegrees * Math.PI) / 180;
+
+            if (toeInRadians === 0) {
+                setDistance(Infinity);
+            } else {
+                const initialDistance = (baseline/2) / Math.tan(toeInRadians);
+                if (isFinite(initialDistance) && initialDistance > 0) {
+                    setDistance(initialDistance);
+                }
+            }
+
+            updateValues();
+        } finally {
+            isUpdating = false;
         }
-        updateValues();
+    }
+
+    function syncValues(id) {
+        if (isUpdating) return;
+        isUpdating = true;
+
+        try {
+            const range = document.getElementById(id);
+            const number = document.getElementById(id + 'Value');
+            let value;
+
+            // Add input validation
+            if (!range || !number) {
+                throw new Error(`Missing input elements for ${id}`);
+            }
+
+            // Validate numerical input
+            value = parseFloat(number.value);
+            if (isNaN(value)) {
+                value = parseFloat(range.value);
+                number.value = value;
+            }
+
+            value = Math.min(Math.max(value, parseFloat(range.min)), parseFloat(range.max));
+            range.value = value;
+            // Determine which element triggered the event
+            const sourceElement = document.activeElement;
+            if (sourceElement === number) {
+                value = parseFloat(number.value);
+                if (!isNaN(value)) {
+                    value = Math.min(Math.max(value, parseFloat(range.min)), parseFloat(range.max));
+                    range.value = value;
+                    number.value = value;
+                }
+            } else {
+                value = parseFloat(range.value);
+                number.value = value;
+            }
+
+            updateLabel(id);
+
+            // Handle parameter updates
+            switch(id) {
+                case 'toeInAngle':
+                    if (!isNaN(value)) {
+                        const baseline = parseFloat(document.getElementById('baselineValue').value) / 1000;
+                        const toeInRadians = (value * Math.PI) / 180;
+
+                        if (toeInRadians === 0) {
+                            setDistance(Infinity);
+                        } else {
+                            const newDistance = (baseline/2) / Math.tan(toeInRadians);
+                            if (isFinite(newDistance) && newDistance > 0) {
+                                setDistance(newDistance);
+                            }
+                        }
+                    }
+                    break;
+
+                case 'baseline':
+                    if (!isNaN(value)) {
+                        const baseline = value / 1000;
+                        const toeInDegrees = parseFloat(document.getElementById('toeInAngleValue').value);
+                        const toeInRadians = (toeInDegrees * Math.PI) / 180;
+
+                        if (toeInRadians === 0) {
+                            setDistance(Infinity);
+                        } else {
+                            const newDistance = (baseline/2) / Math.tan(toeInRadians);
+                            if (isFinite(newDistance) && newDistance > 0) {
+                                setDistance(newDistance);
+                            }
+                        }
+                    }
+                    break;
+
+                case 'distance':
+                    const distanceValue = parseFloat(number.value);
+                    if (!isNaN(distanceValue) && distanceValue > 0) {
+                        const baseline = parseFloat(document.getElementById('baselineValue').value) / 1000;
+                        const newToeIn = Math.atan2(baseline/2, distanceValue);
+                        const newToeInDegrees = (newToeIn * 180) / Math.PI;
+
+                        if (isFinite(newToeInDegrees) && newToeInDegrees >= 0) {
+                            setToeIn(newToeInDegrees);
+                        }
+                    } else if (distanceValue === Infinity || number.value === "∞") {
+                        setToeIn(0);
+                    }
+                    break;
+            }
+
+            if (id === 'focalLength' || id === 'fieldOfView') {
+                updateDependentValues(id);
+            }
+
+            updateValues();
+        } finally {
+            isUpdating = false;
+        }
+    }
+
+    function setDistance(value) {
+        const distanceInput = document.getElementById('distance');
+        const distanceValue = document.getElementById('distanceValue');
+        const distanceLabel = document.getElementById('distanceLabel');
+
+        // Add null checks before accessing the elements
+        if (!distanceInput || !distanceValue || !distanceLabel) {
+            console.error('Missing distance input elements');
+            return;
+        }
+
+        if (value === Infinity || !isFinite(value) || value <= 0) {
+            distanceInput.value = distanceInput.max; // Set to max range value
+            distanceValue.value = "∞";
+            distanceLabel.textContent = "∞";
+        } else {
+            const displayValue = value.toFixed(2);
+            distanceInput.value = Math.min(value, distanceInput.max);
+            distanceValue.value = displayValue;
+            distanceLabel.textContent = displayValue;
+        }
+    }
+
+    function setToeIn(value) {
+        const toeInInput = document.getElementById('toeInAngle');
+        const toeInValue = document.getElementById('toeInAngleValue');
+        const toeInLabel = document.getElementById('toeInAngleLabel');
+
+        if (!isFinite(value) || value < 0) {
+            value = 0;
+        }
+
+        const displayValue = value.toFixed(3);
+        toeInInput.value = value;
+        toeInValue.value = displayValue;
+        toeInLabel.textContent = displayValue;
     }
 
     function updateLabel(id) {
         const value = document.getElementById(id).value;
-        document.getElementById(`${id}Label`).textContent = value;
+        const label = document.getElementById(`${id}Label`);
+        if (label) {
+            label.textContent = value === "∞" ? "∞" : value;
+        }
     }
+
+    // Add event listener for page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeValues();
+    });
 
     function updateDependentValues(changedId) {
         const sensorWidth = parseFloat(document.getElementById('sensorWidth').value);
@@ -656,59 +902,91 @@ else {
 
 
   function updateValues() {
-    const sensorWidth = parseFloat(document.getElementById("sensorWidth").value);
-    const focalLength = parseFloat(document.getElementById("focalLength").value);
-    const baseline = parseFloat(document.getElementById("baseline").value) / 1000; // mm to meters
-    const fieldOfView = parseFloat(document.getElementById("fieldOfView").value);
-    const toeInAngle = parseFloat(document.getElementById("toeInAngle").value) * (Math.PI / 180); // Convert to radians
-    const resolutionHorizontal = 2592; // Example horizontal resolution
+    const elements = {
+        sensorWidth: document.getElementById("sensorWidth"),
+        focalLength: document.getElementById("focalLength"),
+        baseline: document.getElementById("baseline"),
+        fieldOfView: document.getElementById("fieldOfView"),
+        distance: document.getElementById("distance"),
+        toeInAngle: document.getElementById("toeInAngle")
+    };
 
-    // Calculate convergence point (z_convergence)
-    const convergencePoint = baseline / (2 * Math.tan(toeInAngle));
+    // Check if all elements exist
+    for (const [key, element] of Object.entries(elements)) {
+        if (!element) {
+            console.error(`Missing element: ${key}`);
+            return;
+        }
+    }
 
-    // Update Distance to Object (z) to match the convergence point
-    const distance = convergencePoint;
-    document.getElementById("distance").value = distance.toFixed(2);
-    document.getElementById("distanceValue").value = distance.toFixed(2);
-    document.getElementById("distanceLabel").textContent = distance.toFixed(2);
+    const sensorWidth = parseFloat(elements.sensorWidth.value);
+    const focalLength = parseFloat(elements.focalLength.value);
+    const baseline = parseFloat(elements.baseline.value) / 1000; // mm to meters
+    const fieldOfView = parseFloat(elements.fieldOfView.value);
+    const distance = parseFloat(elements.distance.value);
+    const toeInAngle = parseFloat(elements.toeInAngle.value);
+    const toeInRadians = (toeInAngle * Math.PI) / 180;
 
-    // Focal length in pixels
-    const focalLengthPixels = (focalLength / sensorWidth) * resolutionHorizontal;
+    // Calculate values with infinity handling
+    const focalLengthPixels = (focalLength / sensorWidth) * 2592;
 
     // Minimum Depth Resolution (zmin)
-    const zmin = baseline / (2 * Math.tan(toeInAngle + (fieldOfView * Math.PI / 360)));
+    const zmin = baseline / (2 * Math.tan(toeInRadians + (fieldOfView * Math.PI / 360)));
 
-    // Disparity at the distance to the object
-    const disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInAngle));
+    // Disparity calculation with infinity handling
+    let disparity;
+    if (!isFinite(distance) || distance <= 0) {
+        disparity = 0;
+    } else {
+        disparity = (focalLengthPixels * baseline) / (distance * Math.cos(toeInRadians));
+    }
 
-    // Depth Resolution at Distance
-    const depthResolution = (distance * distance) / (focalLengthPixels * baseline); // Depth resolution at distance in meters
-    const depthResolutionMM = depthResolution * 1000; // Convert depth resolution to millimeters
+    // Depth Resolution calculation
+    let depthResolution;
+    if (!isFinite(distance) || distance <= 0) {
+        depthResolution = Infinity;
+    } else {
+        depthResolution = (distance * distance) / (focalLengthPixels * baseline);
+    }
 
     // Maximum Depth Resolution (zmax)
     const theta = 175e-6; // Pixel angular resolution in radians
-    const zmax = baseline / (theta * Math.cos(toeInAngle));
+    const zmax = baseline / (theta * Math.cos(toeInRadians));
 
-    // Update the results in the UI
-    document.getElementById('focalLengthPixels').textContent = `Focal Length (px): ${focalLengthPixels.toFixed(2)}`;
-    document.getElementById('disparity').textContent = `Disparity: ${disparity.toFixed(2)} px`;
-    document.getElementById('zmin').textContent = `Minimum Depth Resolution (zmin): ${zmin.toFixed(2)} m`;
-    document.getElementById('zmax').textContent = `Maximum Depth Resolution (zmax): ${zmax.toFixed(2)} m`;
-    document.getElementById('convergencePoint').textContent = `Convergence Point (zconvergence): ${convergencePoint.toFixed(2)} m`;
-
-    // Add depth resolution at the distance to the object in millimeters
-    const depthResolutionDiv = document.getElementById("depthResolution");
-    if (!depthResolutionDiv) {
-        const newDepthResolutionDiv = document.createElement("div");
-        newDepthResolutionDiv.id = "depthResolution";
-        newDepthResolutionDiv.textContent = `Depth Resolution at Distance: ${depthResolutionMM.toFixed(2)} mm`;
-        document.querySelector(".results").appendChild(newDepthResolutionDiv);
-    } else {
-        depthResolutionDiv.textContent = `Depth Resolution at Distance: ${depthResolutionMM.toFixed(2)} mm`;
+    // Format display values with infinity handling
+    function formatValue(value, decimals = 2) {
+        if (!isFinite(value)) {
+            return "∞";
+        } else if (isNaN(value)) {
+            return "undefined";
+        } else if (value < 0) {
+            return "invalid";
+        } else {
+            return value.toFixed(decimals);
+        }
     }
 
-    // Update visualization
-    updateSvg(baseline, distance, fieldOfView, toeInAngle);
+    // Update the results in the UI with formatted values
+    document.getElementById('focalLengthPixels').textContent =
+        `Focal Length (px): ${formatValue(focalLengthPixels)}`;
+    document.getElementById('disparity').textContent =
+        `Disparity: ${formatValue(disparity)} px`;
+    document.getElementById('zmin').textContent =
+        `Minimum Depth Resolution (zmin): ${formatValue(zmin)} m`;
+    document.getElementById('zmax').textContent =
+        `Maximum Depth Resolution (zmax): ${formatValue(zmax)} m`;
+    document.getElementById('convergencePoint').textContent =
+        `Convergence Point (zconvergence): ${formatValue(distance)} m`;
+
+    // Update depth resolution display (convert to mm for smaller values)
+    const depthResolutionMM = depthResolution * 1000;
+    document.getElementById("depthResolution").textContent =
+        `Depth Resolution at Distance: ${formatValue(depthResolutionMM)} mm`;
+
+    // Only update visualization if values are valid
+    if (isFinite(baseline) && isFinite(distance) && isFinite(fieldOfView) && isFinite(toeInRadians)) {
+        updateSvg(baseline, distance, fieldOfView, toeInRadians);
+    }
 }
 
 
