@@ -59,7 +59,7 @@ urlpatterns = [
     path('generate_batch_report/', generate_batch_report, name='generate_batch_report'),
     path("api/apply-filters/", apply_filters, name="apply_filters"),
     path('ses598_quiz/', ses598_robotic_exploration_and_mapping_quiz, name='ses598_robotic_exploration_and_mapping_quiz'),
-    path('robotic-exploration-and-mapping/', ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
+    path('rem/', ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
   
     # Computer vision URLs
     path('ransac_buddy/', ransac_buddy, name='ransac-buddy'),
