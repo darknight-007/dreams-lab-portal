@@ -528,3 +528,42 @@ def ransac_demo_data(request):
         'x_random': x_random.tolist(),
         'y_random': y_random.tolist()
     })
+    
+def ses598_quiz(request):
+    if request.method == 'POST':
+        # Define correct answers
+        correct_answers = {
+            'q1': 'a', 'q2': 'b', 'q3': 'a', 'q4': 'b', 'q5': 'b',
+            'q6': 'a', 'q7': 'b', 'q8': 'a', 'q9': 'c', 'q10': 'a'
+        }
+        
+        # Calculate scores by topic
+        scores = {
+            'cv_score': 0,
+            'slam_score': 0,
+            'estimation_score': 0,
+            'sensing_score': 0,
+            'motion_score': 0
+        }
+        
+        # Question mapping to topics
+        topic_mapping = {
+            'q1': 'cv_score', 'q2': 'cv_score',
+            'q3': 'slam_score', 'q4': 'slam_score',
+            'q5': 'estimation_score', 'q6': 'estimation_score',
+            'q7': 'sensing_score', 'q8': 'sensing_score',
+            'q9': 'motion_score', 'q10': 'motion_score'
+        }
+        
+        # Calculate scores
+        for question, answer in request.POST.items():
+            if question in correct_answers:
+                if answer == correct_answers[question]:
+                    scores[topic_mapping[question]] += 50  # 50% per correct answer in topic
+        
+        return render(request, 'ses598_quiz.html', {
+            'show_results': True,
+            **scores
+        })
+    
+    return render(request, 'ses598_quiz.html', {'show_results': False}) 

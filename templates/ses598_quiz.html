@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SES598 Assessment Quiz</title>
+    <style>
+        /* Inherit existing styles from main template */
+        
+        .quiz-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .options label {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .options label:hover {
+            background: #e9ecef;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .topic-stats {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Robotic Exploration and Mapping Assessment</h1>
+        
+        <form id="quiz-form" method="POST">
+            {% csrf_token %}
+            
+            <!-- Computer Vision Fundamentals -->
+            <div class="quiz-section">
+                <h2 class="section-title">Computer Vision Fundamentals</h2>
+                
+                <div class="question">
+                    <p>What is epipolar geometry used for in computer vision?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q1" value="a"> Determining the relationship between images of the same scene from different viewpoints</label>
+                        <label><input type="radio" name="q1" value="b"> Processing color images</label>
+                        <label><input type="radio" name="q1" value="c"> Detecting edges in images</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>In stereo vision, what is disparity used to calculate?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q2" value="a"> Image brightness</label>
+                        <label><input type="radio" name="q2" value="b"> Depth information</label>
+                        <label><input type="radio" name="q2" value="c"> Color balance</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLAM and Mapping -->
+            <div class="quiz-section">
+                <h2 class="section-title">SLAM and Mapping</h2>
+                
+                <div class="question">
+                    <p>What is the primary challenge that loop closure addresses in SLAM?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q3" value="a"> Recognizing previously visited locations and correcting accumulated errors</label>
+                        <label><input type="radio" name="q3" value="b"> Planning the shortest path between two points</label>
+                        <label><input type="radio" name="q3" value="c"> Processing sensor data in real-time</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>What is the main purpose of visual odometry?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q4" value="a"> To process point clouds</label>
+                        <label><input type="radio" name="q4" value="b"> To estimate camera motion from image sequences</label>
+                        <label><input type="radio" name="q4" value="c"> To detect objects in images</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estimation and Optimization -->
+            <div class="quiz-section">
+                <h2 class="section-title">Estimation and Optimization</h2>
+                
+                <div class="question">
+                    <p>What is RANSAC primarily used for?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q5" value="a"> Path planning</label>
+                        <label><input type="radio" name="q5" value="b"> Robust estimation in the presence of outliers</label>
+                        <label><input type="radio" name="q5" value="c"> Image segmentation</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>What advantage do Gaussian Processes offer in robotics applications?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q6" value="a"> They provide uncertainty estimates along with predictions</label>
+                        <label><input type="radio" name="q6" value="b"> They are always faster than neural networks</label>
+                        <label><input type="radio" name="q6" value="c"> They require no training data</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensing and Perception -->
+            <div class="quiz-section">
+                <h2 class="section-title">Sensing and Perception</h2>
+                
+                <div class="question">
+                    <p>What is the primary purpose of sensor fusion?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q7" value="a"> To reduce the number of sensors needed</label>
+                        <label><input type="radio" name="q7" value="b"> To combine data from multiple sensors for more accurate estimation</label>
+                        <label><input type="radio" name="q7" value="c"> To calibrate sensors</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>What is a key advantage of particle filters over Kalman filters?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q8" value="a"> They can represent non-Gaussian distributions</label>
+                        <label><input type="radio" name="q8" value="b"> They are always more computationally efficient</label>
+                        <label><input type="radio" name="q8" value="c"> They require less memory</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motion Planning and Control -->
+            <div class="quiz-section">
+                <h2 class="section-title">Motion Planning and Control</h2>
+                
+                <div class="question">
+                    <p>Which of the following is NOT a common path planning algorithm?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q9" value="a"> A*</label>
+                        <label><input type="radio" name="q9" value="b"> RRT</label>
+                        <label><input type="radio" name="q9" value="c"> JPEG</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>What is the main challenge in the cart-pole control problem?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q10" value="a"> Balancing an inverted pendulum through appropriate control inputs</label>
+                        <label><input type="radio" name="q10" value="b"> Minimizing fuel consumption</label>
+                        <label><input type="radio" name="q10" value="c"> Avoiding obstacles</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Quiz</button>
+        </form>
+
+        <!-- Results Section (shown after submission) -->
+        {% if show_results %}
+        <div class="stats-container">
+            <div class="topic-stats">
+                <h3>Computer Vision Fundamentals</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ cv_score }}%"></div>
+                </div>
+                <p>Score: {{ cv_score }}%</p>
+            </div>
+
+            <div class="topic-stats">
+                <h3>SLAM and Mapping</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ slam_score }}%"></div>
+                </div>
+                <p>Score: {{ slam_score }}%</p>
+            </div>
+
+            <div class="topic-stats">
+                <h3>Estimation and Optimization</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ estimation_score }}%"></div>
+                </div>
+                <p>Score: {{ estimation_score }}%</p>
+            </div>
+
+            <div class="topic-stats">
+                <h3>Sensing and Perception</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ sensing_score }}%"></div>
+                </div>
+                <p>Score: {{ sensing_score }}%</p>
+            </div>
+
+            <div class="topic-stats">
+                <h3>Motion Planning and Control</h3>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ motion_score }}%"></div>
+                </div>
+                <p>Score: {{ motion_score }}%</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html> 

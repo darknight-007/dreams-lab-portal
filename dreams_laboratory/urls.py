@@ -33,7 +33,7 @@ from dreams_laboratory.views import (
     visual_odometry_buddy, point_cloud_buddy, path_planning_buddy,
     # API views
     apply_filters, ransac_demo_data, ses598_robotic_exploration_and_mapping_quiz,
-    ses598_robotic_exploration_and_mapping
+    ses598_robotic_exploration_and_mapping, ses598_quiz
 )
 
 urlpatterns = [
@@ -60,7 +60,7 @@ urlpatterns = [
     path("api/apply-filters/", apply_filters, name="apply_filters"),
     path('ses598_quiz/', ses598_robotic_exploration_and_mapping_quiz, name='ses598_robotic_exploration_and_mapping_quiz'),
     path('rem/', ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
-  
+    path('quiz/', ses598_quiz, name='ses598_quiz'),
     # Computer vision URLs
     path('ransac_buddy/', ransac_buddy, name='ransac-buddy'),
     path('multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
