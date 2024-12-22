@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <!-- Header Section -->
+    <!-- Course Header and Info -->
     <header class="course-header">
         <h1>{{ syllabus.course_info.title }}</h1>
         <div class="course-meta">
@@ -65,9 +65,37 @@
         </ul>
     </section>
 
+    <!-- Learning Outcomes -->
+    <section class="learning-outcomes">
+        <h2>Learning Outcomes</h2>
+        <div class="outcomes-list">
+            {% for outcome in syllabus.learning_outcomes %}
+                <div class="outcome-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>{{ outcome }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Grading -->
+    <section class="grading">
+        <h2>Grading Distribution</h2>
+        <div class="grading-chart">
+            {% for component, percentage in syllabus.grading.items %}
+            <div class="grading-item">
+                <div class="grading-label">{{ component }}</div>
+                <div class="grading-bar" style="width: {{ percentage }}">
+                    <span>{{ percentage }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
     <!-- Course Schedule -->
     <section class="course-schedule">
-        <h2>Course Schedule</h2>
+        <h2 class="section-title">Course Schedule</h2>
         <div class="module-grid">
             {% for module in syllabus.modules %}
             <div class="module-card">
@@ -92,31 +120,113 @@
         </div>
     </section>
 
-    <!-- Grading -->
-    <section class="grading">
-        <h2>Grading Distribution</h2>
-        <div class="grading-chart">
-            {% for component, percentage in syllabus.grading.items %}
-            <div class="grading-item">
-                <div class="grading-label">{{ component }}</div>
-                <div class="grading-bar" style="width: {{ percentage }}">
-                    <span>{{ percentage }}</span>
+    <!-- Interactive Tutorials Section -->
+    <section class="tutorials-section">
+        <h2 class="section-title">Interactive Learning Resources</h2>
+        
+        <!-- Computer Vision Fundamentals -->
+        <div class="tutorial-group">
+            <h3>Computer Vision Fundamentals</h3>
+            <div class="grid">
+                <div class="card">
+                    <h2>Multi-View Geometry</h2>
+                    <p>Learn about epipolar geometry, fundamental matrix, and camera calibration with interactive 3D visualizations.</p>
+                    <a href="{% url 'multiview_geometry' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Stereo Vision</h2>
+                    <p>Understand stereo vision concepts and depth estimation techniques.</p>
+                    <a href="{% url 'stereo_buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Image Processing</h2>
+                    <p>Interactive tools for understanding various image processing techniques.</p>
+                    <a href="{% url 'image_buddy' %}">Start Tutorial</a>
                 </div>
             </div>
-            {% endfor %}
         </div>
-    </section>
 
-    <!-- Learning Outcomes -->
-    <section class="learning-outcomes">
-        <h2>Learning Outcomes</h2>
-        <div class="outcomes-list">
-            {% for outcome in syllabus.learning_outcomes %}
-                <div class="outcome-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ outcome }}</span>
+        <!-- SLAM and Mapping -->
+        <div class="tutorial-group">
+            <h3>SLAM and Mapping</h3>
+            <div class="grid">
+                <div class="card">
+                    <h2>SLAM Tutorial</h2>
+                    <p>Interactive tool for understanding Simultaneous Localization and Mapping.</p>
+                    <a href="{% url 'slam_buddy' %}">Start Tutorial</a>
                 </div>
-            {% endfor %}
+                <div class="card">
+                    <h2>Visual Odometry</h2>
+                    <p>Understand how to estimate camera motion from sequential images.</p>
+                    <a href="{% url 'visual_odometry_buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Loop Closure</h2>
+                    <p>Explore place recognition and loop closure detection in SLAM systems.</p>
+                    <a href="{% url 'loop_closure_buddy' %}">Start Tutorial</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estimation and Optimization -->
+        <div class="tutorial-group">
+            <h3>Estimation and Optimization</h3>
+            <div class="grid">
+                <div class="card">
+                    <h2>Parameter Estimation</h2>
+                    <p>Interactive tool for understanding parameter estimation in computer vision.</p>
+                    <a href="{% url 'param_estimation_buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>RANSAC Tutorial</h2>
+                    <p>Explore Random Sample Consensus algorithm with interactive demonstrations.</p>
+                    <a href="{% url 'ransac-buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Gaussian Processes</h2>
+                    <p>Explore Gaussian processes and their applications in computer vision.</p>
+                    <a href="{% url 'gaussian_processes_buddy' %}">Start Tutorial</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensing and Perception -->
+        <div class="tutorial-group">
+            <h3>Sensing and Perception</h3>
+            <div class="grid">
+                <div class="card">
+                    <h2>Sensor Fusion</h2>
+                    <p>Learn about combining data from multiple sensors using Kalman filters.</p>
+                    <a href="{% url 'sensor_fusion_buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Point Cloud Processing</h2>
+                    <p>Learn techniques for processing and analyzing 3D point cloud data.</p>
+                    <a href="{% url 'point_cloud_buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Particle Filters</h2>
+                    <p>Understand Monte Carlo localization and particle filtering techniques.</p>
+                    <a href="{% url 'particle_filter_buddy' %}">Start Tutorial</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motion Planning and Control -->
+        <div class="tutorial-group">
+            <h3>Motion Planning and Control</h3>
+            <div class="grid">
+                <div class="card">
+                    <h2>Path Planning</h2>
+                    <p>Learn about various path planning algorithms including A*, RRT, and potential fields.</p>
+                    <a href="{% url 'path_planning_buddy' %}">Start Tutorial</a>
+                </div>
+                <div class="card">
+                    <h2>Cart-Pole System</h2>
+                    <p>Explore the classic cart-pole control problem with interactive visualization.</p>
+                    <a href="{% url 'cart_pole_buddy' %}">Start Tutorial</a>
+                </div>
+            </div>
         </div>
     </section>
 </div>
@@ -282,6 +392,74 @@
         .quiz-button {
             width: 100%;
             justify-content: center;
+        }
+    }
+
+    .tutorials-section {
+        margin: 3rem 0;
+    }
+
+    .tutorial-group {
+        margin-bottom: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .tutorial-group h3 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 0.5rem;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+        color: #3498db;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .card a {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 1rem;
+        transition: background 0.2s;
+    }
+
+    .card a:hover {
+        background: #2980b9;
+    }
+
+    @media (max-width: 768px) {
+        .tutorial-group {
+            padding: 1rem;
+        }
+        
+        .grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>

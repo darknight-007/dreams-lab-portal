@@ -596,11 +596,11 @@ def ses598_course_view(request):
             'title': 'SES 598: AI and Robotics for Space Exploration',
             'semester': 'Spring 2025',
             'credits': 3,
-            'location': 'ISTB4 401',
+            'location': 'Tempe Campus Room TBD',
             'meeting_times': 'Tuesday/Thursday 3:00 PM - 4:15 PM',
-            'instructor': 'Dr. Travis Marsh',
+            'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'Wednesday 2:00 PM - 4:00 PM or by appointment',
-            'contact': 'travis.marsh@asu.edu'
+            'contact': 'djnan@asu.edu'
         },
         'course_description': '''
             Advanced course focusing on AI and robotics applications in earth and space exploration. 
