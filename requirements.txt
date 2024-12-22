@@ -6,3 +6,4 @@ twilio>=7.15.4
 scipy
 flask
 numpy>=1.19.0
+whitenoise

@@ -39,7 +39,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Collect static files
-RUN python3 manage.py collectstatic --noinput
+# RUN python3 manage.py collectstatic --noinput
 
 # Expose port 8000
 EXPOSE 8000

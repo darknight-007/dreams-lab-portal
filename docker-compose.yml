@@ -6,17 +6,21 @@ services:
       context: .
     runtime: nvidia
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all  # Use all GPUs
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility  # Required for nvidia-smi
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - SECRET_KEY=dreamslab2024
-      - DEBUG=False
+      - DEBUG=True
       - DJANGO_SETTINGS_MODULE=dreams_laboratory.settings
       - TWILIO_ACCOUNT_SID=key
       - TWILIO_AUTH_TOKEN=key
       - TWILIO_VERIFY_SERVICE_SID=key
+      - ALLOWED_HOSTS=your-domain.com,localhost,127.0.0.1,192.168.0.186
 
     volumes:
       - .:/app
+      - ./static:/app/static
+      - ./media:/app/media
       - ./db.sqlite3:/app/db.sqlite3
     ports:
-      - "8080:8000"
+      - "80:8000"
+    command: ["bash", "/app/entrypoint.sh"]

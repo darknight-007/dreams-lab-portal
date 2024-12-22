@@ -38,6 +38,10 @@ from dreams_laboratory.views import (
     ses598_course_view,
     reset_quiz,
 )
+from django.http import HttpResponse
+
+def health_check(request):
+    return HttpResponse("OK")
 
 urlpatterns = [
     # Core URLs
@@ -80,6 +84,7 @@ urlpatterns = [
     # Course URLs
     path('ses598/', ses598_course_view, name='ses598_course'),
     path('ses598/quiz/', ses598_quiz, name='ses598_quiz'),
+    path('health/', health_check),
 ]
 
 if settings.DEBUG:
