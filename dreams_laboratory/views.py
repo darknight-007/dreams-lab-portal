@@ -531,80 +531,42 @@ def ransac_demo_data(request):
     })
     
 def ses598_quiz(request):
-    # Generate or retrieve quiz ID from session
-    if 'quiz_id' not in request.session:
-        request.session['quiz_id'] = str(uuid.uuid4())[:8]
+    quiz_questions = {
+        'interactive_components': [
+            {
+                'id': 'stereo_challenge',
+                'type': 'stereo_buddy',
+                'title': 'Stereo Vision Challenge',
+                'description': 'Use the stereo vision widget to determine the depth of the marked point.',
+                'widget_url': 'stereo_buddy',
+                'question': 'What is the depth (in meters) of the red marker point?',
+                'validation_type': 'numeric',
+                'tolerance': 0.1  # Allow answers within 10cm
+            },
+            {
+                'id': 'ransac_challenge',
+                'type': 'ransac_buddy',
+                'title': 'RANSAC Model Fitting',
+                'description': 'Use RANSAC to fit a line to the noisy data and identify outliers.',
+                'widget_url': 'ransac-buddy',
+                'question': 'How many outliers were identified with the optimal threshold?',
+                'validation_type': 'numeric',
+                'tolerance': 2  # Allow for slight variations in outlier detection
+            },
+            {
+                'id': 'param_estimation',
+                'type': 'param_estimation_buddy',
+                'title': 'Parameter Estimation Challenge',
+                'description': 'Estimate the optimal parameters for the given system using the parameter estimation tool.',
+                'widget_url': 'param_estimation_buddy',
+                'question': 'What is the optimal learning rate that achieves the fastest convergence?',
+                'validation_type': 'numeric',
+                'tolerance': 0.01
+            }
+        ]
+    }
     
-    if request.method == 'GET':
-        if 'quiz_results' in request.session:
-            del request.session['quiz_results']
-        return render(request, 'ses598_quiz.html', {
-            'show_results': False,
-            'quiz_id': request.session['quiz_id']
-        })
-    
-    if request.method == 'POST':
-        # Calculate scores as before
-        cv_score = 0
-        if request.POST.get('q1') == correct_answers['q1']: cv_score += 50
-        if request.POST.get('q2') == correct_answers['q2']: cv_score += 50
-
-        slam_score = 0
-        if request.POST.get('q3') == correct_answers['q3']: slam_score += 50
-        if request.POST.get('q4') == correct_answers['q4']: slam_score += 50
-
-        estimation_score = 0
-        if request.POST.get('q5') == correct_answers['q5']: estimation_score += 50
-        if request.POST.get('q6') == correct_answers['q6']: estimation_score += 50
-
-        sensing_score = 0
-        if request.POST.get('q7') == correct_answers['q7']: sensing_score += 50
-        if request.POST.get('q8') == correct_answers['q8']: sensing_score += 50
-
-        motion_score = 0
-        if request.POST.get('q9') == correct_answers['q9']: motion_score += 50
-        if request.POST.get('q10') == correct_answers['q10']: motion_score += 50
-
-        total_score = (cv_score + slam_score + estimation_score + sensing_score + motion_score) / 5
-
-        # Save to database
-        quiz_submission = QuizSubmission.objects.create(
-            quiz_id=request.session['quiz_id'],
-            cv_score=cv_score,
-            slam_score=slam_score,
-            estimation_score=estimation_score,
-            sensing_score=sensing_score,
-            motion_score=motion_score,
-            total_score=total_score,
-            # Store individual answers
-            q1=request.POST.get('q1'),
-            q2=request.POST.get('q2'),
-            q3=request.POST.get('q3'),
-            q4=request.POST.get('q4'),
-            q5=request.POST.get('q5'),
-            q6=request.POST.get('q6'),
-            q7=request.POST.get('q7'),
-            q8=request.POST.get('q8'),
-            q9=request.POST.get('q9'),
-            q10=request.POST.get('q10'),
-        )
-
-        # Store results in session as before
-        quiz_results = {
-            'show_results': True,
-            'cv_score': cv_score,
-            'slam_score': slam_score,
-            'estimation_score': estimation_score,
-            'sensing_score': sensing_score,
-            'motion_score': motion_score,
-            'total_score': total_score,
-            'quiz_id': request.session['quiz_id']
-        }
-        request.session['quiz_results'] = quiz_results
-
-        return render(request, 'ses598_quiz.html', quiz_results)
-    
-    return render(request, 'ses598_quiz.html', {'show_results': False})
+    return render(request, 'ses598_quiz.html', {'quiz_questions': quiz_questions})
 
 def reset_quiz(request):
     if 'quiz_results' in request.session:
@@ -614,15 +576,59 @@ def reset_quiz(request):
 def ses598_course_view(request):
     syllabus = {
         'course_info': {
-            'title': 'SES 598: AI and Robotics for Space Exploration',
-            'semester': 'Spring 2025',
-            'credits': 3,
+            'title': 'SES 598: Robotics and AI for Planetary Exploration',
+            'semester': 'Spring 2024',
+            'meeting_times': 'Tu/Th 3:00 PM - 4:15 PM',
             'location': 'ISTB4 401',
-            'meeting_times': 'Tuesday/Thursday 3:00 PM - 4:15 PM',
             'instructor': 'Dr. Jnaneshwar Das',
-            'office_hours': 'Wednesday 2:00 PM - 4:00 PM or by appointment',
-            'contact': 'djnan@asu.edu'
+            'office_hours': 'By appointment',
+            'contact': 'jdas@asu.edu'
         },
+        'course_description': '''This course provides a comprehensive introduction to robotic exploration and mapping, 
+        focusing on the fundamental concepts and advanced techniques in computer vision, SLAM (Simultaneous Localization and Mapping), 
+        and autonomous navigation. Students will learn both theoretical foundations and practical implementations of robotic 
+        perception systems, with emphasis on visual-inertial navigation, 3D reconstruction, and environment mapping. The course 
+        includes hands-on experience with real robotic systems and modern software tools used in the industry.''',
+        
+        'prerequisites': [
+            'Mathematics: Linear algebra (vectors, matrices, eigenvalues), calculus (derivatives, gradients), and probability theory (Bayes rule, distributions)',
+            'Programming: Strong Python programming skills with experience in scientific computing libraries (NumPy, SciPy, PyTorch/TensorFlow)',
+            'Computer Vision: Basic understanding of image processing, feature detection, and geometric transformations',
+            'Computing Systems: Experience with Linux/Unix systems, version control (Git), and command-line tools',
+            'Recommended: Prior exposure to ROS (Robot Operating System), CUDA programming, or parallel computing',
+            'Required Software: Students must have a computer capable of running Linux and processing 3D graphics'
+        ],
+        
+        'learning_outcomes': [
+            'Master advanced robotics and AI techniques for exploration in challenging environments',
+            'Design and implement autonomous systems for Earth and Space applications',
+            'Develop expertise in 3D perception, mapping, and scene understanding',
+            'Create intelligent decision-making systems for robotic exploration',
+            'Build distributed multi-robot systems for collaborative missions',
+            'Apply modern machine learning to real-world robotics problems'
+        ],
+        
+        'grading': {
+            'Projects': {
+                'Project 1: 3D Reconstruction': '8%',
+                'Project 2: Neural Scene Understanding': '8%',
+                'Project 3: Digital Twin System': '8%',
+                'Project 4: Multi-Robot Exploration': '8%',
+                'Project 5: Extreme Environment Operations': '8%'
+            },
+            'Midterm Project': {
+                'Information-Driven Mapping System': '20%'
+            },
+            'Final Project': {
+                'End-to-End Space Robotics System': '25%'
+            },
+            'Class Participation': {
+                'Interactive Tutorials': '5%',
+                'Discussion & Code Reviews': '5%',
+                'Project Presentations': '5%'
+            }
+        },
+        
         'modules': [
             {
                 'week': '1-2',
@@ -720,20 +726,6 @@ def ses598_course_view(request):
                 ],
                 'assignment': 'Final Project: End-to-end space robotics system'
             }
-        ],
-        'grading': {
-            'Projects (5)': '40%',
-            'Midterm Project': '20%',
-            'Final Project': '25%',
-            'Class Participation': '15%'
-        },
-        'learning_outcomes': [
-            'Design and implement information-theoretic sampling strategies',
-            'Develop adaptive exploration and learning systems',
-            'Apply multi-armed bandit algorithms to real-world problems',
-            'Create resource-aware planning algorithms',
-            'Implement distributed learning systems for multi-robot scenarios',
-            'Solve challenges specific to space robotics applications'
         ]
     }
     

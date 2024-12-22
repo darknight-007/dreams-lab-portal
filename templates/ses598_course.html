@@ -85,8 +85,7 @@
             {% for component, percentage in syllabus.grading.items %}
             <div class="grading-item">
                 <div class="grading-label">{{ component }}</div>
-                <div class="grading-bar" style="width: {{ percentage }}">
-                    <span>{{ percentage }}</span>
+                <div class="grading-bar" style="width: calc({{ percentage|cut:'%' }} * 1%)">
                 </div>
             </div>
             {% endfor %}
