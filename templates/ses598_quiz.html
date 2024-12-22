@@ -77,6 +77,27 @@
         .submit-btn:hover {
             background: #2980b9;
         }
+
+        .quiz-controls {
+            margin-bottom: 2rem;
+            text-align: right;
+        }
+
+        .reset-button {
+            background: #f44336;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .reset-button:hover {
+            background: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +106,12 @@
         
         <form id="quiz-form" method="POST">
             {% csrf_token %}
+            
+            <div class="quiz-controls">
+                <a href="{% url 'reset_quiz' %}" class="reset-button">
+                    <i class="fas fa-redo"></i> Reset Quiz
+                </a>
+            </div>
             
             <!-- Computer Vision Fundamentals -->
             <div class="quiz-section">
@@ -207,44 +234,52 @@
         <!-- Results Section (shown after submission) -->
         {% if show_results %}
         <div class="stats-container">
+            <div class="topic-stats" style="grid-column: 1 / -1; text-align: center;">
+                <h2>Total Score</h2>
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ total_score|default:'0' }}%;"></div>
+                </div>
+                <p>Overall Score: {{ total_score|default:'0' }}/100%</p>
+            </div>
+
             <div class="topic-stats">
                 <h3>Computer Vision Fundamentals</h3>
                 <div class="progress-bar">
-                    <div class="progress" style="width: {{ cv_score }}%"></div>
+                    <div class="progress" style="width: {{ cv_score|default:'0' }}%;"></div>
                 </div>
-                <p>Score: {{ cv_score }}%</p>
+                <p>Score: {{ cv_score|default:'0' }}/100%</p>
             </div>
 
             <div class="topic-stats">
                 <h3>SLAM and Mapping</h3>
                 <div class="progress-bar">
-                    <div class="progress" style="width: {{ slam_score }}%"></div>
+                    <div class="progress" style="width: {{ slam_score|default:'0' }}%;"></div>
                 </div>
-                <p>Score: {{ slam_score }}%</p>
+                <p>Score: {{ slam_score|default:'0' }}/100%</p>
             </div>
 
             <div class="topic-stats">
                 <h3>Estimation and Optimization</h3>
                 <div class="progress-bar">
-                    <div class="progress" style="width: {{ estimation_score }}%"></div>
+                    <div class="progress" style="width: {{ estimation_score|default:'0' }}%;"></div>
                 </div>
-                <p>Score: {{ estimation_score }}%</p>
+                <p>Score: {{ estimation_score|default:'0' }}/100%</p>
             </div>
 
             <div class="topic-stats">
                 <h3>Sensing and Perception</h3>
                 <div class="progress-bar">
-                    <div class="progress" style="width: {{ sensing_score }}%"></div>
+                    <div class="progress" style="width: {{ sensing_score|default:'0' }}%;"></div>
                 </div>
-                <p>Score: {{ sensing_score }}%</p>
+                <p>Score: {{ sensing_score|default:'0' }}/100%</p>
             </div>
 
             <div class="topic-stats">
                 <h3>Motion Planning and Control</h3>
                 <div class="progress-bar">
-                    <div class="progress" style="width: {{ motion_score }}%"></div>
+                    <div class="progress" style="width: {{ motion_score|default:'0' }}%;"></div>
                 </div>
-                <p>Score: {{ motion_score }}%</p>
+                <p>Score: {{ motion_score|default:'0' }}/100%</p>
             </div>
         </div>
         {% endif %}

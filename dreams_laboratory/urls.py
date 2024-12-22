@@ -33,7 +33,10 @@ from dreams_laboratory.views import (
     visual_odometry_buddy, point_cloud_buddy, path_planning_buddy,
     # API views
     apply_filters, ransac_demo_data, ses598_robotic_exploration_and_mapping_quiz,
-    ses598_robotic_exploration_and_mapping, ses598_quiz
+    ses598_robotic_exploration_and_mapping, ses598_quiz,
+    # Course view
+    ses598_course_view,
+    reset_quiz,
 )
 
 urlpatterns = [
@@ -61,6 +64,7 @@ urlpatterns = [
     path('ses598_quiz/', ses598_robotic_exploration_and_mapping_quiz, name='ses598_robotic_exploration_and_mapping_quiz'),
     path('rem/', ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
     path('quiz/', ses598_quiz, name='ses598_quiz'),
+    path('ses598/quiz/reset/', reset_quiz, name='reset_quiz'),
     # Computer vision URLs
     path('ransac_buddy/', ransac_buddy, name='ransac-buddy'),
     path('multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
@@ -73,6 +77,9 @@ urlpatterns = [
     path('visual-odometry/', visual_odometry_buddy, name='visual_odometry_buddy'),
     path('point-cloud/', point_cloud_buddy, name='point_cloud_buddy'),
     path('path-planning/', path_planning_buddy, name='path_planning_buddy'),
+    # Course URLs
+    path('ses598/', ses598_course_view, name='ses598_course'),
+    path('ses598/quiz/', ses598_quiz, name='ses598_quiz'),
 ]
 
 if settings.DEBUG:

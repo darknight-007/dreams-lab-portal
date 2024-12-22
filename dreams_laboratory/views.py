@@ -530,40 +530,190 @@ def ransac_demo_data(request):
     })
     
 def ses598_quiz(request):
-    if request.method == 'POST':
-        # Define correct answers
-        correct_answers = {
-            'q1': 'a', 'q2': 'b', 'q3': 'a', 'q4': 'b', 'q5': 'b',
-            'q6': 'a', 'q7': 'b', 'q8': 'a', 'q9': 'c', 'q10': 'a'
-        }
-        
-        # Calculate scores by topic
-        scores = {
-            'cv_score': 0,
-            'slam_score': 0,
-            'estimation_score': 0,
-            'sensing_score': 0,
-            'motion_score': 0
-        }
-        
-        # Question mapping to topics
-        topic_mapping = {
-            'q1': 'cv_score', 'q2': 'cv_score',
-            'q3': 'slam_score', 'q4': 'slam_score',
-            'q5': 'estimation_score', 'q6': 'estimation_score',
-            'q7': 'sensing_score', 'q8': 'sensing_score',
-            'q9': 'motion_score', 'q10': 'motion_score'
-        }
-        
-        # Calculate scores
-        for question, answer in request.POST.items():
-            if question in correct_answers:
-                if answer == correct_answers[question]:
-                    scores[topic_mapping[question]] += 50  # 50% per correct answer in topic
-        
-        return render(request, 'ses598_quiz.html', {
-            'show_results': True,
-            **scores
-        })
+    # Define correct answers
+    correct_answers = {
+        'q1': 'a', 'q2': 'b',  # Computer Vision
+        'q3': 'a', 'q4': 'b',  # SLAM
+        'q5': 'b', 'q6': 'a',  # Estimation
+        'q7': 'b', 'q8': 'a',  # Sensing
+        'q9': 'c', 'q10': 'a'  # Motion Planning
+    }
     
-    return render(request, 'ses598_quiz.html', {'show_results': False}) 
+    # Check if we have stored results in session
+    if 'quiz_results' in request.session:
+        return render(request, 'ses598_quiz.html', request.session['quiz_results'])
+    
+    if request.method == 'POST':
+        # Calculate section scores (each section has 2 questions worth 50 points each)
+        cv_score = 0
+        if request.POST.get('q1') == correct_answers['q1']: cv_score += 50
+        if request.POST.get('q2') == correct_answers['q2']: cv_score += 50
+
+        slam_score = 0
+        if request.POST.get('q3') == correct_answers['q3']: slam_score += 50
+        if request.POST.get('q4') == correct_answers['q4']: slam_score += 50
+
+        estimation_score = 0
+        if request.POST.get('q5') == correct_answers['q5']: estimation_score += 50
+        if request.POST.get('q6') == correct_answers['q6']: estimation_score += 50
+
+        sensing_score = 0
+        if request.POST.get('q7') == correct_answers['q7']: sensing_score += 50
+        if request.POST.get('q8') == correct_answers['q8']: sensing_score += 50
+
+        motion_score = 0
+        if request.POST.get('q9') == correct_answers['q9']: motion_score += 50
+        if request.POST.get('q10') == correct_answers['q10']: motion_score += 50
+
+        # Calculate total score (average of all sections)
+        total_score = (cv_score + slam_score + estimation_score + sensing_score + motion_score) / 5
+
+        # Store results in session
+        quiz_results = {
+            'show_results': True,
+            'cv_score': cv_score,
+            'slam_score': slam_score,
+            'estimation_score': estimation_score,
+            'sensing_score': sensing_score,
+            'motion_score': motion_score,
+            'total_score': total_score
+        }
+        request.session['quiz_results'] = quiz_results
+
+        return render(request, 'ses598_quiz.html', quiz_results)
+    
+    return render(request, 'ses598_quiz.html', {'show_results': False})
+
+def reset_quiz(request):
+    if 'quiz_results' in request.session:
+        del request.session['quiz_results']
+    return redirect('ses598_quiz')
+
+def ses598_course_view(request):
+    syllabus = {
+        'course_info': {
+            'title': 'SES 598: AI and Robotics for Space Exploration',
+            'semester': 'Spring 2025',
+            'credits': 3,
+            'location': 'Tempe Campus Room TBD',
+            'meeting_times': 'Tuesday/Thursday 3:00 PM - 4:15 PM',
+            'instructor': 'Dr. Jnaneshwar Das',
+            'office_hours': 'Wednesday 2:00 PM - 4:00 PM or by appointment',
+            'contact': 'djnan@asu.edu'
+        },
+        'course_description': '''
+            Advanced course focusing on AI and robotics applications in earth and space exploration. 
+            Covers fundamental algorithms, state-of-the-art techniques, and practical implementations 
+            for autonomous systems operating in extreme environments.
+        ''',
+        'prerequisites': [
+            'Graduate standing in Engineering, Computer Science, or related field',
+            'Programming experience (Python)',
+            'Basic linear algebra and probability'
+        ],
+        'modules': [
+            {
+                'week': '1-2',
+                'title': 'Fundamentals of Computer Vision in Space',
+                'topics': [
+                    'Image processing in extreme lighting conditions',
+                    'Feature detection and matching',
+                    'Stereo vision for depth estimation',
+                    'Case study: Mars Rover vision systems'
+                ],
+                'assignment': 'Project 1: Implement robust feature detection for Mars surface images'
+            },
+            {
+                'week': '3-4',
+                'title': 'SLAM and Mapping',
+                'topics': [
+                    'Visual SLAM algorithms',
+                    'Loop closure detection',
+                    'Map representation and updates',
+                    'Resource-constrained SLAM'
+                ],
+                'assignment': 'Project 2: Develop a lightweight SLAM system'
+            },
+            {
+                'week': '5-6',
+                'title': 'Terrain Classification & Navigation',
+                'topics': [
+                    'Soil/rock type identification',
+                    'Traversability analysis',
+                    'Hazard avoidance',
+                    'Energy-efficient path planning'
+                ],
+                'assignment': 'Project 3: Terrain classification system'
+            },
+            {
+                'week': '7-8',
+                'title': 'Autonomous Sample Collection',
+                'topics': [
+                    'Target identification',
+                    'Manipulation planning',
+                    'Sample analysis and prioritization',
+                    'Resource-constrained decision making'
+                ],
+                'assignment': 'Midterm Project: End-to-end sample collection system'
+            },
+            {
+                'week': '9-10',
+                'title': 'Multi-Robot Coordination',
+                'topics': [
+                    'Swarm robotics',
+                    'Distributed task allocation',
+                    'Communication constraints',
+                    'Collaborative mapping'
+                ],
+                'assignment': 'Project 4: Multi-robot coordination simulation'
+            },
+            {
+                'week': '11-12',
+                'title': 'Extreme Environment Operations',
+                'topics': [
+                    'Thermal management',
+                    'Radiation-hardened computing',
+                    'Dust mitigation',
+                    'Low-light operation'
+                ],
+                'assignment': 'Project 5: Environmental challenge solutions'
+            },
+            {
+                'week': '13-14',
+                'title': 'Resource-Aware Planning & Adaptive Learning',
+                'topics': [
+                    'Power management',
+                    'Online and transfer learning',
+                    'Uncertainty estimation',
+                    'Fault detection and recovery'
+                ],
+                'assignment': 'Project 6: Adaptive learning system'
+            },
+            {
+                'week': '15-16',
+                'title': 'Space-Specific Challenges & Bio-Inspired Solutions',
+                'topics': [
+                    'Zero/low-gravity operations',
+                    'Bio-mimetic locomotion',
+                    'Time-delayed teleoperation',
+                    'Orbital mechanics for navigation'
+                ],
+                'assignment': 'Final Project: Comprehensive space robotics challenge'
+            }
+        ],
+        'grading': {
+            'Projects (6)': '40%',
+            'Midterm Project': '20%',
+            'Final Project': '25%',
+            'Class Participation': '15%'
+        },
+        'learning_outcomes': [
+            'Design and implement computer vision systems for extreme environments',
+            'Develop SLAM and navigation solutions for unknown terrains',
+            'Create resource-aware planning algorithms for autonomous systems',
+            'Implement multi-robot coordination strategies',
+            'Solve challenges specific to space robotics applications'
+        ]
+    }
+    
+    return render(request, 'ses598_course.html', {'syllabus': syllabus})
