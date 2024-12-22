@@ -6,8 +6,7 @@ import io
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 from scipy.signal import convolve2d  # Correct import for convolve2d
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 from matplotlib.backends.backend_svg import FigureCanvasSVG
 from django.conf import settings
 import subprocess
@@ -530,6 +529,12 @@ def ransac_demo_data(request):
     })
     
 def ses598_quiz(request):
+    # Clear any existing quiz results when first loading the page
+    if request.method == 'GET':
+        if 'quiz_results' in request.session:
+            del request.session['quiz_results']
+        return render(request, 'ses598_quiz.html', {'show_results': False})
+    
     # Define correct answers
     correct_answers = {
         'q1': 'a', 'q2': 'b',  # Computer Vision
@@ -538,10 +543,6 @@ def ses598_quiz(request):
         'q7': 'b', 'q8': 'a',  # Sensing
         'q9': 'c', 'q10': 'a'  # Motion Planning
     }
-    
-    # Check if we have stored results in session
-    if 'quiz_results' in request.session:
-        return render(request, 'ses598_quiz.html', request.session['quiz_results'])
     
     if request.method == 'POST':
         # Calculate section scores (each section has 2 questions worth 50 points each)
@@ -595,11 +596,11 @@ def ses598_course_view(request):
             'title': 'SES 598: AI and Robotics for Space Exploration',
             'semester': 'Spring 2025',
             'credits': 3,
-            'location': 'Tempe Campus Room TBD',
+            'location': 'ISTB4 401',
             'meeting_times': 'Tuesday/Thursday 3:00 PM - 4:15 PM',
-            'instructor': 'Dr. Jnaneshwar Das',
+            'instructor': 'Dr. Travis Marsh',
             'office_hours': 'Wednesday 2:00 PM - 4:00 PM or by appointment',
-            'contact': 'djnan@asu.edu'
+            'contact': 'travis.marsh@asu.edu'
         },
         'course_description': '''
             Advanced course focusing on AI and robotics applications in earth and space exploration. 
