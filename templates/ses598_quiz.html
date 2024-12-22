@@ -98,10 +98,74 @@
         .reset-button:hover {
             background: #d32f2f;
         }
+
+        .quiz-identifier {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .id-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .id-label {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .id-value {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            letter-spacing: 1px;
+        }
+
+        .copy-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background: #2980b9;
+        }
+
+        .id-instruction {
+            margin-top: 0.5rem;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="quiz-identifier">
+            <div class="id-box">
+                <span class="id-label">Your Quiz ID:</span>
+                <span class="id-value">{{ quiz_id }}</span>
+                <button class="copy-button" onclick="copyQuizId()">
+                    <i class="fas fa-copy"></i> Copy ID
+                </button>
+            </div>
+            <p class="id-instruction">Please save this ID to share with the instructor for enrollment verification.</p>
+        </div>
+
         <h1>Robotic Exploration and Mapping Assessment</h1>
         
         <form id="quiz-form" method="POST">
@@ -118,20 +182,70 @@
                 <h2 class="section-title">Computer Vision Fundamentals</h2>
                 
                 <div class="question">
-                    <p>What is epipolar geometry used for in computer vision?</p>
+                    <p>Which mathematical model is used to describe the mapping between 3D world points and 2D image points in a pinhole camera model?</p>
                     <div class="options">
-                        <label><input type="radio" name="q1" value="a"> Determining the relationship between images of the same scene from different viewpoints</label>
-                        <label><input type="radio" name="q1" value="b"> Processing color images</label>
-                        <label><input type="radio" name="q1" value="c"> Detecting edges in images</label>
+                        <label><input type="radio" name="q1" value="a"> Perspective projection matrix (3x4 camera matrix)</label>
+                        <label><input type="radio" name="q1" value="b"> 2D affine transformation</label>
+                        <label><input type="radio" name="q1" value="c"> Gaussian distribution</label>
                     </div>
                 </div>
 
                 <div class="question">
-                    <p>In stereo vision, what is disparity used to calculate?</p>
+                    <p>What is the primary purpose of feature detection and matching in Structure from Motion (SfM)?</p>
                     <div class="options">
-                        <label><input type="radio" name="q2" value="a"> Image brightness</label>
-                        <label><input type="radio" name="q2" value="b"> Depth information</label>
-                        <label><input type="radio" name="q2" value="c"> Color balance</label>
+                        <label><input type="radio" name="q2" value="a"> To enhance image colors</label>
+                        <label><input type="radio" name="q2" value="b"> To identify and track corresponding points across multiple views for 3D reconstruction</label>
+                        <label><input type="radio" name="q2" value="c"> To compress image data</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Neural Scene Representation -->
+            <div class="quiz-section">
+                <h2 class="section-title">Neural Scene Representation & Advanced Perception</h2>
+                
+                <div class="question">
+                    <p>What is the primary advantage of using Neural Radiance Fields (NeRF) for scene representation?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q11" value="a"> Lower memory usage compared to point clouds</label>
+                        <label><input type="radio" name="q11" value="b"> Continuous, view-dependent scene representation with high-quality novel view synthesis</label>
+                        <label><input type="radio" name="q11" value="c"> Faster rendering speed than traditional methods</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>In Gaussian Splatting, what is the key innovation compared to traditional point-based rendering?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q12" value="a"> It uses fewer points to represent scenes</label>
+                        <label><input type="radio" name="q12" value="b"> 3D Gaussian primitives with optimizable parameters for efficient, high-quality rendering</label>
+                        <label><input type="radio" name="q12" value="c"> Direct mesh generation from points</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>What is the main purpose of view synthesis in space robotics applications?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q13" value="a"> To reduce data storage requirements</label>
+                        <label><input type="radio" name="q13" value="b"> To generate new viewpoints for planning and navigation without physical movement</label>
+                        <label><input type="radio" name="q13" value="c"> To compress visual data for transmission</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>What role does transfer learning play in space robotics perception systems?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q14" value="a"> It reduces the need for sensors</label>
+                        <label><input type="radio" name="q14" value="b"> It enables adaptation of Earth-trained models to space environments with limited data</label>
+                        <label><input type="radio" name="q14" value="c"> It increases battery life of robots</label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <p>How does meta-learning benefit robotic exploration in unknown environments?</p>
+                    <div class="options">
+                        <label><input type="radio" name="q15" value="a"> By reducing power consumption</label>
+                        <label><input type="radio" name="q15" value="b"> By learning adaptive strategies that can quickly adjust to new situations</label>
+                        <label><input type="radio" name="q15" value="c"> By eliminating the need for sensors</label>
                     </div>
                 </div>
             </div>
@@ -141,20 +255,20 @@
                 <h2 class="section-title">SLAM and Mapping</h2>
                 
                 <div class="question">
-                    <p>What is the primary challenge that loop closure addresses in SLAM?</p>
+                    <p>What is the fundamental challenge that makes SLAM a "chicken and egg" problem?</p>
                     <div class="options">
-                        <label><input type="radio" name="q3" value="a"> Recognizing previously visited locations and correcting accumulated errors</label>
-                        <label><input type="radio" name="q3" value="b"> Planning the shortest path between two points</label>
-                        <label><input type="radio" name="q3" value="c"> Processing sensor data in real-time</label>
+                        <label><input type="radio" name="q3" value="a"> The need to simultaneously estimate robot pose and map the environment without knowing either perfectly</label>
+                        <label><input type="radio" name="q3" value="b"> The difficulty in processing sensor data quickly</label>
+                        <label><input type="radio" name="q3" value="c"> The challenge of path planning in unknown environments</label>
                     </div>
                 </div>
 
                 <div class="question">
-                    <p>What is the main purpose of visual odometry?</p>
+                    <p>In information-theoretic SLAM, what metric is commonly used to determine the best next observation point?</p>
                     <div class="options">
-                        <label><input type="radio" name="q4" value="a"> To process point clouds</label>
-                        <label><input type="radio" name="q4" value="b"> To estimate camera motion from image sequences</label>
-                        <label><input type="radio" name="q4" value="c"> To detect objects in images</label>
+                        <label><input type="radio" name="q4" value="a"> Euclidean distance to goal</label>
+                        <label><input type="radio" name="q4" value="b"> Expected information gain or reduction in uncertainty</label>
+                        <label><input type="radio" name="q4" value="c"> Battery consumption</label>
                     </div>
                 </div>
             </div>
@@ -164,20 +278,20 @@
                 <h2 class="section-title">Estimation and Optimization</h2>
                 
                 <div class="question">
-                    <p>What is RANSAC primarily used for?</p>
+                    <p>What is the key advantage of using Bayesian optimization for parameter tuning?</p>
                     <div class="options">
-                        <label><input type="radio" name="q5" value="a"> Path planning</label>
-                        <label><input type="radio" name="q5" value="b"> Robust estimation in the presence of outliers</label>
-                        <label><input type="radio" name="q5" value="c"> Image segmentation</label>
+                        <label><input type="radio" name="q5" value="a"> It requires no initial parameters</label>
+                        <label><input type="radio" name="q5" value="b"> It efficiently explores the parameter space by modeling uncertainty and exploiting promising regions</label>
+                        <label><input type="radio" name="q5" value="c"> It always finds the global optimum</label>
                     </div>
                 </div>
 
                 <div class="question">
-                    <p>What advantage do Gaussian Processes offer in robotics applications?</p>
+                    <p>In the context of online learning, what is Thompson sampling used for?</p>
                     <div class="options">
-                        <label><input type="radio" name="q6" value="a"> They provide uncertainty estimates along with predictions</label>
-                        <label><input type="radio" name="q6" value="b"> They are always faster than neural networks</label>
-                        <label><input type="radio" name="q6" value="c"> They require no training data</label>
+                        <label><input type="radio" name="q6" value="a"> To balance exploration and exploitation in decision-making under uncertainty</label>
+                        <label><input type="radio" name="q6" value="b"> To filter sensor noise</label>
+                        <label><input type="radio" name="q6" value="c"> To compress data streams</label>
                     </div>
                 </div>
             </div>
@@ -187,20 +301,20 @@
                 <h2 class="section-title">Sensing and Perception</h2>
                 
                 <div class="question">
-                    <p>What is the primary purpose of sensor fusion?</p>
+                    <p>What is the primary benefit of using multiple sensing modalities in robotic exploration?</p>
                     <div class="options">
-                        <label><input type="radio" name="q7" value="a"> To reduce the number of sensors needed</label>
-                        <label><input type="radio" name="q7" value="b"> To combine data from multiple sensors for more accurate estimation</label>
-                        <label><input type="radio" name="q7" value="c"> To calibrate sensors</label>
+                        <label><input type="radio" name="q7" value="a"> Reduced hardware costs</label>
+                        <label><input type="radio" name="q7" value="b"> Complementary information and increased robustness through sensor fusion</label>
+                        <label><input type="radio" name="q7" value="c"> Simplified data processing</label>
                     </div>
                 </div>
 
                 <div class="question">
-                    <p>What is a key advantage of particle filters over Kalman filters?</p>
+                    <p>Why is uncertainty modeling crucial in robotic perception systems?</p>
                     <div class="options">
-                        <label><input type="radio" name="q8" value="a"> They can represent non-Gaussian distributions</label>
-                        <label><input type="radio" name="q8" value="b"> They are always more computationally efficient</label>
-                        <label><input type="radio" name="q8" value="c"> They require less memory</label>
+                        <label><input type="radio" name="q8" value="a"> It makes computations faster</label>
+                        <label><input type="radio" name="q8" value="b"> It enables robust decision-making by accounting for sensor noise and environmental variability</label>
+                        <label><input type="radio" name="q8" value="c"> It reduces memory usage</label>
                     </div>
                 </div>
             </div>
@@ -210,20 +324,20 @@
                 <h2 class="section-title">Motion Planning and Control</h2>
                 
                 <div class="question">
-                    <p>Which of the following is NOT a common path planning algorithm?</p>
+                    <p>What is the key difference between local and global path planning approaches?</p>
                     <div class="options">
-                        <label><input type="radio" name="q9" value="a"> A*</label>
-                        <label><input type="radio" name="q9" value="b"> RRT</label>
-                        <label><input type="radio" name="q9" value="c"> JPEG</label>
+                        <label><input type="radio" name="q9" value="a"> Local planners are faster but may get stuck in local minima, while global planners find complete solutions but require more computation</label>
+                        <label><input type="radio" name="q9" value="b"> Local planners are always better than global planners</label>
+                        <label><input type="radio" name="q9" value="c"> Global planners use less memory than local planners</label>
                     </div>
                 </div>
 
                 <div class="question">
-                    <p>What is the main challenge in the cart-pole control problem?</p>
+                    <p>In the context of multi-robot systems, what is the primary challenge in distributed decision-making?</p>
                     <div class="options">
-                        <label><input type="radio" name="q10" value="a"> Balancing an inverted pendulum through appropriate control inputs</label>
-                        <label><input type="radio" name="q10" value="b"> Minimizing fuel consumption</label>
-                        <label><input type="radio" name="q10" value="c"> Avoiding obstacles</label>
+                        <label><input type="radio" name="q10" value="a"> Battery life</label>
+                        <label><input type="radio" name="q10" value="b"> Coordinating actions with limited communication while maintaining system-wide performance</label>
+                        <label><input type="radio" name="q10" value="c"> Visual appearance of robots</label>
                     </div>
                 </div>
             </div>
@@ -284,5 +398,43 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        function copyQuizId() {
+            // Create a temporary input element
+            const tempInput = document.createElement('input');
+            const idValue = document.querySelector('.id-value').textContent;
+            
+            // Set its value to the quiz ID
+            tempInput.value = idValue;
+            
+            // Add it to the document
+            document.body.appendChild(tempInput);
+            
+            // Select the text
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                // Copy the text
+                document.execCommand('copy');
+                
+                // Update button text to show feedback
+                const button = document.querySelector('.copy-button');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                
+                // Reset button text after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+            
+            // Remove the temporary input
+            document.body.removeChild(tempInput);
+        }
+    </script>
 </body>
 </html> 

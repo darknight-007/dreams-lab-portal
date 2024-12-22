@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import People, Research, Publication, Project, Role, Photo, Asset, FundingSource
+from .models import People, Research, Publication, Project, Role, Photo, Asset, FundingSource, QuizSubmission
 from .models import Photo
 from django.utils.html import format_html
 from django.contrib import admin
@@ -35,5 +35,22 @@ class AssetAdmin(admin.ModelAdmin):
 @admin.register(FundingSource)
 class AssetAdmin(admin.ModelAdmin):
     list_display = ('source_name',)  # Add other fields if you want them to show up in the list as well
+
+@admin.register(QuizSubmission)
+class QuizSubmissionAdmin(admin.ModelAdmin):
+    list_display = ('quiz_id', 'submission_date', 'total_score')
+    list_filter = ('submission_date',)
+    readonly_fields = ('quiz_id', 'submission_date', 'total_score', 
+                      'cv_score', 'slam_score', 'estimation_score', 
+                      'sensing_score', 'motion_score', 'neural_score',
+                      'q1', 'q2', 'q3', 'q4', 'q5', 
+                      'q6', 'q7', 'q8', 'q9', 'q10',
+                      'q11', 'q12', 'q13', 'q14', 'q15')
+    
+    def has_add_permission(self, request):
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        return True
 
 

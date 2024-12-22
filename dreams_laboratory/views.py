@@ -11,7 +11,7 @@ from matplotlib.backends.backend_svg import FigureCanvasSVG
 from django.conf import settings
 import subprocess
 import os
-from .models import People, Research, Publication, Project, Asset, FundingSource
+from .models import People, Research, Publication, Project, Asset, FundingSource, QuizSubmission
 from django.http import JsonResponse
 import json
 import os
@@ -28,6 +28,8 @@ from scipy.interpolate import interp1d
 
 from django.conf import settings
 from urllib.parse import urljoin
+
+import uuid
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -529,23 +531,20 @@ def ransac_demo_data(request):
     })
     
 def ses598_quiz(request):
-    # Clear any existing quiz results when first loading the page
+    # Generate or retrieve quiz ID from session
+    if 'quiz_id' not in request.session:
+        request.session['quiz_id'] = str(uuid.uuid4())[:8]
+    
     if request.method == 'GET':
         if 'quiz_results' in request.session:
             del request.session['quiz_results']
-        return render(request, 'ses598_quiz.html', {'show_results': False})
-    
-    # Define correct answers
-    correct_answers = {
-        'q1': 'a', 'q2': 'b',  # Computer Vision
-        'q3': 'a', 'q4': 'b',  # SLAM
-        'q5': 'b', 'q6': 'a',  # Estimation
-        'q7': 'b', 'q8': 'a',  # Sensing
-        'q9': 'c', 'q10': 'a'  # Motion Planning
-    }
+        return render(request, 'ses598_quiz.html', {
+            'show_results': False,
+            'quiz_id': request.session['quiz_id']
+        })
     
     if request.method == 'POST':
-        # Calculate section scores (each section has 2 questions worth 50 points each)
+        # Calculate scores as before
         cv_score = 0
         if request.POST.get('q1') == correct_answers['q1']: cv_score += 50
         if request.POST.get('q2') == correct_answers['q2']: cv_score += 50
@@ -566,10 +565,31 @@ def ses598_quiz(request):
         if request.POST.get('q9') == correct_answers['q9']: motion_score += 50
         if request.POST.get('q10') == correct_answers['q10']: motion_score += 50
 
-        # Calculate total score (average of all sections)
         total_score = (cv_score + slam_score + estimation_score + sensing_score + motion_score) / 5
 
-        # Store results in session
+        # Save to database
+        quiz_submission = QuizSubmission.objects.create(
+            quiz_id=request.session['quiz_id'],
+            cv_score=cv_score,
+            slam_score=slam_score,
+            estimation_score=estimation_score,
+            sensing_score=sensing_score,
+            motion_score=motion_score,
+            total_score=total_score,
+            # Store individual answers
+            q1=request.POST.get('q1'),
+            q2=request.POST.get('q2'),
+            q3=request.POST.get('q3'),
+            q4=request.POST.get('q4'),
+            q5=request.POST.get('q5'),
+            q6=request.POST.get('q6'),
+            q7=request.POST.get('q7'),
+            q8=request.POST.get('q8'),
+            q9=request.POST.get('q9'),
+            q10=request.POST.get('q10'),
+        )
+
+        # Store results in session as before
         quiz_results = {
             'show_results': True,
             'cv_score': cv_score,
@@ -577,7 +597,8 @@ def ses598_quiz(request):
             'estimation_score': estimation_score,
             'sensing_score': sensing_score,
             'motion_score': motion_score,
-            'total_score': total_score
+            'total_score': total_score,
+            'quiz_id': request.session['quiz_id']
         }
         request.session['quiz_results'] = quiz_results
 
@@ -596,125 +617,138 @@ def ses598_course_view(request):
             'title': 'SES 598: AI and Robotics for Space Exploration',
             'semester': 'Spring 2025',
             'credits': 3,
-            'location': 'Tempe Campus Room TBD',
+            'location': 'ISTB4 401',
             'meeting_times': 'Tuesday/Thursday 3:00 PM - 4:15 PM',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'Wednesday 2:00 PM - 4:00 PM or by appointment',
             'contact': 'djnan@asu.edu'
         },
-        'course_description': '''
-            Advanced course focusing on AI and robotics applications in earth and space exploration. 
-            Covers fundamental algorithms, state-of-the-art techniques, and practical implementations 
-            for autonomous systems operating in extreme environments.
-        ''',
-        'prerequisites': [
-            'Graduate standing in Engineering, Computer Science, or related field',
-            'Programming experience (Python)',
-            'Basic linear algebra and probability'
-        ],
         'modules': [
             {
                 'week': '1-2',
-                'title': 'Fundamentals of Computer Vision in Space',
+                'title': 'Computer Vision & 3D Reconstruction Fundamentals',
                 'topics': [
-                    'Image processing in extreme lighting conditions',
+                    'Image formation and camera models',
                     'Feature detection and matching',
-                    'Stereo vision for depth estimation',
-                    'Case study: Mars Rover vision systems'
+                    'Epipolar geometry and stereo vision',
+                    'Structure from Motion (SfM)',
+                    'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Project 1: Implement robust feature detection for Mars surface images'
+                'assignment': 'Project 1: 3D reconstruction pipeline'
             },
             {
                 'week': '3-4',
-                'title': 'SLAM and Mapping',
+                'title': 'Advanced Scene Representation & Neural Rendering',
                 'topics': [
-                    'Visual SLAM algorithms',
-                    'Loop closure detection',
-                    'Map representation and updates',
-                    'Resource-constrained SLAM'
+                    'Gaussian Splatting fundamentals',
+                    'Neural Radiance Fields (NeRF)',
+                    'View synthesis techniques',
+                    'Real-time rendering strategies',
+                    'Photogrammetry workflows'
                 ],
-                'assignment': 'Project 2: Develop a lightweight SLAM system'
+                'assignment': 'Project 2: Neural scene representation and rendering'
             },
             {
                 'week': '5-6',
-                'title': 'Terrain Classification & Navigation',
+                'title': 'Sampling Strategies & Information Theory',
                 'topics': [
-                    'Soil/rock type identification',
-                    'Traversability analysis',
-                    'Hazard avoidance',
-                    'Energy-efficient path planning'
+                    'Information theory fundamentals',
+                    'Active sampling and exploration',
+                    'Multi-armed bandits and Thompson sampling',
+                    'Bayesian optimization for parameter tuning',
+                    'Information gain in exploration'
                 ],
-                'assignment': 'Project 3: Terrain classification system'
+                'assignment': 'Project 2: Optimal sampling strategy implementation'
             },
             {
                 'week': '7-8',
-                'title': 'Autonomous Sample Collection',
+                'title': 'Digital Twins & Online Learning',
                 'topics': [
-                    'Target identification',
-                    'Manipulation planning',
-                    'Sample analysis and prioritization',
-                    'Resource-constrained decision making'
+                    'Digital twin fundamentals',
+                    'Online Bayesian learning',
+                    'Adaptive exploration strategies',
+                    'Sequential decision making',
+                    'Real-time model updates'
                 ],
-                'assignment': 'Midterm Project: End-to-end sample collection system'
+                'assignment': 'Project 3: Adaptive digital twin system'
             },
             {
                 'week': '9-10',
-                'title': 'Multi-Robot Coordination',
+                'title': 'SLAM and Active Perception',
                 'topics': [
-                    'Swarm robotics',
-                    'Distributed task allocation',
-                    'Communication constraints',
-                    'Collaborative mapping'
+                    'Information-theoretic SLAM',
+                    'Active view selection',
+                    'Uncertainty-aware mapping',
+                    'Exploration-exploitation trade-offs',
+                    'Resource-constrained planning'
                 ],
-                'assignment': 'Project 4: Multi-robot coordination simulation'
+                'assignment': 'Midterm Project: Information-driven mapping system'
             },
             {
                 'week': '11-12',
-                'title': 'Extreme Environment Operations',
+                'title': 'Multi-Robot Coordination & Distributed Learning',
                 'topics': [
-                    'Thermal management',
-                    'Radiation-hardened computing',
-                    'Dust mitigation',
-                    'Low-light operation'
+                    'Distributed bandit algorithms',
+                    'Multi-agent exploration strategies',
+                    'Collaborative information gathering',
+                    'Decentralized decision making',
+                    'Communication-aware sampling'
                 ],
-                'assignment': 'Project 5: Environmental challenge solutions'
+                'assignment': 'Project 4: Multi-robot exploration system'
             },
             {
                 'week': '13-14',
-                'title': 'Resource-Aware Planning & Adaptive Learning',
+                'title': 'Extreme Environment Operations',
                 'topics': [
-                    'Power management',
-                    'Online and transfer learning',
-                    'Uncertainty estimation',
-                    'Fault detection and recovery'
+                    'Risk-aware exploration',
+                    'Robust sampling strategies',
+                    'Adaptive resource allocation',
+                    'Environmental uncertainty modeling',
+                    'Safety-constrained learning'
                 ],
-                'assignment': 'Project 6: Adaptive learning system'
+                'assignment': 'Project 5: Robust exploration system'
             },
             {
                 'week': '15-16',
-                'title': 'Space-Specific Challenges & Bio-Inspired Solutions',
+                'title': 'Integration & Advanced Applications',
                 'topics': [
-                    'Zero/low-gravity operations',
-                    'Bio-mimetic locomotion',
-                    'Time-delayed teleoperation',
-                    'Orbital mechanics for navigation'
+                    'Meta-learning for exploration',
+                    'Transfer learning in space applications',
+                    'Lifelong learning systems',
+                    'Integrated perception-planning-learning',
+                    'Real-world deployment strategies'
                 ],
-                'assignment': 'Final Project: Comprehensive space robotics challenge'
+                'assignment': 'Final Project: End-to-end space robotics system'
             }
         ],
         'grading': {
-            'Projects (6)': '40%',
+            'Projects (5)': '40%',
             'Midterm Project': '20%',
             'Final Project': '25%',
             'Class Participation': '15%'
         },
         'learning_outcomes': [
-            'Design and implement computer vision systems for extreme environments',
-            'Develop SLAM and navigation solutions for unknown terrains',
-            'Create resource-aware planning algorithms for autonomous systems',
-            'Implement multi-robot coordination strategies',
+            'Design and implement information-theoretic sampling strategies',
+            'Develop adaptive exploration and learning systems',
+            'Apply multi-armed bandit algorithms to real-world problems',
+            'Create resource-aware planning algorithms',
+            'Implement distributed learning systems for multi-robot scenarios',
             'Solve challenges specific to space robotics applications'
         ]
     }
     
     return render(request, 'ses598_course.html', {'syllabus': syllabus})
+
+# Define correct answers
+correct_answers = {
+    'q1': 'a',  # Perspective projection matrix
+    'q2': 'b',  # Feature tracking for SfM
+    'q3': 'a',  # SLAM chicken-and-egg problem
+    'q4': 'b',  # Information gain in SLAM
+    'q5': 'b',  # Bayesian optimization
+    'q6': 'a',  # Thompson sampling
+    'q7': 'b',  # Multi-modal sensing
+    'q8': 'b',  # Uncertainty modeling
+    'q9': 'a',  # Local vs global planning
+    'q10': 'b'  # Distributed decision-making
+}

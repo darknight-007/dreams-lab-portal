@@ -99,3 +99,37 @@ class Photo(models.Model):
 
   def __str__(self):
       return self.photo_url  # Or any other string representation you prefer.
+
+class QuizSubmission(models.Model):
+    quiz_id = models.CharField(max_length=8)
+    submission_date = models.DateTimeField(auto_now_add=True)
+    cv_score = models.FloatField()
+    slam_score = models.FloatField()
+    estimation_score = models.FloatField()
+    sensing_score = models.FloatField()
+    motion_score = models.FloatField()
+    neural_score = models.FloatField(null=True, default=0)
+    total_score = models.FloatField()
+    
+    # Question responses
+    q1 = models.CharField(max_length=1)
+    q2 = models.CharField(max_length=1)
+    q3 = models.CharField(max_length=1)
+    q4 = models.CharField(max_length=1)
+    q5 = models.CharField(max_length=1)
+    q6 = models.CharField(max_length=1)
+    q7 = models.CharField(max_length=1)
+    q8 = models.CharField(max_length=1)
+    q9 = models.CharField(max_length=1)
+    q10 = models.CharField(max_length=1)
+    q11 = models.CharField(max_length=1, null=True, blank=True)
+    q12 = models.CharField(max_length=1, null=True, blank=True)
+    q13 = models.CharField(max_length=1, null=True, blank=True)
+    q14 = models.CharField(max_length=1, null=True, blank=True)
+    q15 = models.CharField(max_length=1, null=True, blank=True)
+
+    class Meta:
+        db_table = 'dreams_laboratory_quizsubmission'
+
+    def __str__(self):
+        return f"Quiz {self.quiz_id} - Score: {self.total_score}%"
