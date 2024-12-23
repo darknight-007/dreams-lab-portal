@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Estimation Challenge</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .widget-container {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .plot-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .value-display {
+            text-align: center;
+            font-family: monospace;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .results {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .convergence-plot {
+            width: 100%;
+            height: 200px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div id="system-plot" class="plot-container"></div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="learning-rate">Learning Rate</label>
+                <input type="range" id="learning-rate" min="0.01" max="1" step="0.01" value="0.1">
+                <div class="value-display" id="learning-rate-value">0.1</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="iterations">Max Iterations</label>
+                <input type="range" id="iterations" min="10" max="1000" step="10" value="100">
+                <div class="value-display" id="iterations-value">100</div>
+            </div>
+            
+            <button onclick="runOptimization()">Run Optimization</button>
+        </div>
+        
+        <div class="results" id="results">
+            Adjust parameters and run optimization
+        </div>
+        
+        <div id="convergence-plot" class="convergence-plot"></div>
+    </div>
+
+    <script>
+        let trueParameters = {
+            amplitude: 2,
+            frequency: 0.5,
+            phase: Math.PI/4
+        };
+        
+        let currentParameters = {
+            amplitude: 1,
+            frequency: 1,
+            phase: 0
+        };
+        
+        let data;
+        let convergenceHistory = [];
+
+        // Generate synthetic data
+        function generateData() {
+            const n = 100;
+            const x = Array.from({length: n}, (_, i) => i * 0.1);
+            const y = x.map(x => 
+                trueParameters.amplitude * 
+                Math.sin(2 * Math.PI * trueParameters.frequency * x + trueParameters.phase) +
+                (Math.random() - 0.5) * 0.2
+            );
+            return {x, y};
+        }
+
+        // Calculate error
+        function calculateError(params) {
+            return data.x.reduce((sum, x, i) => {
+                const predicted = params.amplitude * 
+                    Math.sin(2 * Math.PI * params.frequency * x + params.phase);
+                const actual = data.y[i];
+                return sum + (predicted - actual) ** 2;
+            }, 0) / data.x.length;
+        }
+
+        // Gradient descent step
+        function gradientStep(params, learningRate) {
+            const h = 0.0001;  // Small value for numerical gradient
+            const gradients = {};
+            
+            // Calculate numerical gradients
+            for (let param in params) {
+                const paramPlus = {...params, [param]: params[param] + h};
+                const paramMinus = {...params, [param]: params[param] - h};
+                
+                const gradient = (calculateError(paramPlus) - calculateError(paramMinus)) / (2 * h);
+                gradients[param] = gradient;
+            }
+            
+            // Update parameters
+            const newParams = {};
+            for (let param in params) {
+                newParams[param] = params[param] - learningRate * gradients[param];
+            }
+            
+            return newParams;
+        }
+
+        function updatePlots() {
+            // System plot
+            const observedPoints = {
+                x: data.x,
+                y: data.y,
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Observed Data',
+                marker: {color: 'blue'}
+            };
+            
+            const currentFit = {
+                x: data.x,
+                y: data.x.map(x => 
+                    currentParameters.amplitude * 
+                    Math.sin(2 * Math.PI * currentParameters.frequency * x + currentParameters.phase)
+                ),
+                mode: 'lines',
+                type: 'scatter',
+                name: 'Current Fit',
+                line: {color: 'red'}
+            };
+            
+            const systemLayout = {
+                title: 'Parameter Estimation',
+                xaxis: {title: 'X'},
+                yaxis: {title: 'Y'},
+                showlegend: true
+            };
+            
+            Plotly.newPlot('system-plot', [observedPoints, currentFit], systemLayout);
+            
+            // Convergence plot
+            if (convergenceHistory.length > 0) {
+                const convergencePlot = {
+                    x: Array.from({length: convergenceHistory.length}, (_, i) => i),
+                    y: convergenceHistory,
+                    mode: 'lines',
+                    type: 'scatter',
+                    name: 'Error',
+                    line: {color: 'green'}
+                };
+                
+                const convergenceLayout = {
+                    title: 'Convergence History',
+                    xaxis: {title: 'Iteration'},
+                    yaxis: {title: 'Error', type: 'log'},
+                    showlegend: false
+                };
+                
+                Plotly.newPlot('convergence-plot', [convergencePlot], convergenceLayout);
+            }
+        }
+
+        function runOptimization() {
+            const learningRate = parseFloat(document.getElementById('learning-rate').value);
+            const maxIterations = parseInt(document.getElementById('iterations').value);
+            
+            convergenceHistory = [];
+            let bestError = Infinity;
+            let bestParams = {...currentParameters};
+            
+            for (let i = 0; i < maxIterations; i++) {
+                currentParameters = gradientStep(currentParameters, learningRate);
+                const error = calculateError(currentParameters);
+                convergenceHistory.push(error);
+                
+                if (error < bestError) {
+                    bestError = error;
+                    bestParams = {...currentParameters};
+                }
+            }
+            
+            currentParameters = bestParams;
+            updatePlots();
+            
+            document.getElementById('results').textContent = 
+                `Final Error: ${bestError.toFixed(6)}\n` +
+                `Learning Rate: ${learningRate}`;
+            
+            // Send result to parent
+            window.parent.postMessage({
+                type: 'widget-result',
+                widgetId: 'param_estimation',
+                result: learningRate
+            }, '*');
+        }
+
+        // Initialize the widget
+        data = generateData();
+        updatePlots();
+
+        // Add event listeners for controls
+        document.getElementById('learning-rate').addEventListener('input', function(e) {
+            document.getElementById('learning-rate-value').textContent = e.target.value;
+        });
+
+        document.getElementById('iterations').addEventListener('input', function(e) {
+            document.getElementById('iterations-value').textContent = e.target.value;
+        });
+    </script>
+</body>
+</html> 

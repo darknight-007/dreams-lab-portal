@@ -7,100 +7,236 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <title>ASU DREAMS Laboratory</title>
     <style>
+        :root {
+            --primary-color: #0096e6;
+            --secondary-color: #8B0000;
+            --text-color: #333;
+            --background-color: #f8f9fa;
+            --border-color: #e9ecef;
+            --section-spacing: 4rem;
+        }
+
         body {
-            font-size: 22px;
-            background-color: #ffffff;
-            color: #000000;
-            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
         }
-        a {
-            color: #0096e6;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        img {
-            padding: 0;
-            max-width: 100%;
-            height: auto;
-        }
+
         .container {
             width: 90%;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 2rem;
         }
-        h1, h2, h3, h4, h5 {
-            margin-top: 1.5em;
+
+        /* Header Styles */
+        .hero-section {
+            background: linear-gradient(to right, #fff, #f0f8ff);
+            padding: 4rem 0;
+            margin-bottom: var(--section-spacing);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .research-project-photo-set, .project-photos {
+
+        .hero-content {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .photo-container {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            width: auto;
-        }
-        .project-photo {
-            height: 250px;
-            width: auto;
-        }
-        .photo-caption {
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
             text-align: center;
-            margin-top: 5px;
-            color: #555;
-            font-style: italic;
-            max-width: 100%; /* Make sure the caption doesn't exceed the width of the photo */
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        #logo {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
+
+        #logo:hover {
+            transform: scale(1.05);
         }
+
+        /* Section Styles */
+        section {
+            margin-bottom: var(--section-spacing);
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3, h4, h5 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.25rem; }
+
+        /* Grid Layout */
         .grid-container {
             display: grid;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
+
         .grid-item {
-            padding: 15px;
-            border: 2px solid #ddd;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
         }
-        .funding-source-logo {
-            height: 200px;
-            width: auto;
+
+        .grid-item:hover {
+            transform: translateY(-5px);
         }
-        .centered-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+
+        /* Project Photos */
+        .research-project-photo-set, .project-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
         }
+
+        .photo-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-photo {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-photo:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-caption {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--background-color);
+        }
+
+        /* Funding Sources */
         .funding-sources-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px; /* Add some space between logos */
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .funding-source-logo {
+            height: 150px;
+            width: auto;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .funding-source-logo:hover {
+            filter: grayscale(0%);
+        }
+
+        /* Links */
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 1rem;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            #logo {
+                width: 200px;
+                height: 200px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="centered-content">
-            <h1>DREAMS Laboratory</h1>
-            <img id="logo" src="https://lh3.googleusercontent.com/pw/AP1GczNPyI0kgpiaTxXRFmjMFGZR31shMfq5qIB4hhaLBTiri7hQbc33fVASZ4xusXyRfzZjfkz_Zr0Y2eOov6v5pekTGvZjd0fdVQFG-wdbQ8I0pG3xpEKKtaUv-QiBODdAS_XLWn5jECL6xFo9rxLsDKQG=w732-h717-s-no?authuser=0" alt="DREAMS Lab Logo" width="300" height="300">
-        </div>
+        <section class="hero-section">
+            <div class="hero-content">
+                <img id="logo" src="https://lh3.googleusercontent.com/pw/AP1GczNPyI0kgpiaTxXRFmjMFGZR31shMfq5qIB4hhaLBTiri7hQbc33fVASZ4xusXyRfzZjfkz_Zr0Y2eOov6v5pekTGvZjd0fdVQFG-wdbQ8I0pG3xpEKKtaUv-QiBODdAS_XLWn5jECL6xFo9rxLsDKQG=w732-h717-s-no?authuser=0" alt="DREAMS Lab Logo">
+                <div>
+                    <h1>DREAMS Laboratory</h1>
+                    <p>The Distributed Robotic Exploration and Mapping Systems (DREAMS) Laboratory specializes in the research and development of autonomous robotic systems and cyber-physical twins, for advanced mapping, sampling, and analysis in diverse environments — terrestrial, aquatic, and extraterrestrial.</p>
+                </div>
+            </div>
+        </section>
 
-        <p>The Distributed Robotic Exploration and Mapping Systems (DREAMS) Laboratory specializes in the research and development of autonomous robotic systems and cyber-physical twins, for advanced mapping, sampling, and analysis in diverse environments — terrestrial, aquatic, and extraterrestrial. DREAMS Lab is composed of a multidisciplinary team of researchers in engineering and science, passionate about pushing the boundaries of exploration and discovery.</p>
-        <p>As part of Arizona State University, the DREAMS Lab is affiliated with the <a href="https://sese.asu.edu">School of Earth and Space Exploration</a>, the <a href="https://globalfutures.asu.edu/">Global Futures Laboratory</a>, and the <a href="https://gdcs.asu.edu" target="_blank">Center for Global Discovery and Conservation Science (GDCS)</a>. Located in the heart of innovation at ASU's <a href="https://cfo.asu.edu/ISTB7" target="_blank">Walton Center for Planetary Health (WCPH)</a>, the lab welcomes everyone interested in pioneering research and scholarship.</p>
+        <section>
+            <p>As part of Arizona State University, the DREAMS Lab is affiliated with the <a href="https://sese.asu.edu">School of Earth and Space Exploration</a>, the <a href="https://globalfutures.asu.edu/">Global Futures Laboratory</a>, and the <a href="https://gdcs.asu.edu" target="_blank">Center for Global Discovery and Conservation Science (GDCS)</a>. Located in the heart of innovation at ASU's <a href="https://cfo.asu.edu/ISTB7" target="_blank">Walton Center for Planetary Health (WCPH)</a>, the lab welcomes everyone interested in pioneering research and scholarship.</p>
+        </section>
 
         <section id="research-areas">
             <h2>Focus Areas</h2>
@@ -113,7 +249,7 @@
                             <h4>Projects</h4>
                             <div class="research-project-photo-set">
                                 {% for project in area.projects.all %}
-                                    <div class="project-entry grid-item">
+                                    <div class="project-entry">
                                         <h5>
                                             {% if project.website_url %}
                                                 <a href="{{ project.website_url }}" target="_blank">{{ project.title }}</a>
@@ -127,13 +263,9 @@
                                                     <a href="{{ photo.photo_url }}" target="_blank">
                                                         <img src="{{ photo.photo_url }}" alt="Project Image" class="project-photo">
                                                     </a>
-                                                    <div class="photo-caption">
-                                                        {% if photo.caption %}
-                                                            {{ photo.caption|safe }}
-                                                        {% else %}
-                                                            <span style="color: #aaa;">No caption available</span>
-                                                        {% endif %}
-                                                    </div>
+                                                    {% if photo.caption %}
+                                                        <div class="photo-caption">{{ photo.caption|safe }}</div>
+                                                    {% endif %}
                                                 </div>
                                             {% endfor %}
                                         </div>
@@ -148,68 +280,74 @@
 
         <section id="people">
             <h2>People</h2>
-            <table class="people-table">
-                <thead>
-                    <tr>
-                        <th>Photo</th>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Affiliation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for person in people %}
-                        {% if person.role != 'Alumni' %}
+            <div class="table-responsive">
+                <table class="people-table">
+                    <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Affiliation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for person in people %}
+                            {% if person.role != 'Alumni' %}
+                                <tr>
+                                    <td>
+                                        {% if person.profile_pic %}
+                                            <img src="{{ person.profile_pic }}" alt="{{ person.first_name }} {{ person.last_name }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%;">
+                                        {% else %}
+                                            <div style="width: 120px; height: 120px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center;">No photo</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ person.first_name }} {{ person.last_name }}</td>
+                                    <td>{{ person.role }}</td>
+                                    <td>{{ person.affiliation }}</td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
                             <tr>
-                                <td>
-                                    {% if person.profile_pic %}
-                                        <img src="{{ person.profile_pic }}" alt="{{ person.first_name }} {{ person.last_name }}" class="person-photo" style="width: 200px; height: auto;">
-                                    {% else %}
-                                        No photo
-                                    {% endif %}
-                                </td>
-                                <td>{{ person.first_name }} {{ person.last_name }}</td>
-                                <td>{{ person.role }}</td>
-                                <td>{{ person.affiliation }}</td>
+                                <td colspan="4">No people found.</td>
                             </tr>
-                        {% endif %}
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">No people found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section id="assets">
             <h2>Assets</h2>
-            <table class="assets-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Photo</th>
-                        <th>Project</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for asset in assets %}
+            <div class="table-responsive">
+                <table class="assets-table">
+                    <thead>
                         <tr>
-                            <td>{{ asset.asset_name }}</td>
-                            <td>{{ asset.description }}</td>
-                            <td>
-                                <img src="{{ asset.photo_set.first.photo_url }}" alt="Asset Image" style="width: 300px; height: auto;">
-                            </td>
-                            <td>{{ asset.project.title }}</td>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Photo</th>
+                            <th>Project</th>
                         </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">No assets found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for asset in assets %}
+                            <tr>
+                                <td>{{ asset.asset_name }}</td>
+                                <td>{{ asset.description }}</td>
+                                <td>
+                                    <div class="photo-container" style="width: 200px; height: 150px;">
+                                        <img src="{{ asset.photo_set.first.photo_url }}" alt="Asset Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                    </div>
+                                </td>
+                                <td>{{ asset.project.title }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">No assets found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section id="publications">
@@ -218,10 +356,13 @@
                 {% for publication in publications|dictsortreversed:"publication_date" %}
                     <div class="publication-item grid-item">
                         <p>
-                            ({{ publication.publication_date|date:"Y" }}).
-                            <em>{{ publication.title }}</em>
+                            <span class="publication-year">({{ publication.publication_date|date:"Y" }})</span>
+                            <span class="publication-title">{{ publication.title }}</span>
                             {% if publication.link %}
-                                . <a href="{{ publication.link }}" target="_blank">Access</a>
+                                <a href="{{ publication.link }}" target="_blank" class="publication-link">
+                                    <span class="link-text">Access</span>
+                                    <span class="link-icon">→</span>
+                                </a>
                             {% endif %}
                         </p>
                     </div>
@@ -235,12 +376,37 @@
             <h2>Sponsors and Partners</h2>
             <div class="funding-sources-container">
                 {% for source in funding_source %}
-                    <img src="{{ source.photo_url }}" alt="{{ source.name }}" class="funding-source-logo">
+                    <div class="funding-source">
+                        <img src="{{ source.photo_url }}" alt="{{ source.name }}" class="funding-source-logo">
+                    </div>
                 {% empty %}
                     <p>No funding sources found.</p>
                 {% endfor %}
             </div>
         </section>
     </div>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add table responsiveness
+        document.addEventListener('DOMContentLoaded', function() {
+            const tables = document.querySelectorAll('table');
+            tables.forEach(table => {
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('table-responsive');
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            });
+        });
+    </script>
 </body>
 </html>

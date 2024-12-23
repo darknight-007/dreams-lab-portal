@@ -41,6 +41,9 @@ def create_gazebo_world(cameras, rock_location, model_path, world_output_path):
     # Gazebo template for a world file
     gazebo_world_template = f"""<?xml version="1.0" ?>
 <sdf version="1.6">
+
+
+
     <world name="default">
         <!-- Include Ground Plane -->
         <include>

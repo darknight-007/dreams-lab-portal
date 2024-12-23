@@ -151,6 +151,61 @@
             color: #666;
             font-style: italic;
         }
+
+        /* Add interactive widget styles */
+        .interactive-question {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .widget-container {
+            margin: 1.5rem 0;
+            width: 100%;
+            min-height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .interactive-widget {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .question-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .interactive-answer {
+            width: 200px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        /* Loading indicator for widgets */
+        .widget-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            background: #f8f9fa;
+        }
+
+        .widget-loading::after {
+            content: "Loading interactive widget...";
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -342,6 +397,42 @@
                 </div>
             </div>
 
+            <!-- Interactive Components Section -->
+            <div class="quiz-section">
+                <h2 class="section-title">Interactive Challenges</h2>
+                
+                {% for component in quiz_questions.interactive_components %}
+                <div class="interactive-question" id="{{ component.id }}-container">
+                    <h3>{{ component.title }}</h3>
+                    <p>{{ component.description }}</p>
+                    
+                    <div class="widget-container">
+                        <div class="widget-loading" id="{{ component.id }}-loading"></div>
+                        <iframe 
+                            src="{% url component.widget_url %}"
+                            class="interactive-widget"
+                            id="{{ component.id }}-frame"
+                            data-widget-type="{{ component.type }}"
+                            onload="hideLoading('{{ component.id }}')"
+                            sandbox="allow-same-origin allow-scripts allow-forms"
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                    
+                    <div class="question-container">
+                        <p class="question">{{ component.question }}</p>
+                        <input type="number" 
+                               name="{{ component.id }}_answer"
+                               id="{{ component.id }}_answer"
+                               step="0.01"
+                               required
+                               class="interactive-answer"
+                               placeholder="Enter your answer">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
             <button type="submit" class="submit-btn">Submit Quiz</button>
         </form>
 
@@ -435,6 +526,28 @@
             // Remove the temporary input
             document.body.removeChild(tempInput);
         }
+
+        // Add widget loading handler
+        function hideLoading(componentId) {
+            const loadingElement = document.getElementById(`${componentId}-loading`);
+            if (loadingElement) {
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        // Add widget communication
+        window.addEventListener('message', function(event) {
+            // Verify the origin
+            if (event.origin !== window.location.origin) return;
+
+            const data = event.data;
+            if (data.type === 'widget-result') {
+                const answerInput = document.getElementById(`${data.widgetId}_answer`);
+                if (answerInput) {
+                    answerInput.value = data.result;
+                }
+            }
+        });
     </script>
 </body>
 </html> 

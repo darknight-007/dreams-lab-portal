@@ -744,3 +744,25 @@ correct_answers = {
     'q9': 'a',  # Local vs global planning
     'q10': 'b'  # Distributed decision-making
 }
+
+def validate_interactive_answer(question_id, student_answer, correct_answer, tolerance):
+    try:
+        student_val = float(student_answer)
+        correct_val = float(correct_answer)
+        return abs(student_val - correct_val) <= tolerance
+    except ValueError:
+        return False
+
+def process_quiz_submission(request):
+    if request.method == 'POST':
+        interactive_scores = []
+        for component in quiz_questions['interactive_components']:
+            answer_key = f"{component['id']}_answer"
+            student_answer = request.POST.get(answer_key)
+            is_correct = validate_interactive_answer(
+                component['id'],
+                student_answer,
+                component['correct_answer'],
+                component['tolerance']
+            )
+            interactive_scores.append(is_correct)

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stereo Vision Widget</title>
+    <style>
+        .widget-container {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stereo-images {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        .stereo-image {
+            max-width: 300px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .marker {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+
+        .controls {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .depth-result {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div class="stereo-images">
+            <div class="image-container" id="left-image">
+                <img src="/static/images/stereo_left.jpg" alt="Left stereo image" class="stereo-image">
+                <div class="marker" style="display: none;"></div>
+            </div>
+            <div class="image-container" id="right-image">
+                <img src="/static/images/stereo_right.jpg" alt="Right stereo image" class="stereo-image">
+                <div class="marker" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="resetMarkers()">Reset Markers</button>
+            <button onclick="calculateDepth()">Calculate Depth</button>
+        </div>
+        
+        <div class="depth-result" id="depth-result"></div>
+    </div>
+
+    <script>
+        let leftMarker = null;
+        let rightMarker = null;
+        const baseline = 0.2; // 20cm baseline
+        const focalLength = 500; // pixels
+
+        function initializeMarkers() {
+            const leftImage = document.querySelector('#left-image');
+            const rightImage = document.querySelector('#right-image');
+            
+            leftImage.addEventListener('click', (e) => placeMarker(e, 'left'));
+            rightImage.addEventListener('click', (e) => placeMarker(e, 'right'));
+        }
+
+        function placeMarker(event, side) {
+            const container = event.currentTarget;
+            const marker = container.querySelector('.marker');
+            const rect = container.getBoundingClientRect();
+            
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            marker.style.left = x + 'px';
+            marker.style.top = y + 'px';
+            marker.style.display = 'block';
+            
+            if (side === 'left') {
+                leftMarker = { x, y };
+            } else {
+                rightMarker = { x, y };
+            }
+        }
+
+        function resetMarkers() {
+            document.querySelectorAll('.marker').forEach(marker => {
+                marker.style.display = 'none';
+            });
+            leftMarker = null;
+            rightMarker = null;
+            document.getElementById('depth-result').textContent = '';
+        }
+
+        function calculateDepth() {
+            if (!leftMarker || !rightMarker) {
+                alert('Please place markers on both images');
+                return;
+            }
+
+            const disparity = Math.abs(leftMarker.x - rightMarker.x);
+            const depth = (baseline * focalLength) / disparity;
+            
+            document.getElementById('depth-result').textContent = `Depth: ${depth.toFixed(2)} meters`;
+            
+            // Send result to parent
+            window.parent.postMessage({
+                type: 'widget-result',
+                widgetId: 'stereo_challenge',
+                result: depth.toFixed(2)
+            }, '*');
+        }
+
+        // Initialize the widget
+        initializeMarkers();
+    </script>
+</body>
+</html> 

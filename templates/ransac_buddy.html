@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RANSAC Model Fitting</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .widget-container {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .plot-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        .value-display {
+            text-align: center;
+            font-family: monospace;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .results {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <div id="plot" class="plot-container"></div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="threshold">Inlier Threshold</label>
+                <input type="range" id="threshold" min="0.1" max="5" step="0.1" value="1">
+                <div class="value-display" id="threshold-value">1.0</div>
+            </div>
+            
+            <div class="control-group">
+                <label for="iterations">RANSAC Iterations</label>
+                <input type="range" id="iterations" min="10" max="1000" step="10" value="100">
+                <div class="value-display" id="iterations-value">100</div>
+            </div>
+            
+            <button onclick="runRANSAC()">Run RANSAC</button>
+        </div>
+        
+        <div class="results" id="results">
+            Run RANSAC to see results
+        </div>
+    </div>
+
+    <script>
+        let data;
+        let bestModel;
+        let bestInliers;
+
+        // Generate synthetic data with outliers
+        function generateData() {
+            const n = 100;
+            const x = Array.from({length: n}, () => Math.random() * 10);
+            const y = x.map(x => 2*x + 1 + (Math.random() - 0.5));
+            
+            // Add outliers
+            const nOutliers = 20;
+            for (let i = 0; i < nOutliers; i++) {
+                const idx = Math.floor(Math.random() * n);
+                y[idx] += (Math.random() - 0.5) * 10;
+            }
+            
+            return {x, y};
+        }
+
+        // Fit line using least squares
+        function fitLine(x, y) {
+            const n = x.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            
+            for (let i = 0; i < n; i++) {
+                sumX += x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumX2 += x[i] * x[i];
+            }
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            return {slope, intercept};
+        }
+
+        // Calculate distance from point to line
+        function distanceToLine(x, y, slope, intercept) {
+            return Math.abs(y - (slope * x + intercept)) / Math.sqrt(1 + slope * slope);
+        }
+
+        // RANSAC implementation
+        function ransac(data, threshold, maxIterations) {
+            const n = data.x.length;
+            let bestInlierCount = 0;
+            let bestModel = null;
+            let bestInlierIndices = null;
+            
+            for (let iter = 0; iter < maxIterations; iter++) {
+                // Sample two random points
+                const idx1 = Math.floor(Math.random() * n);
+                const idx2 = Math.floor(Math.random() * n);
+                
+                if (idx1 === idx2) continue;
+                
+                // Fit line to these points
+                const model = fitLine([data.x[idx1], data.x[idx2]], [data.y[idx1], data.y[idx2]]);
+                
+                // Count inliers
+                const inliers = [];
+                for (let i = 0; i < n; i++) {
+                    const dist = distanceToLine(data.x[i], data.y[i], model.slope, model.intercept);
+                    if (dist < threshold) {
+                        inliers.push(i);
+                    }
+                }
+                
+                if (inliers.length > bestInlierCount) {
+                    bestInlierCount = inliers.length;
+                    bestModel = model;
+                    bestInlierIndices = inliers;
+                }
+            }
+            
+            return {model: bestModel, inliers: bestInlierIndices};
+        }
+
+        function updatePlot() {
+            const allPoints = {
+                x: data.x,
+                y: data.y,
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Data Points',
+                marker: {color: 'blue'}
+            };
+            
+            const layout = {
+                title: 'RANSAC Line Fitting',
+                xaxis: {title: 'X'},
+                yaxis: {title: 'Y'},
+                showlegend: true
+            };
+            
+            if (bestModel && bestInliers) {
+                // Color inliers green
+                const inlierPoints = {
+                    x: bestInliers.map(i => data.x[i]),
+                    y: bestInliers.map(i => data.y[i]),
+                    mode: 'markers',
+                    type: 'scatter',
+                    name: 'Inliers',
+                    marker: {color: 'green'}
+                };
+                
+                // Add fitted line
+                const lineX = [0, 10];
+                const lineY = lineX.map(x => bestModel.slope * x + bestModel.intercept);
+                const fittedLine = {
+                    x: lineX,
+                    y: lineY,
+                    mode: 'lines',
+                    type: 'scatter',
+                    name: 'Fitted Line',
+                    line: {color: 'red'}
+                };
+                
+                Plotly.newPlot('plot', [allPoints, inlierPoints, fittedLine], layout);
+            } else {
+                Plotly.newPlot('plot', [allPoints], layout);
+            }
+        }
+
+        function runRANSAC() {
+            const threshold = parseFloat(document.getElementById('threshold').value);
+            const iterations = parseInt(document.getElementById('iterations').value);
+            
+            const result = ransac(data, threshold, iterations);
+            bestModel = result.model;
+            bestInliers = result.inliers;
+            
+            updatePlot();
+            
+            document.getElementById('results').textContent = 
+                `Found ${bestInliers.length} inliers using threshold ${threshold}`;
+            
+            // Send result to parent
+            window.parent.postMessage({
+                type: 'widget-result',
+                widgetId: 'ransac_challenge',
+                result: bestInliers.length
+            }, '*');
+        }
+
+        // Initialize the widget
+        data = generateData();
+        updatePlot();
+
+        // Add event listeners for controls
+        document.getElementById('threshold').addEventListener('input', function(e) {
+            document.getElementById('threshold-value').textContent = e.target.value;
+        });
+
+        document.getElementById('iterations').addEventListener('input', function(e) {
+            document.getElementById('iterations-value').textContent = e.target.value;
+        });
+    </script>
+</body>
+</html> 

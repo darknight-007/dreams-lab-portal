@@ -14,13 +14,23 @@ services:
       - TWILIO_ACCOUNT_SID=key
       - TWILIO_AUTH_TOKEN=key
       - TWILIO_VERIFY_SERVICE_SID=key
-      - ALLOWED_HOSTS=your-domain.com,localhost,127.0.0.1,192.168.0.186
-
+      - ALLOWED_HOSTS=dreamslab.deepgis.org,localhost,127.0.0.1,192.168.0.186,172.20.0.10
     volumes:
       - .:/app
-      - ./static:/app/static
-      - ./media:/app/media
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
       - ./db.sqlite3:/app/db.sqlite3
     ports:
-      - "80:8000"
+      - "8080:80"
     command: ["bash", "/app/entrypoint.sh"]
+    networks:
+      dreamslab:
+        ipv4_address: 172.20.0.10
+
+volumes:
+  static_volume:
+  media_volume:
+
+networks:
+  dreamslab:
+    external: true

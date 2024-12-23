@@ -8,9 +8,9 @@ echo "Starting collectstatic..."
 python3 manage.py collectstatic --noinput
 echo "Finished collectstatic"
 
-echo "Starting gunicorn..."
+echo "Starting gunicorn on port 80..."
 gunicorn dreams_laboratory.wsgi:application \
-    --bind 0.0.0.0:8000 \
+    --bind 0.0.0.0:80 \
     --workers 3 \
     --timeout 120 \
     --log-level debug \

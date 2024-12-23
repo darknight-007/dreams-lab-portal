@@ -31,8 +31,8 @@ if SECRET_KEY is None:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,192.168.0.186').split(',')
-X_FRAME_OPTIONS = 'DENY'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'deepgis.org,localhost,127.0.0.1').split(',')
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Application definition
 
@@ -189,3 +189,25 @@ if DEBUG:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 else:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security settings - make them dependent on DEBUG mode
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_TRUSTED_ORIGINS = ['http://deepgis.org', 'http://192.168.0.186', 'https://deepgis.org']
+
+if DEBUG:
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+else:
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# Update allowed hosts
+ALLOWED_HOSTS = ['deepgis.org', 'localhost', '127.0.0.1', '192.168.0.186']
