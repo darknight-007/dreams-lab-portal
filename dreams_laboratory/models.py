@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 
 
 class CustomUser(AbstractUser):
@@ -133,3 +133,18 @@ class QuizSubmission(models.Model):
 
     def __str__(self):
         return f"Quiz {self.quiz_id} - Score: {self.total_score}%"
+
+class QuizProgress(models.Model):
+    """Model to store user progress in quizzes"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    component_id = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'component_id')
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.component_id} - {'Correct' if self.is_correct else 'Incorrect'}"

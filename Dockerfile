@@ -22,8 +22,18 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive  apt-get install -y --no-in
     libopenal1 \
     curl \
 sqlite \
-    python3-pip && \
+    python3-pip \
+    apt-transport-https \
+    ca-certificates \
+    gnupg-agent \
+    software-properties-common && \
     apt-get clean
+
+# Install Docker
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
+    apt-get update && \
+    apt-get install -y docker-ce-cli
 
 COPY blender-4.2.2-linux-x64 /opt/blender
 RUN chmod +x /opt/blender/blender
@@ -37,6 +47,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . /app/
+
+# Create docker group with same GID as host
+RUN groupadd -g 999 docker && \
+    usermod -aG docker root
 
 # Collect static files
 # RUN python3 manage.py collectstatic --noinput

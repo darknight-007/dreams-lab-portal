@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2>OpenUAV Management</h2>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col">
+                    <h4>Status: 
+                        {% if status.is_running %}
+                            <span class="badge bg-success">Running</span>
+                        {% else %}
+                            <span class="badge bg-danger">Stopped</span>
+                        {% endif %}
+                    </h4>
+                    <p>Instances running: {{ status.instance_count }}</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    {% if not status.is_running %}
+                        <button id="startBtn" class="btn btn-success btn-lg">
+                            <i class="fas fa-play"></i> Start OpenUAV
+                        </button>
+                    {% else %}
+                        <button id="stopBtn" class="btn btn-danger btn-lg">
+                            <i class="fas fa-stop"></i> Stop OpenUAV
+                        </button>
+                    {% endif %}
+                    
+                    {% if status.is_running %}
+                        <a href="{{ vnc_url }}" target="_blank" class="btn btn-primary btn-lg">
+                            <i class="fas fa-desktop"></i> Open VNC Interface
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            fetch('/openuav/launch/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        });
+    }
+    
+    if (stopBtn) {
+        stopBtn.addEventListener('click', function() {
+            fetch('/openuav/stop/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        });
+    }
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %} 

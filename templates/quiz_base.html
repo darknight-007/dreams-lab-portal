@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h1>{% block quiz_title %}{% endblock %}</h1>
+        <div class="progress-container" style="display: none;">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span class="progress-text">0 of {{ total_questions }} completed</span>
+        </div>
+    </div>
+
+    <!-- Multiple Choice Questions Section -->
+    <div class="mcq-section">
+        <h2>{% block mcq_section_title %}Part 1: Fundamental Concepts{% endblock %}</h2>
+        <form id="mcqForm">
+            {% csrf_token %}
+            {% block mcq_questions %}{% endblock %}
+            <button type="button" class="submit-button" onclick="submitMCQ()">Submit Part 1</button>
+        </form>
+
+        <div id="mcqResult" class="result-container" style="display: none;"></div>
+    </div>
+
+    <!-- Interactive Components Section -->
+    <div class="interactive-section" style="display: none;">
+        <h2>{% block interactive_section_title %}Part 2: Interactive Challenges{% endblock %}</h2>
+        {% for component in quiz_components %}
+        <div class="interactive-question" data-component-id="{{ component.id }}">
+            <div class="question-header">
+                <h3>{{ component.title }}</h3>
+                <div class="difficulty-badge {{ component.difficulty }}">
+                    {{ component.difficulty|title }}
+                </div>
+            </div>
+
+            <div class="question-content">
+                <p class="description">{{ component.description }}</p>
+                
+                {% if component.example %}
+                <div class="example-box">
+                    <h4>Example:</h4>
+                    <p>{{ component.example }}</p>
+                </div>
+                {% endif %}
+
+                <div class="widget-container">
+                    <iframe src="/widget/{{ component.widget_type }}?{% for key, value in component.parameters.items %}{{ key }}={{ value }}&{% endfor %}"
+                            class="interactive-widget"
+                            frameborder="0"
+                            scrolling="no"
+                            allowfullscreen></iframe>
+                </div>
+
+                <form class="answer-form" data-component-id="{{ component.id }}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" 
+                               name="answer" 
+                               class="form-control" 
+                               placeholder="Enter your answer"
+                               required>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-secondary hint-button" data-component-id="{{ component.id }}">
+                                <i class="fas fa-lightbulb"></i> Hint
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="hint-panel-{{ component.id }}" class="hint-panel"></div>
+                <div class="feedback-panel"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+.quiz-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.quiz-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.quiz-header h1 {
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+}
+
+.progress-container {
+    max-width: 600px;
+    margin: 1rem auto;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.progress {
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: var(--light-color);
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+}
+
+.mcq-section {
+    margin-bottom: 3rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    padding: 2rem;
+}
+
+.mcq-section h2 {
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.question {
+    background-color: var(--light-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.question h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.question label {
+    display: block;
+    margin: 0.75rem 0;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.question label:hover {
+    background-color: var(--light-color);
+    border-color: var(--primary-color);
+}
+
+.question input[type="radio"] {
+    margin-right: 0.75rem;
+}
+
+.submit-button {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    color: white;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+.result-container {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--light-color);
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.result-container h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.interactive-section {
+    margin-top: 3rem;
+}
+
+.interactive-section h2 {
+    color: var(--dark-color);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.interactive-question {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    margin-bottom: 2rem;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.interactive-question:hover {
+    transform: translateY(-2px);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.difficulty-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.difficulty-badge.easy {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.difficulty-badge.medium {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.difficulty-badge.hard {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.example-box {
+    background-color: var(--light-color);
+    border-left: 4px solid var(--info-color);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0.25rem;
+}
+
+.widget-container {
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.interactive-widget {
+    width: 100%;
+    min-height: 400px;
+    border: none;
+}
+
+.input-group {
+    margin: 1.5rem 0;
+}
+
+.input-group input {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+.input-group-append {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.hint-button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.hint-button:hover {
+    background-color: #5a6268;
+}
+
+.hint-panel {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--light-color);
+    border-radius: 0.25rem;
+    display: none;
+}
+
+.hint-panel.active {
+    display: block;
+}
+
+.feedback-panel {
+    margin-top: 1.5rem;
+}
+
+.feedback-panel .success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 1.5rem;
+    border-radius: 0.25rem;
+}
+
+.feedback-panel .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 1.5rem;
+    border-radius: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .quiz-container {
+        margin: 1rem;
+        padding: 0;
+    }
+
+    .mcq-section,
+    .interactive-question {
+        padding: 1.5rem;
+    }
+
+    .question-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .input-group-append {
+        flex-direction: column;
+    }
+
+    .hint-button {
+        margin-left: 0;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/quiz.js' %}"></script>
+<script>
+(function() {
+    const mcqAnswers = JSON.parse('{% block mcq_answers %}{}{% endblock %}');
+    const requiredScore = parseInt('{% block required_score %}3{% endblock %}');
+
+    window.submitMCQ = function() {
+        const form = document.getElementById('mcqForm');
+        let score = 0;
+        let totalQuestions = Object.keys(mcqAnswers).length;
+
+        for (let question in mcqAnswers) {
+            const selected = form[question]?.value;
+            if (selected === mcqAnswers[question]) {
+                score++;
+            }
+        }
+
+        const resultContainer = document.getElementById('mcqResult');
+        resultContainer.style.display = 'block';
+        resultContainer.innerHTML = `<h3>Part 1 Score: ${score} / ${totalQuestions}</h3>`;
+
+        // Show interactive section if score is sufficient
+        if (score >= requiredScore) {
+            document.querySelector('.interactive-section').style.display = 'block';
+            document.querySelector('.progress-container').style.display = 'block';
+            window.quizManager.init();  // Initialize interactive components
+        } else {
+            resultContainer.innerHTML += '<p>Please review the material and try again to unlock the interactive challenges.</p>';
+        }
+    };
+})();
+</script>
+{% endblock %} 

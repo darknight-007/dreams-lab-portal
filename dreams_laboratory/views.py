@@ -11,7 +11,7 @@ from matplotlib.backends.backend_svg import FigureCanvasSVG
 from django.conf import settings
 import subprocess
 import os
-from .models import People, Research, Publication, Project, Asset, FundingSource, QuizSubmission
+from .models import People, Research, Publication, Project, Asset, FundingSource, QuizSubmission, QuizProgress
 from django.http import JsonResponse
 import json
 import os
@@ -30,6 +30,12 @@ from django.conf import settings
 from urllib.parse import urljoin
 
 import uuid
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from .tutorials import TutorialManager
+
+tutorial_manager = TutorialManager()
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -531,42 +537,89 @@ def ransac_demo_data(request):
     })
     
 def ses598_quiz(request):
-    quiz_questions = {
-        'interactive_components': [
-            {
-                'id': 'stereo_challenge',
-                'type': 'stereo_buddy',
-                'title': 'Stereo Vision Challenge',
-                'description': 'Use the stereo vision widget to determine the depth of the marked point.',
-                'widget_url': 'stereo_buddy',
-                'question': 'What is the depth (in meters) of the red marker point?',
-                'validation_type': 'numeric',
-                'tolerance': 0.1  # Allow answers within 10cm
+    """Render the SES598 quiz page with MCQs and interactive components"""
+    # Create quiz components with enhanced features
+    quiz_components = [
+        {
+            'id': 'stereo_challenge',
+            'title': 'Stereo Vision Challenge',
+            'description': 'Use the stereo vision widget to determine the depth of the marked point.',
+            'widget_type': 'stereo_buddy',
+            'difficulty': 'medium',
+            'hint': 'Consider the relationship between disparity and depth. Remember that depth is inversely proportional to disparity.',
+            'example': 'For a baseline of 20cm and focal length of 50mm, a disparity of 100 pixels corresponds to a depth of approximately 2 meters.',
+            'parameters': {
+                'baseline': 0.2,
+                'focal_length': 50.0,
+                'sensor_width': 36.0,
+                'point_depth': 2.0,
+                'noise_level': 0.02,
+                'num_points': 10
             },
-            {
-                'id': 'ransac_challenge',
-                'type': 'ransac_buddy',
-                'title': 'RANSAC Model Fitting',
-                'description': 'Use RANSAC to fit a line to the noisy data and identify outliers.',
-                'widget_url': 'ransac-buddy',
-                'question': 'How many outliers were identified with the optimal threshold?',
-                'validation_type': 'numeric',
-                'tolerance': 2  # Allow for slight variations in outlier detection
-            },
-            {
-                'id': 'param_estimation',
-                'type': 'param_estimation_buddy',
-                'title': 'Parameter Estimation Challenge',
-                'description': 'Estimate the optimal parameters for the given system using the parameter estimation tool.',
-                'widget_url': 'param_estimation_buddy',
-                'question': 'What is the optimal learning rate that achieves the fastest convergence?',
-                'validation_type': 'numeric',
-                'tolerance': 0.01
+            'validation_rules': {
+                'type': 'numeric',
+                'tolerance': 0.1,
+                'correctValue': 2.0
             }
-        ]
+        },
+        {
+            'id': 'ransac_challenge',
+            'title': 'RANSAC Model Fitting',
+            'description': 'Use RANSAC to fit a line to the noisy data and identify outliers.',
+            'widget_type': 'ransac_buddy',
+            'difficulty': 'hard',
+            'hint': 'Try different threshold values. A good threshold should balance between including valid points and excluding outliers.',
+            'example': 'With 100 points and 30% outliers, a threshold of 1.0 typically works well.',
+            'parameters': {
+                'num_points': 100,
+                'outlier_ratio': 0.3,
+                'noise_std': 0.2,
+                'model_params': {'slope': 1.0, 'intercept': 0.0}
+            },
+            'validation_rules': {
+                'type': 'numeric',
+                'tolerance': 2,
+                'correctValue': 30
+            }
+        },
+        {
+            'id': 'param_estimation',
+            'title': 'Parameter Estimation Challenge',
+            'description': 'Estimate the optimal learning rate for fastest convergence using the parameter estimation tool.',
+            'widget_type': 'param_estimation_buddy',
+            'difficulty': 'medium',
+            'hint': 'A good learning rate should converge quickly without overshooting. Watch the convergence plot.',
+            'example': 'If the error oscillates, the learning rate is too high. If it converges very slowly, the learning rate is too low.',
+            'parameters': {
+                'target_params': {'amplitude': 2.0, 'frequency': 0.5, 'phase': 0.785},
+                'noise_level': 0.1,
+                'num_points': 50
+            },
+            'validation_rules': {
+                'type': 'numeric',
+                'tolerance': 0.01,
+                'correctValue': 0.1
+            }
+        }
+    ]
+    
+    # MCQ answers and scoring
+    mcq_answers = {
+        'q1': '3',  # SLAM purpose
+        'q2': '2',  # LiDAR
+        'q3': '1',  # Occupancy grid
+        'q4': '1',  # GPS challenge
+        'q5': '2',  # Path planning
     }
     
-    return render(request, 'ses598_quiz.html', {'quiz_questions': quiz_questions})
+    context = {
+        'quiz_id': request.session.get('quiz_id', 'Not assigned'),
+        'quiz_components': quiz_components,
+        'total_questions': len(mcq_answers) + len(quiz_components),
+        'show_results': False  # Will be True after submission
+    }
+    
+    return render(request, 'ses598_rem_quiz.html', context)
 
 def reset_quiz(request):
     if 'quiz_results' in request.session:
@@ -766,3 +819,181 @@ def process_quiz_submission(request):
                 component['tolerance']
             )
             interactive_scores.append(is_correct)
+
+def tutorial_view(request, tutorial_type, tutorial_id):
+    """View for rendering a tutorial component"""
+    try:
+        # Create tutorial component
+        tutorial = tutorial_manager.create_tutorial(
+            tutorial_type,
+            tutorial_id,
+            difficulty='medium'  # Could be passed as a parameter
+        )
+        
+        # Get context for rendering
+        context = tutorial.get_context()
+        
+        return render(request, 'interactive_component.html', context)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def quiz_view(request, quiz_type, quiz_id):
+    """View for rendering a quiz component"""
+    try:
+        # Create quiz component
+        quiz = tutorial_manager.create_quiz(
+            quiz_type,
+            quiz_id,
+            difficulty=request.GET.get('difficulty', 'medium')
+        )
+        
+        # Get context for rendering
+        context = quiz.get_context(mode='quiz')
+        
+        return render(request, 'interactive_component.html', context)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def validate_quiz_answer(request, component_id):
+    """Validate a quiz answer and return feedback"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        # Get the quiz component
+        component = tutorial_manager.create_quiz(
+            component_id.split('_')[0],  # Extract type from id
+            component_id,
+            difficulty=request.GET.get('difficulty', 'medium')
+        )
+        
+        # Get student answer from POST data
+        student_answer = request.POST.get('answer')
+        if student_answer is None:
+            return JsonResponse({'error': 'No answer provided'}, status=400)
+        
+        # Generate correct answer
+        if hasattr(component, 'generate_ground_truth'):
+            ground_truth = component.generate_ground_truth()
+            correct_answer = ground_truth['depth']  # For stereo vision
+        else:
+            # For other types of quizzes, get correct answer differently
+            correct_answer = component.get_correct_answer()
+        
+        # Validate the answer
+        is_correct = tutorial_manager.validate_answer(
+            component,
+            student_answer,
+            correct_answer
+        )
+        
+        # Save progress
+        if request.user.is_authenticated:
+            QuizProgress.objects.update_or_create(
+                user=request.user,
+                component_id=component_id,
+                defaults={'is_correct': is_correct}
+            )
+        
+        # Return detailed feedback
+        feedback = {
+            'is_correct': is_correct,
+            'correct_answer': correct_answer,
+            'message': 'Correct! Well done!' if is_correct else 'Not quite right. Try again!',
+            'hint': component.get_hint() if hasattr(component, 'get_hint') else None
+        }
+        
+        return JsonResponse(feedback)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def get_tutorial_hints(request, component_id):
+    """Get hints for a quiz component"""
+    try:
+        # Create tutorial component
+        component = tutorial_manager.create_tutorial(
+            component_id.split('_')[0],  # Extract type from id
+            component_id
+        )
+        
+        # Get hints
+        hints = component.get_hints() if hasattr(component, 'get_hints') else []
+        
+        return JsonResponse({'hints': hints})
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def save_quiz_progress(request):
+    """Save the user's quiz progress"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        # Get progress data from request
+        data = json.loads(request.body)
+        component_id = data.get('component_id')
+        is_correct = data.get('is_correct')
+        
+        if not component_id or is_correct is None:
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+        
+        # Get or create progress record
+        progress, created = QuizProgress.objects.get_or_create(
+            user=request.user,
+            component_id=component_id,
+            defaults={'is_correct': is_correct}
+        )
+        
+        if not created:
+            progress.is_correct = is_correct
+            progress.save()
+        
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def load_quiz_progress(request):
+    """Load the user's quiz progress"""
+    try:
+        # Get all progress records for the user
+        progress = QuizProgress.objects.filter(user=request.user)
+        
+        # Format progress data
+        progress_data = {
+            p.component_id: {
+                'is_correct': p.is_correct,
+                'timestamp': p.updated_at.isoformat()
+            }
+            for p in progress
+        }
+        
+        return JsonResponse(progress_data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def widget_view(request, widget_type):
+    """View for rendering interactive widgets"""
+    # Map widget types to their corresponding views
+    widget_map = {
+        'stereo_buddy': stereo_buddy_view,
+        'ransac_buddy': ransac_buddy,
+        'param_estimation_buddy': param_estimation_buddy_view,
+        'slam_buddy': slam_buddy_view,
+        'cart_pole_buddy': cart_pole_buddy_view,
+        'gaussian_processes_buddy': gaussian_processes_buddy_view,
+        'image_buddy': image_buddy_view,
+        'particle_filter_buddy': particle_filter_buddy,
+        'loop_closure_buddy': loop_closure_buddy,
+        'sensor_fusion_buddy': sensor_fusion_buddy,
+        'visual_odometry_buddy': visual_odometry_buddy,
+        'point_cloud_buddy': point_cloud_buddy,
+        'path_planning_buddy': path_planning_buddy,
+    }
+    
+    # Get the corresponding view function
+    view_func = widget_map.get(widget_type)
+    if not view_func:
+        return JsonResponse({'error': f'Widget type {widget_type} not found'}, status=404)
+    
+    # Pass all query parameters to the view
+    return view_func(request)

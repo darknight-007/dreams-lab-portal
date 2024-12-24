@@ -6,4 +6,6 @@ twilio>=7.15.4
 scipy
 flask
 numpy>=1.19.0
-whitenoise
+docker==3.3.0
+whitenoise>=6.0.0
+docker-py>=1.10.6

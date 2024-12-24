@@ -20,12 +20,15 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - ./db.sqlite3:/app/db.sqlite3
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8080:80"
     command: ["bash", "/app/entrypoint.sh"]
     networks:
       dreamslab:
         ipv4_address: 172.20.0.10
+    group_add:
+      - ${DOCKER_GROUP_ID:-999}
 
 volumes:
   static_volume:

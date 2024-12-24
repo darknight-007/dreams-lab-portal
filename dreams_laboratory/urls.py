@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from dreams_laboratory.views import (
@@ -37,6 +37,15 @@ from dreams_laboratory.views import (
     # Course view
     ses598_course_view,
     reset_quiz,
+    # Tutorial and Quiz URLs
+    tutorial_view,
+    quiz_view,
+    validate_quiz_answer,
+    get_tutorial_hints,
+    save_quiz_progress,
+    load_quiz_progress,
+    # Widget views
+    widget_view,
 )
 from django.http import HttpResponse
 
@@ -49,6 +58,9 @@ urlpatterns = [
     path('', home_view, name='home'),
     path("run_blender/", run_blender, name="run_blender"),
     path('get_models/', get_models, name='get_models'),
+    
+    # OpenUAV Manager URLs
+    path('openuav/', include('openuav_manager.urls')),
     
     # Authentication URLs
     path('initiate-login/', initiate_login, name='initiate_login'),
@@ -85,6 +97,26 @@ urlpatterns = [
     path('ses598/', ses598_course_view, name='ses598_course'),
     path('ses598/quiz/', ses598_quiz, name='ses598_quiz'),
     path('health/', health_check),
+    # Tutorial and Quiz URLs
+    path('tutorial/<str:tutorial_type>/<str:tutorial_id>/', 
+         tutorial_view, 
+         name='tutorial'),
+    
+    path('quiz/<str:quiz_type>/<str:quiz_id>/', 
+         quiz_view, 
+         name='quiz'),
+    
+    path('quiz/<str:quiz_type>/<str:quiz_id>/validate/', 
+         validate_quiz_answer, 
+         name='validate_quiz'),
+    
+    path('tutorial/<str:tutorial_type>/<str:tutorial_id>/hints/', 
+         get_tutorial_hints, 
+         name='tutorial_hints'),
+    path('quiz/progress/save', save_quiz_progress, name='save_quiz_progress'),
+    path('quiz/progress/load', load_quiz_progress, name='load_quiz_progress'),
+    # Widget URLs
+    path('widget/<str:widget_type>/', widget_view, name='widget'),
 ]
 
 if settings.DEBUG:
