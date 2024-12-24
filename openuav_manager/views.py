@@ -102,52 +102,65 @@ def launch_openuav(request):
                 'message': f'Error checking container: {stderr}'
             }, status=500)
             
-        if 'openuav' not in stdout:
-            logger.info("Container does not exist, creating new container...")
-            # Clean up any existing X11 sockets first
-            run_command("rm -f /tmp/.X11-unix/X1")
-            # Container doesn't exist, create it
-            cmd = ("docker run -d --name openuav --privileged "
-                  "-p 6080:6080 -p 5901:5901 "
-                  "-e NVIDIA_VISIBLE_DEVICES=all "
-                  "-e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute "
-                  "-e VNC_PASSWORD=liftoff "
-                  "-v /tmp/.X11-unix:/tmp/.X11-unix:rw "
-                  "openuav:px4-sitl "
-                  "/usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf")
-            stdout, stderr, code = run_command(cmd)
-            if code == 0:
-                logger.info(f"Container created with ID: {stdout}")
-            else:
-                logger.error(f"Failed to create container: {stderr}")
-        else:
-            logger.info("Container exists, cleaning up and restarting...")
-            # Stop and remove existing container
+        # If container exists, stop and remove it
+        if 'openuav' in stdout:
+            logger.info("Container exists, cleaning up...")
             run_command("docker stop openuav")
             run_command("docker rm openuav")
-            run_command("rm -f /tmp/.X11-unix/X1")
-            # Create new container
-            cmd = ("docker run -d --name openuav --privileged "
-                  "-p 6080:6080 -p 5901:5901 "
-                  "-e NVIDIA_VISIBLE_DEVICES=all "
-                  "-e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute "
-                  "-e VNC_PASSWORD=liftoff "
-                  "-v /tmp/.X11-unix:/tmp/.X11-unix:rw "
-                  "openuav:px4-sitl "
-                  "/usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf")
-            stdout, stderr, code = run_command(cmd)
+            
+        # Thorough cleanup of any stale files
+        logger.info("Cleaning up stale files...")
+        run_command("rm -f /tmp/.X11-unix/X1")
+        run_command("rm -f /tmp/.X1*")
+        run_command("pkill -f Xvnc || true")
+        run_command("pkill -f vncserver || true")
+            
+        # Create new container
+        logger.info("Creating new container...")
+        cmd = ("docker run -d --name openuav --privileged "
+              "--gpus all "
+              "-p 6080:6080 -p 5901:5901 "
+              "-e NVIDIA_VISIBLE_DEVICES=all "
+              "-e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute "
+              "-e VNC_PASSWORD=liftoff "
+              "-v /tmp/.X11-unix:/tmp/.X11-unix:rw "
+              "--runtime=nvidia "
+              "openuav:px4-sitl "
+              "/usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf")
+        stdout, stderr, code = run_command(cmd)
         
         if code == 0:
             logger.info("Container started successfully")
-            # Wait a bit for container to initialize
+            # Wait for services to initialize
             import time
-            time.sleep(5)  # Increased wait time to allow services to start
+            time.sleep(5)  # Initial wait
             
-            # Verify container is running and get its status
+            # Verify container is running
             verify_stdout, verify_stderr, verify_code = run_command("docker inspect openuav --format '{{.State.Status}} {{.State.Running}}'")
             logger.info(f"Container state: {verify_stdout}")
             
-            # Get container logs
+            # Check if TurboVNC is running
+            vnc_check, vnc_stderr, vnc_code = run_command("docker exec openuav ps aux | grep Xvnc")
+            if 'Xvnc' not in vnc_check:
+                logger.error("TurboVNC not running, attempting to start it...")
+                # Clean up any stale files inside the container
+                run_command("docker exec openuav rm -f /tmp/.X11-unix/X1 /tmp/.X1* /root/.vnc/*.pid /root/.vnc/*.log")
+                time.sleep(1)  # Wait for cleanup
+                
+                # Try to start TurboVNC manually
+                run_command("docker exec openuav /opt/TurboVNC/bin/vncserver :1 -geometry 1920x1080 -depth 24")
+                time.sleep(2)  # Wait for VNC server to start
+                
+                # Verify TurboVNC again
+                vnc_check, _, _ = run_command("docker exec openuav ps aux | grep Xvnc")
+                if 'Xvnc' not in vnc_check:
+                    logger.error("Failed to start TurboVNC")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Failed to start TurboVNC server'
+                    }, status=500)
+            
+            # Get container logs for debugging
             logs_stdout, logs_stderr, logs_code = run_command("docker logs openuav --tail 20")
             logger.info(f"Container recent logs: {logs_stdout}")
             if logs_stderr:
@@ -156,7 +169,7 @@ def launch_openuav(request):
             return JsonResponse({
                 'status': 'success',
                 'message': 'OpenUAV instance launched successfully',
-                'vnc_url': f'http://{request.get_host().split(":")[0]}:6080/vnc.html',
+                'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1',
                 'container_state': verify_stdout
             })
         else:
@@ -176,18 +189,29 @@ def launch_openuav(request):
 @require_http_methods(["POST"])
 def stop_openuav(request):
     try:
+        # First stop the container
         stdout, stderr, code = run_command("docker stop openuav")
-        
-        if code == 0:
-            return JsonResponse({
-                'status': 'success',
-                'message': 'OpenUAV instance stopped successfully'
-            })
-        else:
+        if code != 0:
             return JsonResponse({
                 'status': 'error',
                 'message': f'Error stopping container: {stderr}'
             }, status=500)
+            
+        # Then remove the container
+        stdout, stderr, code = run_command("docker rm openuav")
+        if code != 0:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error removing container: {stderr}'
+            }, status=500)
+            
+        # Clean up X11 socket
+        run_command("rm -f /tmp/.X11-unix/X1")
+            
+        return JsonResponse({
+            'status': 'success',
+            'message': 'OpenUAV instance stopped and removed successfully'
+        })
     except Exception as e:
         return JsonResponse({
             'status': 'error',
@@ -246,5 +270,5 @@ def manage_openuav(request):
     
     return render(request, 'openuav_manager/manage.html', {
         'status': status,
-        'vnc_url': 'http://localhost:6080'
+        'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1'
     })
