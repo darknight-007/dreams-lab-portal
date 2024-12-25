@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, User
+from django.conf import settings
 
 
 class CustomUser(AbstractUser):
@@ -136,7 +137,7 @@ class QuizSubmission(models.Model):
 
 class QuizProgress(models.Model):
     """Model to store user progress in quizzes"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     component_id = models.CharField(max_length=100)
     is_correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

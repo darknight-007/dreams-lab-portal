@@ -273,3 +273,587 @@ INFO 2024-12-24 05:59:13,425 views 33 139848044822528 Command output - stdout: {
 INFO 2024-12-24 05:59:13,425 views 33 139848044822528 Command return code: 0
 WARNING 2024-12-24 05:59:44,549 log 33 139848044822528 Not Found: /None
 WARNING 2024-12-24 05:59:44,622 log 33 139848044822528 Not Found: /static/images/planetary_background.jpg
+ERROR 2024-12-25 04:31:59,862 exception 285 140648106434560 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 04:31:59,922 log 285 140648106434560 Bad Request: /
+WARNING 2024-12-25 04:32:01,435 log 286 140648106434560 Not Found: /logon.htm
+ERROR 2024-12-25 04:44:04,591 exception 286 140648106434560 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 04:44:04,645 log 286 140648106434560 Bad Request: /
+ERROR 2024-12-25 04:44:04,961 exception 286 140648106434560 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 04:44:05,007 log 286 140648106434560 Bad Request: /443
+ERROR 2024-12-25 04:44:05,340 exception 286 140648106434560 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 04:44:05,388 log 286 140648106434560 Bad Request: /
+ERROR 2024-12-25 04:44:05,710 exception 286 140648106434560 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 04:44:05,755 log 286 140648106434560 Bad Request: /443
+ERROR 2024-12-25 04:52:49,954 exception 286 140648106434560 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 04:52:50,004 log 286 140648106434560 Bad Request: /goform/set_LimitClient_cfg
+WARNING 2024-12-25 05:59:09,817 log 30 140095638204416 Not Found: /None
+WARNING 2024-12-25 05:59:09,915 log 30 140095638204416 Not Found: /static/images/planetary_background.jpg
+INFO 2024-12-25 05:59:13,621 views 30 140095638204416 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 05:59:13,666 views 30 140095638204416 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-24 17:30:17 +0000 UTC","ID":"106e6f7aaf22","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"12 hours ago","Size":"686kB (virtual 14GB)","State":"running","Status":"Up 12 hours"}
+INFO 2024-12-25 05:59:13,667 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:15,538 views 30 140095638204416 Executing command: docker stop openuav
+INFO 2024-12-25 05:59:17,767 views 30 140095638204416 Command output - stdout: openuav
+INFO 2024-12-25 05:59:17,768 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:17,768 views 30 140095638204416 Executing command: docker rm openuav
+INFO 2024-12-25 05:59:17,811 views 30 140095638204416 Command output - stdout: openuav
+INFO 2024-12-25 05:59:17,811 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:17,811 views 30 140095638204416 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 05:59:17,815 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:17,815 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:17,831 views 30 140095638204416 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 05:59:17,860 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:17,861 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:19,256 views 30 140095638204416 Received request to launch OpenUAV
+INFO 2024-12-25 05:59:19,256 views 30 140095638204416 Launching container with name: openuav-f1e3abbf
+INFO 2024-12-25 05:59:19,257 views 30 140095638204416 Checking if container already exists...
+INFO 2024-12-25 05:59:19,257 views 30 140095638204416 Executing command: docker ps -a --filter name=openuav-f1e3abbf --format '{{.Names}}'
+INFO 2024-12-25 05:59:19,291 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:19,291 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:19,292 views 30 140095638204416 Cleaning up stale files...
+INFO 2024-12-25 05:59:19,292 views 30 140095638204416 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 05:59:19,295 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:19,296 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:19,296 views 30 140095638204416 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-25 05:59:19,299 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:19,299 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:19,299 views 30 140095638204416 Executing command: pkill -f Xvnc || true
+INFO 2024-12-25 05:59:19,306 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:19,307 views 30 140095638204416 Command return code: -15
+INFO 2024-12-25 05:59:19,307 views 30 140095638204416 Executing command: pkill -f vncserver || true
+INFO 2024-12-25 05:59:19,312 views 30 140095638204416 Command output - stdout: 
+INFO 2024-12-25 05:59:19,312 views 30 140095638204416 Command return code: -15
+INFO 2024-12-25 05:59:19,313 views 30 140095638204416 Creating new container...
+INFO 2024-12-25 05:59:19,313 views 30 140095638204416 Executing command: docker run -d --name openuav-f1e3abbf --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-25 05:59:20,314 views 30 140095638204416 Command output - stdout: cb26a9dab49f688179c9b1d869fedd9d1aea030927a28003f7c25a9783730621
+INFO 2024-12-25 05:59:20,315 views 30 140095638204416 Command return code: 0
+INFO 2024-12-25 05:59:20,315 views 30 140095638204416 Container started successfully
+INFO 2024-12-25 05:59:25,320 views 30 140095638204416 Executing command: docker inspect --format='{{.Id}}' openuav-f1e3abbf
+INFO 2024-12-25 05:59:25,359 views 30 140095638204416 Command output - stdout: cb26a9dab49f688179c9b1d869fedd9d1aea030927a28003f7c25a9783730621
+INFO 2024-12-25 05:59:25,360 views 30 140095638204416 Command return code: 0
+ERROR 2024-12-25 05:59:25,366 views 30 140095638204416 Exception in launch_openuav: no such table: openuav_manager_container
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such table: openuav_manager_container
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 190, in launch_openuav
+    container = Container.objects.create(
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 453, in create
+    obj.save(force_insert=True, using=self.db)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 739, in save
+    self.save_base(using=using, force_insert=force_insert,
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 776, in save_base
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 881, in _save_table
+    results = self._do_insert(cls._base_manager, using, fields, returning_fields, raw)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 919, in _do_insert
+    return manager._insert(
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1270, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1416, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such table: openuav_manager_container
+ERROR 2024-12-25 05:59:25,369 log 30 140095638204416 Internal Server Error: /openuav/launch/
+ERROR 2024-12-25 06:28:53,101 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 06:28:53,160 log 1177 140351621001216 Bad Request: /
+WARNING 2024-12-25 06:28:54,638 log 1177 140351621001216 Not Found: /logon.htm
+ERROR 2024-12-25 06:35:42,163 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 06:35:42,223 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 06:48:29,560 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 06:48:29,625 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 07:04:11,964 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:04:12,012 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 07:12:18,308 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:12:18,355 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 07:13:28,065 exception 1176 140351621001216 Invalid HTTP_HOST header: 'api.ipify.org'. You may need to add 'api.ipify.org' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:13:28,112 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 07:13:51,494 exception 1176 140351621001216 Invalid HTTP_HOST header: 'www.shadowserver.org'. You may need to add 'www.shadowserver.org' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:13:51,540 log 1176 140351621001216 Bad Request: /443
+ERROR 2024-12-25 07:14:14,475 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:14:14,522 log 1176 140351621001216 Bad Request: /geoserver/web/
+ERROR 2024-12-25 07:43:16,364 exception 1175 140351621001216 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:43:16,412 log 1175 140351621001216 Bad Request: /443
+ERROR 2024-12-25 07:50:50,203 exception 1176 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:50:50,250 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 07:52:23,840 exception 1176 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:52:23,886 log 1176 140351621001216 Bad Request: /443
+ERROR 2024-12-25 07:57:18,655 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:57:18,702 log 1176 140351621001216 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 07:59:08,057 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 07:59:08,104 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 08:20:14,831 exception 1177 140351621001216 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 08:20:14,882 log 1177 140351621001216 Bad Request: /443
+ERROR 2024-12-25 08:31:17,434 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 08:31:17,482 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 08:35:00,278 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 08:35:00,326 log 1176 140351621001216 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 08:37:55,284 exception 1175 140351621001216 Invalid HTTP_HOST header: 'term-3.openuav.us'. You may need to add 'term-3.openuav.us' to ALLOWED_HOSTS.
+WARNING 2024-12-25 08:37:55,333 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 09:27:53,987 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 09:27:54,038 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 09:41:13,599 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 09:41:13,649 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 09:41:14,447 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 09:41:14,494 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 09:41:15,217 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 09:41:15,262 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 10:14:19,452 exception 1175 140351621001216 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:14:19,499 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 10:14:19,825 exception 1175 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:14:19,870 log 1175 140351621001216 Bad Request: /443
+ERROR 2024-12-25 10:14:20,190 exception 1175 140351621001216 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:14:20,236 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 10:14:20,558 exception 1175 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:14:20,602 log 1175 140351621001216 Bad Request: /443
+ERROR 2024-12-25 10:14:59,444 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:14:59,490 log 1175 140351621001216 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 10:38:01,389 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:38:01,437 log 1177 140351621001216 Bad Request: /
+ERROR 2024-12-25 10:41:23,649 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 10:41:23,708 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 11:17:53,733 exception 1175 140351621001216 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:17:53,784 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 11:17:54,789 exception 1176 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:17:54,839 log 1176 140351621001216 Bad Request: /443
+ERROR 2024-12-25 11:17:55,171 exception 1176 140351621001216 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:17:55,216 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 11:17:55,543 exception 1176 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:17:55,598 log 1176 140351621001216 Bad Request: /443
+ERROR 2024-12-25 11:24:22,764 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:24:22,818 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 11:26:02,454 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:26:02,502 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 11:26:03,369 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:26:03,417 log 1177 140351621001216 Bad Request: /favicon.ico
+ERROR 2024-12-25 11:26:03,781 exception 1175 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+ERROR 2024-12-25 11:26:03,788 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:26:03,827 log 1175 140351621001216 Bad Request: /sitemap.xml
+WARNING 2024-12-25 11:26:03,835 log 1176 140351621001216 Bad Request: /robots.txt
+ERROR 2024-12-25 11:28:15,765 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:28:15,813 log 1175 140351621001216 Bad Request: /
+ERROR 2024-12-25 11:45:54,380 exception 1177 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:45:54,428 log 1177 140351621001216 Bad Request: /443
+ERROR 2024-12-25 11:57:49,317 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 11:57:49,364 log 1176 140351621001216 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 12:18:42,150 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 12:18:42,187 log 1176 140351621001216 Bad Request: /
+ERROR 2024-12-25 12:40:01,105 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 12:40:01,157 log 1177 140351621001216 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 14:01:57,747 exception 1176 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:01:57,793 log 1176 140351621001216 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 14:27:10,667 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:10,717 log 1175 140351621001216 Bad Request: /phpMyAdmin/scripts/setup.php
+ERROR 2024-12-25 14:27:11,091 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:11,138 log 1175 140351621001216 Bad Request: /phpmyadmin/scripts/setup.php
+ERROR 2024-12-25 14:27:11,518 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:11,564 log 1175 140351621001216 Bad Request: /phpMyAdmin-2.11.4/scripts/setup.php
+ERROR 2024-12-25 14:27:11,932 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:11,977 log 1175 140351621001216 Bad Request: /phpMyAdmin-2.11.3/scripts/setup.php
+ERROR 2024-12-25 14:27:12,334 exception 1177 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:12,381 log 1177 140351621001216 Bad Request: /phpMyAdmin-2.10.0.2/scripts/setup.php
+ERROR 2024-12-25 14:27:12,746 exception 1177 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:12,793 log 1177 140351621001216 Bad Request: /phpMyAdmin-2.10.3/scripts/setup.php
+ERROR 2024-12-25 14:27:13,171 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:13,217 log 1175 140351621001216 Bad Request: /phpMyAdmin-2.8.0.2/scripts/setup.php
+ERROR 2024-12-25 14:27:13,597 exception 1176 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:13,644 log 1176 140351621001216 Bad Request: /phpMyAdmin-2.10.2/scripts/setup.php
+ERROR 2024-12-25 14:27:14,027 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:14,074 log 1175 140351621001216 Bad Request: /phpMyAdmin-2.11.9.2/scripts/setup.php
+ERROR 2024-12-25 14:27:14,435 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:14,481 log 1175 140351621001216 Bad Request: /phpMyAdmin-2.11.0/scripts/setup.php
+ERROR 2024-12-25 14:27:14,845 exception 1175 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:14,892 log 1175 140351621001216 Bad Request: /phpMyAdmin-2.11.7/scripts/setup.php
+ERROR 2024-12-25 14:27:15,259 exception 1177 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:15,305 log 1177 140351621001216 Bad Request: /phpMyAdmin-2.11.1.2/scripts/setup.php
+ERROR 2024-12-25 14:27:15,671 exception 1177 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:15,798 log 1177 140351621001216 Bad Request: /pma/scripts/setup.php
+ERROR 2024-12-25 14:27:16,179 exception 1177 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:16,225 log 1177 140351621001216 Bad Request: /phpMyAdmin3/scripts/setup.php
+ERROR 2024-12-25 14:27:16,606 exception 1177 140351621001216 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:27:16,652 log 1177 140351621001216 Bad Request: /myadmin/scripts/setup.php
+ERROR 2024-12-25 14:36:03,599 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:36:03,649 log 1177 140351621001216 Bad Request: /
+ERROR 2024-12-25 14:40:26,762 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:40:26,813 log 1177 140351621001216 Bad Request: /
+ERROR 2024-12-25 14:44:35,790 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:44:35,838 log 1177 140351621001216 Bad Request: /
+ERROR 2024-12-25 14:47:08,445 exception 1177 140351621001216 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 14:47:08,493 log 1177 140351621001216 Bad Request: /
+ERROR 2024-12-25 15:50:00,664 exception 1175 140351621001216 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 15:50:00,712 log 1175 140351621001216 Bad Request: /443
+ERROR 2024-12-25 16:20:52,582 exception 1176 140351621001216 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 16:20:52,630 log 1176 140351621001216 Bad Request: /443
+WARNING 2024-12-25 16:28:57,906 log 1050 140122105278464 Not Found: /favicon.ico
+ERROR 2024-12-25 16:38:03,804 exception 1050 140122105278464 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 16:38:03,911 log 1050 140122105278464 Bad Request: /cgi-bin/luci/;stok=/locale
+INFO 2024-12-25 16:44:03,713 views 1049 140122105278464 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 16:44:03,757 views 1049 140122105278464 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 05:59:19 +0000 UTC","ID":"cb26a9dab49f","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-f1e3abbf","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"11 hours ago","Size":"515kB (virtual 14GB)","State":"running","Status":"Up 11 hours"}
+INFO 2024-12-25 16:44:03,757 views 1049 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:05,410 views 1049 140122105278464 Executing command: docker stop openuav
+INFO 2024-12-25 16:44:05,443 views 1049 140122105278464 Command output - stdout: 
+ERROR 2024-12-25 16:44:05,443 views 1049 140122105278464 Command error - stderr: Error response from daemon: No such container: openuav
+INFO 2024-12-25 16:44:05,443 views 1049 140122105278464 Command return code: 1
+ERROR 2024-12-25 16:44:05,444 log 1049 140122105278464 Internal Server Error: /openuav/stop/
+INFO 2024-12-25 16:44:10,028 views 1049 140122105278464 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 16:44:10,071 views 1049 140122105278464 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 05:59:19 +0000 UTC","ID":"cb26a9dab49f","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-f1e3abbf","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"11 hours ago","Size":"515kB (virtual 14GB)","State":"running","Status":"Up 11 hours"}
+INFO 2024-12-25 16:44:10,071 views 1049 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:49,045 views 1048 140122105278464 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 16:44:49,082 views 1048 140122105278464 Command output - stdout: 
+INFO 2024-12-25 16:44:49,082 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:50,822 views 1048 140122105278464 Received request to launch OpenUAV
+INFO 2024-12-25 16:44:50,823 views 1048 140122105278464 Launching container with name: openuav-3ad74990
+INFO 2024-12-25 16:44:50,823 views 1048 140122105278464 Checking if container already exists...
+INFO 2024-12-25 16:44:50,823 views 1048 140122105278464 Executing command: docker ps -a --filter name=openuav-3ad74990 --format '{{.Names}}'
+INFO 2024-12-25 16:44:50,856 views 1048 140122105278464 Command output - stdout: 
+INFO 2024-12-25 16:44:50,856 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:50,857 views 1048 140122105278464 Cleaning up stale files...
+INFO 2024-12-25 16:44:50,857 views 1048 140122105278464 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 16:44:50,860 views 1048 140122105278464 Command output - stdout: 
+INFO 2024-12-25 16:44:50,860 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:50,861 views 1048 140122105278464 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-25 16:44:50,864 views 1048 140122105278464 Command output - stdout: 
+INFO 2024-12-25 16:44:50,864 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:50,864 views 1048 140122105278464 Executing command: pkill -f Xvnc || true
+INFO 2024-12-25 16:44:50,870 views 1048 140122105278464 Command output - stdout: 
+INFO 2024-12-25 16:44:50,870 views 1048 140122105278464 Command return code: -15
+INFO 2024-12-25 16:44:50,870 views 1048 140122105278464 Executing command: pkill -f vncserver || true
+INFO 2024-12-25 16:44:50,876 views 1048 140122105278464 Command output - stdout: 
+INFO 2024-12-25 16:44:50,876 views 1048 140122105278464 Command return code: -15
+INFO 2024-12-25 16:44:50,877 views 1048 140122105278464 Creating new container...
+INFO 2024-12-25 16:44:50,877 views 1048 140122105278464 Executing command: docker run -d --name openuav-3ad74990 --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-25 16:44:51,832 views 1048 140122105278464 Command output - stdout: f1dca70e2cd94161732ee31c46e285b2dafd22eeeab8fa7acf7f753842734489
+INFO 2024-12-25 16:44:51,832 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:51,832 views 1048 140122105278464 Container started successfully
+INFO 2024-12-25 16:44:56,837 views 1048 140122105278464 Executing command: docker inspect --format='{{.Id}}' openuav-3ad74990
+INFO 2024-12-25 16:44:56,878 views 1048 140122105278464 Command output - stdout: f1dca70e2cd94161732ee31c46e285b2dafd22eeeab8fa7acf7f753842734489
+INFO 2024-12-25 16:44:56,879 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:56,889 views 1048 140122105278464 Executing command: docker inspect openuav-3ad74990 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-25 16:44:56,922 views 1048 140122105278464 Command output - stdout: running true
+INFO 2024-12-25 16:44:56,922 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:56,923 views 1048 140122105278464 Container state: running true
+INFO 2024-12-25 16:44:56,923 views 1048 140122105278464 Executing command: docker exec openuav-3ad74990 ps aux | grep Xvnc
+INFO 2024-12-25 16:44:57,010 views 1048 140122105278464 Command output - stdout: root          50  3.7  0.0 167056 64640 ?        S    16:44   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: f1dca70e2cd9:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-25 16:44:57,010 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:57,010 views 1048 140122105278464 Executing command: docker logs openuav-3ad74990 --tail 20
+INFO 2024-12-25 16:44:57,045 views 1048 140122105278464 Command output - stdout: 2024-12-25 16:44:53,108 INFO spawned: 'cleanup' with pid 20
+2024-12-25 16:44:53,111 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 16:44:53,114 INFO spawned: 'novnc' with pid 22
+2024-12-25 16:44:53,117 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 16:44:53,119 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 16:44:53,119 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 16:44:53,239 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 16:44:54,162 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 16:44:54,163 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 16:44:54,167 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 16:44:55,171 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 16:44:55,174 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 16:44:55,175 INFO reaped unknown pid 154
+2024-12-25 16:44:55,175 INFO reaped unknown pid 161
+2024-12-25 16:44:55,175 INFO reaped unknown pid 165
+2024-12-25 16:44:55,175 INFO reaped unknown pid 172
+2024-12-25 16:44:55,213 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 16:44:55,290 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 16:44:56,294 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 16:44:56,336 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 16:44:57,046 views 1048 140122105278464 Command return code: 0
+INFO 2024-12-25 16:44:57,046 views 1048 140122105278464 Container recent logs: 2024-12-25 16:44:53,108 INFO spawned: 'cleanup' with pid 20
+2024-12-25 16:44:53,111 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 16:44:53,114 INFO spawned: 'novnc' with pid 22
+2024-12-25 16:44:53,117 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 16:44:53,119 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 16:44:53,119 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 16:44:53,239 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 16:44:54,162 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 16:44:54,163 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 16:44:54,167 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 16:44:55,171 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 16:44:55,174 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 16:44:55,175 INFO reaped unknown pid 154
+2024-12-25 16:44:55,175 INFO reaped unknown pid 161
+2024-12-25 16:44:55,175 INFO reaped unknown pid 165
+2024-12-25 16:44:55,175 INFO reaped unknown pid 172
+2024-12-25 16:44:55,213 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 16:44:55,290 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 16:44:56,294 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 16:44:56,336 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 16:44:57,058 views 1048 140122105278464 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 16:44:57,103 views 1048 140122105278464 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 16:44:50 +0000 UTC","ID":"f1dca70e2cd9","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-3ad74990","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"7 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-25 16:44:57,103 views 1048 140122105278464 Command return code: 0
+WARNING 2024-12-25 16:47:39,535 log 32 139779472371712 Not Found: /openuav_manager/admin/
+WARNING 2024-12-25 16:47:46,365 log 31 139779472371712 Not Found: /favicon.ico
+INFO 2024-12-25 16:51:13,765 views 31 140716401926144 Executing command: docker stop openuav
+INFO 2024-12-25 16:51:13,790 views 31 140716401926144 Command output - stdout: 
+ERROR 2024-12-25 16:51:13,790 views 31 140716401926144 Command error - stderr: Error response from daemon: No such container: openuav
+INFO 2024-12-25 16:51:13,790 views 31 140716401926144 Command return code: 1
+ERROR 2024-12-25 16:51:13,791 log 31 140716401926144 Internal Server Error: /openuav/stop/
+INFO 2024-12-25 16:56:51,114 views 33 140716401926144 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 16:56:51,159 views 33 140716401926144 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 16:44:50 +0000 UTC","ID":"f1dca70e2cd9","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-3ad74990","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"12 minutes ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 12 minutes"}
+INFO 2024-12-25 16:56:51,160 views 33 140716401926144 Command return code: 0
+INFO 2024-12-25 16:57:11,815 views 33 140716401926144 Executing command: docker stop openuav
+INFO 2024-12-25 16:57:11,848 views 33 140716401926144 Command output - stdout: 
+ERROR 2024-12-25 16:57:11,848 views 33 140716401926144 Command error - stderr: Error response from daemon: No such container: openuav
+INFO 2024-12-25 16:57:11,848 views 33 140716401926144 Command return code: 1
+ERROR 2024-12-25 16:57:11,849 log 33 140716401926144 Internal Server Error: /openuav/stop/
+INFO 2024-12-25 16:57:14,783 views 31 140716401926144 Executing command: docker stop openuav
+INFO 2024-12-25 16:57:14,813 views 31 140716401926144 Command output - stdout: 
+ERROR 2024-12-25 16:57:14,813 views 31 140716401926144 Command error - stderr: Error response from daemon: No such container: openuav
+INFO 2024-12-25 16:57:14,814 views 31 140716401926144 Command return code: 1
+ERROR 2024-12-25 16:57:14,814 log 31 140716401926144 Internal Server Error: /openuav/stop/
+INFO 2024-12-25 17:04:11,831 views 32 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:04:11,858 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:04:11,858 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 17:04:14,201 views 31 140235855441920 Received request to launch OpenUAV
+ERROR 2024-12-25 17:04:14,209 views 31 140235855441920 Exception in launch_openuav: no such column: openuav_manager_container.session_type
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.session_type
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.session_type
+ERROR 2024-12-25 17:04:14,211 log 31 140235855441920 Internal Server Error: /openuav/launch/
+ERROR 2024-12-25 17:04:44,599 exception 31 140235855441920 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 17:04:44,661 log 31 140235855441920 Bad Request: /443
+INFO 2024-12-25 17:05:39,220 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:05:39,255 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:05:39,255 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:40,593 views 31 140235855441920 Received request to launch OpenUAV
+INFO 2024-12-25 17:05:40,603 views 31 140235855441920 Launching container with name: openuav-cb95302b
+INFO 2024-12-25 17:05:40,603 views 31 140235855441920 Checking if container already exists...
+INFO 2024-12-25 17:05:40,604 views 31 140235855441920 Executing command: docker ps -a --filter name=openuav-cb95302b --format '{{.Names}}'
+INFO 2024-12-25 17:05:40,637 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:05:40,637 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:40,637 views 31 140235855441920 Cleaning up stale files...
+INFO 2024-12-25 17:05:40,638 views 31 140235855441920 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 17:05:40,641 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:05:40,642 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:40,642 views 31 140235855441920 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-25 17:05:40,646 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:05:40,646 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:40,646 views 31 140235855441920 Executing command: pkill -f Xvnc || true
+INFO 2024-12-25 17:05:40,653 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:05:40,653 views 31 140235855441920 Command return code: -15
+INFO 2024-12-25 17:05:40,653 views 31 140235855441920 Executing command: pkill -f vncserver || true
+INFO 2024-12-25 17:05:40,659 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:05:40,659 views 31 140235855441920 Command return code: -15
+INFO 2024-12-25 17:05:40,659 views 31 140235855441920 Creating new container...
+INFO 2024-12-25 17:05:40,660 views 31 140235855441920 Executing command: docker run -d --name openuav-cb95302b --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-25 17:05:41,596 views 31 140235855441920 Command output - stdout: d4585549aec285613cbfc72f5b9ec5ec40c5d0954c75fe3b5400e799412c7332
+INFO 2024-12-25 17:05:41,596 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:41,596 views 31 140235855441920 Container started successfully
+INFO 2024-12-25 17:05:46,602 views 31 140235855441920 Executing command: docker inspect --format='{{.Id}}' openuav-cb95302b
+INFO 2024-12-25 17:05:46,641 views 31 140235855441920 Command output - stdout: d4585549aec285613cbfc72f5b9ec5ec40c5d0954c75fe3b5400e799412c7332
+INFO 2024-12-25 17:05:46,641 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:46,649 views 31 140235855441920 Executing command: docker inspect openuav-cb95302b --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-25 17:05:46,685 views 31 140235855441920 Command output - stdout: running true
+INFO 2024-12-25 17:05:46,685 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:46,685 views 31 140235855441920 Container state: running true
+INFO 2024-12-25 17:05:46,685 views 31 140235855441920 Executing command: docker exec openuav-cb95302b ps aux | grep Xvnc
+INFO 2024-12-25 17:05:46,775 views 31 140235855441920 Command output - stdout: root          50  3.7  0.0 167056 64048 ?        S    17:05   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: d4585549aec2:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-25 17:05:46,775 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:46,775 views 31 140235855441920 Executing command: docker logs openuav-cb95302b --tail 20
+INFO 2024-12-25 17:05:46,806 views 31 140235855441920 Command output - stdout: 2024-12-25 17:05:42,882 INFO spawned: 'cleanup' with pid 20
+2024-12-25 17:05:42,885 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 17:05:42,888 INFO spawned: 'novnc' with pid 22
+2024-12-25 17:05:42,891 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 17:05:42,894 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 17:05:42,894 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 17:05:43,010 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:05:43,941 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:05:43,941 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:05:43,946 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 17:05:44,950 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 17:05:44,953 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 17:05:44,954 INFO reaped unknown pid 154
+2024-12-25 17:05:44,954 INFO reaped unknown pid 162
+2024-12-25 17:05:44,954 INFO reaped unknown pid 167
+2024-12-25 17:05:44,954 INFO reaped unknown pid 172
+2024-12-25 17:05:44,994 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 17:05:45,068 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:05:46,072 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 17:05:46,113 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 17:05:46,806 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:05:46,807 views 31 140235855441920 Container recent logs: 2024-12-25 17:05:42,882 INFO spawned: 'cleanup' with pid 20
+2024-12-25 17:05:42,885 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 17:05:42,888 INFO spawned: 'novnc' with pid 22
+2024-12-25 17:05:42,891 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 17:05:42,894 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 17:05:42,894 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 17:05:43,010 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:05:43,941 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:05:43,941 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:05:43,946 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 17:05:44,950 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 17:05:44,953 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 17:05:44,954 INFO reaped unknown pid 154
+2024-12-25 17:05:44,954 INFO reaped unknown pid 162
+2024-12-25 17:05:44,954 INFO reaped unknown pid 167
+2024-12-25 17:05:44,954 INFO reaped unknown pid 172
+2024-12-25 17:05:44,994 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 17:05:45,068 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:05:46,072 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 17:05:46,113 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 17:05:46,819 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:05:46,856 views 31 140235855441920 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 17:05:40 +0000 UTC","ID":"d4585549aec2","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-cb95302b","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"6 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-25 17:05:46,856 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:08,644 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:06:08,688 views 31 140235855441920 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 17:05:40 +0000 UTC","ID":"d4585549aec2","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-cb95302b","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"28 seconds ago","Size":"514kB (virtual 14GB)","State":"running","Status":"Up 27 seconds"}
+INFO 2024-12-25 17:06:08,688 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:11,794 views 31 140235855441920 Stopping container: openuav-cb95302b
+INFO 2024-12-25 17:06:11,794 views 31 140235855441920 Executing command: docker stop openuav-cb95302b
+INFO 2024-12-25 17:06:13,520 views 31 140235855441920 Command output - stdout: openuav-cb95302b
+INFO 2024-12-25 17:06:13,521 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:13,521 views 31 140235855441920 Executing command: docker rm openuav-cb95302b
+INFO 2024-12-25 17:06:13,570 views 31 140235855441920 Command output - stdout: openuav-cb95302b
+INFO 2024-12-25 17:06:13,571 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:13,579 views 31 140235855441920 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 17:06:13,583 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:13,583 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:13,604 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:06:13,636 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:13,636 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:27,160 views 31 140235855441920 Received request to launch OpenUAV
+INFO 2024-12-25 17:06:27,170 views 31 140235855441920 Launching container with name: openuav-a69e5db2
+INFO 2024-12-25 17:06:27,170 views 31 140235855441920 Checking if container already exists...
+INFO 2024-12-25 17:06:27,170 views 31 140235855441920 Executing command: docker ps -a --filter name=openuav-a69e5db2 --format '{{.Names}}'
+INFO 2024-12-25 17:06:27,204 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:27,204 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:27,204 views 31 140235855441920 Cleaning up stale files...
+INFO 2024-12-25 17:06:27,205 views 31 140235855441920 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 17:06:27,208 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:27,208 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:27,209 views 31 140235855441920 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-25 17:06:27,212 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:27,212 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:27,213 views 31 140235855441920 Executing command: pkill -f Xvnc || true
+INFO 2024-12-25 17:06:27,218 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:27,219 views 31 140235855441920 Command return code: -15
+INFO 2024-12-25 17:06:27,219 views 31 140235855441920 Executing command: pkill -f vncserver || true
+INFO 2024-12-25 17:06:27,225 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:27,225 views 31 140235855441920 Command return code: -15
+INFO 2024-12-25 17:06:27,225 views 31 140235855441920 Creating new container...
+INFO 2024-12-25 17:06:27,225 views 31 140235855441920 Executing command: docker run -d --name openuav-a69e5db2 --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-25 17:06:28,185 views 31 140235855441920 Command output - stdout: 4b0d3026fa7c8506f1a8bee961cb2fd0805f045f1034b66de5fd2ee04501cfc6
+INFO 2024-12-25 17:06:28,185 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:28,185 views 31 140235855441920 Container started successfully
+INFO 2024-12-25 17:06:33,190 views 31 140235855441920 Executing command: docker inspect --format='{{.Id}}' openuav-a69e5db2
+INFO 2024-12-25 17:06:33,231 views 31 140235855441920 Command output - stdout: 4b0d3026fa7c8506f1a8bee961cb2fd0805f045f1034b66de5fd2ee04501cfc6
+INFO 2024-12-25 17:06:33,231 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:33,237 views 31 140235855441920 Executing command: docker inspect openuav-a69e5db2 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-25 17:06:33,271 views 31 140235855441920 Command output - stdout: running true
+INFO 2024-12-25 17:06:33,271 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:33,271 views 31 140235855441920 Container state: running true
+INFO 2024-12-25 17:06:33,271 views 31 140235855441920 Executing command: docker exec openuav-a69e5db2 ps aux | grep Xvnc
+INFO 2024-12-25 17:06:33,359 views 31 140235855441920 Command output - stdout: root          50  3.7  0.0 167096 63636 ?        S    17:06   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 4b0d3026fa7c:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-25 17:06:33,359 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:33,360 views 31 140235855441920 Executing command: docker logs openuav-a69e5db2 --tail 20
+INFO 2024-12-25 17:06:33,399 views 31 140235855441920 Command output - stdout: 2024-12-25 17:06:29,457 INFO spawned: 'cleanup' with pid 20
+2024-12-25 17:06:29,461 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 17:06:29,464 INFO spawned: 'novnc' with pid 22
+2024-12-25 17:06:29,466 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 17:06:29,469 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 17:06:29,469 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 17:06:29,587 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:06:30,514 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:06:30,514 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:06:30,518 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 17:06:31,522 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 17:06:31,525 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 17:06:31,526 INFO reaped unknown pid 154
+2024-12-25 17:06:31,526 INFO reaped unknown pid 161
+2024-12-25 17:06:31,526 INFO reaped unknown pid 166
+2024-12-25 17:06:31,526 INFO reaped unknown pid 174
+2024-12-25 17:06:31,568 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 17:06:31,647 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:06:32,651 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 17:06:32,694 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 17:06:33,399 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:33,399 views 31 140235855441920 Container recent logs: 2024-12-25 17:06:29,457 INFO spawned: 'cleanup' with pid 20
+2024-12-25 17:06:29,461 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 17:06:29,464 INFO spawned: 'novnc' with pid 22
+2024-12-25 17:06:29,466 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 17:06:29,469 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 17:06:29,469 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 17:06:29,587 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:06:30,514 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:06:30,514 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 17:06:30,518 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 17:06:31,522 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 17:06:31,525 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 17:06:31,526 INFO reaped unknown pid 154
+2024-12-25 17:06:31,526 INFO reaped unknown pid 161
+2024-12-25 17:06:31,526 INFO reaped unknown pid 166
+2024-12-25 17:06:31,526 INFO reaped unknown pid 174
+2024-12-25 17:06:31,568 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 17:06:31,647 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 17:06:32,651 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 17:06:32,694 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 17:06:33,420 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:06:33,459 views 31 140235855441920 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 17:06:27 +0000 UTC","ID":"4b0d3026fa7c","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-a69e5db2","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"6 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-25 17:06:33,459 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:45,943 views 32 140235855441920 Stopping container: openuav-a69e5db2
+INFO 2024-12-25 17:06:45,943 views 32 140235855441920 Executing command: docker stop openuav-a69e5db2
+INFO 2024-12-25 17:06:48,211 views 32 140235855441920 Command output - stdout: openuav-a69e5db2
+INFO 2024-12-25 17:06:48,212 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:48,212 views 32 140235855441920 Executing command: docker rm openuav-a69e5db2
+INFO 2024-12-25 17:06:48,254 views 32 140235855441920 Command output - stdout: openuav-a69e5db2
+INFO 2024-12-25 17:06:48,255 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:48,263 views 32 140235855441920 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 17:06:48,267 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:48,267 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 17:06:48,281 views 32 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:06:48,312 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:06:48,313 views 32 140235855441920 Command return code: 0
