@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepGIS - Space-Oriented Digital & Cyber-Physical Twins</title>
+    <style>
+        :root {
+            --primary-color: #0096e6;
+            --secondary-color: #8B0000;
+            --accent-color: #00bf63;
+            --text-color: #333;
+            --background-color: #f8f9fa;
+            --section-spacing: 4rem;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('https://images.nasa.gov/images/earth_from_space.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 8rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .platform-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .platform-card img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+
+        .platform-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .features {
+            background: white;
+            padding: 4rem 0;
+            margin-top: 4rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .platforms {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="hero">
+        <h1>DeepGIS</h1>
+        <p>Advanced Digital & Cyber-Physical Twins for Space Exploration and Earth Observation</p>
+    </div>
+
+    <div class="container">
+        <div class="platforms">
+            <div class="platform-card">
+                <i class="fas fa-vr-cardboard fa-4x" style="color: var(--primary-color)"></i>
+                <h3>DeepGIS XR</h3>
+                <p>Immersive virtual reality platform for geospatial data analysis and visualization. Experience planetary data in an interactive 3D environment.</p>
+                <a href="http://deepgis.org:8090/map-label/" target="_blank" class="btn">Launch DeepGIS XR</a>
+            </div>
+            <div class="platform-card">
+                <i class="fas fa-drone fa-4x" style="color: var(--primary-color)"></i>
+                <h3>OpenUAV</h3>
+                <p>Open-source unmanned aerial vehicle platform for autonomous exploration and mapping of terrestrial and extraterrestrial environments.</p>
+                <a href="/openuav" class="btn">Explore OpenUAV</a>
+            </div>
+            <div class="platform-card">
+                <i class="fas fa-microscope fa-4x" style="color: var(--primary-color)"></i>
+                <h3>DREAMS Lab</h3>
+                <p>Research initiatives in robotic exploration, mapping systems, and cyber-physical twins at Arizona State University.</p>
+                <a href="/dreamslab" class="btn">Visit DREAMS Lab</a>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="container">
+                <div class="feature-grid">
+                    <div class="feature">
+                        <i class="fas fa-satellite"></i>
+                        <h3>Space Exploration</h3>
+                        <p>Advanced tools for planetary science and space exploration missions.</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-robot"></i>
+                        <h3>Autonomous Systems</h3>
+                        <p>Cutting-edge robotics and autonomous navigation capabilities.</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-globe"></i>
+                        <h3>Earth Observation</h3>
+                        <p>Comprehensive Earth monitoring and environmental analysis tools.</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>Digital Twins</h3>
+                        <p>Advanced cyber-physical systems for real-time monitoring and control.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

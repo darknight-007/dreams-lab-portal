@@ -1156,3 +1156,277 @@ WARNING 2024-12-26 06:18:28,197 log 31 140074856919040 Not Found: /None
 WARNING 2024-12-26 06:18:28,206 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
 WARNING 2024-12-26 06:18:28,641 log 31 140074856919040 Not Found: /None
 WARNING 2024-12-26 06:18:28,647 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:21:54,610 log 33 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:21:55,859 log 32 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:22:06,092 log 33 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:22:07,347 log 31 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:26:41,738 log 31 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:26:41,753 log 33 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:26:42,845 log 32 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:26:42,848 log 33 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:26:45,342 log 33 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:26:45,606 log 33 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:28:47,586 log 33 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:28:47,596 log 32 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:28:48,816 log 33 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:28:48,823 log 32 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:28:50,222 log 33 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:28:50,228 log 31 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:28:53,448 log 33 140042657062912 Not Found: /favicon.ico
+WARNING 2024-12-26 06:29:00,385 log 33 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:29:00,387 log 31 140042657062912 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:29:06,770 log 31 140042657062912 Not Found: /None
+WARNING 2024-12-26 06:29:06,775 log 32 140042657062912 Not Found: /static/images/planetary_background.jpg
+ERROR 2024-12-26 06:29:38,386 log 31 140606251057152 Internal Server Error: /
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/dreams_laboratory/urls.py", line 62, in <module>
+    path('xr/', include('deepgis_xr.urls')),
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'deepgis_xr'
+ERROR 2024-12-26 06:29:39,287 log 31 140606251057152 Internal Server Error: /
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/dreams_laboratory/urls.py", line 62, in <module>
+    path('xr/', include('deepgis_xr.urls')),
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'deepgis_xr'
+ERROR 2024-12-26 06:29:40,026 log 31 140606251057152 Internal Server Error: /
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/dreams_laboratory/urls.py", line 62, in <module>
+    path('xr/', include('deepgis_xr.urls')),
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'deepgis_xr'
+ERROR 2024-12-26 06:29:42,046 log 31 140606251057152 Internal Server Error: /
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/dreams_laboratory/urls.py", line 62, in <module>
+    path('xr/', include('deepgis_xr.urls')),
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'deepgis_xr'
+ERROR 2024-12-26 06:29:42,303 log 32 140606251057152 Internal Server Error: /
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/dreams_laboratory/urls.py", line 62, in <module>
+    path('xr/', include('deepgis_xr.urls')),
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'deepgis_xr'
+ERROR 2024-12-26 06:29:42,907 log 32 140606251057152 Internal Server Error: /
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 167, in _get_response
+    callback, callback_args, callback_kwargs = self.resolve_request(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 290, in resolve_request
+    resolver_match = resolver.resolve(request.path_info)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 560, in resolve
+    for pattern in self.url_patterns:
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 602, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "/usr/local/lib/python3.10/dist-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/resolvers.py", line 595, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/dreams_laboratory/urls.py", line 62, in <module>
+    path('xr/', include('deepgis_xr.urls')),
+  File "/usr/local/lib/python3.10/dist-packages/django/urls/conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'deepgis_xr'
+INFO 2024-12-26 06:32:04,554 views 32 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:32:04,591 views 32 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:32:04,591 views 32 140606251057152 Command return code: 0
+INFO 2024-12-26 06:32:06,812 views 32 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:32:06,822 views 32 140606251057152 Found existing container: openuav-462bffd5
+INFO 2024-12-26 06:32:06,831 views 32 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:32:06,867 views 32 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:32:06,868 views 32 140606251057152 Command return code: 0
+WARNING 2024-12-26 06:32:21,301 log 32 140606251057152 Not Found: /dreamslab/None
+WARNING 2024-12-26 06:32:21,582 log 32 140606251057152 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:34:15,906 log 31 140606251057152 Not Found: /favicon.ico
+WARNING 2024-12-26 06:35:22,598 log 32 140606251057152 Not Found: /dreamslab/None
+WARNING 2024-12-26 06:35:22,715 log 32 140606251057152 Not Found: /static/images/planetary_background.jpg

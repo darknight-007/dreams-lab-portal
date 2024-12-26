@@ -997,3 +997,18 @@ def widget_view(request, widget_type):
     
     # Pass all query parameters to the view
     return view_func(request)
+
+def deepgis_home(request):
+    """New home page for deepgis.org"""
+    return render(request, 'deepgis_home.html')
+
+def dreamslab_home(request):
+    """DREAMS Lab home page (previously the main home page)"""
+    context = {
+        'research_areas': Research.objects.all(),
+        'people': People.objects.all(),
+        'publications': Publication.objects.all(),
+        'funding_source': FundingSource.objects.all(),
+        'assets': Asset.objects.all()
+    }
+    return render(request, 'home.html', context)

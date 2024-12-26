@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from dreams_laboratory.views import (
     # Core views
-    home_view, run_blender, get_models,
+    deepgis_home, dreamslab_home, run_blender, get_models,
     # Authentication views
     initiate_login, verify_login, initiate_login_view, verify_login_view,
     # Main feature views
@@ -55,68 +55,56 @@ def health_check(request):
 urlpatterns = [
     # Core URLs
     path('admin/', admin.site.urls),
-    path('', home_view, name='home'),
-    path("run_blender/", run_blender, name="run_blender"),
-    path('get_models/', get_models, name='get_models'),
+    path('', deepgis_home, name='home'),  # New DeepGIS home page
+    path('dreamslab/', dreamslab_home, name='dreamslab_home'),  # DREAMS Lab home page
     
-    # OpenUAV Manager URLs
+    # OpenUAV URLs
     path('openuav/', include('openuav_manager.urls')),
     
+    # DREAMS Lab URLs (moved under dreamslab/ prefix)
+    path('dreamslab/run_blender/', run_blender, name='run_blender'),
+    path('dreamslab/get_models/', get_models, name='get_models'),
+    path('dreamslab/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
+    path('dreamslab/slam-buddy/', slam_buddy_view, name='slam_buddy'),
+    path('dreamslab/cart-pole-buddy/', cart_pole_buddy_view, name='cart_pole_buddy'),
+    path('dreamslab/gaussian-processes-buddy/', gaussian_processes_buddy_view, name='gaussian_processes_buddy'),
+    path('dreamslab/param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
+    path('dreamslab/image-buddy/', image_buddy_view, name='image_buddy'),
+    path('dreamslab/generate_batch_report/', generate_batch_report, name='generate_batch_report'),
+    path('dreamslab/ransac_buddy/', ransac_buddy, name='ransac-buddy'),
+    path('dreamslab/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
+    path('dreamslab/particle-filter/', particle_filter_buddy, name='particle_filter_buddy'),
+    path('dreamslab/loop-closure/', loop_closure_buddy, name='loop_closure_buddy'),
+    path('dreamslab/sensor-fusion/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
+    path('dreamslab/visual-odometry/', visual_odometry_buddy, name='visual_odometry_buddy'),
+    path('dreamslab/point-cloud/', point_cloud_buddy, name='point_cloud_buddy'),
+    path('dreamslab/path-planning/', path_planning_buddy, name='path_planning_buddy'),
+    path('dreamslab/ses598/', ses598_course_view, name='ses598_course'),
+    path('dreamslab/ses598/quiz/', ses598_quiz, name='ses598_quiz'),
+    
     # Authentication URLs
-    path('initiate-login/', initiate_login, name='initiate_login'),
-    path('initiate-login-form/', initiate_login_view, name='initiate_login_form'),
-    path('verify-login/', verify_login, name='verify_login'),
-    path('verify-login-form/', verify_login_view, name='verify_login_form'),
+    path('auth/initiate-login/', initiate_login, name='initiate_login'),
+    path('auth/initiate-login-form/', initiate_login_view, name='initiate_login_form'),
+    path('auth/verify-login/', verify_login, name='verify_login'),
+    path('auth/verify-login-form/', verify_login_view, name='verify_login_form'),
     
-    # Main feature URLs
-    path('stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
-    path('slam-buddy/', slam_buddy_view, name='slam_buddy'),
-    path('cart-pole-buddy/', cart_pole_buddy_view, name='cart_pole_buddy'),
-    path('gaussian-processes-buddy/', gaussian_processes_buddy_view, name='gaussian_processes_buddy'),
-    path('param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
-    path('image-buddy/', image_buddy_view, name='image_buddy'),
-    path('generate_batch_report/', generate_batch_report, name='generate_batch_report'),
-    path("api/apply-filters/", apply_filters, name="apply_filters"),
-    path('ses598_quiz/', ses598_robotic_exploration_and_mapping_quiz, name='ses598_robotic_exploration_and_mapping_quiz'),
-    path('rem/', ses598_robotic_exploration_and_mapping, name='ses598_robotic_exploration_and_mapping'),
-    path('quiz/', ses598_quiz, name='ses598_quiz'),
-    path('ses598/quiz/reset/', reset_quiz, name='reset_quiz'),
-    # Computer vision URLs
-    path('ransac_buddy/', ransac_buddy, name='ransac-buddy'),
-    path('multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
-    path('ransac-demo-data/', ransac_demo_data, name='ransac-demo-data'),
+    # API URLs
+    path('api/apply-filters/', apply_filters, name='apply_filters'),
+    path('api/ransac-demo-data/', ransac_demo_data, name='ransac-demo-data'),
     
-    # Tutorial URLs
-    path('particle-filter/', particle_filter_buddy, name='particle_filter_buddy'),
-    path('loop-closure/', loop_closure_buddy, name='loop_closure_buddy'),
-    path('sensor-fusion/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
-    path('visual-odometry/', visual_odometry_buddy, name='visual_odometry_buddy'),
-    path('point-cloud/', point_cloud_buddy, name='point_cloud_buddy'),
-    path('path-planning/', path_planning_buddy, name='path_planning_buddy'),
-    # Course URLs
-    path('ses598/', ses598_course_view, name='ses598_course'),
-    path('ses598/quiz/', ses598_quiz, name='ses598_quiz'),
-    path('health/', health_check),
     # Tutorial and Quiz URLs
-    path('tutorial/<str:tutorial_type>/<str:tutorial_id>/', 
-         tutorial_view, 
-         name='tutorial'),
-    
-    path('quiz/<str:quiz_type>/<str:quiz_id>/', 
-         quiz_view, 
-         name='quiz'),
-    
-    path('quiz/<str:quiz_type>/<str:quiz_id>/validate/', 
-         validate_quiz_answer, 
-         name='validate_quiz'),
-    
-    path('tutorial/<str:tutorial_type>/<str:tutorial_id>/hints/', 
-         get_tutorial_hints, 
-         name='tutorial_hints'),
+    path('tutorial/<str:tutorial_type>/<str:tutorial_id>/', tutorial_view, name='tutorial'),
+    path('quiz/<str:quiz_type>/<str:quiz_id>/', quiz_view, name='quiz'),
+    path('quiz/<str:quiz_type>/<str:quiz_id>/validate/', validate_quiz_answer, name='validate_quiz'),
+    path('tutorial/<str:tutorial_type>/<str:tutorial_id>/hints/', get_tutorial_hints, name='tutorial_hints'),
     path('quiz/progress/save', save_quiz_progress, name='save_quiz_progress'),
     path('quiz/progress/load', load_quiz_progress, name='load_quiz_progress'),
+    
     # Widget URLs
     path('widget/<str:widget_type>/', widget_view, name='widget'),
+    
+    # Health check
+    path('health/', health_check),
 ]
 
 if settings.DEBUG:
