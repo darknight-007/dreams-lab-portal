@@ -1430,3 +1430,130 @@ WARNING 2024-12-26 06:32:21,582 log 32 140606251057152 Not Found: /static/images
 WARNING 2024-12-26 06:34:15,906 log 31 140606251057152 Not Found: /favicon.ico
 WARNING 2024-12-26 06:35:22,598 log 32 140606251057152 Not Found: /dreamslab/None
 WARNING 2024-12-26 06:35:22,715 log 32 140606251057152 Not Found: /static/images/planetary_background.jpg
+ERROR 2024-12-26 06:38:15,993 exception 33 140606251057152 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 06:38:16,047 log 33 140606251057152 Bad Request: /
+ERROR 2024-12-26 06:40:07,450 exception 32 140606251057152 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 06:40:07,499 log 32 140606251057152 Bad Request: /
+WARNING 2024-12-26 06:42:03,195 log 33 140606251057152 Not Found: /favicon.ico
+INFO 2024-12-26 06:42:09,703 views 33 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:09,738 views 33 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:09,738 views 33 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:11,275 views 33 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:42:11,284 views 33 140606251057152 Found existing container: openuav-462bffd5
+INFO 2024-12-26 06:42:11,293 views 33 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:11,328 views 33 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:11,328 views 33 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:19,963 views 33 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:42:19,969 views 33 140606251057152 Found existing container: openuav-462bffd5
+INFO 2024-12-26 06:42:20,070 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:20,104 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:20,105 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:23,728 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:23,763 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:23,763 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:24,979 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:25,015 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:25,015 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:26,998 views 31 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:42:27,007 views 31 140606251057152 Found existing container: openuav-462bffd5
+INFO 2024-12-26 06:42:27,042 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:27,077 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:27,077 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:53,047 views 31 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:42:53,053 views 31 140606251057152 Found existing container: openuav-462bffd5
+INFO 2024-12-26 06:42:53,090 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:53,126 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:53,127 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:42:57,620 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:57,654 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:57,654 views 31 140606251057152 Command return code: 0
+WARNING 2024-12-26 06:42:57,851 log 31 140606251057152 Not Found: /favicon.ico
+INFO 2024-12-26 06:42:58,837 views 31 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:42:58,842 views 31 140606251057152 Found existing container: openuav-462bffd5
+INFO 2024-12-26 06:42:58,860 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:42:58,895 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:42:58,895 views 31 140606251057152 Command return code: 0
+WARNING 2024-12-26 06:43:05,808 log 31 140606251057152 Not Found: /openuav/admin
+WARNING 2024-12-26 06:43:55,423 log 31 140606251057152 Not Found: /favicon.ico
+INFO 2024-12-26 06:44:01,254 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:44:01,290 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:44:01,291 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:02,527 views 31 140606251057152 Received request to launch OpenUAV
+INFO 2024-12-26 06:44:02,537 views 31 140606251057152 Launching container with name: openuav-470e4ab8
+INFO 2024-12-26 06:44:02,537 views 31 140606251057152 Checking if container already exists...
+INFO 2024-12-26 06:44:02,537 views 31 140606251057152 Executing command: docker ps -a --filter name=openuav-470e4ab8 --format '{{.Names}}'
+INFO 2024-12-26 06:44:02,571 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:44:02,572 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:02,572 views 31 140606251057152 Cleaning up stale files...
+INFO 2024-12-26 06:44:02,572 views 31 140606251057152 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-26 06:44:02,577 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:44:02,577 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:02,577 views 31 140606251057152 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-26 06:44:02,580 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:44:02,581 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:02,581 views 31 140606251057152 Executing command: pkill -f Xvnc || true
+INFO 2024-12-26 06:44:02,587 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:44:02,588 views 31 140606251057152 Command return code: -15
+INFO 2024-12-26 06:44:02,588 views 31 140606251057152 Executing command: pkill -f vncserver || true
+INFO 2024-12-26 06:44:02,593 views 31 140606251057152 Command output - stdout: 
+INFO 2024-12-26 06:44:02,593 views 31 140606251057152 Command return code: -15
+INFO 2024-12-26 06:44:02,593 views 31 140606251057152 Creating new container...
+INFO 2024-12-26 06:44:02,594 views 31 140606251057152 Executing command: docker run -d --name openuav-470e4ab8 --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-26 06:44:05,892 views 31 140606251057152 Command output - stdout: 1fb5068c8397a7734ccff19e0ea04ad9e1e0033b0a5e5a474dfd7de7b9705891
+INFO 2024-12-26 06:44:05,892 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:05,893 views 31 140606251057152 Container started successfully
+INFO 2024-12-26 06:44:10,898 views 31 140606251057152 Executing command: docker inspect --format='{{.Id}}' openuav-470e4ab8
+INFO 2024-12-26 06:44:10,936 views 31 140606251057152 Command output - stdout: 1fb5068c8397a7734ccff19e0ea04ad9e1e0033b0a5e5a474dfd7de7b9705891
+INFO 2024-12-26 06:44:10,937 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:10,946 views 31 140606251057152 Executing command: docker inspect openuav-470e4ab8 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-26 06:44:10,979 views 31 140606251057152 Command output - stdout: running true
+INFO 2024-12-26 06:44:10,979 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:10,979 views 31 140606251057152 Container state: running true
+INFO 2024-12-26 06:44:10,980 views 31 140606251057152 Executing command: docker exec openuav-470e4ab8 ps aux | grep Xvnc
+INFO 2024-12-26 06:44:11,062 views 31 140606251057152 Command output - stdout: root          59  4.7  0.0 167064 62816 ?        S    06:44   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 1fb5068c8397:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-26 06:44:11,063 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:11,063 views 31 140606251057152 Executing command: docker logs openuav-470e4ab8 --tail 20
+INFO 2024-12-26 06:44:11,096 views 31 140606251057152 Command output - stdout: 2024-12-26 06:44:07,361 INFO spawned: 'cleanup' with pid 20
+2024-12-26 06:44:07,365 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-26 06:44:07,368 INFO spawned: 'novnc' with pid 22
+2024-12-26 06:44:07,372 INFO spawned: 'virtualgl' with pid 23
+2024-12-26 06:44:07,377 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-26 06:44:07,377 INFO exited: cleanup (exit status 1; not expected)
+2024-12-26 06:44:07,515 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-26 06:44:08,449 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-26 06:44:08,449 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-26 06:44:08,453 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-26 06:44:09,456 INFO spawned: 'turbo_vnc' with pid 243
+2024-12-26 06:44:09,459 INFO spawned: 'virtualgl' with pid 244
+2024-12-26 06:44:09,460 INFO reaped unknown pid 154
+2024-12-26 06:44:09,460 INFO reaped unknown pid 161
+2024-12-26 06:44:09,460 INFO reaped unknown pid 166
+2024-12-26 06:44:09,460 INFO reaped unknown pid 172
+2024-12-26 06:44:09,496 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-26 06:44:09,566 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-26 06:44:10,571 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-26 06:44:10,612 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-26 06:44:11,096 views 31 140606251057152 Command return code: 0
+INFO 2024-12-26 06:44:11,096 views 31 140606251057152 Container recent logs: 2024-12-26 06:44:07,361 INFO spawned: 'cleanup' with pid 20
+2024-12-26 06:44:07,365 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-26 06:44:07,368 INFO spawned: 'novnc' with pid 22
+2024-12-26 06:44:07,372 INFO spawned: 'virtualgl' with pid 23
+2024-12-26 06:44:07,377 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-26 06:44:07,377 INFO exited: cleanup (exit status 1; not expected)
+2024-12-26 06:44:07,515 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-26 06:44:08,449 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-26 06:44:08,449 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-26 06:44:08,453 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-26 06:44:09,456 INFO spawned: 'turbo_vnc' with pid 243
+2024-12-26 06:44:09,459 INFO spawned: 'virtualgl' with pid 244
+2024-12-26 06:44:09,460 INFO reaped unknown pid 154
+2024-12-26 06:44:09,460 INFO reaped unknown pid 161
+2024-12-26 06:44:09,460 INFO reaped unknown pid 166
+2024-12-26 06:44:09,460 INFO reaped unknown pid 172
+2024-12-26 06:44:09,496 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-26 06:44:09,566 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-26 06:44:10,571 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-26 06:44:10,612 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-26 06:44:11,112 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:44:11,148 views 31 140606251057152 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-26 06:44:02 +0000 UTC","ID":"1fb5068c8397","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-470e4ab8","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"9 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 8 seconds"}
+INFO 2024-12-26 06:44:11,148 views 31 140606251057152 Command return code: 0
