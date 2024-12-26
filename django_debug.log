@@ -857,3 +857,302 @@ INFO 2024-12-25 17:06:48,267 views 32 140235855441920 Command return code: 0
 INFO 2024-12-25 17:06:48,281 views 32 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
 INFO 2024-12-25 17:06:48,312 views 32 140235855441920 Command output - stdout: 
 INFO 2024-12-25 17:06:48,313 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 17:10:45,454 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:10:45,489 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:10:45,489 views 31 140235855441920 Command return code: 0
+INFO 2024-12-25 17:14:24,687 views 33 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:14:24,722 views 33 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:14:24,723 views 33 140235855441920 Command return code: 0
+INFO 2024-12-25 17:14:25,841 views 33 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:14:25,876 views 33 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:14:25,876 views 33 140235855441920 Command return code: 0
+INFO 2024-12-25 17:16:22,619 views 31 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 17:16:22,655 views 31 140235855441920 Command output - stdout: 
+INFO 2024-12-25 17:16:22,655 views 31 140235855441920 Command return code: 0
+ERROR 2024-12-25 17:55:38,939 exception 33 140235855441920 Invalid HTTP_HOST header: 'www.google.com:443'. You may need to add 'www.google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 17:55:38,992 log 33 140235855441920 Bad Request: /443
+ERROR 2024-12-25 17:56:11,899 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 17:56:11,949 log 31 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 18:26:39,242 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 18:26:39,290 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-25 18:26:39,611 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 18:26:39,655 log 31 140235855441920 Bad Request: /443
+ERROR 2024-12-25 18:26:39,975 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 18:26:40,022 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-25 18:26:40,348 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 18:26:40,393 log 31 140235855441920 Bad Request: /443
+ERROR 2024-12-25 18:54:16,999 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 18:54:17,048 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-25 19:04:54,660 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 19:04:54,708 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-25 19:04:56,543 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 19:04:56,585 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-25 19:09:20,808 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 19:09:20,857 log 31 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 19:37:36,905 exception 33 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 19:37:36,954 log 33 140235855441920 Bad Request: /443
+ERROR 2024-12-25 19:55:20,386 exception 31 140235855441920 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 19:55:20,433 log 31 140235855441920 Bad Request: /443
+WARNING 2024-12-25 20:58:37,034 log 32 140235855441920 Not Found: /None
+WARNING 2024-12-25 20:58:37,083 log 32 140235855441920 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-25 20:58:38,635 log 31 140235855441920 Not Found: /favicon.ico
+INFO 2024-12-25 20:58:48,942 views 32 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 20:58:48,979 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 20:58:48,979 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:07,340 views 32 140235855441920 Received request to launch OpenUAV
+INFO 2024-12-25 20:59:07,351 views 32 140235855441920 Launching container with name: openuav-462bffd5
+INFO 2024-12-25 20:59:07,351 views 32 140235855441920 Checking if container already exists...
+INFO 2024-12-25 20:59:07,351 views 32 140235855441920 Executing command: docker ps -a --filter name=openuav-462bffd5 --format '{{.Names}}'
+INFO 2024-12-25 20:59:07,385 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 20:59:07,385 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:07,385 views 32 140235855441920 Cleaning up stale files...
+INFO 2024-12-25 20:59:07,385 views 32 140235855441920 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-25 20:59:07,390 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 20:59:07,390 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:07,390 views 32 140235855441920 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-25 20:59:07,394 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 20:59:07,394 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:07,394 views 32 140235855441920 Executing command: pkill -f Xvnc || true
+INFO 2024-12-25 20:59:07,400 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 20:59:07,400 views 32 140235855441920 Command return code: -15
+INFO 2024-12-25 20:59:07,401 views 32 140235855441920 Executing command: pkill -f vncserver || true
+INFO 2024-12-25 20:59:07,406 views 32 140235855441920 Command output - stdout: 
+INFO 2024-12-25 20:59:07,407 views 32 140235855441920 Command return code: -15
+INFO 2024-12-25 20:59:07,407 views 32 140235855441920 Creating new container...
+INFO 2024-12-25 20:59:07,407 views 32 140235855441920 Executing command: docker run -d --name openuav-462bffd5 --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-25 20:59:08,433 views 32 140235855441920 Command output - stdout: 6eb2c1cc95ffa3081490c65b101c12a4d6a997c194b03b97a615a07468ef2a8d
+INFO 2024-12-25 20:59:08,433 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:08,433 views 32 140235855441920 Container started successfully
+INFO 2024-12-25 20:59:13,439 views 32 140235855441920 Executing command: docker inspect --format='{{.Id}}' openuav-462bffd5
+INFO 2024-12-25 20:59:13,478 views 32 140235855441920 Command output - stdout: 6eb2c1cc95ffa3081490c65b101c12a4d6a997c194b03b97a615a07468ef2a8d
+INFO 2024-12-25 20:59:13,478 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:13,487 views 32 140235855441920 Executing command: docker inspect openuav-462bffd5 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-25 20:59:13,523 views 32 140235855441920 Command output - stdout: running true
+INFO 2024-12-25 20:59:13,523 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:13,523 views 32 140235855441920 Container state: running true
+INFO 2024-12-25 20:59:13,523 views 32 140235855441920 Executing command: docker exec openuav-462bffd5 ps aux | grep Xvnc
+INFO 2024-12-25 20:59:13,617 views 32 140235855441920 Command output - stdout: root          50  3.7  0.0 167056 64208 ?        S    20:59   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 6eb2c1cc95ff:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-25 20:59:13,617 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:13,617 views 32 140235855441920 Executing command: docker logs openuav-462bffd5 --tail 20
+INFO 2024-12-25 20:59:13,654 views 32 140235855441920 Command output - stdout: 2024-12-25 20:59:09,729 INFO spawned: 'cleanup' with pid 20
+2024-12-25 20:59:09,732 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 20:59:09,735 INFO spawned: 'novnc' with pid 22
+2024-12-25 20:59:09,738 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 20:59:09,745 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 20:59:09,745 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 20:59:09,861 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 20:59:10,787 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 20:59:10,787 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 20:59:10,792 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 20:59:11,796 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 20:59:11,798 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 20:59:11,799 INFO reaped unknown pid 154
+2024-12-25 20:59:11,799 INFO reaped unknown pid 161
+2024-12-25 20:59:11,799 INFO reaped unknown pid 166
+2024-12-25 20:59:11,799 INFO reaped unknown pid 172
+2024-12-25 20:59:11,838 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 20:59:11,913 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 20:59:12,917 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 20:59:12,960 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 20:59:13,654 views 32 140235855441920 Command return code: 0
+INFO 2024-12-25 20:59:13,654 views 32 140235855441920 Container recent logs: 2024-12-25 20:59:09,729 INFO spawned: 'cleanup' with pid 20
+2024-12-25 20:59:09,732 INFO spawned: 'turbo_vnc' with pid 21
+2024-12-25 20:59:09,735 INFO spawned: 'novnc' with pid 22
+2024-12-25 20:59:09,738 INFO spawned: 'virtualgl' with pid 23
+2024-12-25 20:59:09,745 INFO success: cleanup entered RUNNING state, process has stayed up for > than 0 seconds (startsecs)
+2024-12-25 20:59:09,745 INFO exited: cleanup (exit status 1; not expected)
+2024-12-25 20:59:09,861 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 20:59:10,787 INFO success: turbo_vnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 20:59:10,787 INFO success: novnc entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-12-25 20:59:10,792 INFO exited: turbo_vnc (exit status 0; expected)
+2024-12-25 20:59:11,796 INFO spawned: 'turbo_vnc' with pid 249
+2024-12-25 20:59:11,798 INFO spawned: 'virtualgl' with pid 250
+2024-12-25 20:59:11,799 INFO reaped unknown pid 154
+2024-12-25 20:59:11,799 INFO reaped unknown pid 161
+2024-12-25 20:59:11,799 INFO reaped unknown pid 166
+2024-12-25 20:59:11,799 INFO reaped unknown pid 172
+2024-12-25 20:59:11,838 INFO exited: turbo_vnc (exit status 98; not expected)
+2024-12-25 20:59:11,913 INFO exited: virtualgl (exit status 0; not expected)
+2024-12-25 20:59:12,917 INFO spawned: 'turbo_vnc' with pid 319
+2024-12-25 20:59:12,960 INFO exited: turbo_vnc (exit status 98; not expected)
+INFO 2024-12-25 20:59:13,809 views 32 140235855441920 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-25 20:59:13,849 views 32 140235855441920 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-25 20:59:07 +0000 UTC","ID":"6eb2c1cc95ff","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-462bffd5","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"6 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-25 20:59:13,849 views 32 140235855441920 Command return code: 0
+ERROR 2024-12-25 21:12:26,399 exception 31 140235855441920 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 21:12:26,446 log 31 140235855441920 Bad Request: /443
+ERROR 2024-12-25 21:25:19,764 exception 31 140235855441920 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 21:25:19,813 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-25 22:05:02,137 exception 32 140235855441920 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 22:05:02,182 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-25 22:05:03,056 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 22:05:03,098 log 31 140235855441920 Bad Request: /443
+ERROR 2024-12-25 22:05:03,425 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 22:05:03,469 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-25 22:05:03,793 exception 31 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 22:05:03,835 log 31 140235855441920 Bad Request: /443
+ERROR 2024-12-25 22:10:31,885 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 22:10:31,928 log 33 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-25 22:33:02,180 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 22:33:02,227 log 33 140235855441920 Bad Request: /
+WARNING 2024-12-25 22:33:02,603 log 33 140235855441920 Not Found: /logon.htm
+ERROR 2024-12-25 23:02:49,962 exception 32 140235855441920 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-25 23:02:50,010 log 32 140235855441920 Bad Request: /goform/set_LimitClient_cfg
+ERROR 2024-12-25 23:19:25,319 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 23:19:25,369 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-25 23:50:50,409 exception 33 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-25 23:50:50,453 log 33 140235855441920 Bad Request: /443
+ERROR 2024-12-25 23:55:30,711 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-25 23:55:30,760 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-26 00:18:45,411 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:18:45,458 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 00:21:17,013 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:21:17,061 log 32 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-26 00:54:07,207 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:54:07,254 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 00:55:12,842 exception 32 140235855441920 Invalid HTTP_HOST header: 'api.ipify.org'. You may need to add 'api.ipify.org' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:55:12,889 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 00:55:36,135 exception 32 140235855441920 Invalid HTTP_HOST header: 'www.shadowserver.org'. You may need to add 'www.shadowserver.org' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:55:36,183 log 32 140235855441920 Bad Request: /443
+ERROR 2024-12-26 00:56:03,607 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:56:03,654 log 33 140235855441920 Bad Request: /geoserver/web/
+ERROR 2024-12-26 00:58:45,760 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 00:58:45,807 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 01:07:01,291 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 01:07:01,343 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-26 01:51:36,020 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 01:51:36,068 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-26 02:01:03,596 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 02:01:03,643 log 33 140235855441920 Bad Request: /
+WARNING 2024-12-26 02:01:04,007 log 33 140235855441920 Not Found: /logon.htm
+ERROR 2024-12-26 02:14:03,272 exception 33 140235855441920 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-26 02:14:03,320 log 33 140235855441920 Bad Request: /
+WARNING 2024-12-26 02:24:15,808 log 32 140235855441920 Not Found: /favicon.ico
+ERROR 2024-12-26 02:29:05,717 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 02:29:05,763 log 33 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-26 02:36:22,698 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 02:36:22,741 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 03:30:45,137 exception 31 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 03:30:45,184 log 31 140235855441920 Bad Request: /
+ERROR 2024-12-26 03:31:38,800 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 03:31:38,848 log 32 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-26 03:45:53,126 exception 33 140235855441920 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-26 03:45:53,172 log 33 140235855441920 Bad Request: /443
+ERROR 2024-12-26 03:47:03,961 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 03:47:04,008 log 33 140235855441920 Bad Request: /actuator/gateway/routes
+ERROR 2024-12-26 04:01:45,865 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:01:45,912 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 04:01:50,926 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:01:50,973 log 32 140235855441920 Bad Request: /
+ERROR 2024-12-26 04:14:37,467 exception 33 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:14:37,513 log 33 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-26 04:26:36,361 exception 31 140235855441920 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:26:36,418 log 31 140235855441920 Bad Request: /443
+ERROR 2024-12-26 04:29:57,742 exception 32 140235855441920 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:29:57,788 log 32 140235855441920 Bad Request: /cgi-bin/luci/;stok=/locale
+WARNING 2024-12-26 04:51:05,173 log 31 140235855441920 Not Found: /None
+WARNING 2024-12-26 04:51:05,244 log 31 140235855441920 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 04:51:07,935 log 32 140235855441920 Not Found: /None
+WARNING 2024-12-26 04:51:07,949 log 31 140235855441920 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 04:51:10,230 log 31 140235855441920 Not Found: /favicon.ico
+WARNING 2024-12-26 04:54:20,609 log 33 140235855441920 Not Found: /None
+WARNING 2024-12-26 04:54:20,654 log 33 140235855441920 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 04:54:22,827 log 32 140235855441920 Not Found: /favicon.ico
+WARNING 2024-12-26 04:57:15,561 log 32 139933300924416 Not Found: /None
+WARNING 2024-12-26 04:57:17,767 log 31 139933300924416 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 04:57:53,871 log 32 139933300924416 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 04:57:54,092 log 33 139933300924416 Not Found: /None
+ERROR 2024-12-26 04:58:01,574 exception 33 139933300924416 Invalid HTTP_HOST header: 'xr.localhost'. You may need to add 'xr.localhost' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:58:01,626 log 33 139933300924416 Bad Request: /
+ERROR 2024-12-26 04:58:01,809 exception 33 139933300924416 Invalid HTTP_HOST header: 'xr.localhost'. You may need to add 'xr.localhost' to ALLOWED_HOSTS.
+WARNING 2024-12-26 04:58:01,856 log 33 139933300924416 Bad Request: /favicon.ico
+WARNING 2024-12-26 05:01:41,086 log 33 139933300924416 Not Found: /None
+WARNING 2024-12-26 05:01:41,303 log 31 139933300924416 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:03:23,690 log 32 140172504739840 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:03:24,860 log 33 140172504739840 Not Found: /None
+WARNING 2024-12-26 05:05:44,807 log 32 140172504739840 Not Found: /None
+WARNING 2024-12-26 05:05:46,016 log 31 140172504739840 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:06:24,420 log 33 140172504739840 Not Found: /None
+WARNING 2024-12-26 05:06:24,429 log 31 140172504739840 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:23:32,114 log 31 140172504739840 Not Found: /None
+WARNING 2024-12-26 05:23:32,481 log 31 140172504739840 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:23:39,340 log 31 140172504739840 Not Found: /None
+WARNING 2024-12-26 05:23:39,637 log 31 140172504739840 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:23:42,419 log 31 140172504739840 Not Found: /favicon.ico
+WARNING 2024-12-26 05:33:46,912 log 31 139879510306816 Not Found: /None
+WARNING 2024-12-26 05:33:46,974 log 31 139879510306816 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:33:47,666 log 31 139879510306816 Not Found: /favicon.ico
+ERROR 2024-12-26 05:35:34,366 exception 32 139879510306816 Invalid HTTP_HOST header: '68.109.135.117:x'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2024-12-26 05:35:34,423 log 32 139879510306816 Bad Request: /
+ERROR 2024-12-26 05:37:18,530 exception 32 139879510306816 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 05:37:18,578 log 32 139879510306816 Bad Request: /.env
+WARNING 2024-12-26 05:39:50,818 log 33 139879510306816 Not Found: /None
+WARNING 2024-12-26 05:39:50,990 log 33 139879510306816 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:39:51,315 log 33 139879510306816 Not Found: /favicon.ico
+INFO 2024-12-26 05:39:54,379 views 32 139879510306816 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 05:39:54,553 views 32 139879510306816 Command output - stdout: 
+INFO 2024-12-26 05:39:54,553 views 32 139879510306816 Command return code: 0
+INFO 2024-12-26 05:39:55,872 views 32 139879510306816 Received request to launch OpenUAV
+INFO 2024-12-26 05:39:55,880 views 32 139879510306816 Found existing container: openuav-462bffd5
+INFO 2024-12-26 05:39:55,893 views 32 139879510306816 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 05:39:55,926 views 32 139879510306816 Command output - stdout: 
+INFO 2024-12-26 05:39:55,926 views 32 139879510306816 Command return code: 0
+WARNING 2024-12-26 05:39:55,982 log 32 139879510306816 Not Found: /favicon.ico
+WARNING 2024-12-26 05:42:22,893 log 32 139879510306816 Not Found: /None
+WARNING 2024-12-26 05:42:22,955 log 32 139879510306816 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:42:23,983 log 32 139879510306816 Not Found: /favicon.ico
+WARNING 2024-12-26 05:42:24,199 log 33 139879510306816 Not Found: /None
+WARNING 2024-12-26 05:42:24,206 log 32 139879510306816 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:44:08,423 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:14,637 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:15,151 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:15,700 log 33 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:16,451 log 33 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:16,490 log 33 139879510306816 Not Found: /favicon.ico
+WARNING 2024-12-26 05:44:17,089 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:18,834 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:29,603 log 33 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:30,150 log 33 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:33,336 log 33 139879510306816 Not Found: /None
+WARNING 2024-12-26 05:44:33,344 log 31 139879510306816 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:44:33,466 log 31 139879510306816 Not Found: /favicon.ico
+WARNING 2024-12-26 05:44:34,370 log 31 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:44:36,539 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:45:32,147 log 33 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:45:33,549 log 33 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:46:02,518 log 31 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:46:05,997 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:46:06,428 log 32 139879510306816 Not Found: /xr
+WARNING 2024-12-26 05:46:31,377 log 33 140074856919040 Not Found: /xr
+WARNING 2024-12-26 05:46:32,166 log 33 140074856919040 Not Found: /xr
+ERROR 2024-12-26 05:47:01,056 exception 31 140074856919040 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 05:47:01,099 log 31 140074856919040 Bad Request: /
+WARNING 2024-12-26 05:47:29,237 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 05:47:29,322 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:47:32,430 log 33 140074856919040 Not Found: /xr
+WARNING 2024-12-26 05:47:57,144 log 33 140074856919040 Not Found: /xr
+WARNING 2024-12-26 05:47:57,588 log 33 140074856919040 Not Found: /xr
+WARNING 2024-12-26 05:51:01,942 log 31 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:51:03,077 log 32 140074856919040 Not Found: /None
+ERROR 2024-12-26 05:51:15,234 exception 32 140074856919040 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 05:51:15,291 log 32 140074856919040 Bad Request: /
+ERROR 2024-12-26 05:53:01,297 exception 33 140074856919040 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 05:53:01,347 log 33 140074856919040 Bad Request: /cgi-bin/luci/;stok=/locale
+WARNING 2024-12-26 05:53:35,984 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 05:53:35,991 log 32 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:53:37,140 log 33 140074856919040 Not Found: /None
+WARNING 2024-12-26 05:53:37,146 log 32 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:55:00,699 log 33 140074856919040 Not Found: /None
+WARNING 2024-12-26 05:55:00,704 log 31 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:57:04,333 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 05:57:04,345 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 05:57:07,316 log 31 140074856919040 Not Found: /favicon.ico
+WARNING 2024-12-26 06:05:46,617 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 06:05:46,624 log 32 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:05:46,898 log 32 140074856919040 Not Found: /None
+WARNING 2024-12-26 06:05:46,901 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:05:47,117 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 06:05:47,117 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:18:28,197 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 06:18:28,206 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:18:28,641 log 31 140074856919040 Not Found: /None
+WARNING 2024-12-26 06:18:28,647 log 33 140074856919040 Not Found: /static/images/planetary_background.jpg

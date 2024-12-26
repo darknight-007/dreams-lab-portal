@@ -278,6 +278,58 @@
             </div>
         </section>
 
+        <section id="deepgis-xr">
+            <h2>DeepGIS XR</h2>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <h3>Virtual Reality GIS Platform</h3>
+                    <p>Experience geographic information systems in virtual reality with DeepGIS XR. This cutting-edge platform combines the power of GIS with immersive VR technology.</p>
+                    <div class="deepgis-options">
+                        <div class="option">
+                            <h4>Image Analysis</h4>
+                            <p>Label and analyze aerial imagery with our advanced image processing tools.</p>
+                            <p><a href="http://deepgis.org:8090/label/" target="_blank" class="btn">Launch Image Analysis →</a></p>
+                        </div>
+                        <div class="option">
+                            <h4>Scene Analysis</h4>
+                            <p>Explore and analyze 3D scenes with our immersive VR environment.</p>
+                            <p><a href="http://deepgis.org:8090/map-label/" target="_blank" class="btn">Launch Scene Analysis →</a></p>
+                        </div>
+                    </div>
+                    <style>
+                        .deepgis-options {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 2rem;
+                            margin-top: 1.5rem;
+                        }
+                        .option {
+                            background: #f8f9fa;
+                            padding: 1.5rem;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            transition: transform 0.2s ease;
+                        }
+                        .option:hover {
+                            transform: translateY(-5px);
+                        }
+                        .option h4 {
+                            color: var(--primary-color);
+                            margin-bottom: 1rem;
+                        }
+                        .option p {
+                            margin-bottom: 1rem;
+                        }
+                        @media (max-width: 768px) {
+                            .deepgis-options {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                </div>
+            </div>
+        </section>
+
         <section id="people">
             <h2>People</h2>
             <div class="table-responsive">
