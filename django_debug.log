@@ -1557,3 +1557,27 @@ INFO 2024-12-26 06:44:11,096 views 31 140606251057152 Container recent logs: 202
 INFO 2024-12-26 06:44:11,112 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
 INFO 2024-12-26 06:44:11,148 views 31 140606251057152 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-26 06:44:02 +0000 UTC","ID":"1fb5068c8397","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-470e4ab8","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"9 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 8 seconds"}
 INFO 2024-12-26 06:44:11,148 views 31 140606251057152 Command return code: 0
+WARNING 2024-12-26 06:45:06,655 log 32 140606251057152 Not Found: /favicon.ico
+WARNING 2024-12-26 06:45:08,699 log 33 140606251057152 Not Found: /dreamslab/None
+WARNING 2024-12-26 06:45:08,748 log 31 140606251057152 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-26 06:45:11,512 log 31 140606251057152 Not Found: /favicon.ico
+WARNING 2024-12-26 06:46:30,922 log 31 140606251057152 Not Found: /favicon.ico
+WARNING 2024-12-26 06:49:10,989 log 31 140606251057152 Not Found: /map-label/
+ERROR 2024-12-26 06:49:16,846 exception 32 140606251057152 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-26 06:49:16,897 log 32 140606251057152 Bad Request: /
+WARNING 2024-12-26 06:49:20,423 log 32 140606251057152 Not Found: /map-label/
+WARNING 2024-12-26 06:51:28,543 log 33 140606251057152 Not Found: /map-label/
+WARNING 2024-12-26 06:52:28,926 log 33 140606251057152 Not Found: /static/css/style.css
+WARNING 2024-12-26 06:52:28,941 log 32 140606251057152 Not Found: /static/css/simple-sidebar.css
+WARNING 2024-12-26 06:52:28,943 log 31 140606251057152 Not Found: /static/scripts/webclient/map_label.js
+WARNING 2024-12-26 06:52:29,056 log 33 140606251057152 Not Found: /static/css/simple-sidebar.css
+WARNING 2024-12-26 06:52:29,288 log 33 140606251057152 Not Found: /static/scripts/webclient/map_label.js
+WARNING 2024-12-26 06:52:34,167 log 33 140606251057152 Not Found: /static/css/style.css
+WARNING 2024-12-26 06:52:34,168 log 32 140606251057152 Not Found: /static/css/simple-sidebar.css
+WARNING 2024-12-26 06:52:34,171 log 31 140606251057152 Not Found: /static/scripts/webclient/map_label.js
+WARNING 2024-12-26 06:52:34,236 log 32 140606251057152 Not Found: /static/scripts/webclient/map_label.js
+INFO 2024-12-26 06:52:42,520 views 31 140606251057152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-26 06:52:42,561 views 31 140606251057152 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-26 06:44:02 +0000 UTC","ID":"1fb5068c8397","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-470e4ab8","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"8 minutes ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 8 minutes"}
+INFO 2024-12-26 06:52:42,562 views 31 140606251057152 Command return code: 0
+WARNING 2024-12-26 06:53:01,617 log 31 140606251057152 Not Found: /dreamslab/None
+WARNING 2024-12-26 06:53:01,620 log 33 140606251057152 Not Found: /static/images/planetary_background.jpg
