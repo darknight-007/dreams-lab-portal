@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from dreams_laboratory.views import (
     # Core views
-    deepgis_home, dreamslab_home, run_blender, get_models,
+    deepgis_home, dreamslab_home, run_blender, get_models, get_available_layers,
     # Authentication views
     initiate_login, verify_login, initiate_login_view, verify_login_view,
     # Main feature views
@@ -57,6 +57,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', deepgis_home, name='home'),  # New DeepGIS home page
     path('dreamslab/', dreamslab_home, name='dreamslab_home'),  # DREAMS Lab home page
+    path('api/get_available_layers.json', get_available_layers, name='get_available_layers'),
     
     # OpenUAV URLs
     path('openuav/', include('openuav_manager.urls')),

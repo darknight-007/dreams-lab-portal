@@ -1012,3 +1012,30 @@ def dreamslab_home(request):
         'assets': Asset.objects.all()
     }
     return render(request, 'home.html', context)
+
+def get_available_layers(request):
+    """Return available map layers organized by category"""
+    try:
+        # Define the two layer groups
+        layers = {
+            "tiles_media": {
+                "name": "Media Tiles",
+                "layers": []
+            },
+            "tileserver": {
+                "name": "Base Layers",
+                "layers": ["rocks", "wildfire"]
+            }
+        }
+        
+        # Scan tiles_media directory for available layers
+        media_tiles_path = os.path.join(settings.MEDIA_ROOT, 'tiles')
+        if os.path.exists(media_tiles_path):
+            for item in os.listdir(media_tiles_path):
+                if os.path.isdir(os.path.join(media_tiles_path, item)):
+                    layers["tiles_media"]["layers"].append(item)
+        
+        return JsonResponse(layers)
+    except Exception as e:
+        logger.error(f"Error in get_available_layers: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
