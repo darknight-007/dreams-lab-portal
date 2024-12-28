@@ -10077,3 +10077,1812 @@ WARNING 2024-12-27 08:29:08,645 log 31 140067806568448 Bad Request: /cgi-bin/luc
 ERROR 2024-12-27 16:57:29,289 exception 31 140162090999808 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
 WARNING 2024-12-27 16:57:29,357 log 31 140162090999808 Bad Request: /
 WARNING 2024-12-27 17:01:50,391 log 31 139994620354560 Not Found: /webclient/get_available_layers
+INFO 2024-12-27 17:03:11,438 views 32 139994620354560 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:03:11,614 views 32 139994620354560 Command output - stdout: 97c48351b0e8	deepgis-xr-nginx-1	Up About a minute	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 2 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up About a minute	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 2 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 2 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 2 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 2 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 2 minutes	dreams-lab-website-server-web
+406c432e564f	openuav-61262ef7	Exited (0) 9 hours ago	openuav:px4-sitl
+INFO 2024-12-27 17:03:11,615 views 32 139994620354560 Command return code: 0
+INFO 2024-12-27 17:03:13,470 views 32 139994620354560 Received request to launch OpenUAV
+INFO 2024-12-27 17:03:13,470 views 32 139994620354560 Launching container with name: openuav-498d9eba
+INFO 2024-12-27 17:03:13,471 views 32 139994620354560 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:03:13,507 views 32 139994620354560 Command output - stdout: openuav_network
+INFO 2024-12-27 17:03:13,507 views 32 139994620354560 Command return code: 0
+INFO 2024-12-27 17:03:13,507 views 32 139994620354560 Checking if container already exists...
+INFO 2024-12-27 17:03:13,507 views 32 139994620354560 Executing command: docker ps -a --filter name=openuav-498d9eba --format '{{.Names}}'
+INFO 2024-12-27 17:03:13,537 views 32 139994620354560 Command output - stdout: 
+INFO 2024-12-27 17:03:13,537 views 32 139994620354560 Command return code: 0
+INFO 2024-12-27 17:03:13,537 views 32 139994620354560 Creating new container...
+INFO 2024-12-27 17:03:13,538 views 32 139994620354560 Executing command: docker run -d --name openuav-498d9eba --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:03:16,899 views 32 139994620354560 Command output - stdout: 52304552cecec67c321cd70fc8d0c2829e6be5676c7e8669ab7242796f93cf94
+INFO 2024-12-27 17:03:16,899 views 32 139994620354560 Command return code: 0
+INFO 2024-12-27 17:03:16,899 views 32 139994620354560 Container started successfully
+INFO 2024-12-27 17:03:21,905 views 32 139994620354560 Executing command: docker inspect --format='{{.Id}}' openuav-498d9eba
+INFO 2024-12-27 17:03:21,942 views 32 139994620354560 Command output - stdout: 52304552cecec67c321cd70fc8d0c2829e6be5676c7e8669ab7242796f93cf94
+INFO 2024-12-27 17:03:21,942 views 32 139994620354560 Command return code: 0
+ERROR 2024-12-27 17:03:21,957 views 32 139994620354560 Exception in launch_openuav: Unknown command: 'update_container_ip'
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/management/__init__.py", line 105, in call_command
+    app_name = get_commands()[command_name]
+KeyError: 'update_container_ip'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 218, in launch_openuav
+    container.update_container_ip()
+  File "/app/openuav_manager/models.py", line 34, in update_container_ip
+    call_command('update_container_ip', self.container_id)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/management/__init__.py", line 107, in call_command
+    raise CommandError("Unknown command: %r" % command_name)
+django.core.management.base.CommandError: Unknown command: 'update_container_ip'
+ERROR 2024-12-27 17:03:21,958 log 32 139994620354560 Internal Server Error: /openuav/launch/
+ERROR 2024-12-27 17:05:02,832 exception 33 139994620354560 Invalid HTTP_HOST header: 'term-4.openuav.us'. You may need to add 'term-4.openuav.us' to ALLOWED_HOSTS.
+WARNING 2024-12-27 17:05:02,877 log 33 139994620354560 Bad Request: /
+INFO 2024-12-27 17:05:08,316 views 33 139994620354560 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:05:08,350 views 33 139994620354560 Command output - stdout: 52304552cece	openuav-498d9eba	Up About a minute	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 3 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 3 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 3 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 3 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 3 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 3 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 3 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 4 minutes	dreams-lab-website-server-web
+406c432e564f	openuav-61262ef7	Exited (0) 9 hours ago	openuav:px4-sitl
+INFO 2024-12-27 17:05:08,350 views 33 139994620354560 Command return code: 0
+ERROR 2024-12-27 17:05:08,358 views 33 139994620354560 Error syncing containers: no such column: openuav_manager_container.container_ip
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.container_ip
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 54, in sync_containers
+    for container in db_containers:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.container_ip
+INFO 2024-12-27 17:05:08,720 views 33 139994620354560 Received request to launch OpenUAV
+INFO 2024-12-27 17:05:08,720 views 33 139994620354560 Launching container with name: openuav-d96ac120
+INFO 2024-12-27 17:05:08,721 views 33 139994620354560 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:05:08,753 views 33 139994620354560 Command output - stdout: openuav_network
+INFO 2024-12-27 17:05:08,753 views 33 139994620354560 Command return code: 0
+INFO 2024-12-27 17:05:08,753 views 33 139994620354560 Checking if container already exists...
+INFO 2024-12-27 17:05:08,753 views 33 139994620354560 Executing command: docker ps -a --filter name=openuav-d96ac120 --format '{{.Names}}'
+INFO 2024-12-27 17:05:08,782 views 33 139994620354560 Command output - stdout: 
+INFO 2024-12-27 17:05:08,782 views 33 139994620354560 Command return code: 0
+INFO 2024-12-27 17:05:08,782 views 33 139994620354560 Creating new container...
+INFO 2024-12-27 17:05:08,782 views 33 139994620354560 Executing command: docker run -d --name openuav-d96ac120 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:05:09,553 views 33 139994620354560 Command output - stdout: 879521c5fb84ccebb87cfd3d62d25456708b39c66fc12fe7806c23384cd8c8b2
+INFO 2024-12-27 17:05:09,553 views 33 139994620354560 Command return code: 0
+INFO 2024-12-27 17:05:09,553 views 33 139994620354560 Container started successfully
+INFO 2024-12-27 17:05:14,559 views 33 139994620354560 Executing command: docker inspect --format='{{.Id}}' openuav-d96ac120
+INFO 2024-12-27 17:05:14,596 views 33 139994620354560 Command output - stdout: 879521c5fb84ccebb87cfd3d62d25456708b39c66fc12fe7806c23384cd8c8b2
+INFO 2024-12-27 17:05:14,596 views 33 139994620354560 Command return code: 0
+ERROR 2024-12-27 17:05:14,605 views 33 139994620354560 Exception in launch_openuav: table openuav_manager_container has no column named container_ip
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: table openuav_manager_container has no column named container_ip
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 205, in launch_openuav
+    container = Container.objects.create(
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 453, in create
+    obj.save(force_insert=True, using=self.db)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 739, in save
+    self.save_base(using=using, force_insert=force_insert,
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 776, in save_base
+    updated = self._save_table(
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 881, in _save_table
+    results = self._do_insert(cls._base_manager, using, fields, returning_fields, raw)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/base.py", line 919, in _do_insert
+    return manager._insert(
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1270, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1416, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: table openuav_manager_container has no column named container_ip
+ERROR 2024-12-27 17:05:14,608 log 33 139994620354560 Internal Server Error: /openuav/launch/
+INFO 2024-12-27 17:09:45,875 views 32 140175846756352 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:09:45,919 views 32 140175846756352 Command output - stdout: 879521c5fb84	openuav-d96ac120	Up 4 minutes	openuav:px4-sitl
+52304552cece	openuav-498d9eba	Up 6 minutes	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 8 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 8 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 8 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 8 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 8 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 8 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 8 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 12 seconds	dreams-lab-website-server-web
+406c432e564f	openuav-61262ef7	Exited (0) 9 hours ago	openuav:px4-sitl
+INFO 2024-12-27 17:09:45,919 views 32 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:49,076 views 31 140175846756352 Received request to launch OpenUAV
+INFO 2024-12-27 17:09:49,076 views 31 140175846756352 Launching container with name: openuav-2d6690d7
+INFO 2024-12-27 17:09:49,076 views 31 140175846756352 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:09:49,103 views 31 140175846756352 Command output - stdout: openuav_network
+INFO 2024-12-27 17:09:49,103 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:49,104 views 31 140175846756352 Checking if container already exists...
+INFO 2024-12-27 17:09:49,104 views 31 140175846756352 Executing command: docker ps -a --filter name=openuav-2d6690d7 --format '{{.Names}}'
+INFO 2024-12-27 17:09:49,129 views 31 140175846756352 Command output - stdout: 
+INFO 2024-12-27 17:09:49,129 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:49,129 views 31 140175846756352 Creating new container...
+INFO 2024-12-27 17:09:49,129 views 31 140175846756352 Executing command: docker run -d --name openuav-2d6690d7 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:09:49,897 views 31 140175846756352 Command output - stdout: a794e224d14b06b117ff26910e1917cc31f83352ded4c61b325d45f2553abbea
+INFO 2024-12-27 17:09:49,897 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:49,897 views 31 140175846756352 Container started successfully
+INFO 2024-12-27 17:09:54,902 views 31 140175846756352 Executing command: docker inspect --format='{{.Id}}' openuav-2d6690d7
+INFO 2024-12-27 17:09:54,940 views 31 140175846756352 Command output - stdout: a794e224d14b06b117ff26910e1917cc31f83352ded4c61b325d45f2553abbea
+INFO 2024-12-27 17:09:54,940 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:54,957 views 31 140175846756352 Executing command: docker inspect openuav-2d6690d7 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 17:09:54,994 views 31 140175846756352 Command output - stdout: running true
+INFO 2024-12-27 17:09:54,994 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:54,994 views 31 140175846756352 Container state: running true
+INFO 2024-12-27 17:09:54,994 views 31 140175846756352 Executing command: docker exec openuav-2d6690d7 ps aux | grep Xvnc
+INFO 2024-12-27 17:09:55,080 views 31 140175846756352 Command output - stdout: root          50  3.5  0.0 167056 63896 ?        S    17:09   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: a794e224d14b:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 17:09:55,081 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:56,267 views 33 140175846756352 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:09:56,309 views 33 140175846756352 Command output - stdout: a794e224d14b	openuav-2d6690d7	Up 7 seconds	openuav:px4-sitl
+879521c5fb84	openuav-d96ac120	Up 4 minutes	openuav:px4-sitl
+52304552cece	openuav-498d9eba	Up 6 minutes	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 8 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 8 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 8 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 8 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 8 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 8 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 8 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 23 seconds	dreams-lab-website-server-web
+406c432e564f	openuav-61262ef7	Exited (0) 9 hours ago	openuav:px4-sitl
+INFO 2024-12-27 17:09:56,310 views 33 140175846756352 Command return code: 0
+INFO 2024-12-27 17:09:59,675 views 33 140175846756352 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:09:59,723 views 33 140175846756352 Command output - stdout: a794e224d14b	openuav-2d6690d7	Up 10 seconds	openuav:px4-sitl
+879521c5fb84	openuav-d96ac120	Up 4 minutes	openuav:px4-sitl
+52304552cece	openuav-498d9eba	Up 6 minutes	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 8 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 8 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 8 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 8 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 8 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 8 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 8 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 26 seconds	dreams-lab-website-server-web
+406c432e564f	openuav-61262ef7	Exited (0) 9 hours ago	openuav:px4-sitl
+INFO 2024-12-27 17:09:59,723 views 33 140175846756352 Command return code: 0
+INFO 2024-12-27 17:11:13,450 views 31 140175846756352 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:11:13,493 views 31 140175846756352 Command output - stdout: 52304552cece	openuav-498d9eba	Up 7 minutes	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 9 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 10 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 9 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 10 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 10 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 10 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 10 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+INFO 2024-12-27 17:11:13,493 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:13:49,168 views 31 140175846756352 Received request to launch OpenUAV
+INFO 2024-12-27 17:13:49,169 views 31 140175846756352 Launching container with name: openuav-17a2d3a7
+INFO 2024-12-27 17:13:49,169 views 31 140175846756352 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:13:49,202 views 31 140175846756352 Command output - stdout: openuav_network
+INFO 2024-12-27 17:13:49,202 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:13:49,202 views 31 140175846756352 Checking if container already exists...
+INFO 2024-12-27 17:13:49,203 views 31 140175846756352 Executing command: docker ps -a --filter name=openuav-17a2d3a7 --format '{{.Names}}'
+INFO 2024-12-27 17:13:49,233 views 31 140175846756352 Command output - stdout: 
+INFO 2024-12-27 17:13:49,233 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:13:49,233 views 31 140175846756352 Creating new container...
+INFO 2024-12-27 17:13:49,233 views 31 140175846756352 Executing command: docker run -d --name openuav-17a2d3a7 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:13:50,154 views 31 140175846756352 Command output - stdout: 12cfa7e1fab1d6481a702cca7f357e789a1e7f0b8298fe7e347875bc915ed809
+INFO 2024-12-27 17:13:50,155 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:13:50,155 views 31 140175846756352 Container started successfully
+INFO 2024-12-27 17:13:55,160 views 31 140175846756352 Executing command: docker inspect --format='{{.Id}}' openuav-17a2d3a7
+INFO 2024-12-27 17:13:55,200 views 31 140175846756352 Command output - stdout: 12cfa7e1fab1d6481a702cca7f357e789a1e7f0b8298fe7e347875bc915ed809
+INFO 2024-12-27 17:13:55,200 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:13:55,207 views 31 140175846756352 Executing command: docker inspect openuav-17a2d3a7 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 17:13:55,242 views 31 140175846756352 Command output - stdout: running true
+INFO 2024-12-27 17:13:55,242 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:13:55,242 views 31 140175846756352 Container state: running true
+INFO 2024-12-27 17:13:55,242 views 31 140175846756352 Executing command: docker exec openuav-17a2d3a7 ps aux | grep Xvnc
+INFO 2024-12-27 17:13:55,327 views 31 140175846756352 Command output - stdout: root          50  3.7  0.0 167056 63440 ?        S    17:13   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 12cfa7e1fab1:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 17:13:55,327 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:05,317 views 31 140175846756352 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:14:05,360 views 31 140175846756352 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:13:49 +0000 UTC","ID":"12cfa7e1fab1","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-17a2d3a7","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"16 seconds ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 16 seconds"}
+INFO 2024-12-27 17:14:05,360 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:42,562 views 31 140175846756352 Received request to launch OpenUAV
+INFO 2024-12-27 17:14:42,562 views 31 140175846756352 Launching container with name: openuav-bbde2167
+INFO 2024-12-27 17:14:42,562 views 31 140175846756352 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:14:42,599 views 31 140175846756352 Command output - stdout: openuav_network
+INFO 2024-12-27 17:14:42,599 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:42,599 views 31 140175846756352 Checking if container already exists...
+INFO 2024-12-27 17:14:42,599 views 31 140175846756352 Executing command: docker ps -a --filter name=openuav-bbde2167 --format '{{.Names}}'
+INFO 2024-12-27 17:14:42,634 views 31 140175846756352 Command output - stdout: 
+INFO 2024-12-27 17:14:42,634 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:42,634 views 31 140175846756352 Creating new container...
+INFO 2024-12-27 17:14:42,634 views 31 140175846756352 Executing command: docker run -d --name openuav-bbde2167 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:14:43,511 views 31 140175846756352 Command output - stdout: aec8c402d374f4e3946792198cd3f9d780d590cf4d72db89f035bef416290bef
+INFO 2024-12-27 17:14:43,511 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:43,511 views 31 140175846756352 Container started successfully
+INFO 2024-12-27 17:14:48,517 views 31 140175846756352 Executing command: docker inspect --format='{{.Id}}' openuav-bbde2167
+INFO 2024-12-27 17:14:48,555 views 31 140175846756352 Command output - stdout: aec8c402d374f4e3946792198cd3f9d780d590cf4d72db89f035bef416290bef
+INFO 2024-12-27 17:14:48,555 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:48,563 views 31 140175846756352 Executing command: docker inspect openuav-bbde2167 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 17:14:48,600 views 31 140175846756352 Command output - stdout: running true
+INFO 2024-12-27 17:14:48,601 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:48,601 views 31 140175846756352 Container state: running true
+INFO 2024-12-27 17:14:48,601 views 31 140175846756352 Executing command: docker exec openuav-bbde2167 ps aux | grep Xvnc
+INFO 2024-12-27 17:14:48,684 views 31 140175846756352 Command output - stdout: root          51  3.5  0.0 167056 63420 ?        S    17:14   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: aec8c402d374:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 17:14:48,684 views 31 140175846756352 Command return code: 0
+INFO 2024-12-27 17:14:58,329 views 33 140175846756352 Received request to stop OpenUAV
+INFO 2024-12-27 17:14:58,335 views 33 140175846756352 Stopping container: openuav-498d9eba
+INFO 2024-12-27 17:14:58,336 views 33 140175846756352 Executing command: docker stop 52304552cece
+INFO 2024-12-27 17:14:58,371 views 33 140175846756352 Command output - stdout: 
+ERROR 2024-12-27 17:14:58,371 views 33 140175846756352 Command error - stderr: Error response from daemon: No such container: 52304552cece
+INFO 2024-12-27 17:14:58,372 views 33 140175846756352 Command return code: 1
+ERROR 2024-12-27 17:14:58,372 views 33 140175846756352 Error stopping container: Error response from daemon: No such container: 52304552cece
+ERROR 2024-12-27 17:14:58,372 log 33 140175846756352 Internal Server Error: /openuav/stop/
+INFO 2024-12-27 17:16:19,933 views 32 140175846756352 Received request to stop OpenUAV
+INFO 2024-12-27 17:16:19,939 views 32 140175846756352 Stopping container: openuav-498d9eba
+INFO 2024-12-27 17:16:19,939 views 32 140175846756352 Executing command: docker stop 52304552cece
+INFO 2024-12-27 17:16:19,974 views 32 140175846756352 Command output - stdout: 
+ERROR 2024-12-27 17:16:19,974 views 32 140175846756352 Command error - stderr: Error response from daemon: No such container: 52304552cece
+INFO 2024-12-27 17:16:19,974 views 32 140175846756352 Command return code: 1
+ERROR 2024-12-27 17:16:19,975 views 32 140175846756352 Error stopping container: Error response from daemon: No such container: 52304552cece
+ERROR 2024-12-27 17:16:19,975 log 32 140175846756352 Internal Server Error: /openuav/stop/
+INFO 2024-12-27 17:16:39,253 views 31 139752266813440 Received request to stop OpenUAV
+INFO 2024-12-27 17:16:39,259 views 31 139752266813440 Stopping container: openuav-498d9eba (52304552cece)
+INFO 2024-12-27 17:16:39,259 views 31 139752266813440 Executing command: docker stop openuav-498d9eba
+INFO 2024-12-27 17:16:39,287 views 31 139752266813440 Command output - stdout: 
+ERROR 2024-12-27 17:16:39,288 views 31 139752266813440 Command error - stderr: Error response from daemon: No such container: openuav-498d9eba
+INFO 2024-12-27 17:16:39,288 views 31 139752266813440 Command return code: 1
+ERROR 2024-12-27 17:16:39,288 views 31 139752266813440 Error stopping container openuav-498d9eba: Error response from daemon: No such container: openuav-498d9eba
+INFO 2024-12-27 17:16:39,288 views 31 139752266813440 Stopping container: openuav-17a2d3a7 (12cfa7e1fab1d6481a702cca7f357e789a1e7f0b8298fe7e347875bc915ed809)
+INFO 2024-12-27 17:16:39,288 views 31 139752266813440 Executing command: docker stop openuav-17a2d3a7
+INFO 2024-12-27 17:16:41,282 views 31 139752266813440 Command output - stdout: openuav-17a2d3a7
+INFO 2024-12-27 17:16:41,282 views 31 139752266813440 Command return code: 0
+INFO 2024-12-27 17:16:41,289 views 31 139752266813440 Stopping container: openuav-bbde2167 (aec8c402d374f4e3946792198cd3f9d780d590cf4d72db89f035bef416290bef)
+INFO 2024-12-27 17:16:41,289 views 31 139752266813440 Executing command: docker stop openuav-bbde2167
+INFO 2024-12-27 17:16:43,620 views 31 139752266813440 Command output - stdout: openuav-bbde2167
+INFO 2024-12-27 17:16:43,620 views 31 139752266813440 Command return code: 0
+INFO 2024-12-27 17:16:43,625 views 31 139752266813440 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-27 17:16:43,629 views 31 139752266813440 Command output - stdout: 
+INFO 2024-12-27 17:16:43,629 views 31 139752266813440 Command return code: 0
+INFO 2024-12-27 17:16:43,629 views 31 139752266813440 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-27 17:16:43,633 views 31 139752266813440 Command output - stdout: 
+INFO 2024-12-27 17:16:43,633 views 31 139752266813440 Command return code: 0
+INFO 2024-12-27 17:16:43,633 views 31 139752266813440 Executing command: pkill -f Xvnc || true
+INFO 2024-12-27 17:16:43,640 views 31 139752266813440 Command output - stdout: 
+INFO 2024-12-27 17:16:43,640 views 31 139752266813440 Command return code: -15
+INFO 2024-12-27 17:16:43,640 views 31 139752266813440 Executing command: pkill -f vncserver || true
+INFO 2024-12-27 17:16:43,645 views 31 139752266813440 Command output - stdout: 
+INFO 2024-12-27 17:16:43,646 views 31 139752266813440 Command return code: -15
+INFO 2024-12-27 17:18:06,110 views 33 140127683031040 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:18:06,131 views 33 140127683031040 Command output - stdout: 
+INFO 2024-12-27 17:18:06,131 views 33 140127683031040 Command return code: 0
+INFO 2024-12-27 17:19:20,732 views 32 140404266192896 Executing command: docker ps -a --format '{{.Names}}'
+INFO 2024-12-27 17:19:20,771 views 32 140404266192896 Command output - stdout: openuav-bbde2167
+openuav-17a2d3a7
+deepgis-xr-nginx-1
+deepgis-xr-celery-1
+deepgis-xr-web-1
+deepgis-xr-db-1
+deepgis-xr-tileserver-static-1
+deepgis-xr-tileserver-1
+deepgis-xr-redis-1
+dreams-lab-website-server-web-1
+INFO 2024-12-27 17:19:20,771 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:19:20,775 views 32 140404266192896 Removing stale container record: openuav-498d9eba
+INFO 2024-12-27 17:19:20,779 views 32 140404266192896 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:19:20,804 views 32 140404266192896 Command output - stdout: 
+INFO 2024-12-27 17:19:20,804 views 32 140404266192896 Command return code: 0
+WARNING 2024-12-27 17:19:20,944 log 32 140404266192896 Not Found: /favicon.ico
+WARNING 2024-12-27 17:19:22,098 log 33 140404266192896 Not Found: /webclient/get_available_layers
+INFO 2024-12-27 17:19:23,304 views 33 140404266192896 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:19:23,348 views 33 140404266192896 Command output - stdout: aec8c402d374	openuav-bbde2167	Exited (0) 2 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 2 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 18 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 18 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 18 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 18 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 18 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 18 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 18 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 44 seconds	dreams-lab-website-server-web
+INFO 2024-12-27 17:19:23,348 views 33 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:09,885 views 32 140404266192896 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:20:09,929 views 32 140404266192896 Command output - stdout: aec8c402d374	openuav-bbde2167	Exited (0) 3 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 18 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 18 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 18 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 19 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 19 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 19 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 19 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+INFO 2024-12-27 17:20:09,929 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:11,405 views 32 140404266192896 Received request to launch OpenUAV
+INFO 2024-12-27 17:20:11,405 views 32 140404266192896 Launching container with name: openuav-384708c6
+INFO 2024-12-27 17:20:11,405 views 32 140404266192896 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:20:11,439 views 32 140404266192896 Command output - stdout: openuav_network
+INFO 2024-12-27 17:20:11,440 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:11,440 views 32 140404266192896 Checking if container already exists...
+INFO 2024-12-27 17:20:11,440 views 32 140404266192896 Executing command: docker ps -a --filter name=openuav-384708c6 --format '{{.Names}}'
+INFO 2024-12-27 17:20:11,479 views 32 140404266192896 Command output - stdout: 
+INFO 2024-12-27 17:20:11,480 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:11,480 views 32 140404266192896 Creating new container...
+INFO 2024-12-27 17:20:11,480 views 32 140404266192896 Executing command: docker run -d --name openuav-384708c6 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:20:12,369 views 32 140404266192896 Command output - stdout: dfb071af7b8264cf0ea56cddb81eb6ca7c3ad2ba636d219ccbf2620b3b58ae72
+INFO 2024-12-27 17:20:12,369 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:12,369 views 32 140404266192896 Container started successfully
+INFO 2024-12-27 17:20:17,375 views 32 140404266192896 Executing command: docker inspect --format='{{.Id}}' openuav-384708c6
+INFO 2024-12-27 17:20:17,416 views 32 140404266192896 Command output - stdout: dfb071af7b8264cf0ea56cddb81eb6ca7c3ad2ba636d219ccbf2620b3b58ae72
+INFO 2024-12-27 17:20:17,416 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:17,429 views 32 140404266192896 Executing command: docker inspect openuav-384708c6 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 17:20:17,465 views 32 140404266192896 Command output - stdout: running true
+INFO 2024-12-27 17:20:17,465 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:17,465 views 32 140404266192896 Container state: running true
+INFO 2024-12-27 17:20:17,465 views 32 140404266192896 Executing command: docker exec openuav-384708c6 ps aux | grep Xvnc
+INFO 2024-12-27 17:20:17,553 views 32 140404266192896 Command output - stdout: root          51  5.0  0.0 167056 64116 ?        S    17:20   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: dfb071af7b82:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 17:20:17,553 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:20:17,573 views 32 140404266192896 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:20:17,616 views 32 140404266192896 Command output - stdout: dfb071af7b82	openuav-384708c6	Up 6 seconds	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 3 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 19 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 19 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 19 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 19 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 19 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 19 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 19 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+INFO 2024-12-27 17:20:17,616 views 32 140404266192896 Command return code: 0
+INFO 2024-12-27 17:23:18,329 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:23:18,367 views 32 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Up 3 minutes	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 22 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 22 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 22 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 22 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 22 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 22 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 22 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 24 seconds	dreams-lab-website-server-web
+INFO 2024-12-27 17:23:18,367 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 17:23:18,380 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:23:18,411 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:20:11 +0000 UTC","ID":"dfb071af7b82","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-384708c6","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"3 minutes ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 3 minutes"}
+INFO 2024-12-27 17:23:18,411 views 32 140294651707392 Command return code: 0
+ERROR 2024-12-27 17:35:40,212 exception 32 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 17:35:40,261 log 32 140294651707392 Bad Request: /
+INFO 2024-12-27 17:46:00,686 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:46:00,736 views 31 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Up 25 minutes	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 29 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 29 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 44 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 44 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 44 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 44 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 44 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 44 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 44 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 23 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:46:00,736 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:46:00,761 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:46:00,804 views 31 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:20:11 +0000 UTC","ID":"dfb071af7b82","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-384708c6","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"25 minutes ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 25 minutes"}
+INFO 2024-12-27 17:46:00,804 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:46:02,410 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:46:02,457 views 31 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Up 25 minutes	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 29 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 29 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 44 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 44 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 44 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 44 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 44 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 44 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 44 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 23 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:46:02,458 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:46:02,473 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:46:02,513 views 31 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:20:11 +0000 UTC","ID":"dfb071af7b82","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-384708c6","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"25 minutes ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 25 minutes"}
+INFO 2024-12-27 17:46:02,514 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:25,543 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:59:25,592 views 33 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Up 8 minutes	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 42 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 42 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 58 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 58 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 58 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 58 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 58 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 58 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 58 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 36 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:59:25,592 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:25,614 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:59:25,654 views 33 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:20:11 +0000 UTC","ID":"dfb071af7b82","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-384708c6","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"39 minutes ago","Size":"534kB (virtual 14GB)","State":"running","Status":"Up 8 minutes"}
+INFO 2024-12-27 17:59:25,654 views 33 140294651707392 Command return code: 0
+WARNING 2024-12-27 17:59:25,786 log 33 140294651707392 Not Found: /favicon.ico
+INFO 2024-12-27 17:59:37,148 views 31 140294651707392 Received request to stop OpenUAV
+INFO 2024-12-27 17:59:37,148 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:59:37,196 views 31 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Up 8 minutes	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 42 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 42 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 58 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 58 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 58 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 58 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 58 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 58 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 58 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 36 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:59:37,196 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:37,214 views 31 140294651707392 Stopping container: openuav-384708c6 (dfb071af7b82)
+INFO 2024-12-27 17:59:37,214 views 31 140294651707392 Executing command: docker stop openuav-384708c6
+INFO 2024-12-27 17:59:38,965 views 31 140294651707392 Command output - stdout: openuav-384708c6
+INFO 2024-12-27 17:59:38,966 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:38,972 views 31 140294651707392 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-27 17:59:38,976 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 17:59:38,976 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:38,976 views 31 140294651707392 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-27 17:59:38,980 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 17:59:38,980 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:38,981 views 31 140294651707392 Executing command: pkill -f Xvnc || true
+INFO 2024-12-27 17:59:38,987 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 17:59:38,987 views 31 140294651707392 Command return code: -15
+INFO 2024-12-27 17:59:38,987 views 31 140294651707392 Executing command: pkill -f vncserver || true
+INFO 2024-12-27 17:59:38,992 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 17:59:38,993 views 31 140294651707392 Command return code: -15
+INFO 2024-12-27 17:59:38,993 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:59:39,040 views 31 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Exited (0) Less than a second ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 42 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 42 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 58 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 58 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 58 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 58 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 58 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 58 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 58 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 36 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:59:39,040 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:39,137 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:59:39,184 views 31 140294651707392 Command output - stdout: dfb071af7b82	openuav-384708c6	Exited (0) Less than a second ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 42 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 42 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 58 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 58 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 58 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 58 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 58 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 58 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 58 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 36 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:59:39,184 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:39,200 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:59:39,232 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 17:59:39,232 views 31 140294651707392 Command return code: 0
+WARNING 2024-12-27 17:59:39,315 log 31 140294651707392 Not Found: /favicon.ico
+INFO 2024-12-27 17:59:41,169 views 31 140294651707392 Received request to launch OpenUAV
+INFO 2024-12-27 17:59:41,169 views 31 140294651707392 Launching container with name: openuav-53dab4a8
+INFO 2024-12-27 17:59:41,169 views 31 140294651707392 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 17:59:41,206 views 31 140294651707392 Command output - stdout: openuav_network
+INFO 2024-12-27 17:59:41,206 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:41,206 views 31 140294651707392 Checking if container already exists...
+INFO 2024-12-27 17:59:41,207 views 31 140294651707392 Executing command: docker ps -a --filter name=openuav-53dab4a8 --format '{{.Names}}'
+INFO 2024-12-27 17:59:41,237 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 17:59:41,238 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:41,238 views 31 140294651707392 Creating new container...
+INFO 2024-12-27 17:59:41,238 views 31 140294651707392 Executing command: docker run -d --name openuav-53dab4a8 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 17:59:42,146 views 31 140294651707392 Command output - stdout: aabeaf5ea95b5bbbb5b5909010e9cbad8b73147a386909cc5c6e832cf11ee98d
+INFO 2024-12-27 17:59:42,147 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:42,147 views 31 140294651707392 Container started successfully
+INFO 2024-12-27 17:59:47,152 views 31 140294651707392 Executing command: docker inspect --format='{{.Id}}' openuav-53dab4a8
+INFO 2024-12-27 17:59:47,189 views 31 140294651707392 Command output - stdout: aabeaf5ea95b5bbbb5b5909010e9cbad8b73147a386909cc5c6e832cf11ee98d
+INFO 2024-12-27 17:59:47,189 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:47,201 views 31 140294651707392 Executing command: docker inspect openuav-53dab4a8 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 17:59:47,237 views 31 140294651707392 Command output - stdout: running true
+INFO 2024-12-27 17:59:47,238 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:47,238 views 31 140294651707392 Container state: running true
+INFO 2024-12-27 17:59:47,238 views 31 140294651707392 Executing command: docker exec openuav-53dab4a8 ps aux | grep Xvnc
+INFO 2024-12-27 17:59:47,320 views 31 140294651707392 Command output - stdout: root          50  3.7  0.0 167052 63152 ?        S    17:59   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: aabeaf5ea95b:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 17:59:47,320 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:47,364 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 17:59:47,412 views 31 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Up 6 seconds	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 8 seconds ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 43 minutes ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 43 minutes ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 58 minutes	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 58 minutes	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 58 minutes	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 58 minutes (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 58 minutes	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 58 minutes (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 58 minutes	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 36 minutes	dreams-lab-website-server-web
+INFO 2024-12-27 17:59:47,412 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 17:59:47,432 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 17:59:47,470 views 31 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:59:41 +0000 UTC","ID":"aabeaf5ea95b","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-53dab4a8","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"6 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-27 17:59:47,470 views 31 140294651707392 Command return code: 0
+WARNING 2024-12-27 17:59:47,543 log 31 140294651707392 Not Found: /favicon.ico
+ERROR 2024-12-27 18:23:15,703 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:23:15,753 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:28:29,307 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:28:29,352 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:34:48,294 exception 32 140294651707392 Invalid HTTP_HOST header: 'view-8.openuav.us'. You may need to add 'view-8.openuav.us' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:34:48,344 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:39:24,229 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:39:24,279 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:39:28,472 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:39:28,518 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:45:52,526 exception 32 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:45:52,574 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:49:51,055 exception 32 140294651707392 Invalid HTTP_HOST header: 'cpsvo-zhiang-10.openuav.us'. You may need to add 'cpsvo-zhiang-10.openuav.us' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:49:51,103 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 18:55:41,126 exception 32 140294651707392 Invalid HTTP_HOST header: 'term-2.openuav.us'. You may need to add 'term-2.openuav.us' to ALLOWED_HOSTS.
+WARNING 2024-12-27 18:55:41,172 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 19:39:08,811 exception 32 140294651707392 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 19:39:08,857 log 32 140294651707392 Bad Request: /443
+INFO 2024-12-27 19:51:52,166 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 19:51:52,219 views 33 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Up 2 hours	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 2 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 3 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 3 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 3 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 3 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 3 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 3 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 3 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 3 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 2 hours	dreams-lab-website-server-web
+INFO 2024-12-27 19:51:52,219 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 19:51:52,238 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 19:51:52,279 views 33 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:59:41 +0000 UTC","ID":"aabeaf5ea95b","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-53dab4a8","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 19:51:52,279 views 33 140294651707392 Command return code: 0
+ERROR 2024-12-27 19:52:13,652 exception 33 140294651707392 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 19:52:13,703 log 33 140294651707392 Bad Request: /
+ERROR 2024-12-27 19:52:14,060 exception 33 140294651707392 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 19:52:14,106 log 33 140294651707392 Bad Request: /443
+ERROR 2024-12-27 19:52:14,441 exception 32 140294651707392 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 19:52:14,548 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 19:52:14,880 exception 33 140294651707392 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 19:52:14,928 log 33 140294651707392 Bad Request: /443
+INFO 2024-12-27 19:52:18,057 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 19:52:18,108 views 32 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Up 2 hours	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 2 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 3 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 3 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 3 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 3 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 3 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 3 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 3 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 3 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 2 hours	dreams-lab-website-server-web
+INFO 2024-12-27 19:52:18,108 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:18,125 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 19:52:18,163 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 17:59:41 +0000 UTC","ID":"aabeaf5ea95b","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-53dab4a8","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 19:52:18,164 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:20,773 views 32 140294651707392 Received request to stop OpenUAV
+INFO 2024-12-27 19:52:20,773 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 19:52:20,822 views 32 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Up 2 hours	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 2 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 3 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 3 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 3 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 3 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 3 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 3 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 3 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 3 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 2 hours	dreams-lab-website-server-web
+INFO 2024-12-27 19:52:20,822 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:20,841 views 32 140294651707392 Stopping container: openuav-53dab4a8 (aabeaf5ea95b)
+INFO 2024-12-27 19:52:20,841 views 32 140294651707392 Executing command: docker stop openuav-53dab4a8
+INFO 2024-12-27 19:52:23,272 views 32 140294651707392 Command output - stdout: openuav-53dab4a8
+INFO 2024-12-27 19:52:23,272 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:23,277 views 32 140294651707392 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-27 19:52:23,281 views 32 140294651707392 Command output - stdout: 
+INFO 2024-12-27 19:52:23,282 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:23,282 views 32 140294651707392 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-27 19:52:23,285 views 32 140294651707392 Command output - stdout: 
+INFO 2024-12-27 19:52:23,285 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:23,286 views 32 140294651707392 Executing command: pkill -f Xvnc || true
+INFO 2024-12-27 19:52:23,291 views 32 140294651707392 Command output - stdout: 
+INFO 2024-12-27 19:52:23,291 views 32 140294651707392 Command return code: -15
+INFO 2024-12-27 19:52:23,292 views 32 140294651707392 Executing command: pkill -f vncserver || true
+INFO 2024-12-27 19:52:23,297 views 32 140294651707392 Command output - stdout: 
+INFO 2024-12-27 19:52:23,297 views 32 140294651707392 Command return code: -15
+INFO 2024-12-27 19:52:23,298 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 19:52:23,346 views 32 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Exited (0) Less than a second ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 2 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 3 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 3 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 3 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 3 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 3 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 3 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 3 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 3 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 2 hours	dreams-lab-website-server-web
+INFO 2024-12-27 19:52:23,347 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:23,589 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 19:52:23,638 views 32 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Exited (0) Less than a second ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 2 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 3 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 3 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 3 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 3 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 3 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 3 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 3 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 3 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 3 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 2 hours	dreams-lab-website-server-web
+INFO 2024-12-27 19:52:23,639 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 19:52:23,655 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 19:52:23,687 views 32 140294651707392 Command output - stdout: 
+INFO 2024-12-27 19:52:23,687 views 32 140294651707392 Command return code: 0
+WARNING 2024-12-27 19:52:32,635 log 32 140294651707392 Not Found: /webclient/get_available_layers
+WARNING 2024-12-27 19:52:53,926 log 33 140294651707392 Not Found: /dreamslab/None
+WARNING 2024-12-27 19:52:54,008 log 31 140294651707392 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-27 19:55:05,253 log 33 140294651707392 Not Found: /rss2020workshop/rss2020-camready/5_OptimizedRoboticInfomationGatheringUsingSemanticLanguageInstruction.pdf
+ERROR 2024-12-27 20:06:07,320 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:06:07,433 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:06:08,187 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:06:08,224 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:06:08,933 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:06:08,969 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:15:02,473 exception 32 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:15:02,523 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:15:06,794 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:15:06,841 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:28:40,026 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:28:40,071 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:56:11,273 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:56:11,321 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:56:12,065 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:56:12,109 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 20:56:12,904 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 20:56:12,951 log 31 140294651707392 Bad Request: /
+INFO 2024-12-27 21:14:25,933 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 21:14:25,983 views 31 140294651707392 Command output - stdout: aabeaf5ea95b	openuav-53dab4a8	Exited (0) About an hour ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 3 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 4 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 4 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 4 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 4 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 4 hours	dreams-lab-website-server-web
+INFO 2024-12-27 21:14:25,984 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:26,002 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 21:14:26,033 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:14:26,033 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:28,274 views 31 140294651707392 Received request to launch OpenUAV
+INFO 2024-12-27 21:14:28,274 views 31 140294651707392 Launching container with name: openuav-b6d89793
+INFO 2024-12-27 21:14:28,275 views 31 140294651707392 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 21:14:28,310 views 31 140294651707392 Command output - stdout: openuav_network
+INFO 2024-12-27 21:14:28,310 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:28,310 views 31 140294651707392 Checking if container already exists...
+INFO 2024-12-27 21:14:28,310 views 31 140294651707392 Executing command: docker ps -a --filter name=openuav-b6d89793 --format '{{.Names}}'
+INFO 2024-12-27 21:14:28,341 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:14:28,341 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:28,341 views 31 140294651707392 Creating new container...
+INFO 2024-12-27 21:14:28,341 views 31 140294651707392 Executing command: docker run -d --name openuav-b6d89793 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 21:14:29,208 views 31 140294651707392 Command output - stdout: e3ec23170654d9b11e215ca6f404d3165cd12ed048436bdb83b35f2864a12ec0
+INFO 2024-12-27 21:14:29,209 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:29,209 views 31 140294651707392 Container started successfully
+INFO 2024-12-27 21:14:34,214 views 31 140294651707392 Executing command: docker inspect --format='{{.Id}}' openuav-b6d89793
+INFO 2024-12-27 21:14:34,254 views 31 140294651707392 Command output - stdout: e3ec23170654d9b11e215ca6f404d3165cd12ed048436bdb83b35f2864a12ec0
+INFO 2024-12-27 21:14:34,254 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:34,266 views 31 140294651707392 Executing command: docker inspect openuav-b6d89793 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 21:14:34,299 views 31 140294651707392 Command output - stdout: running true
+INFO 2024-12-27 21:14:34,299 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:34,299 views 31 140294651707392 Container state: running true
+INFO 2024-12-27 21:14:34,300 views 31 140294651707392 Executing command: docker exec openuav-b6d89793 ps aux | grep Xvnc
+INFO 2024-12-27 21:14:34,383 views 31 140294651707392 Command output - stdout: root          50  3.7  0.0 167056 63116 ?        S    21:14   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: e3ec23170654:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 21:14:34,383 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:34,417 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 21:14:34,462 views 31 140294651707392 Command output - stdout: e3ec23170654	openuav-b6d89793	Up 5 seconds	openuav:px4-sitl
+aabeaf5ea95b	openuav-53dab4a8	Exited (0) About an hour ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 3 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 4 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 4 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 4 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 4 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 4 hours	dreams-lab-website-server-web
+INFO 2024-12-27 21:14:34,462 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:34,489 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 21:14:34,525 views 31 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:14:28 +0000 UTC","ID":"e3ec23170654","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-b6d89793","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"6 seconds ago","Size":"430kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-27 21:14:34,525 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:58,618 views 33 140294651707392 Received request to stop OpenUAV
+INFO 2024-12-27 21:14:58,618 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 21:14:58,668 views 33 140294651707392 Command output - stdout: e3ec23170654	openuav-b6d89793	Up 30 seconds	openuav:px4-sitl
+aabeaf5ea95b	openuav-53dab4a8	Exited (0) About an hour ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 3 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 4 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 4 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 4 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 4 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 4 hours	dreams-lab-website-server-web
+INFO 2024-12-27 21:14:58,668 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:14:58,696 views 33 140294651707392 Stopping container: openuav-b6d89793 (e3ec23170654)
+INFO 2024-12-27 21:14:58,696 views 33 140294651707392 Executing command: docker stop openuav-b6d89793
+INFO 2024-12-27 21:15:01,189 views 33 140294651707392 Command output - stdout: openuav-b6d89793
+INFO 2024-12-27 21:15:01,190 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:01,196 views 33 140294651707392 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-27 21:15:01,200 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:15:01,200 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:01,200 views 33 140294651707392 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-27 21:15:01,204 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:15:01,204 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:01,204 views 33 140294651707392 Executing command: pkill -f Xvnc || true
+INFO 2024-12-27 21:15:01,210 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:15:01,210 views 33 140294651707392 Command return code: -15
+INFO 2024-12-27 21:15:01,210 views 33 140294651707392 Executing command: pkill -f vncserver || true
+INFO 2024-12-27 21:15:01,215 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:15:01,215 views 33 140294651707392 Command return code: -15
+INFO 2024-12-27 21:15:01,215 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 21:15:01,264 views 33 140294651707392 Command output - stdout: e3ec23170654	openuav-b6d89793	Exited (0) Less than a second ago	openuav:px4-sitl
+aabeaf5ea95b	openuav-53dab4a8	Exited (0) About an hour ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 3 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 4 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 4 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 4 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 4 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 4 hours	dreams-lab-website-server-web
+INFO 2024-12-27 21:15:01,264 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:01,300 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 21:15:01,345 views 33 140294651707392 Command output - stdout: e3ec23170654	openuav-b6d89793	Exited (0) Less than a second ago	openuav:px4-sitl
+aabeaf5ea95b	openuav-53dab4a8	Exited (0) About an hour ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 3 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 4 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 4 hours ago	openuav:px4-sitl
+97c48351b0e8	deepgis-xr-nginx-1	Up 4 hours	nginx:1.25
+3eaee314327f	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+e9e7ace0cfb9	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+80cd75185428	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+afe7c56e7002	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+0b6373925d74	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+edd4f62c006b	deepgis-xr-redis-1	Up 4 hours	redis:latest
+77bebf7ed707	dreams-lab-website-server-web-1	Up 4 hours	dreams-lab-website-server-web
+INFO 2024-12-27 21:15:01,345 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:01,368 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 21:15:01,400 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:15:01,400 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:32,823 views 33 140294651707392 Received request to launch OpenUAV
+INFO 2024-12-27 21:15:32,824 views 33 140294651707392 Launching container with name: openuav-08b66f52
+INFO 2024-12-27 21:15:32,824 views 33 140294651707392 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 21:15:32,858 views 33 140294651707392 Command output - stdout: openuav_network
+INFO 2024-12-27 21:15:32,858 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:32,859 views 33 140294651707392 Checking if container already exists...
+INFO 2024-12-27 21:15:32,859 views 33 140294651707392 Executing command: docker ps -a --filter name=openuav-08b66f52 --format '{{.Names}}'
+INFO 2024-12-27 21:15:32,888 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-27 21:15:32,889 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:32,889 views 33 140294651707392 Creating new container...
+INFO 2024-12-27 21:15:32,889 views 33 140294651707392 Executing command: docker run -d --name openuav-08b66f52 --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 21:15:33,750 views 33 140294651707392 Command output - stdout: 967c9b0b60752f15b83c5637f7617a4b64c4e37eb4459de79ac4860f0ea7332d
+INFO 2024-12-27 21:15:33,750 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:33,750 views 33 140294651707392 Container started successfully
+INFO 2024-12-27 21:15:38,756 views 33 140294651707392 Executing command: docker inspect --format='{{.Id}}' openuav-08b66f52
+INFO 2024-12-27 21:15:38,795 views 33 140294651707392 Command output - stdout: 967c9b0b60752f15b83c5637f7617a4b64c4e37eb4459de79ac4860f0ea7332d
+INFO 2024-12-27 21:15:38,795 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:38,805 views 33 140294651707392 Executing command: docker inspect openuav-08b66f52 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 21:15:38,838 views 33 140294651707392 Command output - stdout: running true
+INFO 2024-12-27 21:15:38,839 views 33 140294651707392 Command return code: 0
+INFO 2024-12-27 21:15:38,839 views 33 140294651707392 Container state: running true
+INFO 2024-12-27 21:15:38,839 views 33 140294651707392 Executing command: docker exec openuav-08b66f52 ps aux | grep Xvnc
+INFO 2024-12-27 21:15:38,925 views 33 140294651707392 Command output - stdout: root          51  3.5  0.0 167056 63804 ?        S    21:15   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 967c9b0b6075:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 21:15:38,925 views 33 140294651707392 Command return code: 0
+WARNING 2024-12-27 21:28:42,686 log 32 140294651707392 Not Found: /rss2020workshop
+WARNING 2024-12-27 21:32:42,760 log 32 140294651707392 Not Found: /rss2020workshop/
+ERROR 2024-12-27 21:35:57,793 exception 32 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 21:35:57,841 log 32 140294651707392 Bad Request: /
+ERROR 2024-12-27 21:36:02,245 exception 32 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 21:36:02,292 log 32 140294651707392 Bad Request: /
+WARNING 2024-12-27 21:36:42,990 log 31 140294651707392 Not Found: /robots.txt
+WARNING 2024-12-27 21:40:42,900 log 31 140294651707392 Not Found: /robots.txt
+WARNING 2024-12-27 21:44:46,257 log 31 140294651707392 Not Found: /robots.txt
+WARNING 2024-12-27 21:48:43,671 log 33 140294651707392 Not Found: /robots.txt
+ERROR 2024-12-27 22:00:41,693 exception 31 140294651707392 Invalid HTTP_HOST header: 'www.qq.com'. You may need to add 'www.qq.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 22:00:41,742 log 31 140294651707392 Bad Request: /404/search_children.js
+INFO 2024-12-27 22:16:32,558 views 32 140294651707392 Received request to launch OpenUAV
+INFO 2024-12-27 22:16:32,559 views 32 140294651707392 Launching container with name: openuav-1fbd7b7a
+INFO 2024-12-27 22:16:32,559 views 32 140294651707392 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 22:16:32,596 views 32 140294651707392 Command output - stdout: openuav_network
+INFO 2024-12-27 22:16:32,597 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 22:16:32,597 views 32 140294651707392 Checking if container already exists...
+INFO 2024-12-27 22:16:32,597 views 32 140294651707392 Executing command: docker ps -a --filter name=openuav-1fbd7b7a --format '{{.Names}}'
+INFO 2024-12-27 22:16:32,629 views 32 140294651707392 Command output - stdout: 
+INFO 2024-12-27 22:16:32,630 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 22:16:32,630 views 32 140294651707392 Creating new container...
+INFO 2024-12-27 22:16:32,630 views 32 140294651707392 Executing command: docker run -d --name openuav-1fbd7b7a --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 22:16:33,551 views 32 140294651707392 Command output - stdout: 9b5a22f1337a604bac3c99ccf4d62bfa6edc73c5d0336bfdf4515878eaff5a6f
+INFO 2024-12-27 22:16:33,551 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 22:16:33,551 views 32 140294651707392 Container started successfully
+INFO 2024-12-27 22:16:38,555 views 32 140294651707392 Executing command: docker inspect --format='{{.Id}}' openuav-1fbd7b7a
+INFO 2024-12-27 22:16:38,594 views 32 140294651707392 Command output - stdout: 9b5a22f1337a604bac3c99ccf4d62bfa6edc73c5d0336bfdf4515878eaff5a6f
+INFO 2024-12-27 22:16:38,594 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 22:16:38,604 views 32 140294651707392 Executing command: docker inspect openuav-1fbd7b7a --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 22:16:38,638 views 32 140294651707392 Command output - stdout: running true
+INFO 2024-12-27 22:16:38,638 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 22:16:38,638 views 32 140294651707392 Container state: running true
+INFO 2024-12-27 22:16:38,638 views 32 140294651707392 Executing command: docker exec openuav-1fbd7b7a ps aux | grep Xvnc
+INFO 2024-12-27 22:16:38,731 views 32 140294651707392 Command output - stdout: root          50  4.0  0.0 167056 63904 ?        S    22:16   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 9b5a22f1337a:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 22:16:38,731 views 32 140294651707392 Command return code: 0
+WARNING 2024-12-27 22:42:39,532 log 32 140294651707392 Not Found: /.git/config
+ERROR 2024-12-27 23:02:13,450 exception 32 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 23:02:13,498 log 32 140294651707392 Bad Request: /actuator/
+ERROR 2024-12-27 23:07:00,593 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 23:07:00,641 log 31 140294651707392 Bad Request: /hudson
+INFO 2024-12-27 23:25:59,016 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:25:59,089 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 27 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 28 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 33 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 34 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 34 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 34 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 34 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:25:59,090 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:25:59,252 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:25:59,296 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 22:16:32 +0000 UTC","ID":"9b5a22f1337a","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-1fbd7b7a","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About an hour ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About an hour"}
+{"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:15:32 +0000 UTC","ID":"967c9b0b6075","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-08b66f52","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 23:25:59,297 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:03,549 views 32 140294651707392 Received request to stop OpenUAV
+INFO 2024-12-27 23:26:03,550 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:26:03,598 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 32 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 32 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 38 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 38 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 38 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 38 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 38 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:26:03,598 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:03,665 views 32 140294651707392 No running containers found
+INFO 2024-12-27 23:26:03,688 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:26:03,738 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 32 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 32 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 38 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 39 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 39 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 39 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 39 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:26:03,739 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:03,800 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:26:03,845 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 22:16:32 +0000 UTC","ID":"9b5a22f1337a","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-1fbd7b7a","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About an hour ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About an hour"}
+{"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:15:32 +0000 UTC","ID":"967c9b0b6075","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-08b66f52","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 23:26:03,845 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:06,288 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:26:06,337 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 35 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 35 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 41 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 41 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 41 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 41 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 41 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:26:06,337 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:06,366 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:26:06,409 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 22:16:32 +0000 UTC","ID":"9b5a22f1337a","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-1fbd7b7a","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About an hour ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About an hour"}
+{"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:15:32 +0000 UTC","ID":"967c9b0b6075","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-08b66f52","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 23:26:06,409 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:07,358 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:26:07,408 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 36 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 36 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 42 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 42 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 42 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 42 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 42 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:26:07,409 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:07,436 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:26:07,477 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 22:16:32 +0000 UTC","ID":"9b5a22f1337a","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-1fbd7b7a","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About an hour ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About an hour"}
+{"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:15:32 +0000 UTC","ID":"967c9b0b6075","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-08b66f52","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 23:26:07,478 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:08,736 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:26:08,781 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 37 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 37 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 43 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 44 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 44 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 44 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 44 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:26:08,781 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:08,809 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:26:08,852 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 22:16:32 +0000 UTC","ID":"9b5a22f1337a","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-1fbd7b7a","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About an hour ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About an hour"}
+{"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:15:32 +0000 UTC","ID":"967c9b0b6075","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-08b66f52","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 23:26:08,852 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:10,206 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:26:10,255 views 32 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up 39 seconds	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 39 seconds	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 44 seconds	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 45 seconds (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 45 seconds	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 45 seconds	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 45 seconds (health: starting)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Up About an hour	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Up 2 hours	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:26:10,255 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:26:10,283 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:26:10,325 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 22:16:32 +0000 UTC","ID":"9b5a22f1337a","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-1fbd7b7a","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About an hour ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About an hour"}
+{"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 21:15:32 +0000 UTC","ID":"967c9b0b6075","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-08b66f52","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"2 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 2 hours"}
+INFO 2024-12-27 23:26:10,325 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:01,120 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:27:01,169 views 31 140294651707392 Command output - stdout: c35f0b5a4dcb	deepgis-xr-nginx-1	Up About a minute	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up About a minute	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up About a minute	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up About a minute (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up About a minute	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up About a minute	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up About a minute (unhealthy)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Exited (0) 15 seconds ago	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Exited (0) 21 seconds ago	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:27:01,169 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:01,196 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:27:01,228 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 23:27:01,228 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:03,849 views 31 140294651707392 Received request to launch OpenUAV
+INFO 2024-12-27 23:27:03,850 views 31 140294651707392 Launching container with name: openuav-a8f3599c
+INFO 2024-12-27 23:27:03,850 views 31 140294651707392 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-27 23:27:03,884 views 31 140294651707392 Command output - stdout: openuav_network
+INFO 2024-12-27 23:27:03,884 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:03,884 views 31 140294651707392 Checking if container already exists...
+INFO 2024-12-27 23:27:03,884 views 31 140294651707392 Executing command: docker ps -a --filter name=openuav-a8f3599c --format '{{.Names}}'
+INFO 2024-12-27 23:27:03,920 views 31 140294651707392 Command output - stdout: 
+INFO 2024-12-27 23:27:03,920 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:03,920 views 31 140294651707392 Creating new container...
+INFO 2024-12-27 23:27:03,920 views 31 140294651707392 Executing command: docker run -d --name openuav-a8f3599c --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-27 23:27:04,828 views 31 140294651707392 Command output - stdout: 1a9332e08fc5837a674ff4feb2da1a94e9d0f08dfeeca1183b4ba46c82f131f4
+INFO 2024-12-27 23:27:04,828 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:04,828 views 31 140294651707392 Container started successfully
+INFO 2024-12-27 23:27:09,830 views 31 140294651707392 Executing command: docker inspect --format='{{.Id}}' openuav-a8f3599c
+INFO 2024-12-27 23:27:09,869 views 31 140294651707392 Command output - stdout: 1a9332e08fc5837a674ff4feb2da1a94e9d0f08dfeeca1183b4ba46c82f131f4
+INFO 2024-12-27 23:27:09,869 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:09,881 views 31 140294651707392 Executing command: docker inspect openuav-a8f3599c --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-27 23:27:09,916 views 31 140294651707392 Command output - stdout: running true
+INFO 2024-12-27 23:27:09,917 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:09,917 views 31 140294651707392 Container state: running true
+INFO 2024-12-27 23:27:09,917 views 31 140294651707392 Executing command: docker exec openuav-a8f3599c ps aux | grep Xvnc
+INFO 2024-12-27 23:27:10,005 views 31 140294651707392 Command output - stdout: root          50  3.7  0.0 167056 63852 ?        S    23:27   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 1a9332e08fc5:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-27 23:27:10,005 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:10,035 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:27:10,086 views 31 140294651707392 Command output - stdout: 1a9332e08fc5	openuav-a8f3599c	Up 6 seconds	openuav:px4-sitl
+c35f0b5a4dcb	deepgis-xr-nginx-1	Up About a minute	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up About a minute	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up About a minute	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up About a minute (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up About a minute	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up About a minute	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up About a minute (unhealthy)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Exited (0) 24 seconds ago	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Exited (0) 30 seconds ago	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 5 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:27:10,086 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:27:10,118 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:27:10,155 views 31 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 23:27:03 +0000 UTC","ID":"1a9332e08fc5","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-a8f3599c","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"7 seconds ago","Size":"429kB (virtual 14GB)","State":"running","Status":"Up 6 seconds"}
+INFO 2024-12-27 23:27:10,155 views 31 140294651707392 Command return code: 0
+INFO 2024-12-27 23:30:40,519 views 32 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-27 23:30:40,570 views 32 140294651707392 Command output - stdout: 1a9332e08fc5	openuav-a8f3599c	Up 3 minutes	openuav:px4-sitl
+c35f0b5a4dcb	deepgis-xr-nginx-1	Up 5 minutes	nginx:1.25
+4828f0ba2749	deepgis-xr-web-1	Up 5 minutes	deepgis-xr-web
+8a13d86ade6b	deepgis-xr-celery-1	Up 5 minutes	deepgis-xr-celery
+f8d08d47051b	deepgis-xr-db-1	Up 5 minutes (healthy)	postgis/postgis:13-3.3
+6dd4cbf282ea	deepgis-xr-tileserver-static-1	Up 5 minutes	nginx:alpine
+cdc8ec24bb95	deepgis-xr-redis-1	Up 5 minutes	redis:latest
+34b40ea89696	deepgis-xr-tileserver-1	Up 5 minutes (unhealthy)	maptiler/tileserver-gl
+9b5a22f1337a	openuav-1fbd7b7a	Exited (0) 3 minutes ago	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Exited (0) 4 minutes ago	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 2 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 6 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 6 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 6 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 6 hours	dreams-lab-website-server-web
+INFO 2024-12-27 23:30:40,570 views 32 140294651707392 Command return code: 0
+INFO 2024-12-27 23:30:40,608 views 32 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-27 23:30:40,647 views 32 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 23:27:03 +0000 UTC","ID":"1a9332e08fc5","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-a8f3599c","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"3 minutes ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 3 minutes"}
+INFO 2024-12-27 23:30:40,647 views 32 140294651707392 Command return code: 0
+ERROR 2024-12-27 23:42:42,047 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-27 23:42:42,094 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-27 23:46:08,487 exception 32 140294651707392 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-27 23:46:08,536 log 32 140294651707392 Bad Request: /443
+ERROR 2024-12-28 01:10:10,669 exception 33 140294651707392 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 01:10:10,721 log 33 140294651707392 Bad Request: /
+ERROR 2024-12-28 01:10:11,043 exception 33 140294651707392 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 01:10:11,090 log 33 140294651707392 Bad Request: /443
+ERROR 2024-12-28 01:10:11,417 exception 31 140294651707392 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 01:10:11,465 log 31 140294651707392 Bad Request: /
+ERROR 2024-12-28 01:10:11,787 exception 33 140294651707392 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 01:10:11,900 log 33 140294651707392 Bad Request: /443
+ERROR 2024-12-28 01:39:23,526 exception 33 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 01:39:23,572 log 33 140294651707392 Bad Request: /
+INFO 2024-12-28 03:01:10,819 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-28 03:01:10,873 views 33 140294651707392 Command output - stdout: 09dc8296b6aa	deepgis-xr-nginx-1	Up 3 hours	nginx:1.25
+7fbb129f69c5	deepgis-xr-celery-1	Up 3 hours	deepgis-xr-celery
+c1183d4dece4	deepgis-xr-web-1	Up 3 hours	deepgis-xr-web
+7bd5a76c1107	deepgis-xr-db-1	Up 3 hours (healthy)	postgis/postgis:13-3.3
+0c8838f663a2	deepgis-xr-tileserver-static-1	Up 3 hours	nginx:alpine
+1b957abbf789	deepgis-xr-redis-1	Up 3 hours	redis:latest
+c6886ea0e28e	deepgis-xr-tileserver-1	Up 3 hours (unhealthy)	maptiler/tileserver-gl
+1a9332e08fc5	openuav-a8f3599c	Up 4 hours	openuav:px4-sitl
+9b5a22f1337a	openuav-1fbd7b7a	Exited (0) 4 hours ago	openuav:px4-sitl
+967c9b0b6075	openuav-08b66f52	Exited (0) 4 hours ago	openuav:px4-sitl
+e3ec23170654	openuav-b6d89793	Exited (0) 6 hours ago	openuav:px4-sitl
+dfb071af7b82	openuav-384708c6	Exited (0) 9 hours ago	openuav:px4-sitl
+aec8c402d374	openuav-bbde2167	Exited (0) 10 hours ago	openuav:px4-sitl
+12cfa7e1fab1	openuav-17a2d3a7	Exited (0) 10 hours ago	openuav:px4-sitl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 10 hours	dreams-lab-website-server-web
+INFO 2024-12-28 03:01:10,873 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:01:10,906 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-28 03:01:10,943 views 33 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-27 23:27:03 +0000 UTC","ID":"1a9332e08fc5","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-a8f3599c","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"4 hours ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 4 hours"}
+INFO 2024-12-28 03:01:10,944 views 33 140294651707392 Command return code: 0
+WARNING 2024-12-28 03:10:29,354 log 31 140294651707392 Not Found: /robots.txt
+WARNING 2024-12-28 03:10:29,527 log 31 140294651707392 Not Found: /rss2020workshop/rss2020-camready/3_Object_and_Gas_Source_Detection_with_Robotic_Platforms_in_Perceptually_Degraded_Environments.pdf
+ERROR 2024-12-28 03:18:51,237 exception 31 140294651707392 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 03:18:51,286 log 31 140294651707392 Bad Request: /
+INFO 2024-12-28 03:35:11,118 views 33 140294651707392 Received request to launch OpenUAV
+INFO 2024-12-28 03:35:11,119 views 33 140294651707392 Launching container with name: openuav-69ba17ea
+INFO 2024-12-28 03:35:11,119 views 33 140294651707392 Executing command: docker network ls --filter name=^openuav_network$ --format '{{.Name}}'
+INFO 2024-12-28 03:35:11,157 views 33 140294651707392 Command output - stdout: openuav_network
+INFO 2024-12-28 03:35:11,157 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:11,158 views 33 140294651707392 Checking if container already exists...
+INFO 2024-12-28 03:35:11,158 views 33 140294651707392 Executing command: docker ps -a --filter name=openuav-69ba17ea --format '{{.Names}}'
+INFO 2024-12-28 03:35:11,190 views 33 140294651707392 Command output - stdout: 
+INFO 2024-12-28 03:35:11,191 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:11,191 views 33 140294651707392 Creating new container...
+INFO 2024-12-28 03:35:11,191 views 33 140294651707392 Executing command: docker run -d --name openuav-69ba17ea --privileged --network openuav_network --gpus all -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-28 03:35:12,074 views 33 140294651707392 Command output - stdout: c38ac439042280d0b9b5ddd234f3f7baf55a91e9f419fc2ef8ac7365e73e320c
+INFO 2024-12-28 03:35:12,075 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:12,075 views 33 140294651707392 Container started successfully
+INFO 2024-12-28 03:35:17,080 views 33 140294651707392 Executing command: docker inspect --format='{{.Id}}' openuav-69ba17ea
+INFO 2024-12-28 03:35:17,119 views 33 140294651707392 Command output - stdout: c38ac439042280d0b9b5ddd234f3f7baf55a91e9f419fc2ef8ac7365e73e320c
+INFO 2024-12-28 03:35:17,120 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:17,127 views 33 140294651707392 Executing command: docker inspect openuav-69ba17ea --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-28 03:35:17,160 views 33 140294651707392 Command output - stdout: running true
+INFO 2024-12-28 03:35:17,161 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:17,161 views 33 140294651707392 Container state: running true
+INFO 2024-12-28 03:35:17,161 views 33 140294651707392 Executing command: docker exec openuav-69ba17ea ps aux | grep Xvnc
+INFO 2024-12-28 03:35:17,246 views 33 140294651707392 Command output - stdout: root          50  3.5  0.0 167056 63900 ?        S    03:35   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: c38ac4390422:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-28 03:35:17,247 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:31,272 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-28 03:35:31,317 views 33 140294651707392 Command output - stdout: c38ac4390422	openuav-69ba17ea	Up 20 seconds	openuav:px4-sitl
+f0ea8cb87f84	deepgis-xr-nginx-1	Created	nginx:1.25
+7fbb129f69c5	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+c1183d4dece4	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+7bd5a76c1107	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+0c8838f663a2	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+1b957abbf789	deepgis-xr-redis-1	Up 4 hours	redis:latest
+c6886ea0e28e	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 10 hours	dreams-lab-website-server-web
+INFO 2024-12-28 03:35:31,317 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:35:31,357 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-28 03:35:31,395 views 33 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-28 03:35:11 +0000 UTC","ID":"c38ac4390422","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-69ba17ea","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"20 seconds ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up 20 seconds"}
+INFO 2024-12-28 03:35:31,396 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:36:48,294 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-28 03:36:48,336 views 33 140294651707392 Command output - stdout: c38ac4390422	openuav-69ba17ea	Up About a minute	openuav:px4-sitl
+f0ea8cb87f84	deepgis-xr-nginx-1	Created	nginx:1.25
+7fbb129f69c5	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+c1183d4dece4	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+7bd5a76c1107	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+0c8838f663a2	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+1b957abbf789	deepgis-xr-redis-1	Up 4 hours	redis:latest
+c6886ea0e28e	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 10 hours	dreams-lab-website-server-web
+INFO 2024-12-28 03:36:48,336 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:36:48,351 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-28 03:36:48,389 views 33 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-28 03:35:11 +0000 UTC","ID":"c38ac4390422","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-69ba17ea","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About a minute ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About a minute"}
+INFO 2024-12-28 03:36:48,389 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:36:54,720 views 33 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-28 03:36:54,765 views 33 140294651707392 Command output - stdout: c38ac4390422	openuav-69ba17ea	Up About a minute	openuav:px4-sitl
+f0ea8cb87f84	deepgis-xr-nginx-1	Created	nginx:1.25
+7fbb129f69c5	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+c1183d4dece4	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+7bd5a76c1107	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+0c8838f663a2	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+1b957abbf789	deepgis-xr-redis-1	Up 4 hours	redis:latest
+c6886ea0e28e	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 10 hours	dreams-lab-website-server-web
+INFO 2024-12-28 03:36:54,766 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:36:54,781 views 33 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-28 03:36:54,820 views 33 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-28 03:35:11 +0000 UTC","ID":"c38ac4390422","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-69ba17ea","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About a minute ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About a minute"}
+INFO 2024-12-28 03:36:54,820 views 33 140294651707392 Command return code: 0
+INFO 2024-12-28 03:37:05,919 views 31 140294651707392 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-28 03:37:05,962 views 31 140294651707392 Command output - stdout: c38ac4390422	openuav-69ba17ea	Up About a minute	openuav:px4-sitl
+f0ea8cb87f84	deepgis-xr-nginx-1	Created	nginx:1.25
+7fbb129f69c5	deepgis-xr-celery-1	Up 4 hours	deepgis-xr-celery
+c1183d4dece4	deepgis-xr-web-1	Up 4 hours	deepgis-xr-web
+7bd5a76c1107	deepgis-xr-db-1	Up 4 hours (healthy)	postgis/postgis:13-3.3
+0c8838f663a2	deepgis-xr-tileserver-static-1	Up 4 hours	nginx:alpine
+1b957abbf789	deepgis-xr-redis-1	Up 4 hours	redis:latest
+c6886ea0e28e	deepgis-xr-tileserver-1	Up 4 hours (unhealthy)	maptiler/tileserver-gl
+77bebf7ed707	dreams-lab-website-server-web-1	Up 10 hours	dreams-lab-website-server-web
+INFO 2024-12-28 03:37:05,963 views 31 140294651707392 Command return code: 0
+INFO 2024-12-28 03:37:05,979 views 31 140294651707392 Executing command: docker ps --filter name=openuav --format '{{json .}}'
+INFO 2024-12-28 03:37:06,016 views 31 140294651707392 Command output - stdout: {"Command":"\"/usr/bin/supervisor…\"","CreatedAt":"2024-12-28 03:35:11 +0000 UTC","ID":"c38ac4390422","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-69ba17ea","Networks":"openuav_network","Ports":"5901/tcp, 6080/tcp","RunningFor":"About a minute ago","Size":"513kB (virtual 14GB)","State":"running","Status":"Up About a minute"}
+INFO 2024-12-28 03:37:06,016 views 31 140294651707392 Command return code: 0
+WARNING 2024-12-28 04:27:43,907 log 33 140170718433280 Forbidden (CSRF cookie not set.): /openuav/launch/
+ERROR 2024-12-28 04:38:14,034 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 04:38:14,098 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 04:51:25,686 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:x'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2024-12-28 04:51:25,735 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 04:57:40,996 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 04:57:41,047 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 05:13:06,010 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 05:13:06,059 log 31 140170718433280 Bad Request: /actuator/gateway/routes
+WARNING 2024-12-28 05:24:41,203 log 32 140170718433280 Not Found: /favicon.ico
+WARNING 2024-12-28 05:26:01,835 log 31 140170718433280 Not Found: /favicon.ico
+ERROR 2024-12-28 06:13:43,275 exception 33 140170718433280 Invalid HTTP_HOST header: 'www.google.com:443'. You may need to add 'www.google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 06:13:43,334 log 33 140170718433280 Bad Request: /443
+ERROR 2024-12-28 06:14:10,993 exception 31 140170718433280 Invalid HTTP_HOST header: 'www.google.com:443'. You may need to add 'www.google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 06:14:11,043 log 31 140170718433280 Bad Request: /443
+ERROR 2024-12-28 06:36:10,490 exception 33 140170718433280 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-28 06:36:10,540 log 33 140170718433280 Bad Request: /
+WARNING 2024-12-28 06:47:16,769 log 32 140170718433280 Not Found: /wp-login.php
+ERROR 2024-12-28 06:56:47,142 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 06:56:47,192 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 07:07:10,835 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:07:10,883 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 07:10:24,819 exception 32 140170718433280 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:10:24,867 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 07:12:49,078 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:12:49,125 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 07:19:19,780 exception 32 140170718433280 Invalid HTTP_HOST header: 'admin.deepgis.org'. You may need to add 'admin.deepgis.org' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:19:19,827 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 07:20:02,111 exception 32 140170718433280 Invalid HTTP_HOST header: 'admin.deepgis.org'. You may need to add 'admin.deepgis.org' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:20:02,158 log 32 140170718433280 Bad Request: /robots.txt
+ERROR 2024-12-28 07:20:06,988 exception 31 140170718433280 Invalid HTTP_HOST header: 'admin.deepgis.org'. You may need to add 'admin.deepgis.org' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:20:07,036 log 31 140170718433280 Bad Request: /favicon.ico
+ERROR 2024-12-28 07:33:36,068 exception 32 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:33:36,114 log 32 140170718433280 Bad Request: /443
+WARNING 2024-12-28 07:35:49,509 log 32 140170718433280 Not Found: /rss2020workshop
+ERROR 2024-12-28 07:40:20,629 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:40:20,677 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 07:53:26,508 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 07:53:26,557 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:02:41,648 exception 33 140170718433280 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:02:41,695 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:02:42,018 exception 33 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:02:42,065 log 33 140170718433280 Bad Request: /443
+ERROR 2024-12-28 08:02:43,405 exception 33 140170718433280 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:02:43,451 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:02:43,781 exception 33 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:02:43,826 log 33 140170718433280 Bad Request: /443
+ERROR 2024-12-28 08:36:09,081 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:36:09,129 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:36:09,876 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:36:09,921 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:36:10,691 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:36:10,738 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:39:50,584 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:39:50,630 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 08:42:28,882 exception 33 140170718433280 Invalid HTTP_HOST header: 'www.google.com:443'. You may need to add 'www.google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 08:42:28,930 log 33 140170718433280 Bad Request: /443
+ERROR 2024-12-28 09:22:05,898 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 09:22:05,946 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 09:22:31,986 exception 33 140170718433280 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 09:22:32,032 log 33 140170718433280 Bad Request: /443
+ERROR 2024-12-28 09:23:11,039 exception 31 140170718433280 Invalid HTTP_HOST header: 'api.ipify.org'. You may need to add 'api.ipify.org' to ALLOWED_HOSTS.
+WARNING 2024-12-28 09:23:11,086 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 09:23:34,977 exception 31 140170718433280 Invalid HTTP_HOST header: 'www.shadowserver.org'. You may need to add 'www.shadowserver.org' to ALLOWED_HOSTS.
+WARNING 2024-12-28 09:23:35,023 log 31 140170718433280 Bad Request: /443
+ERROR 2024-12-28 09:24:06,696 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 09:24:06,744 log 31 140170718433280 Bad Request: /geoserver/web/
+ERROR 2024-12-28 09:41:55,920 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 09:41:55,967 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 10:16:01,676 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 10:16:01,724 log 32 140170718433280 Bad Request: /aws.yml
+ERROR 2024-12-28 11:20:58,530 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 11:20:58,577 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 11:51:10,972 exception 31 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 11:51:11,019 log 31 140170718433280 Bad Request: /443
+WARNING 2024-12-28 12:31:54,216 log 31 140170718433280 Not Found: /robots.txt
+WARNING 2024-12-28 12:32:02,332 log 31 140170718433280 Not Found: /favicon.ico
+ERROR 2024-12-28 12:46:45,444 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 12:46:45,491 log 32 140170718433280 Bad Request: /cgi-bin/luci/;stok=/locale
+ERROR 2024-12-28 12:59:33,827 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 12:59:33,875 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 13:10:13,525 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 13:10:13,571 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 13:24:01,915 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 13:24:01,965 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 13:42:05,285 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 13:42:05,331 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 14:41:31,281 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 14:41:31,328 log 31 140170718433280 Bad Request: /
+WARNING 2024-12-28 15:38:41,056 log 33 140170718433280 Not Found: /favicon.ico
+ERROR 2024-12-28 15:38:43,328 log 33 140170718433280 Internal Server Error: /openuav/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/usr/local/lib/python3.10/dist-packages/django/contrib/auth/decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "/app/openuav_manager/views.py", line 241, in manage_openuav
+  File "/usr/local/lib/python3.10/dist-packages/django/shortcuts.py", line 19, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: openuav_manager/manage.html
+ERROR 2024-12-28 15:39:07,828 exception 31 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 15:39:07,877 log 31 140170718433280 Bad Request: /443
+ERROR 2024-12-28 16:06:25,961 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 16:06:26,007 log 31 140170718433280 Bad Request: /
+ERROR 2024-12-28 16:32:00,612 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 16:32:00,659 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 16:41:09,996 exception 31 140170718433280 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 16:41:10,045 log 31 140170718433280 Bad Request: /443
+ERROR 2024-12-28 17:09:49,326 exception 32 140170718433280 Invalid HTTP_HOST header: '0.0.0.0'. You may need to add '0.0.0.0' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:09:49,374 log 32 140170718433280 Bad Request: /
+WARNING 2024-12-28 17:32:54,826 log 33 140170718433280 Not Found: /favicon.ico
+WARNING 2024-12-28 17:33:00,274 log 33 140170718433280 Not Found: /accounts/login/
+WARNING 2024-12-28 17:33:06,431 log 33 140170718433280 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-28 17:33:06,691 log 33 140170718433280 Not Found: /dreamslab/None
+ERROR 2024-12-28 17:34:39,690 exception 33 140170718433280 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:34:39,737 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 17:34:40,057 exception 32 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:34:40,104 log 32 140170718433280 Bad Request: /443
+ERROR 2024-12-28 17:34:40,425 exception 32 140170718433280 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:34:40,472 log 32 140170718433280 Bad Request: /
+ERROR 2024-12-28 17:34:40,794 exception 32 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:34:40,839 log 32 140170718433280 Bad Request: /443
+WARNING 2024-12-28 17:36:09,450 log 33 140170718433280 Not Found: /accounts/login/
+WARNING 2024-12-28 17:36:12,614 log 31 140170718433280 Not Found: /dreamslab/None
+WARNING 2024-12-28 17:36:19,593 log 33 140170718433280 Not Found: /dreamslab/None
+ERROR 2024-12-28 17:44:54,320 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:44:54,369 log 32 140170718433280 Bad Request: /hello.world
+ERROR 2024-12-28 17:44:56,105 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:44:56,152 log 32 140170718433280 Bad Request: /vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:44:57,460 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:44:57,507 log 32 140170718433280 Bad Request: /vendor/phpunit/phpunit/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:44:59,025 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:44:59,070 log 32 140170718433280 Bad Request: /vendor/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:00,457 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:00,504 log 32 140170718433280 Bad Request: /vendor/phpunit/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:01,801 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:01,845 log 32 140170718433280 Bad Request: /vendor/phpunit/phpunit/LICENSE/eval-stdin.php
+ERROR 2024-12-28 17:45:03,598 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:03,646 log 33 140170718433280 Bad Request: /vendor/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:05,498 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:05,544 log 33 140170718433280 Bad Request: /phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:07,292 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:07,341 log 33 140170718433280 Bad Request: /phpunit/phpunit/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:08,728 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:08,775 log 33 140170718433280 Bad Request: /phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:10,273 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:10,321 log 33 140170718433280 Bad Request: /phpunit/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:11,880 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:11,927 log 33 140170718433280 Bad Request: /lib/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:13,365 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:13,412 log 33 140170718433280 Bad Request: /lib/phpunit/phpunit/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:15,090 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:15,139 log 31 140170718433280 Bad Request: /lib/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:16,718 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:16,764 log 31 140170718433280 Bad Request: /lib/phpunit/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:18,460 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:18,508 log 31 140170718433280 Bad Request: /lib/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:19,809 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:19,855 log 31 140170718433280 Bad Request: /laravel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:20,995 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:21,041 log 31 140170718433280 Bad Request: /www/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:22,044 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:22,090 log 31 140170718433280 Bad Request: /ws/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:23,292 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:23,339 log 31 140170718433280 Bad Request: /yii/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:24,732 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:24,779 log 31 140170718433280 Bad Request: /zend/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:26,223 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:26,271 log 31 140170718433280 Bad Request: /ws/ec/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:27,559 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:27,607 log 32 140170718433280 Bad Request: /V2/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:29,063 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:29,108 log 32 140170718433280 Bad Request: /tests/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:30,730 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:30,777 log 32 140170718433280 Bad Request: /test/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:31,865 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:31,911 log 32 140170718433280 Bad Request: /testing/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:33,085 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:33,132 log 32 140170718433280 Bad Request: /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:34,372 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:34,420 log 33 140170718433280 Bad Request: /demo/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:35,984 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:36,031 log 33 140170718433280 Bad Request: /cms/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:37,376 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:37,424 log 33 140170718433280 Bad Request: /crm/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:38,909 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:38,958 log 33 140170718433280 Bad Request: /admin/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:40,414 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:40,461 log 33 140170718433280 Bad Request: /backup/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:41,977 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:42,024 log 33 140170718433280 Bad Request: /blog/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:43,447 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:43,492 log 33 140170718433280 Bad Request: /workspace/drupal/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:44,764 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:44,811 log 33 140170718433280 Bad Request: /panel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:46,356 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:46,404 log 33 140170718433280 Bad Request: /public/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:48,168 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:48,216 log 33 140170718433280 Bad Request: /apps/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:50,065 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:50,111 log 33 140170718433280 Bad Request: /app/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php
+ERROR 2024-12-28 17:45:51,849 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:51,895 log 32 140170718433280 Bad Request: /index.php
+ERROR 2024-12-28 17:45:53,592 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:53,640 log 32 140170718433280 Bad Request: /public/index.php
+ERROR 2024-12-28 17:45:55,179 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:55,225 log 32 140170718433280 Bad Request: /index.php
+ERROR 2024-12-28 17:45:56,694 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:56,742 log 33 140170718433280 Bad Request: /index.php
+ERROR 2024-12-28 17:45:58,120 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 17:45:58,166 log 33 140170718433280 Bad Request: /containers/json
+WARNING 2024-12-28 17:46:50,259 log 33 140170718433280 Not Found: /dreamslab/None
+WARNING 2024-12-28 17:46:50,384 log 31 140170718433280 Not Found: /static/images/planetary_background.jpg
+WARNING 2024-12-28 17:57:20,398 log 32 140170718433280 Not Found: /accounts/login/
+WARNING 2024-12-28 17:57:24,069 log 32 140170718433280 Not Found: /dreamslab/None
+WARNING 2024-12-28 17:57:24,166 log 32 140170718433280 Not Found: /static/images/planetary_background.jpg
+ERROR 2024-12-28 18:08:11,658 exception 31 140170718433280 Invalid HTTP_HOST header: 'api.ip.pn'. You may need to add 'api.ip.pn' to ALLOWED_HOSTS.
+WARNING 2024-12-28 18:08:11,705 log 31 140170718433280 Bad Request: /443
+WARNING 2024-12-28 18:11:13,712 log 31 140170718433280 Not Found: /favicon.ico
+WARNING 2024-12-28 18:11:14,735 log 31 140170718433280 Not Found: /favicon.ico
+WARNING 2024-12-28 18:20:18,689 log 31 140170718433280 Not Found: /favicon.ico
+ERROR 2024-12-28 18:21:47,468 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 18:21:47,515 log 33 140170718433280 Bad Request: /
+ERROR 2024-12-28 19:09:48,923 exception 32 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 19:09:48,970 log 32 140170718433280 Bad Request: /cgi-bin/luci/;stok=/locale
+WARNING 2024-12-28 19:40:49,265 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:23,727 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:24,386 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:24,775 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:25,195 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:33,762 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:34,270 log 32 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:43:40,319 log 33 140170718433280 Not Found: /map-label/
+ERROR 2024-12-28 19:50:11,867 exception 31 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 19:50:11,912 log 31 140170718433280 Bad Request: /
+WARNING 2024-12-28 19:50:21,615 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:50:22,974 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:50:30,900 log 31 140170718433280 Not Found: /map-label/
+ERROR 2024-12-28 19:50:49,556 exception 33 140170718433280 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 19:50:49,627 log 33 140170718433280 Bad Request: /
+WARNING 2024-12-28 19:52:41,942 log 32 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:52:42,698 log 33 140170718433280 Not Found: /map-label/
+ERROR 2024-12-28 19:53:06,318 exception 33 140170718433280 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 19:53:06,365 log 33 140170718433280 Bad Request: /443
+WARNING 2024-12-28 19:55:02,930 log 32 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:55:03,513 log 32 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:36,830 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:37,535 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:38,520 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:40,181 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:41,247 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:42,754 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:57:44,453 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:58:03,373 log 32 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 19:58:32,550 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:00:07,589 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:01:01,820 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:03:34,904 log 32 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:06:16,286 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:06:17,026 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:06:45,665 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:06:46,407 log 31 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 20:09:36,644 log 33 140170718433280 Not Found: /map-label/
+WARNING 2024-12-28 21:00:57,998 log 33 140604680404992 Not Found: /rss2020workshop
+WARNING 2024-12-28 21:04:39,778 log 32 140604680404992 Not Found: /map-label/
+INFO 2024-12-28 21:04:44,191 views 31 140604680404992 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-28 21:04:44,383 views 31 140604680404992 Command output - stdout: 
+INFO 2024-12-28 21:04:44,384 views 31 140604680404992 Command return code: 0
+INFO 2024-12-28 21:04:46,394 views 31 140604680404992 Received request to launch OpenUAV
+ERROR 2024-12-28 21:04:46,410 views 31 140604680404992 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-28 21:04:46,415 log 31 140604680404992 Internal Server Error: /openuav/launch/
+INFO 2024-12-28 21:04:53,061 views 32 140604680404992 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-28 21:04:53,109 views 32 140604680404992 Command output - stdout: 2877ebd7387f	deepgis-xr-nginx-1	Created	nginx:1.25
+c63229c4d037	deepgis-xr-web-1	Created	deepgis-xr-web
+51e63bde1b15	deepgis-xr-celery-1	Created	deepgis-xr-celery
+d578e4fbb74f	deepgis-xr-tileserver-static-1	Created	nginx:alpine
+258d209bd2f0	deepgis-xr-tileserver-1	Up 2 minutes (unhealthy)	maptiler/tileserver-gl
+d010312de650	deepgis-xr-db-1	Up 2 minutes (healthy)	postgis/postgis:13-3.3
+0cfd4bcd6394	deepgis-xr-redis-1	Up 2 minutes	redis:latest
+5131b1cef323	dreams-lab-website-server-web-1	Up 5 minutes	dreams-lab-website-server-web
+35f1d02b49c3	dreams-lab-website-server-celery-1	Created	dreams-lab-website-server-celery
+48c6d9bc1190	dreams-lab-website-server-nginx-1	Created	nginx:1.25
+701d49ad4159	dreams-lab-website-server-db-1	Up 12 minutes (healthy)	postgis/postgis:13-3.3
+8a2c3a657ebf	dreams-lab-website-server-redis-1	Up 12 minutes	redis:latest
+9d6a3d24f2d7	dreams-lab-website-server-tileserver-static-1	Created	nginx:alpine
+b80a394438da	dns-proxy	Up 3 hours	nginx
+19bf6016bf66	peaceful_ishizaka	Up 5 hours	openuav:px4-ros-cuda-11.4.2-base-ubuntu20.04
+INFO 2024-12-28 21:04:53,109 views 32 140604680404992 Command return code: 0
+ERROR 2024-12-28 21:04:53,117 views 32 140604680404992 Error syncing containers: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 54, in sync_containers
+    for container in db_containers:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-28 21:04:53,256 log 32 140604680404992 Internal Server Error: /openuav/containers/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/app/openuav_manager/views.py", line 100, in container_list
+    return render(request, 'openuav_manager/container_list.html', {'containers': containers})
+  File "/usr/local/lib/python3.10/dist-packages/django/shortcuts.py", line 19, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 170, in render
+    return self._render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/defaulttags.py", line 171, in render
+    len_values = len(values)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 262, in __len__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+WARNING 2024-12-28 21:04:56,720 log 32 140604680404992 Not Found: /rss2020workshop/
+WARNING 2024-12-28 21:05:06,972 log 32 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:05:33,427 log 32 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:08:58,712 log 32 140604680404992 Not Found: /robots.txt
+WARNING 2024-12-28 21:11:24,705 log 31 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:12:57,028 log 31 140604680404992 Not Found: /robots.txt
+ERROR 2024-12-28 21:13:12,994 exception 32 140604680404992 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-28 21:13:13,040 log 32 140604680404992 Bad Request: /
+WARNING 2024-12-28 21:32:08,190 log 33 140604680404992 Not Found: /robots.txt
+WARNING 2024-12-28 21:32:08,375 log 33 140604680404992 Not Found: /rss2020workshop/rss2020-camready/5_OptimizedRoboticInfomationGatheringUsingSemanticLanguageInstruction.pdf
+WARNING 2024-12-28 21:37:17,892 log 31 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:37:19,672 log 32 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:37:20,538 log 32 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:37:20,579 log 32 140604680404992 Not Found: /favicon.ico
+WARNING 2024-12-28 21:37:55,255 log 32 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:38:24,188 log 32 140604680404992 Not Found: /map-label/
+WARNING 2024-12-28 21:40:19,536 log 33 140604680404992 Not Found: /map-label/
+ERROR 2024-12-28 21:47:56,296 exception 31 140384577310720 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 21:47:56,357 log 31 140384577310720 Bad Request: /
+ERROR 2024-12-28 21:47:57,289 exception 31 140384577310720 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 21:47:57,336 log 31 140384577310720 Bad Request: /443
+ERROR 2024-12-28 21:47:57,678 exception 31 140384577310720 Invalid HTTP_HOST header: 'example.com'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 21:47:57,723 log 31 140384577310720 Bad Request: /
+ERROR 2024-12-28 21:47:58,048 exception 32 140384577310720 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-28 21:47:58,108 log 32 140384577310720 Bad Request: /443
+WARNING 2024-12-28 21:48:24,124 log 32 140384577310720 Not Found: /dreamslab/None
+INFO 2024-12-28 21:48:28,200 views 32 140384577310720 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-28 21:48:28,238 views 32 140384577310720 Command output - stdout: 
+INFO 2024-12-28 21:48:28,239 views 32 140384577310720 Command return code: 0
+INFO 2024-12-28 21:48:29,532 views 32 140384577310720 Received request to launch OpenUAV
+ERROR 2024-12-28 21:48:29,545 views 32 140384577310720 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-28 21:48:29,547 log 32 140384577310720 Internal Server Error: /openuav/launch/
+WARNING 2024-12-28 21:48:33,856 log 32 140384577310720 Not Found: /webclient/get_available_layers
+WARNING 2024-12-28 21:51:20,682 log 33 140384577310720 Not Found: /webclient/get_available_layers
+WARNING 2024-12-28 21:51:20,943 log 31 140384577310720 Not Found: /favicon.ico
+WARNING 2024-12-28 21:51:23,407 log 31 140384577310720 Not Found: /favicon.ico
+WARNING 2024-12-28 21:51:24,779 log 33 140384577310720 Not Found: /webclient/get_available_layers
+WARNING 2024-12-28 21:51:28,039 log 33 140384577310720 Not Found: /dreamslab/None
+WARNING 2024-12-28 21:51:35,703 log 33 140384577310720 Not Found: /favicon.ico
+WARNING 2024-12-28 21:54:31,524 log 31 140384577310720 Not Found: /webclient/get_available_layers
+INFO 2024-12-28 21:54:36,469 views 31 140384577310720 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-28 21:54:36,505 views 31 140384577310720 Command output - stdout: 
+INFO 2024-12-28 21:54:36,506 views 31 140384577310720 Command return code: 0
+INFO 2024-12-28 21:54:38,991 views 31 140384577310720 Received request to launch OpenUAV
+ERROR 2024-12-28 21:54:39,005 views 31 140384577310720 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-28 21:54:39,008 log 31 140384577310720 Internal Server Error: /openuav/launch/
