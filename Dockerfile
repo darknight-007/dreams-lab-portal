@@ -61,3 +61,33 @@ EXPOSE 8000
 # Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "600", "dreams_laboratory.wsgi:application"]
 
+# Copy startup script
+COPY startup.sh /root/startup.sh
+RUN chmod +x /root/startup.sh
+
+# Install VNC and X11 dependencies
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    xvfb \
+    x11vnc \
+    xfce4 \
+    xfce4-terminal \
+    novnc \
+    websockify \
+    net-tools \
+    netcat \
+    && apt-get clean
+
+# Download and install TurboVNC
+RUN curl -fsSL -o turbovnc.deb https://sourceforge.net/projects/turbovnc/files/3.0.3/turbovnc_3.0.3_amd64.deb/download \
+    && dpkg -i turbovnc.deb \
+    && rm turbovnc.deb
+
+# Create required directories
+RUN mkdir -p /root/.vnc /tmp/.X11-unix
+
+# Set VNC password
+RUN mkdir -p /root/.vnc && x11vnc -storepasswd liftoff /root/.vnc/passwd
+
+# Expose VNC and noVNC ports
+EXPOSE 5901 6080
+
