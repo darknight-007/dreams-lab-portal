@@ -30,18 +30,6 @@ services:
     group_add:
       - ${DOCKER_GROUP_ID:-999}
 
-  tileserver:
-    image: maptiler/tileserver-gl
-    volumes:
-      - ./tiles_media:/data
-    ports:
-      - "8081:80"
-    networks:
-      dreamslab:
-        ipv4_address: 172.20.0.11
-    environment:
-      - CORS_ORIGIN=*
-
 volumes:
   static_volume:
   media_volume:

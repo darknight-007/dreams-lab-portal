@@ -100,7 +100,7 @@ def container_list(request):
     return render(request, 'openuav_manager/container_list.html', {'containers': containers})
 
 def container_action(request, container_id, action):
-    """Handle container actions (start/stop)"""
+    """Handle container actions (start/stop/remove)"""
     try:
         if action == 'start':
             stdout, stderr, code = run_command(f"docker start {container_id}")
@@ -114,6 +114,19 @@ def container_action(request, container_id, action):
                 messages.success(request, f'Container {container_id} stopped successfully')
             else:
                 messages.error(request, f'Error stopping container: {stderr}')
+        elif action == 'remove':
+            # First stop if running
+            run_command(f"docker stop {container_id}")
+            # Then remove
+            stdout, stderr, code = run_command(f"docker rm {container_id}")
+            if code == 0:
+                messages.success(request, f'Container {container_id} removed successfully')
+                # Update container status in database
+                container = Container.objects.get(container_id=container_id)
+                container.status = 'removed'
+                container.save()
+            else:
+                messages.error(request, f'Error removing container: {stderr}')
         
         # Allow time for container status to update
         import time
@@ -132,30 +145,20 @@ def container_action(request, container_id, action):
 def launch_openuav(request):
     logger.info("Received request to launch OpenUAV")
     try:
-        # Check for existing active containers for this session
-        session_filter = {
-            'session_type': 'guest',  # For now, assume guest session
-            'status': 'running'
-        }
-        if request.user.is_authenticated:
-            session_filter['user'] = request.user
-        
-        existing_container = Container.objects.filter(**session_filter).first()
-        if existing_container:
-            logger.info(f"Found existing container: {existing_container.name}")
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Existing OpenUAV instance found',
-                'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1',
-                'container_name': existing_container.name,
-                'unique_id': existing_container.unique_id
-            })
-
         # Generate a unique ID for this container
         unique_id = str(uuid.uuid4())
-        container_name = f"openuav-{unique_id[:8]}"
+        short_id = unique_id[:8]
+        container_name = f"openuav-{short_id}"
+        subdomain = f"digital-twin-{short_id}"
         
         logger.info(f"Launching container with name: {container_name}")
+        
+        # Ensure Docker network exists
+        network_name = Container._meta.get_field('network').default
+        network_check = run_command(f"docker network ls --filter name=^{network_name}$ --format '{{{{.Name}}}}'")
+        if not network_check[0]:
+            logger.info(f"Creating Docker network {network_name}")
+            run_command(f"docker network create {network_name}")
         
         # First check if container exists
         logger.info("Checking if container already exists...")
@@ -174,18 +177,11 @@ def launch_openuav(request):
             run_command(f"docker stop {container_name}")
             run_command(f"docker rm {container_name}")
             
-        # Thorough cleanup of any stale files
-        logger.info("Cleaning up stale files...")
-        run_command("rm -f /tmp/.X11-unix/X1")
-        run_command("rm -f /tmp/.X1*")
-        run_command("pkill -f Xvnc || true")
-        run_command("pkill -f vncserver || true")
-            
         # Create new container
         logger.info("Creating new container...")
         cmd = (f"docker run -d --name {container_name} --privileged "
+              f"--network {network_name} "
               "--gpus all "
-              "-p 6080:6080 -p 5901:5901 "
               "-e NVIDIA_VISIBLE_DEVICES=all "
               "-e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute "
               "-e VNC_PASSWORD=liftoff "
@@ -205,18 +201,21 @@ def launch_openuav(request):
             container_id_stdout, _, _ = run_command(f"docker inspect --format='{{{{.Id}}}}' {container_name}")
             container_id = container_id_stdout.strip()
             
-            # Create or update container record in database
+            # Create container record in database
             container = Container.objects.create(
                 container_id=container_id,
                 unique_id=unique_id,
                 name=container_name,
                 status='running',
                 created=datetime.now(),
-                ports={'6080': '6080', '5901': '5901'},
                 image='openuav:px4-sitl',
                 session_type='guest',
-                user=request.user if request.user.is_authenticated else None
+                user=request.user if request.user.is_authenticated else None,
+                subdomain=subdomain
             )
+            
+            # Update container IP
+            container.update_container_ip()
             
             # Verify container is running
             verify_stdout, verify_stderr, verify_code = run_command(f"docker inspect {container_name} --format '{{{{.State.Status}}}} {{{{.State.Running}}}}'")
@@ -243,19 +242,14 @@ def launch_openuav(request):
                         'message': 'Failed to start TurboVNC server'
                     }, status=500)
             
-            # Get container logs for debugging
-            logs_stdout, logs_stderr, logs_code = run_command(f"docker logs {container_name} --tail 20")
-            logger.info(f"Container recent logs: {logs_stdout}")
-            if logs_stderr:
-                logger.warning(f"Container logs errors: {logs_stderr}")
-            
             return JsonResponse({
                 'status': 'success',
                 'message': 'OpenUAV instance launched successfully',
-                'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1',
+                'vnc_url': container.get_novnc_url(),
                 'container_state': verify_stdout,
                 'container_name': container_name,
-                'unique_id': unique_id
+                'unique_id': unique_id,
+                'subdomain': subdomain
             })
         else:
             logger.error(f"Failed to start container: {stderr}")
@@ -273,64 +267,55 @@ def launch_openuav(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def stop_openuav(request):
+    logger.info("Received request to stop OpenUAV")
     try:
-        # Get container name from request data
-        data = json.loads(request.body) if request.body else {}
-        container_name = data.get('container_name')
+        # Find running container for this session
+        session_filter = {
+            'session_type': 'guest',  # For now, assume guest session
+            'status': 'running'
+        }
+        if request.user.is_authenticated:
+            session_filter['user'] = request.user
         
-        if not container_name:
-            # Try to find the most recent container for this session
-            container = Container.objects.filter(
-                session_type='guest',  # For now, assume guest session
-                status='running'
-            ).order_by('-created').first()
-            
-            if container:
-                container_name = container.name
-            else:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'No running container found'
-                }, status=404)
+        container = Container.objects.filter(**session_filter).first()
+        if not container:
+            logger.info("No running container found")
+            return JsonResponse({
+                'status': 'success',
+                'message': 'No running container found'
+            })
         
-        logger.info(f"Stopping container: {container_name}")
+        logger.info(f"Stopping container: {container.name}")
         
-        # First stop the container
-        stdout, stderr, code = run_command(f"docker stop {container_name}")
+        # Stop the container
+        stdout, stderr, code = run_command(f"docker stop {container.container_id}")
         if code != 0:
+            logger.error(f"Error stopping container: {stderr}")
             return JsonResponse({
                 'status': 'error',
                 'message': f'Error stopping container: {stderr}'
             }, status=500)
-            
-        # Then remove the container
-        stdout, stderr, code = run_command(f"docker rm {container_name}")
-        if code != 0:
-            return JsonResponse({
-                'status': 'error',
-                'message': f'Error removing container: {stderr}'
-            }, status=500)
-            
-        # Update container status in database
-        try:
-            container = Container.objects.get(name=container_name)
-            container.status = 'removed'
-            container.save()
-        except Container.DoesNotExist:
-            logger.warning(f"Container {container_name} not found in database")
-            
-        # Clean up X11 socket
+        
+        # Update container status
+        container.status = 'stopped'
+        container.save()
+        
+        # Clean up any stale files
         run_command("rm -f /tmp/.X11-unix/X1")
-            
+        run_command("rm -f /tmp/.X1*")
+        run_command("pkill -f Xvnc || true")
+        run_command("pkill -f vncserver || true")
+        
         return JsonResponse({
             'status': 'success',
-            'message': 'OpenUAV instance stopped and removed successfully'
+            'message': 'Container stopped successfully'
         })
+        
     except Exception as e:
-        logger.error(f"Error in stop_openuav: {str(e)}", exc_info=True)
+        logger.error(f"Error stopping container: {str(e)}", exc_info=True)
         return JsonResponse({
             'status': 'error',
-            'message': str(e)
+            'message': f'Error: {str(e)}'
         }, status=500)
 
 @require_http_methods(["GET"])
@@ -367,23 +352,18 @@ def openuav_status(request):
 
 def manage_openuav(request):
     """Render the OpenUAV management interface"""
-    # Get current status
-    stdout, stderr, code = run_command("docker ps --format '{{json .}}' --filter name=openuav")
+    # Sync container states with Docker
+    sync_containers()
     
-    status = {
-        'is_running': False,
-        'instance_count': 0
+    # Get all containers for this user/session
+    session_filter = {
+        'session_type': 'guest'  # For now, assume guest session
     }
+    if request.user.is_authenticated:
+        session_filter['user'] = request.user
     
-    if code == 0:
-        containers = [json.loads(line) for line in stdout.split('\n') if line]
-        if containers:
-            status = {
-                'is_running': True,
-                'instance_count': 1
-            }
+    containers = Container.objects.filter(**session_filter).order_by('-created')
     
     return render(request, 'openuav_manager/manage.html', {
-        'status': status,
-        'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1'
+        'containers': containers
     })

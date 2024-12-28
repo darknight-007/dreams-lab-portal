@@ -1,0 +1,13 @@
+{
+  "options": {
+    "paths": {
+      "root": "/data",
+      "styles": "/data/styles",
+      "mbtiles": "/data/mbtiles"
+    },
+    "serveAllFonts": true,
+    "serveStaticMaps": true
+  },
+  "styles": {},
+  "data": {}
+} 
