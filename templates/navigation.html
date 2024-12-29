@@ -1,0 +1,56 @@
+                <!-- Tutorials Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="tutorialsDropdown" role="button" data-bs-toggle="dropdown">
+                        Tutorials
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- Perception and Mapping -->
+                        <li>
+                            <a class="dropdown-item dropdown-toggle" href="#">Perception and Mapping</a>
+                            <ul class="dropdown-menu dropdown-submenu">
+                                <li><a class="dropdown-item" href="{% url 'multiview_geometry' %}">Multi-View Geometry</a></li>
+                                <li><a class="dropdown-item" href="{% url 'stereo_buddy' %}">Stereo Vision</a></li>
+                                <li><a class="dropdown-item" href="{% url 'point_cloud_buddy' %}">Point Cloud Processing</a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Localization and Navigation -->
+                        <li>
+                            <a class="dropdown-item dropdown-toggle" href="#">Localization and Navigation</a>
+                            <ul class="dropdown-menu dropdown-submenu">
+                                <li><a class="dropdown-item" href="{% url 'slam_buddy' %}">SLAM Systems</a></li>
+                                <li><a class="dropdown-item" href="{% url 'visual_odometry_buddy' %}">Visual Odometry</a></li>
+                                <li><a class="dropdown-item" href="{% url 'path_planning_buddy' %}">Path Planning</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- AI and Machine Learning -->
+                        <li>
+                            <a class="dropdown-item dropdown-toggle" href="#">AI and Machine Learning</a>
+                            <ul class="dropdown-menu dropdown-submenu">
+                                <li><a class="dropdown-item" href="{% url 'gaussian_processes_buddy' %}">Gaussian Processes</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ransac-buddy' %}">RANSAC</a></li>
+                                <li><a class="dropdown-item" href="{% url 'image_buddy' %}">Image Processing</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- State Estimation and Control -->
+                        <li>
+                            <a class="dropdown-item dropdown-toggle" href="#">State Estimation and Control</a>
+                            <ul class="dropdown-menu dropdown-submenu">
+                                <li><a class="dropdown-item" href="{% url 'sensor_fusion_buddy' %}">Sensor Fusion</a></li>
+                                <li><a class="dropdown-item" href="{% url 'particle_filter_buddy' %}">Particle Filters</a></li>
+                                <li><a class="dropdown-item" href="{% url 'cart_pole_buddy' %}">Cart-Pole Control</a></li>
+                            </ul>
+                        </li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        
+                        <!-- Course Link -->
+                        <li>
+                            <a class="dropdown-item" href="{% url 'ses598_course' %}">
+                                <i class="fas fa-graduation-cap"></i> SES 598 Course
+                            </a>
+                        </li>
+                    </ul>
+                </li> 

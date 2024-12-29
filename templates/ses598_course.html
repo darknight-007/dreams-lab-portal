@@ -1,22 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="syllabus-container">
-    <!-- Enrollment Quiz Banner -->
-    <div class="enrollment-quiz-banner">
-        <div class="quiz-info">
-            <h2>📝 Required Enrollment Quiz</h2>
-            <p>Students must complete this assessment quiz and share results with the instructor to receive enrollment consent.</p>
+<div class="container mt-4">
+    <div class="course-header mb-4 p-4 bg-primary text-white rounded">
+        <h1 class="mb-3">SES 598: Robotics and AI in Earth and Space Exploration</h1>
+        <div class="course-description mb-4">
+            <p class="lead">This advanced graduate-level course examines the theoretical foundations and practical applications of robotics and artificial intelligence in Earth and space exploration contexts. The curriculum integrates autonomous systems engineering, computer vision algorithms, and machine learning methodologies, with emphasis on their applications in terrestrial and extraterrestrial robotic systems. Through rigorous theoretical study and hands-on experimentation, students will develop expertise in state-of-the-art techniques for robotic perception, navigation, and decision-making. Spring 2025 registration is now available.</p>
         </div>
-        <a href="{% url 'ses598_quiz' %}" class="quiz-button">
-            Take Enrollment Quiz
-            <i class="fas fa-arrow-right"></i>
-        </a>
-    </div>
-
-    <!-- Course Header and Info -->
-    <header class="course-header">
-        <h1>{{ syllabus.course_info.title }}</h1>
         <div class="course-meta">
             <div class="meta-item">
                 <i class="fas fa-calendar"></i>
@@ -31,203 +21,200 @@
                 <span>{{ syllabus.course_info.location }}</span>
             </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Instructor Info -->
-    <section class="instructor-info">
-        <h2>Instructor Information</h2>
-        <div class="info-grid">
-            <div class="info-item">
-                <strong>Instructor:</strong> {{ syllabus.course_info.instructor }}
-            </div>
-            <div class="info-item">
-                <strong>Office Hours:</strong> {{ syllabus.course_info.office_hours }}
-            </div>
-            <div class="info-item">
-                <strong>Contact:</strong> {{ syllabus.course_info.contact }}
-            </div>
+    <div class="enrollment-quiz-banner mb-4 p-3 bg-light rounded">
+        <div class="quiz-info">
+            <h2>📝 Required Enrollment Quiz</h2>
+            <p>Students must complete this assessment quiz and share results with the instructor to receive enrollment consent.</p>
         </div>
-    </section>
+        <a href="{% url 'ses598_quiz' %}" class="quiz-button btn btn-primary">
+            Take Enrollment Quiz
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
 
-    <!-- Course Description -->
-    <section class="course-description">
-        <h2>Course Description</h2>
-        <p>{{ syllabus.course_description }}</p>
-    </section>
-
-    <!-- Prerequisites -->
-    <section class="prerequisites">
-        <h2>Prerequisites</h2>
-        <ul>
-            {% for prereq in syllabus.prerequisites %}
-                <li>{{ prereq }}</li>
-            {% endfor %}
-        </ul>
-    </section>
-
-    <!-- Learning Outcomes -->
-    <section class="learning-outcomes">
-        <h2>Learning Outcomes</h2>
-        <div class="outcomes-list">
-            {% for outcome in syllabus.learning_outcomes %}
-                <div class="outcome-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ outcome }}</span>
+    <!-- Course Content -->
+    <div class="course-content">
+        <!-- Instructor Info -->
+        <section class="instructor-info">
+            <h2>Instructor Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Instructor:</strong> {{ syllabus.course_info.instructor }}
                 </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <!-- Grading -->
-    <section class="grading">
-        <h2>Grading Distribution</h2>
-        <div class="grading-chart">
-            {% for component, percentage in syllabus.grading.items %}
-            <div class="grading-item">
-                <div class="grading-label">{{ component }}</div>
-                <div class="grading-bar" style="width: calc({{ percentage|cut:'%' }} * 1%)">
+                <div class="info-item">
+                    <strong>Office Hours:</strong> {{ syllabus.course_info.office_hours }}
+                </div>
+                <div class="info-item">
+                    <strong>Contact:</strong> {{ syllabus.course_info.contact }}
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </section>
+        </section>
 
-    <!-- Course Schedule -->
-    <section class="course-schedule">
-        <h2 class="section-title">Course Schedule</h2>
-        <div class="module-grid">
-            {% for module in syllabus.modules %}
-            <div class="module-card">
-                <div class="module-header">
-                    <span class="week">Week {{ module.week }}</span>
-                    <h3>{{ module.title }}</h3>
+        <!-- Course Description -->
+        <section class="course-description">
+            <h2>Course Description</h2>
+            <p>{{ syllabus.course_description }}</p>
+        </section>
+
+        <!-- Prerequisites -->
+        <section class="prerequisites">
+            <h2>Prerequisites</h2>
+            <ul>
+                {% for prereq in syllabus.prerequisites %}
+                    <li>{{ prereq }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Learning Outcomes -->
+        <section class="learning-outcomes">
+            <h2>Learning Outcomes</h2>
+            <div class="outcomes-list">
+                {% for outcome in syllabus.learning_outcomes %}
+                    <div class="outcome-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ outcome }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Grading -->
+        <section class="grading">
+            <h2>Grading Distribution</h2>
+            <div class="grading-chart">
+                {% for component, percentage in syllabus.grading.items %}
+                <div class="grading-item">
+                    <div class="grading-label">{{ component }}</div>
+                    <div class="grading-bar" style="width: calc({{ percentage|cut:'%' }} * 1%)">
+                    </div>
                 </div>
-                <div class="module-content">
-                    <h4>Topics:</h4>
-                    <ul>
-                        {% for topic in module.topics %}
-                            <li>{{ topic }}</li>
-                        {% endfor %}
-                    </ul>
-                    <div class="assignment">
-                        <strong>Assignment:</strong>
-                        <p>{{ module.assignment }}</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Course Schedule -->
+        <section class="course-schedule">
+            <h2 class="section-title">Course Schedule</h2>
+            <div class="module-grid">
+                {% for module in syllabus.modules %}
+                <div class="module-card">
+                    <div class="module-header">
+                        <span class="week">Week {{ module.week }}</span>
+                        <h3>{{ module.title }}</h3>
+                    </div>
+                    <div class="module-content">
+                        <h4>Topics:</h4>
+                        <ul>
+                            {% for topic in module.topics %}
+                                <li>{{ topic }}</li>
+                            {% endfor %}
+                        </ul>
+                        <div class="assignment">
+                            <strong>Assignment:</strong>
+                            <p>{{ module.assignment }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Interactive Tutorials Section -->
+        <section class="tutorials-section">
+            <h2 class="section-title">Interactive Learning Resources</h2>
+            
+            <!-- Perception and Mapping -->
+            <div class="tutorial-group">
+                <h3>Perception and Mapping</h3>
+                <div class="grid">
+                    <div class="card">
+                        <h2>Multi-View Geometry</h2>
+                        <p>Master 3D scene reconstruction and camera geometry for robotic exploration.</p>
+                        <a href="{% url 'multiview_geometry' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Stereo Vision</h2>
+                        <p>Learn depth estimation for terrain mapping and obstacle detection.</p>
+                        <a href="{% url 'stereo_buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Point Cloud Processing</h2>
+                        <p>Process 3D scan data for terrain analysis and mapping.</p>
+                        <a href="{% url 'point_cloud_buddy' %}">Start Tutorial</a>
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </section>
 
-    <!-- Interactive Tutorials Section -->
-    <section class="tutorials-section">
-        <h2 class="section-title">Interactive Learning Resources</h2>
-        
-        <!-- Computer Vision Fundamentals -->
-        <div class="tutorial-group">
-            <h3>Computer Vision Fundamentals</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Multi-View Geometry</h2>
-                    <p>Learn about epipolar geometry, fundamental matrix, and camera calibration with interactive 3D visualizations.</p>
-                    <a href="{% url 'multiview_geometry' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Stereo Vision</h2>
-                    <p>Understand stereo vision concepts and depth estimation techniques.</p>
-                    <a href="{% url 'stereo_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Image Processing</h2>
-                    <p>Interactive tools for understanding various image processing techniques.</p>
-                    <a href="{% url 'image_buddy' %}">Start Tutorial</a>
+            <!-- Localization and Navigation -->
+            <div class="tutorial-group">
+                <h3>Localization and Navigation</h3>
+                <div class="grid">
+                    <div class="card">
+                        <h2>SLAM Systems</h2>
+                        <p>Build autonomous navigation systems for unknown environments.</p>
+                        <a href="{% url 'slam_buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Visual Odometry</h2>
+                        <p>Implement vision-based motion estimation for GPS-denied environments.</p>
+                        <a href="{% url 'visual_odometry_buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Path Planning</h2>
+                        <p>Design algorithms for safe navigation in challenging terrains.</p>
+                        <a href="{% url 'path_planning_buddy' %}">Start Tutorial</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- SLAM and Mapping -->
-        <div class="tutorial-group">
-            <h3>SLAM and Mapping</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>SLAM Tutorial</h2>
-                    <p>Interactive tool for understanding Simultaneous Localization and Mapping.</p>
-                    <a href="{% url 'slam_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Visual Odometry</h2>
-                    <p>Understand how to estimate camera motion from sequential images.</p>
-                    <a href="{% url 'visual_odometry_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Loop Closure</h2>
-                    <p>Explore place recognition and loop closure detection in SLAM systems.</p>
-                    <a href="{% url 'loop_closure_buddy' %}">Start Tutorial</a>
+            <!-- AI and Machine Learning -->
+            <div class="tutorial-group">
+                <h3>AI and Machine Learning</h3>
+                <div class="grid">
+                    <div class="card">
+                        <h2>Gaussian Processes</h2>
+                        <p>Apply probabilistic modeling for environmental mapping and prediction.</p>
+                        <a href="{% url 'gaussian_processes_buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>RANSAC</h2>
+                        <p>Robust feature matching and model fitting for varied environments.</p>
+                        <a href="{% url 'ransac-buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Image Processing</h2>
+                        <p>Advanced techniques for analyzing planetary and aerial imagery.</p>
+                        <a href="{% url 'image_buddy' %}">Start Tutorial</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Estimation and Optimization -->
-        <div class="tutorial-group">
-            <h3>Estimation and Optimization</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Parameter Estimation</h2>
-                    <p>Interactive tool for understanding parameter estimation in computer vision.</p>
-                    <a href="{% url 'param_estimation_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>RANSAC Tutorial</h2>
-                    <p>Explore Random Sample Consensus algorithm with interactive demonstrations.</p>
-                    <a href="{% url 'ransac-buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Gaussian Processes</h2>
-                    <p>Explore Gaussian processes and their applications in computer vision.</p>
-                    <a href="{% url 'gaussian_processes_buddy' %}">Start Tutorial</a>
+            <!-- State Estimation and Control -->
+            <div class="tutorial-group">
+                <h3>State Estimation and Control</h3>
+                <div class="grid">
+                    <div class="card">
+                        <h2>Sensor Fusion</h2>
+                        <p>Combine multiple sensor inputs for robust state estimation.</p>
+                        <a href="{% url 'sensor_fusion_buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Particle Filters</h2>
+                        <p>Probabilistic state estimation for complex dynamic systems.</p>
+                        <a href="{% url 'particle_filter_buddy' %}">Start Tutorial</a>
+                    </div>
+                    <div class="card">
+                        <h2>Cart-Pole Control</h2>
+                        <p>Learn fundamental control principles for robotic systems.</p>
+                        <a href="{% url 'cart_pole_buddy' %}">Start Tutorial</a>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Sensing and Perception -->
-        <div class="tutorial-group">
-            <h3>Sensing and Perception</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Sensor Fusion</h2>
-                    <p>Learn about combining data from multiple sensors using Kalman filters.</p>
-                    <a href="{% url 'sensor_fusion_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Point Cloud Processing</h2>
-                    <p>Learn techniques for processing and analyzing 3D point cloud data.</p>
-                    <a href="{% url 'point_cloud_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Particle Filters</h2>
-                    <p>Understand Monte Carlo localization and particle filtering techniques.</p>
-                    <a href="{% url 'particle_filter_buddy' %}">Start Tutorial</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Motion Planning and Control -->
-        <div class="tutorial-group">
-            <h3>Motion Planning and Control</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Path Planning</h2>
-                    <p>Learn about various path planning algorithms including A*, RRT, and potential fields.</p>
-                    <a href="{% url 'path_planning_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Cart-Pole System</h2>
-                    <p>Explore the classic cart-pole control problem with interactive visualization.</p>
-                    <a href="{% url 'cart_pole_buddy' %}">Start Tutorial</a>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 </div>
 
 <style>
