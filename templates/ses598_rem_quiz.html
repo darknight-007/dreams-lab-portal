@@ -1,0 +1,53 @@
+{% extends "quiz_base.html" %}
+
+{% block quiz_title %}SES 598: Robotic Exploration and Mapping - Course Quiz{% endblock %}
+
+{% block mcq_section_title %}Part 1: Robotics and Mapping Fundamentals{% endblock %}
+
+{% block mcq_questions %}
+<div class="question">
+    <h3>1. What is the primary purpose of Simultaneous Localization and Mapping (SLAM) in robotics?</h3>
+    <label><input type="radio" name="q1" value="1" required> To create a robot's control algorithm</label>
+    <label><input type="radio" name="q1" value="2"> To detect objects in the robot's environment</label>
+    <label><input type="radio" name="q1" value="3"> To build a map of an unknown environment while tracking the robot's position</label>
+    <label><input type="radio" name="q1" value="4"> To program robot behaviors for obstacle avoidance</label>
+</div>
+
+<div class="question">
+    <h3>2. Which sensor is most commonly used for 3D mapping in robotic systems?</h3>
+    <label><input type="radio" name="q2" value="1" required> Ultrasonic sensor</label>
+    <label><input type="radio" name="q2" value="2"> LiDAR</label>
+    <label><input type="radio" name="q2" value="3"> Infrared sensor</label>
+    <label><input type="radio" name="q2" value="4"> GPS</label>
+</div>
+
+<div class="question">
+    <h3>3. In occupancy grid mapping, what does a high probability value in a grid cell represent?</h3>
+    <label><input type="radio" name="q3" value="1" required> The cell is likely to contain an obstacle</label>
+    <label><input type="radio" name="q3" value="2"> The cell is unexplored</label>
+    <label><input type="radio" name="q3" value="3"> The cell is part of free space</label>
+    <label><input type="radio" name="q3" value="4"> The cell is a probable goal location</label>
+</div>
+
+<div class="question">
+    <h3>4. What is a common challenge in using GPS for outdoor robotic navigation?</h3>
+    <label><input type="radio" name="q4" value="1" required> Lack of precision in densely populated environments</label>
+    <label><input type="radio" name="q4" value="2"> High energy consumption</label>
+    <label><input type="radio" name="q4" value="3"> Difficulty in avoiding static obstacles</label>
+    <label><input type="radio" name="q4" value="4"> Difficulty in path planning</label>
+</div>
+
+<div class="question">
+    <h3>5. Which algorithm is typically used for path planning in robotic mapping?</h3>
+    <label><input type="radio" name="q5" value="1" required> Breadth-First Search (BFS)</label>
+    <label><input type="radio" name="q5" value="2"> Dijkstra's Algorithm</label>
+    <label><input type="radio" name="q5" value="3"> Gradient Descent</label>
+    <label><input type="radio" name="q5" value="4"> Genetic Algorithm</label>
+</div>
+{% endblock %}
+
+{% block interactive_section_title %}Part 2: Hands-on Robotics Challenges{% endblock %}
+
+{% block mcq_answers %}{"q1":"3","q2":"2","q3":"1","q4":"1","q5":"2"}{% endblock %}
+
+{% block required_score %}3{% endblock %} 

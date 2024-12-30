@@ -8,182 +8,217 @@
     <title>ASU DREAMS Laboratory</title>
     <style>
         :root {
-            --primary-color: #8C1D40;
-            --secondary-color: #FFC627;
+            --primary-color: #0096e6;
+            --secondary-color: #8B0000;
             --text-color: #333;
-            --background-color: #f5f5f5;
+            --background-color: #f8f9fa;
+            --border-color: #e9ecef;
+            --section-spacing: 4rem;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-size: 18px;
             line-height: 1.6;
-            margin: 0;
-            padding: 0;
             background-color: var(--background-color);
             color: var(--text-color);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
-            max-width: 1200px;
+            width: 90%;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
 
+        /* Header Styles */
         .hero-section {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, #fff, #f0f8ff);
+            padding: 4rem 0;
+            margin-bottom: var(--section-spacing);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .hero-content {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            text-align: center;
         }
 
         #logo {
-            max-width: 200px;
-            height: auto;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+        #logo:hover {
+            transform: scale(1.05);
         }
 
-        h2 {
-            color: var(--primary-color);
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-
+        /* Section Styles */
         section {
-            background-color: white;
+            margin-bottom: var(--section-spacing);
+            background: white;
             padding: 2rem;
             border-radius: 10px;
-            margin-bottom: 2rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        h1, h2, h3, h4, h5 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.25rem; }
+
+        /* Grid Layout */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
         }
 
         .grid-item {
-            text-align: center;
+            background: white;
             padding: 1.5rem;
-            background-color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
         }
 
-        .grid-item i {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+        .grid-item:hover {
+            transform: translateY(-5px);
         }
 
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .research-areas-container {
-            margin-top: 2rem;
-        }
-
-        .research-area {
-            margin-bottom: 2rem;
-        }
-
-        .research-projects {
-            margin-top: 1rem;
-        }
-
-        .research-project-photo-set {
+        /* Project Photos */
+        .research-project-photo-set, .project-photos {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-top: 1rem;
-        }
-
-        .project-entry {
-            text-align: center;
-        }
-
-        .project-photos {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
         }
 
         .photo-container {
             position: relative;
-            max-width: 200px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .project-photo {
             width: 100%;
-            height: auto;
-            border-radius: 5px;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-photo:hover {
+            transform: scale(1.05);
         }
 
         .photo-caption {
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            color: #666;
-        }
-
-        /* New styles for course announcement */
-        .announcement-section {
-            background: linear-gradient(135deg, var(--primary-color), #6a1730);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 0.9rem;
         }
 
-        .announcement-content {
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--background-color);
+        }
+
+        /* Funding Sources */
+        .funding-sources-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 2rem;
+            padding: 2rem;
         }
 
-        .announcement-text {
-            flex: 1;
+        .funding-source-logo {
+            height: 150px;
+            width: auto;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
         }
 
-        .announcement-text h2 {
-            color: var(--secondary-color);
-            margin-top: 0;
+        .funding-source-logo:hover {
+            filter: grayscale(0%);
         }
 
-        .cta-button {
-            background-color: var(--secondary-color);
+        /* Links */
+        a {
             color: var(--primary-color);
-            padding: 1rem 2rem;
-            border-radius: 5px;
             text-decoration: none;
-            font-weight: bold;
-            transition: transform 0.2s;
-            white-space: nowrap;
+            transition: color 0.2s ease;
         }
 
-        .cta-button:hover {
-            transform: translateY(-2px);
-            text-decoration: none;
+        a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 1rem;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            #logo {
+                width: 200px;
+                height: 200px;
+            }
         }
     </style>
 </head>
@@ -196,17 +231,6 @@
                     <h1>DREAMS Laboratory</h1>
                     <p>The Distributed Robotic Exploration and Mapping Systems (DREAMS) Laboratory specializes in the research and development of autonomous robotic systems and cyber-physical twins, for advanced mapping, sampling, and analysis in diverse environments — terrestrial, aquatic, and extraterrestrial.</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- New Course Announcement Section -->
-        <section class="announcement-section">
-            <div class="announcement-content">
-                <div class="announcement-text">
-                    <h2>🎓 New Course: SES 598 - Robotics and AI in Earth and Space Exploration</h2>
-                    <p>This advanced graduate-level course examines the theoretical foundations and practical applications of robotics and artificial intelligence in Earth and space exploration contexts. The curriculum integrates autonomous systems engineering, computer vision algorithms, and machine learning methodologies, with emphasis on their applications in terrestrial and extraterrestrial robotic systems. Through rigorous theoretical study and hands-on experimentation, students will develop expertise in state-of-the-art techniques for robotic perception, navigation, and decision-making. Spring 2025 registration is now available.</p>
-                </div>
-                <a href="{% url 'ses598_course' %}" class="cta-button">Explore Course →</a>
             </div>
         </section>
 
@@ -253,6 +277,188 @@
                 {% endfor %}
             </div>
         </section>
+
+        <section id="deepgis-xr">
+            <h2>DeepGIS XR</h2>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <h3>Virtual Reality GIS Platform</h3>
+                    <p>Experience geographic information systems in virtual reality with DeepGIS XR. This cutting-edge platform combines the power of GIS with immersive VR technology.</p>
+                    <div class="deepgis-options">
+                        <div class="option">
+                            <h4>Image Analysis</h4>
+                            <p>Label and analyze aerial imagery with our advanced image processing tools.</p>
+                            <p><a href="https://deepgis.org/label/" target="_blank" class="btn">Launch Image Analysis →</a></p>
+                        </div>
+                        <div class="option">
+                            <h4>Scene Analysis</h4>
+                            <p>Explore and analyze 3D scenes with our immersive VR environment.</p>
+                            <p><a href="https://deepgis.org/map-label/" target="_blank" class="btn">Launch Scene Analysis →</a></p>
+                        </div>
+                    </div>
+                    <style>
+                        .deepgis-options {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 2rem;
+                            margin-top: 1.5rem;
+                        }
+                        .option {
+                            background: #f8f9fa;
+                            padding: 1.5rem;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            transition: transform 0.2s ease;
+                        }
+                        .option:hover {
+                            transform: translateY(-5px);
+                        }
+                        .option h4 {
+                            color: var(--primary-color);
+                            margin-bottom: 1rem;
+                        }
+                        .option p {
+                            margin-bottom: 1rem;
+                        }
+                        @media (max-width: 768px) {
+                            .deepgis-options {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                </div>
+            </div>
+        </section>
+
+        <section id="people">
+            <h2>People</h2>
+            <div class="table-responsive">
+                <table class="people-table">
+                    <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Affiliation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for person in people %}
+                            {% if person.role != 'Alumni' %}
+                                <tr>
+                                    <td>
+                                        {% if person.profile_pic %}
+                                            <img src="{{ person.profile_pic }}" alt="{{ person.first_name }} {{ person.last_name }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%;">
+                                        {% else %}
+                                            <div style="width: 120px; height: 120px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center;">No photo</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ person.first_name }} {{ person.last_name }}</td>
+                                    <td>{{ person.role }}</td>
+                                    <td>{{ person.affiliation }}</td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">No people found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="assets">
+            <h2>Assets</h2>
+            <div class="table-responsive">
+                <table class="assets-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Photo</th>
+                            <th>Project</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asset in assets %}
+                            <tr>
+                                <td>{{ asset.asset_name }}</td>
+                                <td>{{ asset.description }}</td>
+                                <td>
+                                    <div class="photo-container" style="width: 200px; height: 150px;">
+                                        <img src="{{ asset.photo_set.first.photo_url }}" alt="Asset Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                    </div>
+                                </td>
+                                <td>{{ asset.project.title }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">No assets found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="publications">
+            <h2>Publications</h2>
+            <div class="publications-container grid-container">
+                {% for publication in publications|dictsortreversed:"publication_date" %}
+                    <div class="publication-item grid-item">
+                        <p>
+                            <span class="publication-year">({{ publication.publication_date|date:"Y" }})</span>
+                            <span class="publication-title">{{ publication.title }}</span>
+                            {% if publication.link %}
+                                <a href="{{ publication.link }}" target="_blank" class="publication-link">
+                                    <span class="link-text">Access</span>
+                                    <span class="link-icon">→</span>
+                                </a>
+                            {% endif %}
+                        </p>
+                    </div>
+                {% empty %}
+                    <p>No publications found.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section id="funding-sources">
+            <h2>Sponsors and Partners</h2>
+            <div class="funding-sources-container">
+                {% for source in funding_source %}
+                    <div class="funding-source">
+                        <img src="{{ source.photo_url }}" alt="{{ source.name }}" class="funding-source-logo">
+                    </div>
+                {% empty %}
+                    <p>No funding sources found.</p>
+                {% endfor %}
+            </div>
+        </section>
     </div>
+
+    <script>
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add table responsiveness
+        document.addEventListener('DOMContentLoaded', function() {
+            const tables = document.querySelectorAll('table');
+            tables.forEach(table => {
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('table-responsive');
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            });
+        });
+    </script>
 </body>
 </html>

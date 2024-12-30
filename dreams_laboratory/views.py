@@ -339,34 +339,22 @@ def home_view(request):
 
 
 def stereo_buddy_view(request):
-    return render(request, 'stereo_buddy.html')
+    return render(request, 'stereo-buddy.html')
 
 
 def cart_pole_buddy_view(request):
-    """
-    View function for the cart pole control tutorial page.
-    """
     return render(request, 'cart-pole-buddy.html')
 
 
 def gaussian_processes_buddy_view(request):
-    """
-    View function for the Gaussian processes tutorial page.
-    """
     return render(request, 'gaussian-processes-buddy.html')
 
 
 def param_estimation_buddy_view(request):
-    """
-    View function for the parameter estimation tutorial page.
-    """
-    return render(request, 'param_estimation_buddy.html')
+    return render(request, 'param-estimation-buddy.html')
 
 
 def image_buddy_view(request):
-    """
-    View function for the image processing tutorial page.
-    """
     return render(request, 'image-buddy.html')
 
 
@@ -375,55 +363,47 @@ def slam_buddy_view(request):
 
 
 def ses598_robotic_exploration_and_mapping_quiz(request):
-    return render(request, 'ses598_quiz.html')
-
+    return render(request, 'ses-598-robotic-exploration-and-mapping-quiz.html')
 
 def ransac_buddy(request):
     """
     View function for the RANSAC tutorial page.
     Demonstrates RANSAC algorithm for point cloud matching and outlier rejection.
     """
-    return render(request, 'ransac_buddy.html')
-
+    return render(request, 'ransac-buddy.html') 
 
 def multiview_geometry_view(request):
-    return render(request, 'multiview-geometry.html')
+    """
+    View function for the multi-view geometry tutorial page.
+    Can include computed matrices as context if needed.
+    """
+    context = {
+        'title': 'Multi-View Geometry Tutorial',
+        # Add any computed matrices to the context if needed
+        # 'essential_matrix': computed_essential_matrix,
+        # 'fundamental_matrix': computed_fundamental_matrix,
+        # 'camera_matrix': computed_camera_matrix,
+    }
+    return render(request, 'multiview-geometry.html', context)
 
+
+def ses598_robotic_exploration_and_mapping(request):
+    return render(request, 'SES598_robotic_exploration_and_mapping.html')
 
 def particle_filter_buddy(request):
     return render(request, 'particle_filter_buddy.html')
 
-
 def loop_closure_buddy(request):
-    """
-    View function for the loop closure tutorial page.
-    Demonstrates loop closure detection and pose graph optimization.
-    """
     return render(request, 'loop_closure_buddy.html')
 
-
 def sensor_fusion_buddy(request):
-    """
-    View function for the sensor fusion tutorial page.
-    Demonstrates multi-sensor fusion techniques and filtering.
-    """
     return render(request, 'sensor_fusion_buddy.html')
 
-
 def visual_odometry_buddy(request):
-    """
-    View function for the visual odometry tutorial page.
-    Demonstrates feature tracking and motion estimation.
-    """
     return render(request, 'visual_odometry_buddy.html')
 
-
 def point_cloud_buddy(request):
-    """
-    View function for the point cloud processing tutorial page.
-    """
     return render(request, 'point_cloud_buddy.html')
-
 
 def path_planning_buddy(request):
     """
@@ -452,7 +432,6 @@ def generate_curved_line():
     
     return x, y
 
-
 def sample_points_on_curve(x, y, num_points=300):
     # Create interpolation function
     curve = interp1d(x, y, kind='linear')
@@ -465,7 +444,6 @@ def sample_points_on_curve(x, y, num_points=300):
     y_random = curve(x_random)
     
     return x_random, y_random
-
 
 def ransac_demo_data(request):
     # Generate dense point sampling
@@ -558,9 +536,9 @@ def ransac_demo_data(request):
         'y_random': y_random.tolist()
     })
     
-
 def ses598_quiz(request):
     """Render the SES598 quiz page with MCQs and interactive components"""
+    # Create quiz components with enhanced features
     quiz_components = [
         {
             'id': 'stereo_challenge',
@@ -603,140 +581,208 @@ def ses598_quiz(request):
                 'tolerance': 2,
                 'correctValue': 30
             }
+        },
+        {
+            'id': 'param_estimation',
+            'title': 'Parameter Estimation Challenge',
+            'description': 'Estimate the optimal learning rate for fastest convergence using the parameter estimation tool.',
+            'widget_type': 'param_estimation_buddy',
+            'difficulty': 'medium',
+            'hint': 'A good learning rate should converge quickly without overshooting. Watch the convergence plot.',
+            'example': 'If the error oscillates, the learning rate is too high. If it converges very slowly, the learning rate is too low.',
+            'parameters': {
+                'target_params': {'amplitude': 2.0, 'frequency': 0.5, 'phase': 0.785},
+                'noise_level': 0.1,
+                'num_points': 50
+            },
+            'validation_rules': {
+                'type': 'numeric',
+                'tolerance': 0.01,
+                'correctValue': 0.1
+            }
         }
     ]
     
-    context = {
-        'quiz_components': quiz_components,
-        'total_questions': len(quiz_components),
-        'show_results': False
+    # MCQ answers and scoring
+    mcq_answers = {
+        'q1': '3',  # SLAM purpose
+        'q2': '2',  # LiDAR
+        'q3': '1',  # Occupancy grid
+        'q4': '1',  # GPS challenge
+        'q5': '2',  # Path planning
     }
     
-    return render(request, 'ses598_quiz.html', context)
-
+    context = {
+        'quiz_id': request.session.get('quiz_id', 'Not assigned'),
+        'quiz_components': quiz_components,
+        'total_questions': len(mcq_answers) + len(quiz_components),
+        'show_results': False  # Will be True after submission
+    }
+    
+    return render(request, 'ses598_rem_quiz.html', context)
 
 def reset_quiz(request):
     if 'quiz_results' in request.session:
         del request.session['quiz_results']
     return redirect('ses598_quiz')
 
-
 def ses598_course_view(request):
-    """Main view for the SES598 course page"""
-    context = {
-        'syllabus': {
-            'course_info': {
-                'semester': 'Spring 2024',
-                'meeting_times': 'TBD',
-                'location': 'TBD',
-                'instructor': 'Dr. Jnaneshwar Das',
-                'office_hours': 'By appointment',
-                'contact': 'jdas@asu.edu'
+    syllabus = {
+        'course_info': {
+            'title': 'SES 598: Robotics and AI for Planetary Exploration',
+            'semester': 'Spring 2024',
+            'meeting_times': 'Tu/Th 3:00 PM - 4:15 PM',
+            'location': 'ISTB4 401',
+            'instructor': 'Dr. Jnaneshwar Das',
+            'office_hours': 'By appointment',
+            'contact': 'jdas@asu.edu'
+        },
+        'course_description': '''This course provides a comprehensive introduction to robotic exploration and mapping, 
+        focusing on the fundamental concepts and advanced techniques in computer vision, SLAM (Simultaneous Localization and Mapping), 
+        and autonomous navigation. Students will learn both theoretical foundations and practical implementations of robotic 
+        perception systems, with emphasis on visual-inertial navigation, 3D reconstruction, and environment mapping. The course 
+        includes hands-on experience with real robotic systems and modern software tools used in the industry.''',
+        
+        'prerequisites': [
+            'Mathematics: Linear algebra (vectors, matrices, eigenvalues), calculus (derivatives, gradients), and probability theory (Bayes rule, distributions)',
+            'Programming: Strong Python programming skills with experience in scientific computing libraries (NumPy, SciPy, PyTorch/TensorFlow)',
+            'Computer Vision: Basic understanding of image processing, feature detection, and geometric transformations',
+            'Computing Systems: Experience with Linux/Unix systems, version control (Git), and command-line tools',
+            'Recommended: Prior exposure to ROS (Robot Operating System), CUDA programming, or parallel computing',
+            'Required Software: Students must have a computer capable of running Linux and processing 3D graphics'
+        ],
+        
+        'learning_outcomes': [
+            'Master advanced robotics and AI techniques for exploration in challenging environments',
+            'Design and implement autonomous systems for Earth and Space applications',
+            'Develop expertise in 3D perception, mapping, and scene understanding',
+            'Create intelligent decision-making systems for robotic exploration',
+            'Build distributed multi-robot systems for collaborative missions',
+            'Apply modern machine learning to real-world robotics problems'
+        ],
+        
+        'grading': {
+            'Projects': {
+                'Project 1: 3D Reconstruction': '8%',
+                'Project 2: Neural Scene Understanding': '8%',
+                'Project 3: Digital Twin System': '8%',
+                'Project 4: Multi-Robot Exploration': '8%',
+                'Project 5: Extreme Environment Operations': '8%'
             },
-            'course_description': 'An advanced course exploring robotics and artificial intelligence applications in Earth and Space exploration. Topics include computer vision, SLAM, path planning, and machine learning for autonomous systems.',
-            'prerequisites': [
-                'Programming experience in Python',
-                'Basic understanding of linear algebra and probability',
-                'Interest in robotics and AI applications'
-            ],
-            'learning_outcomes': [
-                'Understand fundamental concepts in robotic perception and control',
-                'Implement computer vision algorithms for exploration tasks',
-                'Design autonomous navigation systems',
-                'Apply machine learning techniques to robotics problems'
-            ],
-            'grading': {
-                'Assignments': '40%',
-                'Projects': '30%',
-                'Final Project': '20%',
-                'Participation': '10%'
+            'Midterm Project': {
+                'Information-Driven Mapping System': '20%'
             },
-            'modules': [
-                {
-                    'week': 1,
-                    'title': 'Introduction to Robotics in Exploration',
-                    'topics': [
-                        'Course overview',
-                        'Robotics in Earth and Space exploration',
-                        'Python tools for robotics'
-                    ],
-                    'assignment': 'Setup development environment and complete initial coding exercises'
-                },
-                {
-                    'week': 2,
-                    'title': 'Computer Vision Fundamentals',
-                    'topics': [
-                        'Image processing basics',
-                        'Feature detection and matching',
-                        'Camera models and calibration'
-                    ],
-                    'assignment': 'Image processing and feature detection lab'
-                },
-                {
-                    'week': 3,
-                    'title': 'Stereo Vision and 3D Reconstruction',
-                    'topics': [
-                        'Stereo camera geometry',
-                        'Depth estimation',
-                        'Point cloud generation'
-                    ],
-                    'assignment': 'Stereo vision and depth mapping project'
-                },
-                {
-                    'week': 4,
-                    'title': 'SLAM and Visual Odometry',
-                    'topics': [
-                        'Visual SLAM principles',
-                        'Feature tracking',
-                        'Loop closure detection'
-                    ],
-                    'assignment': 'Implement basic visual odometry system'
-                },
-                {
-                    'week': 5,
-                    'title': 'Path Planning and Navigation',
-                    'topics': [
-                        'Graph-based planning',
-                        'Sampling-based methods',
-                        'Dynamic path planning'
-                    ],
-                    'assignment': 'Path planning implementation for exploration scenarios'
-                },
-                {
-                    'week': 6,
-                    'title': 'Machine Learning for Robotics',
-                    'topics': [
-                        'Neural networks for perception',
-                        'Reinforcement learning basics',
-                        'Learning from demonstration'
-                    ],
-                    'assignment': 'ML-based perception system development'
-                },
-                {
-                    'week': 7,
-                    'title': 'State Estimation and Sensor Fusion',
-                    'topics': [
-                        'Kalman filtering',
-                        'Particle filters',
-                        'Multi-sensor fusion'
-                    ],
-                    'assignment': 'Sensor fusion implementation'
-                },
-                {
-                    'week': 8,
-                    'title': 'Advanced Topics and Applications',
-                    'topics': [
-                        'Aerial robotics',
-                        'Planetary rovers',
-                        'Field robotics case studies'
-                    ],
-                    'assignment': 'Final project proposal and implementation'
-                }
-            ]
-        }
+            'Final Project': {
+                'End-to-End Space Robotics System': '25%'
+            },
+            'Class Participation': {
+                'Interactive Tutorials': '5%',
+                'Discussion & Code Reviews': '5%',
+                'Project Presentations': '5%'
+            }
+        },
+        
+        'modules': [
+            {
+                'week': '1-2',
+                'title': 'Computer Vision & 3D Reconstruction Fundamentals',
+                'topics': [
+                    'Image formation and camera models',
+                    'Feature detection and matching',
+                    'Epipolar geometry and stereo vision',
+                    'Structure from Motion (SfM)',
+                    'Multi-View Stereo (MVS)'
+                ],
+                'assignment': 'Project 1: 3D reconstruction pipeline'
+            },
+            {
+                'week': '3-4',
+                'title': 'Advanced Scene Representation & Neural Rendering',
+                'topics': [
+                    'Gaussian Splatting fundamentals',
+                    'Neural Radiance Fields (NeRF)',
+                    'View synthesis techniques',
+                    'Real-time rendering strategies',
+                    'Photogrammetry workflows'
+                ],
+                'assignment': 'Project 2: Neural scene representation and rendering'
+            },
+            {
+                'week': '5-6',
+                'title': 'Sampling Strategies & Information Theory',
+                'topics': [
+                    'Information theory fundamentals',
+                    'Active sampling and exploration',
+                    'Multi-armed bandits and Thompson sampling',
+                    'Bayesian optimization for parameter tuning',
+                    'Information gain in exploration'
+                ],
+                'assignment': 'Project 2: Optimal sampling strategy implementation'
+            },
+            {
+                'week': '7-8',
+                'title': 'Digital Twins & Online Learning',
+                'topics': [
+                    'Digital twin fundamentals',
+                    'Online Bayesian learning',
+                    'Adaptive exploration strategies',
+                    'Sequential decision making',
+                    'Real-time model updates'
+                ],
+                'assignment': 'Project 3: Adaptive digital twin system'
+            },
+            {
+                'week': '9-10',
+                'title': 'SLAM and Active Perception',
+                'topics': [
+                    'Information-theoretic SLAM',
+                    'Active view selection',
+                    'Uncertainty-aware mapping',
+                    'Exploration-exploitation trade-offs',
+                    'Resource-constrained planning'
+                ],
+                'assignment': 'Midterm Project: Information-driven mapping system'
+            },
+            {
+                'week': '11-12',
+                'title': 'Multi-Robot Coordination & Distributed Learning',
+                'topics': [
+                    'Distributed bandit algorithms',
+                    'Multi-agent exploration strategies',
+                    'Collaborative information gathering',
+                    'Decentralized decision making',
+                    'Communication-aware sampling'
+                ],
+                'assignment': 'Project 4: Multi-robot exploration system'
+            },
+            {
+                'week': '13-14',
+                'title': 'Extreme Environment Operations',
+                'topics': [
+                    'Risk-aware exploration',
+                    'Robust sampling strategies',
+                    'Adaptive resource allocation',
+                    'Environmental uncertainty modeling',
+                    'Safety-constrained learning'
+                ],
+                'assignment': 'Project 5: Robust exploration system'
+            },
+            {
+                'week': '15-16',
+                'title': 'Integration & Advanced Applications',
+                'topics': [
+                    'Meta-learning for exploration',
+                    'Transfer learning in space applications',
+                    'Lifelong learning systems',
+                    'Integrated perception-planning-learning',
+                    'Real-world deployment strategies'
+                ],
+                'assignment': 'Final Project: End-to-end space robotics system'
+            }
+        ]
     }
-    return render(request, 'ses598_course.html', context)
-
+    
+    return render(request, 'ses598_course.html', {'syllabus': syllabus})
 
 # Define correct answers
 correct_answers = {
@@ -752,7 +798,6 @@ correct_answers = {
     'q10': 'b'  # Distributed decision-making
 }
 
-
 def validate_interactive_answer(question_id, student_answer, correct_answer, tolerance):
     try:
         student_val = float(student_answer)
@@ -760,7 +805,6 @@ def validate_interactive_answer(question_id, student_answer, correct_answer, tol
         return abs(student_val - correct_val) <= tolerance
     except ValueError:
         return False
-
 
 def process_quiz_submission(request):
     if request.method == 'POST':
@@ -775,7 +819,6 @@ def process_quiz_submission(request):
                 component['tolerance']
             )
             interactive_scores.append(is_correct)
-
 
 def tutorial_view(request, tutorial_type, tutorial_id):
     """View for rendering a tutorial component"""
@@ -794,7 +837,6 @@ def tutorial_view(request, tutorial_type, tutorial_id):
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
 def quiz_view(request, quiz_type, quiz_id):
     """View for rendering a quiz component"""
     try:
@@ -811,7 +853,6 @@ def quiz_view(request, quiz_type, quiz_id):
         return render(request, 'interactive_component.html', context)
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)
-
 
 def validate_quiz_answer(request, component_id):
     """Validate a quiz answer and return feedback"""
@@ -866,7 +907,6 @@ def validate_quiz_answer(request, component_id):
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
 def get_tutorial_hints(request, component_id):
     """Get hints for a quiz component"""
     try:
@@ -882,7 +922,6 @@ def get_tutorial_hints(request, component_id):
         return JsonResponse({'hints': hints})
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)
-
 
 def save_quiz_progress(request):
     """Save the user's quiz progress"""
@@ -913,7 +952,6 @@ def save_quiz_progress(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
 def load_quiz_progress(request):
     """Load the user's quiz progress"""
     try:
@@ -932,7 +970,6 @@ def load_quiz_progress(request):
         return JsonResponse(progress_data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
-
 
 def widget_view(request, widget_type):
     """View for rendering interactive widgets"""
@@ -961,11 +998,9 @@ def widget_view(request, widget_type):
     # Pass all query parameters to the view
     return view_func(request)
 
-
 def deepgis_home(request):
     """New home page for deepgis.org"""
     return render(request, 'deepgis_home.html')
-
 
 def dreamslab_home(request):
     """DREAMS Lab home page (previously the main home page)"""
@@ -977,7 +1012,6 @@ def dreamslab_home(request):
         'assets': Asset.objects.all()
     }
     return render(request, 'home.html', context)
-
 
 def get_available_layers(request):
     """Return available map layers organized by category"""
@@ -1005,175 +1039,3 @@ def get_available_layers(request):
     except Exception as e:
         logger.error(f"Error in get_available_layers: {e}")
         return JsonResponse({"error": str(e)}, status=500)
-
-
-# DeepGIS Decision Support views
-def spatial_analysis_view(request):
-    return render(request, 'decision_support/spatial_analysis.html')
-
-
-def data_visualization_view(request):
-    return render(request, 'decision_support/data_visualization.html')
-
-
-def interactive_decision_view(request):
-    return render(request, 'decision_support/interactive_decision.html')
-
-
-# OpenUAV Digital Twin views
-def container_setup_view(request):
-    return render(request, 'digital_twin/container_setup.html')
-
-
-def vnc_connection_view(request):
-    return render(request, 'digital_twin/vnc_connection.html')
-
-
-def env_config_view(request):
-    return render(request, 'digital_twin/env_config.html')
-
-
-def px4_sitl_view(request):
-    return render(request, 'digital_twin/px4_sitl.html')
-
-
-def gazebo_view(request):
-    return render(request, 'digital_twin/gazebo.html')
-
-
-def ros2_view(request):
-    return render(request, 'digital_twin/ros2.html')
-
-
-# DREAMSLab About views
-def research_areas_view(request):
-    return render(request, 'dreamslab/research_areas.html')
-
-
-def team_view(request):
-    return render(request, 'dreamslab/team.html')
-
-
-def publications_view(request):
-    return render(request, 'dreamslab/publications.html')
-
-
-# Tutorial views
-def stereo_buddy_view(request):
-    return render(request, 'stereo_buddy.html')
-
-
-def ransac_buddy(request):
-    return render(request, 'ransac_buddy.html')
-
-
-def multiview_geometry_view(request):
-    return render(request, 'multiview-geometry.html')
-
-
-def visual_odometry_buddy(request):
-    return render(request, 'visual_odometry_buddy.html')
-
-
-def point_cloud_buddy(request):
-    return render(request, 'point_cloud_buddy.html')
-
-
-def slam_buddy_view(request):
-    return render(request, 'slam-buddy.html')
-
-
-def particle_filter_buddy(request):
-    return render(request, 'particle_filter_buddy.html')
-
-
-def loop_closure_buddy(request):
-    """
-    View function for the loop closure tutorial page.
-    Demonstrates loop closure detection and pose graph optimization.
-    """
-    return render(request, 'loop_closure_buddy.html')
-
-
-def sensor_fusion_buddy(request):
-    """
-    View function for the sensor fusion tutorial page.
-    Demonstrates multi-sensor fusion techniques and filtering.
-    """
-    return render(request, 'sensor_fusion_buddy.html')
-
-
-def visual_odometry_buddy(request):
-    """
-    View function for the visual odometry tutorial page.
-    Demonstrates feature tracking and motion estimation.
-    """
-    return render(request, 'visual_odometry_buddy.html')
-
-
-def point_cloud_buddy(request):
-    """
-    View function for the point cloud processing tutorial page.
-    """
-    return render(request, 'point_cloud_buddy.html')
-
-
-def path_planning_buddy(request):
-    """
-    View function for the path planning tutorial page.
-    Covers algorithms like A*, RRT, and potential fields with interactive demonstrations.
-    """
-    return render(request, 'path_planning_buddy.html')
-
-
-def cart_pole_buddy_view(request):
-    """
-    View function for the cart pole control tutorial page.
-    """
-    return render(request, 'cart-pole-buddy.html')
-
-
-def gaussian_processes_buddy_view(request):
-    """
-    View function for the Gaussian processes tutorial page.
-    """
-    return render(request, 'gaussian-processes-buddy.html')
-
-
-def param_estimation_buddy_view(request):
-    """
-    View function for the parameter estimation tutorial page.
-    """
-    return render(request, 'param_estimation_buddy.html')
-
-
-def image_buddy_view(request):
-    """
-    View function for the image processing tutorial page.
-    """
-    return render(request, 'image-buddy.html')
-
-
-# Authentication views
-def initiate_login(request):
-    return render(request, 'auth/initiate_login.html')
-
-
-def verify_login(request):
-    return render(request, 'auth/verify_login.html')
-
-
-def initiate_login_view(request):
-    return render(request, 'auth/initiate_login_form.html')
-
-
-def verify_login_view(request):
-    return render(request, 'auth/verify_login_form.html')
-
-
-def profile_view(request):
-    return render(request, 'auth/profile.html')
-
-
-def logout_view(request):
-    return redirect('home')
