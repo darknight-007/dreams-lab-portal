@@ -12314,3 +12314,219 @@ INFO 2024-12-30 07:59:12,536 views 31 140641378865152 Command output - stdout: {
 INFO 2024-12-30 07:59:12,536 views 31 140641378865152 Command return code: 0
 WARNING 2024-12-30 08:00:47,547 log 31 140641378865152 Not Found: /favicon.ico
 WARNING 2024-12-30 08:00:57,554 log 31 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:07:41,092 log 31 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:07:44,440 log 31 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:07:44,684 log 33 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:09:29,479 log 32 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:09:31,442 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:09:31,759 log 31 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:09:49,115 log 33 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:09:52,249 log 32 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:11:10,278 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:11:11,322 log 31 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:11:12,551 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:11:12,871 log 31 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:11:13,769 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:11:14,078 log 33 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:11:53,711 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:12:01,239 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:12:36,311 log 32 140641378865152 Not Found: /webclient/get_available_layers
+ERROR 2024-12-30 08:14:38,599 exception 33 140641378865152 Invalid HTTP_HOST header: 'google.com:443'. You may need to add 'google.com' to ALLOWED_HOSTS.
+WARNING 2024-12-30 08:14:38,648 log 33 140641378865152 Bad Request: /443
+WARNING 2024-12-30 08:24:16,377 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:24:18,042 log 33 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:24:18,253 log 32 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:27:22,512 log 33 140616531501056 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:27:22,849 log 31 140616531501056 Not Found: /webclient/get_available_layers
+INFO 2024-12-30 08:27:30,590 views 32 140616531501056 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:27:30,692 views 32 140616531501056 Command output - stdout: 
+INFO 2024-12-30 08:27:30,692 views 32 140616531501056 Command return code: 0
+INFO 2024-12-30 08:27:32,023 views 32 140616531501056 Received request to launch OpenUAV
+INFO 2024-12-30 08:27:32,035 views 32 140616531501056 Found existing container: openuav-dd2ca371
+INFO 2024-12-30 08:27:32,044 views 32 140616531501056 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:27:32,079 views 32 140616531501056 Command output - stdout: 
+INFO 2024-12-30 08:27:32,079 views 32 140616531501056 Command return code: 0
+INFO 2024-12-30 08:27:51,131 views 31 140616531501056 Received request to launch OpenUAV
+INFO 2024-12-30 08:27:51,146 views 31 140616531501056 Found existing container: openuav-dd2ca371
+INFO 2024-12-30 08:27:51,160 views 32 140616531501056 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:27:51,196 views 32 140616531501056 Command output - stdout: 
+INFO 2024-12-30 08:27:51,197 views 32 140616531501056 Command return code: 0
+WARNING 2024-12-30 08:27:53,959 log 32 140616531501056 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:32:43,342 log 32 140616531501056 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:32:43,698 log 31 140616531501056 Not Found: /favicon.ico
+WARNING 2024-12-30 08:33:29,761 log 31 140616531501056 Not Found: //webclient/get_available_layers
+WARNING 2024-12-30 08:33:32,132 log 33 140616531501056 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:33:43,979 log 32 140616531501056 Not Found: /get_available_layers
+WARNING 2024-12-30 08:33:57,393 log 31 140616531501056 Not Found: /webclient
+WARNING 2024-12-30 08:34:09,396 log 31 140616531501056 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:34:36,547 log 32 140616531501056 Not Found: /webclient/get_available_layers
+ERROR 2024-12-30 08:36:53,500 exception 31 140616531501056 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-30 08:36:53,555 log 31 140616531501056 Bad Request: /
+WARNING 2024-12-30 08:44:51,346 log 33 140616531501056 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:46:15,228 log 31 140589330587648 Not Found: /favicon.ico
+WARNING 2024-12-30 08:46:15,240 log 31 140589330587648 Not Found: /favicon.ico
+WARNING 2024-12-30 08:46:52,691 log 33 140589330587648 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:46:55,489 log 33 140589330587648 Not Found: /webclient/get_available_layers
+INFO 2024-12-30 08:47:02,064 views 31 140589330587648 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:47:02,100 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:02,101 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:03,691 views 31 140589330587648 Received request to launch OpenUAV
+INFO 2024-12-30 08:47:03,705 views 31 140589330587648 Found existing container: openuav-dd2ca371
+INFO 2024-12-30 08:47:03,716 views 31 140589330587648 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:47:03,750 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:03,750 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:07,538 views 31 140589330587648 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-30 08:47:07,581 views 31 140589330587648 Command output - stdout: 153a1dfff6c6	deepgis-xr-celery-1	Up About a minute	deepgis-xr-celery
+62319b5e43ea	deepgis-xr-web-1	Up 57 seconds	deepgis-xr-web
+f57830ed7eed	deepgis-xr-db-1	Up About a minute (healthy)	postgis/postgis:13-3.3
+8c6c71eeca46	deepgis-xr-redis-1	Up About a minute	redis:latest
+7256566229cf	deepgis-xr-tileserver-1	Up About a minute (health: starting)	maptiler/tileserver-gl
+f04f928c9bd1	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+38d05431a654	deepgis-xr-tileserver-static-1	Up 39 minutes	nginx:alpine
+80e2d7dc5249	traefik	Up 6 hours	traefik:v2.10
+INFO 2024-12-30 08:47:07,582 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:09,664 views 31 140589330587648 Executing command: docker start 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+INFO 2024-12-30 08:47:09,673 views 33 140589330587648 Executing command: docker start 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+INFO 2024-12-30 08:47:09,700 views 31 140589330587648 Command output - stdout: 
+ERROR 2024-12-30 08:47:09,700 views 31 140589330587648 Command error - stderr: Error response from daemon: No such container: 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+Error: failed to start containers: 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+INFO 2024-12-30 08:47:09,701 views 31 140589330587648 Command return code: 1
+INFO 2024-12-30 08:47:09,708 views 33 140589330587648 Command output - stdout: 
+ERROR 2024-12-30 08:47:09,708 views 33 140589330587648 Command error - stderr: Error response from daemon: No such container: 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+Error: failed to start containers: 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+INFO 2024-12-30 08:47:09,708 views 33 140589330587648 Command return code: 1
+INFO 2024-12-30 08:47:10,702 views 31 140589330587648 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-30 08:47:10,710 views 33 140589330587648 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-30 08:47:10,745 views 31 140589330587648 Command output - stdout: 153a1dfff6c6	deepgis-xr-celery-1	Up About a minute	deepgis-xr-celery
+62319b5e43ea	deepgis-xr-web-1	Up About a minute	deepgis-xr-web
+f57830ed7eed	deepgis-xr-db-1	Up About a minute (healthy)	postgis/postgis:13-3.3
+8c6c71eeca46	deepgis-xr-redis-1	Up About a minute	redis:latest
+7256566229cf	deepgis-xr-tileserver-1	Up About a minute (health: starting)	maptiler/tileserver-gl
+f04f928c9bd1	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+38d05431a654	deepgis-xr-tileserver-static-1	Up 39 minutes	nginx:alpine
+80e2d7dc5249	traefik	Up 6 hours	traefik:v2.10
+INFO 2024-12-30 08:47:10,745 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:10,750 views 33 140589330587648 Command output - stdout: 153a1dfff6c6	deepgis-xr-celery-1	Up About a minute	deepgis-xr-celery
+62319b5e43ea	deepgis-xr-web-1	Up About a minute	deepgis-xr-web
+f57830ed7eed	deepgis-xr-db-1	Up About a minute (healthy)	postgis/postgis:13-3.3
+8c6c71eeca46	deepgis-xr-redis-1	Up About a minute	redis:latest
+7256566229cf	deepgis-xr-tileserver-1	Up About a minute (health: starting)	maptiler/tileserver-gl
+f04f928c9bd1	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+38d05431a654	deepgis-xr-tileserver-static-1	Up 39 minutes	nginx:alpine
+80e2d7dc5249	traefik	Up 6 hours	traefik:v2.10
+INFO 2024-12-30 08:47:10,750 views 33 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:10,774 views 33 140589330587648 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-30 08:47:10,815 views 33 140589330587648 Command output - stdout: 153a1dfff6c6	deepgis-xr-celery-1	Up About a minute	deepgis-xr-celery
+62319b5e43ea	deepgis-xr-web-1	Up About a minute	deepgis-xr-web
+f57830ed7eed	deepgis-xr-db-1	Up About a minute (healthy)	postgis/postgis:13-3.3
+8c6c71eeca46	deepgis-xr-redis-1	Up About a minute	redis:latest
+7256566229cf	deepgis-xr-tileserver-1	Up About a minute (health: starting)	maptiler/tileserver-gl
+f04f928c9bd1	dreams-lab-website-server-web-1	Up About a minute	dreams-lab-website-server-web
+38d05431a654	deepgis-xr-tileserver-static-1	Up 39 minutes	nginx:alpine
+80e2d7dc5249	traefik	Up 6 hours	traefik:v2.10
+INFO 2024-12-30 08:47:10,815 views 33 140589330587648 Command return code: 0
+WARNING 2024-12-30 08:47:53,968 log 31 140589330587648 Not Found: /webclient/get_available_layers
+INFO 2024-12-30 08:47:58,062 views 31 140589330587648 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:47:58,098 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:58,099 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:59,543 views 31 140589330587648 Received request to launch OpenUAV
+INFO 2024-12-30 08:47:59,553 views 31 140589330587648 Launching container with name: openuav-63fc3dfe
+INFO 2024-12-30 08:47:59,553 views 31 140589330587648 Checking if container already exists...
+INFO 2024-12-30 08:47:59,553 views 31 140589330587648 Executing command: docker ps -a --filter name=openuav-63fc3dfe --format '{{.Names}}'
+INFO 2024-12-30 08:47:59,588 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:59,588 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:59,589 views 31 140589330587648 Cleaning up stale files...
+INFO 2024-12-30 08:47:59,589 views 31 140589330587648 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-30 08:47:59,592 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:59,592 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:47:59,592 views 31 140589330587648 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-30 08:47:59,597 views 31 140589330587648 Command output - stdout: 
+ERROR 2024-12-30 08:47:59,597 views 31 140589330587648 Command error - stderr: rm: cannot remove '/tmp/.X11-unix': Is a directory
+INFO 2024-12-30 08:47:59,597 views 31 140589330587648 Command return code: 1
+INFO 2024-12-30 08:47:59,597 views 31 140589330587648 Executing command: pkill -f Xvnc || true
+INFO 2024-12-30 08:47:59,603 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:59,603 views 31 140589330587648 Command return code: -15
+INFO 2024-12-30 08:47:59,604 views 31 140589330587648 Executing command: pkill -f vncserver || true
+INFO 2024-12-30 08:47:59,609 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:47:59,610 views 31 140589330587648 Command return code: -15
+INFO 2024-12-30 08:47:59,610 views 31 140589330587648 Creating new container...
+INFO 2024-12-30 08:47:59,610 views 31 140589330587648 Executing command: docker run -d --name openuav-63fc3dfe --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-30 08:48:00,572 views 31 140589330587648 Command output - stdout: 883c1c928dfc57bde06cd4dcfac782278fc59833705546e91795ba4996ac10e0
+INFO 2024-12-30 08:48:00,572 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:48:00,572 views 31 140589330587648 Container started successfully
+INFO 2024-12-30 08:48:05,578 views 31 140589330587648 Executing command: docker inspect --format='{{.Id}}' openuav-63fc3dfe
+INFO 2024-12-30 08:48:05,613 views 31 140589330587648 Command output - stdout: 883c1c928dfc57bde06cd4dcfac782278fc59833705546e91795ba4996ac10e0
+INFO 2024-12-30 08:48:05,613 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:48:05,621 views 31 140589330587648 Executing command: docker inspect openuav-63fc3dfe --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-30 08:48:05,655 views 31 140589330587648 Command output - stdout: running true
+INFO 2024-12-30 08:48:05,655 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:48:05,655 views 31 140589330587648 Container state: running true
+INFO 2024-12-30 08:48:05,656 views 31 140589330587648 Executing command: docker exec openuav-63fc3dfe ps aux | grep Xvnc
+INFO 2024-12-30 08:48:05,744 views 31 140589330587648 Command output - stdout: 
+INFO 2024-12-30 08:48:05,745 views 31 140589330587648 Command return code: 1
+ERROR 2024-12-30 08:48:05,745 views 31 140589330587648 TurboVNC not running, attempting to start it...
+INFO 2024-12-30 08:48:05,745 views 31 140589330587648 Executing command: docker exec openuav-63fc3dfe rm -f /tmp/.X11-unix/X1 /tmp/.X1* /root/.vnc/*.pid /root/.vnc/*.log
+INFO 2024-12-30 08:48:05,827 views 31 140589330587648 Command output - stdout: 
+ERROR 2024-12-30 08:48:05,828 views 31 140589330587648 Command error - stderr: rm: cannot remove '/tmp/.X11-unix': Is a directory
+INFO 2024-12-30 08:48:05,828 views 31 140589330587648 Command return code: 1
+INFO 2024-12-30 08:48:06,829 views 31 140589330587648 Executing command: docker exec openuav-63fc3dfe /opt/TurboVNC/bin/vncserver :1 -geometry 1920x1080 -depth 24
+INFO 2024-12-30 08:48:07,963 views 31 140589330587648 Command output - stdout: 
+ERROR 2024-12-30 08:48:07,964 views 31 140589330587648 Command error - stderr: xauth:  file /root/.Xauthority does not exist
+
+Desktop 'TurboVNC: 883c1c928dfc:1 ()' started on display 883c1c928dfc:1
+
+Starting applications specified in /opt/TurboVNC/bin/xstartup.turbovnc
+Log file is /root/.vnc/883c1c928dfc:1.log
+INFO 2024-12-30 08:48:07,964 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:48:09,966 views 31 140589330587648 Executing command: docker exec openuav-63fc3dfe ps aux | grep Xvnc
+INFO 2024-12-30 08:48:10,046 views 31 140589330587648 Command output - stdout: root          67 19.0  0.0 171584 73996 ?        R    08:48   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 883c1c928dfc:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-30 08:48:10,046 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:48:10,046 views 31 140589330587648 Executing command: docker logs openuav-63fc3dfe --tail 20
+INFO 2024-12-30 08:48:10,079 views 31 140589330587648 Command output - stdout: Warning: could not find self.pem
+Using installed websockify at /usr/bin/websockify
+Starting webserver and WebSockets proxy on port 6080
+
+
+Navigate to this URL:
+
+    http://883c1c928dfc:6080/vnc.html?host=883c1c928dfc&port=6080
+
+Press Ctrl-C to exit
+ERROR 2024-12-30 08:48:10,079 views 31 140589330587648 Command error - stderr: WARNING: 883c1c928dfc:1 is taken because of /tmp/.X11-unix/X1
+Remove this file if there is no X server 883c1c928dfc:1
+A VNC server is already running as :1
+WebSocket server settings:
+  - Listen on :6080
+  - Web server. Web root: /usr/share/novnc
+  - No SSL/TLS support (no cert file)
+  - proxying from :6080 to localhost:5901
+INFO 2024-12-30 08:48:10,079 views 31 140589330587648 Command return code: 0
+INFO 2024-12-30 08:48:10,079 views 31 140589330587648 Container recent logs: Warning: could not find self.pem
+Using installed websockify at /usr/bin/websockify
+Starting webserver and WebSockets proxy on port 6080
+
+
+Navigate to this URL:
+
+    http://883c1c928dfc:6080/vnc.html?host=883c1c928dfc&port=6080
+
+Press Ctrl-C to exit
+WARNING 2024-12-30 08:48:10,079 views 31 140589330587648 Container logs errors: WARNING: 883c1c928dfc:1 is taken because of /tmp/.X11-unix/X1
+Remove this file if there is no X server 883c1c928dfc:1
+A VNC server is already running as :1
+WebSocket server settings:
+  - Listen on :6080
+  - Web server. Web root: /usr/share/novnc
+  - No SSL/TLS support (no cert file)
+  - proxying from :6080 to localhost:5901
+INFO 2024-12-30 08:48:10,093 views 31 140589330587648 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 08:48:10,128 views 31 140589330587648 Command output - stdout: {"Command":"\"/usr/local/bin/star…\"","CreatedAt":"2024-12-30 08:47:59 +0000 UTC","ID":"883c1c928dfc","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-63fc3dfe","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"11 seconds ago","Size":"358kB (virtual 10.3GB)","State":"running","Status":"Up 10 seconds"}
+INFO 2024-12-30 08:48:10,128 views 31 140589330587648 Command return code: 0
+WARNING 2024-12-30 08:54:46,829 log 31 140487566946304 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 08:56:19,755 log 33 140225206833152 Not Found: /webclient/get_available_layers
+ERROR 2024-12-30 08:57:10,088 exception 31 140225206833152 Invalid HTTP_HOST header: '68.109.135.117:8080'. You may need to add '68.109.135.117' to ALLOWED_HOSTS.
+WARNING 2024-12-30 08:57:10,148 log 31 140225206833152 Bad Request: /
+WARNING 2024-12-30 08:58:17,660 log 33 140225206833152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 09:01:46,626 log 32 140225206833152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 09:01:47,446 log 32 140225206833152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 09:02:08,182 log 32 140225206833152 Not Found: /webclient/get_available_layers
