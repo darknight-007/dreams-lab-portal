@@ -1030,7 +1030,7 @@ def get_available_layers(request):
     try:
         logger.info("Fetching available layers...")
         
-        # Define the two layer groups with default layers
+        # Define empty layer groups
         layers = {
             "tiles_media": {
                 "name": "Media Tiles",
@@ -1038,31 +1038,9 @@ def get_available_layers(request):
             },
             "tileserver": {
                 "name": "Base Layers",
-                "layers": [
-                    "v3",
-                    "v3color",
-                    "bf_latest",
-                    "bf_vector",
-                    "landsat_combined",
-                    "kmeans",
-                    "rock_poly",
-                    "merged_crowns"
-                ]
+                "layers": []
             }
         }
-        
-        # Scan tiles_media directory for available layers
-        media_tiles_path = os.path.join(settings.MEDIA_ROOT, 'tiles')
-        logger.info(f"Checking media tiles path: {media_tiles_path}")
-        
-        if os.path.exists(media_tiles_path):
-            logger.info("Media tiles directory exists")
-            for item in os.listdir(media_tiles_path):
-                if os.path.isdir(os.path.join(media_tiles_path, item)):
-                    layers["tiles_media"]["layers"].append(item)
-                    logger.info(f"Found media tile layer: {item}")
-        else:
-            logger.warning(f"Media tiles directory does not exist: {media_tiles_path}")
         
         # Log the final layer configuration
         logger.info(f"Returning layers configuration: {json.dumps(layers, indent=2)}")
