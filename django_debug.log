@@ -11886,3 +11886,431 @@ Traceback (most recent call last):
     return Database.Cursor.execute(self, query, params)
 django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
 ERROR 2024-12-28 21:54:39,008 log 31 140384577310720 Internal Server Error: /openuav/launch/
+WARNING 2024-12-30 07:46:22,903 log 33 140641378865152 Not Found: /dreamslab/None
+WARNING 2024-12-30 07:46:41,691 log 32 140641378865152 Not Found: /dreamslab/None
+WARNING 2024-12-30 07:46:57,332 log 33 140641378865152 Not Found: /webclient/get_available_layers
+INFO 2024-12-30 07:47:01,439 views 33 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:47:01,624 views 33 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:47:01,624 views 33 140641378865152 Command return code: 0
+INFO 2024-12-30 07:47:03,776 views 33 140641378865152 Received request to launch OpenUAV
+ERROR 2024-12-30 07:47:03,789 views 33 140641378865152 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-30 07:47:03,794 log 33 140641378865152 Internal Server Error: /openuav/launch/
+INFO 2024-12-30 07:47:17,475 views 33 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:47:17,512 views 33 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:47:17,512 views 33 140641378865152 Command return code: 0
+INFO 2024-12-30 07:47:33,146 views 33 140641378865152 Received request to launch OpenUAV
+ERROR 2024-12-30 07:47:33,156 views 33 140641378865152 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-30 07:47:33,157 log 33 140641378865152 Internal Server Error: /openuav/launch/
+INFO 2024-12-30 07:47:37,425 views 33 140641378865152 Executing command: docker ps -a --format '{{.ID}}	{{.Names}}	{{.Status}}	{{.Image}}'
+INFO 2024-12-30 07:47:37,473 views 33 140641378865152 Command output - stdout: ab8dd4cc4589	dreams-lab-website-server-web-1	Up 3 minutes	dreams-lab-website-server-web
+9ad288666174	deepgis-xr-web-1	Up 39 minutes	deepgis-xr-web
+cec908c09966	deepgis-xr-celery-1	Up 39 minutes	deepgis-xr-celery
+63fda57e2f12	deepgis-xr-redis-1	Up 39 minutes	redis:latest
+68089b2aa05e	deepgis-xr-db-1	Up 39 minutes (healthy)	postgis/postgis:13-3.3
+2abf26bf0a96	deepgis-xr-tileserver-1	Up 39 minutes (unhealthy)	maptiler/tileserver-gl
+d93f0fe616fc	digital-twin-55020236	Up 4 hours	openuav:px4-sitl
+80e2d7dc5249	traefik	Up 5 hours	traefik:v2.10
+f97c699e130c	gpu-vnc-test	Created	openuav:px4-sitl
+INFO 2024-12-30 07:47:37,473 views 33 140641378865152 Command return code: 0
+ERROR 2024-12-30 07:47:37,477 views 33 140641378865152 Error syncing containers: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 54, in sync_containers
+    for container in db_containers:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-30 07:47:37,590 log 33 140641378865152 Internal Server Error: /openuav/containers/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/usr/local/lib/python3.10/dist-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/app/openuav_manager/views.py", line 100, in container_list
+    return render(request, 'openuav_manager/container_list.html', {'containers': containers})
+  File "/usr/local/lib/python3.10/dist-packages/django/shortcuts.py", line 19, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 170, in render
+    return self._render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/usr/local/lib/python3.10/dist-packages/django/template/defaulttags.py", line 171, in render
+    len_values = len(values)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 262, in __len__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+INFO 2024-12-30 07:47:47,615 views 33 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:47:47,653 views 33 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:47:47,653 views 33 140641378865152 Command return code: 0
+INFO 2024-12-30 07:49:56,996 views 33 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:49:57,032 views 33 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:49:57,032 views 33 140641378865152 Command return code: 0
+WARNING 2024-12-30 07:49:57,274 log 33 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 07:50:02,499 log 32 140641378865152 Not Found: /webclient/get_available_layers
+WARNING 2024-12-30 07:53:43,589 log 33 140641378865152 Not Found: /favicon.ico
+INFO 2024-12-30 07:53:46,253 views 33 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:53:46,291 views 33 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:53:46,291 views 33 140641378865152 Command return code: 0
+ERROR 2024-12-30 07:54:24,553 exception 33 140641378865152 Invalid HTTP_HOST header: 'example.com:443'. You may need to add 'example.com' to ALLOWED_HOSTS.
+WARNING 2024-12-30 07:54:24,605 log 33 140641378865152 Bad Request: /443
+INFO 2024-12-30 07:54:46,615 views 32 140641378865152 Received request to launch OpenUAV
+ERROR 2024-12-30 07:54:46,628 views 32 140641378865152 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-30 07:54:46,633 log 32 140641378865152 Internal Server Error: /openuav/launch/
+INFO 2024-12-30 07:54:58,136 views 33 140641378865152 Received request to launch OpenUAV
+ERROR 2024-12-30 07:54:58,147 views 33 140641378865152 Exception in launch_openuav: no such column: openuav_manager_container.last_accessed
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+sqlite3.OperationalError: no such column: openuav_manager_container.last_accessed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/openuav_manager/views.py", line 143, in launch_openuav
+    existing_container = Container.objects.filter(**session_filter).first()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 674, in first
+    for obj in (self if self.ordered else self.order_by('pk'))[:1]:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 280, in __iter__
+    self._fetch_all()
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 1324, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 98, in execute
+    return super().execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 66, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 79, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.10/dist-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/utils.py", line 84, in _execute
+    return self.cursor.execute(sql, params)
+  File "/usr/local/lib/python3.10/dist-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+    return Database.Cursor.execute(self, query, params)
+django.db.utils.OperationalError: no such column: openuav_manager_container.last_accessed
+ERROR 2024-12-30 07:54:58,148 log 33 140641378865152 Internal Server Error: /openuav/launch/
+INFO 2024-12-30 07:58:02,504 views 32 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:58:02,537 views 32 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:58:02,537 views 32 140641378865152 Command return code: 0
+INFO 2024-12-30 07:58:05,531 views 31 140641378865152 Received request to launch OpenUAV
+INFO 2024-12-30 07:58:05,541 views 31 140641378865152 Launching container with name: openuav-03aa1e71
+INFO 2024-12-30 07:58:05,541 views 31 140641378865152 Checking if container already exists...
+INFO 2024-12-30 07:58:05,541 views 31 140641378865152 Executing command: docker ps -a --filter name=openuav-03aa1e71 --format '{{.Names}}'
+INFO 2024-12-30 07:58:05,568 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:58:05,568 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:58:05,568 views 31 140641378865152 Cleaning up stale files...
+INFO 2024-12-30 07:58:05,568 views 31 140641378865152 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-30 07:58:05,572 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:58:05,572 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:58:05,572 views 31 140641378865152 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-30 07:58:05,575 views 31 140641378865152 Command output - stdout: 
+ERROR 2024-12-30 07:58:05,575 views 31 140641378865152 Command error - stderr: rm: cannot remove '/tmp/.X11-unix': Is a directory
+INFO 2024-12-30 07:58:05,575 views 31 140641378865152 Command return code: 1
+INFO 2024-12-30 07:58:05,576 views 31 140641378865152 Executing command: pkill -f Xvnc || true
+INFO 2024-12-30 07:58:05,581 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:58:05,582 views 31 140641378865152 Command return code: -15
+INFO 2024-12-30 07:58:05,582 views 31 140641378865152 Executing command: pkill -f vncserver || true
+INFO 2024-12-30 07:58:05,586 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:58:05,586 views 31 140641378865152 Command return code: -15
+INFO 2024-12-30 07:58:05,586 views 31 140641378865152 Creating new container...
+INFO 2024-12-30 07:58:05,586 views 31 140641378865152 Executing command: docker run -d --name openuav-03aa1e71 --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-30 07:58:05,795 views 31 140641378865152 Command output - stdout: 5ce12537859ec2135b2e6f339936bbe2667d3dbacb38d3bdbe75db4a964b2580
+ERROR 2024-12-30 07:58:05,796 views 31 140641378865152 Command error - stderr: docker: Error response from daemon: driver failed programming external connectivity on endpoint openuav-03aa1e71 (42aa2e37a7003f2538cc9e53f2e32138062e315a303c10d0f242565717d826ae): Bind for 0.0.0.0:5901 failed: port is already allocated.
+INFO 2024-12-30 07:58:05,796 views 31 140641378865152 Command return code: 125
+ERROR 2024-12-30 07:58:05,796 views 31 140641378865152 Failed to start container: docker: Error response from daemon: driver failed programming external connectivity on endpoint openuav-03aa1e71 (42aa2e37a7003f2538cc9e53f2e32138062e315a303c10d0f242565717d826ae): Bind for 0.0.0.0:5901 failed: port is already allocated.
+ERROR 2024-12-30 07:58:05,797 log 31 140641378865152 Internal Server Error: /openuav/launch/
+INFO 2024-12-30 07:58:58,701 views 31 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:58:58,739 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:58:58,739 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:00,303 views 31 140641378865152 Received request to launch OpenUAV
+INFO 2024-12-30 07:59:00,313 views 31 140641378865152 Launching container with name: openuav-dd2ca371
+INFO 2024-12-30 07:59:00,313 views 31 140641378865152 Checking if container already exists...
+INFO 2024-12-30 07:59:00,313 views 31 140641378865152 Executing command: docker ps -a --filter name=openuav-dd2ca371 --format '{{.Names}}'
+INFO 2024-12-30 07:59:00,348 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:59:00,348 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:00,348 views 31 140641378865152 Cleaning up stale files...
+INFO 2024-12-30 07:59:00,349 views 31 140641378865152 Executing command: rm -f /tmp/.X11-unix/X1
+INFO 2024-12-30 07:59:00,352 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:59:00,353 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:00,353 views 31 140641378865152 Executing command: rm -f /tmp/.X1*
+INFO 2024-12-30 07:59:00,357 views 31 140641378865152 Command output - stdout: 
+ERROR 2024-12-30 07:59:00,357 views 31 140641378865152 Command error - stderr: rm: cannot remove '/tmp/.X11-unix': Is a directory
+INFO 2024-12-30 07:59:00,357 views 31 140641378865152 Command return code: 1
+INFO 2024-12-30 07:59:00,357 views 31 140641378865152 Executing command: pkill -f Xvnc || true
+INFO 2024-12-30 07:59:00,363 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:59:00,363 views 31 140641378865152 Command return code: -15
+INFO 2024-12-30 07:59:00,363 views 31 140641378865152 Executing command: pkill -f vncserver || true
+INFO 2024-12-30 07:59:00,369 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:59:00,369 views 31 140641378865152 Command return code: -15
+INFO 2024-12-30 07:59:00,369 views 31 140641378865152 Creating new container...
+INFO 2024-12-30 07:59:00,369 views 31 140641378865152 Executing command: docker run -d --name openuav-dd2ca371 --privileged --gpus all -p 6080:6080 -p 5901:5901 -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute -e VNC_PASSWORD=liftoff -v /tmp/.X11-unix:/tmp/.X11-unix:rw --runtime=nvidia openuav:px4-sitl /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+INFO 2024-12-30 07:59:02,960 views 31 140641378865152 Command output - stdout: 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+INFO 2024-12-30 07:59:02,960 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:02,960 views 31 140641378865152 Container started successfully
+INFO 2024-12-30 07:59:07,966 views 31 140641378865152 Executing command: docker inspect --format='{{.Id}}' openuav-dd2ca371
+INFO 2024-12-30 07:59:08,005 views 31 140641378865152 Command output - stdout: 1bc26bd22a22754ea61cc347e21125be1e968a1024767deafd3facd7daa4b5ef
+INFO 2024-12-30 07:59:08,005 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:08,014 views 31 140641378865152 Executing command: docker inspect openuav-dd2ca371 --format '{{.State.Status}} {{.State.Running}}'
+INFO 2024-12-30 07:59:08,047 views 31 140641378865152 Command output - stdout: running true
+INFO 2024-12-30 07:59:08,048 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:08,048 views 31 140641378865152 Container state: running true
+INFO 2024-12-30 07:59:08,048 views 31 140641378865152 Executing command: docker exec openuav-dd2ca371 ps aux | grep Xvnc
+INFO 2024-12-30 07:59:08,134 views 31 140641378865152 Command output - stdout: 
+INFO 2024-12-30 07:59:08,135 views 31 140641378865152 Command return code: 1
+ERROR 2024-12-30 07:59:08,135 views 31 140641378865152 TurboVNC not running, attempting to start it...
+INFO 2024-12-30 07:59:08,135 views 31 140641378865152 Executing command: docker exec openuav-dd2ca371 rm -f /tmp/.X11-unix/X1 /tmp/.X1* /root/.vnc/*.pid /root/.vnc/*.log
+INFO 2024-12-30 07:59:08,217 views 31 140641378865152 Command output - stdout: 
+ERROR 2024-12-30 07:59:08,218 views 31 140641378865152 Command error - stderr: rm: cannot remove '/tmp/.X11-unix': Is a directory
+INFO 2024-12-30 07:59:08,218 views 31 140641378865152 Command return code: 1
+INFO 2024-12-30 07:59:09,219 views 31 140641378865152 Executing command: docker exec openuav-dd2ca371 /opt/TurboVNC/bin/vncserver :1 -geometry 1920x1080 -depth 24
+INFO 2024-12-30 07:59:10,353 views 31 140641378865152 Command output - stdout: 
+ERROR 2024-12-30 07:59:10,353 views 31 140641378865152 Command error - stderr: xauth:  file /root/.Xauthority does not exist
+
+Desktop 'TurboVNC: 1bc26bd22a22:1 ()' started on display 1bc26bd22a22:1
+
+Starting applications specified in /opt/TurboVNC/bin/xstartup.turbovnc
+Log file is /root/.vnc/1bc26bd22a22:1.log
+INFO 2024-12-30 07:59:10,353 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:12,356 views 31 140641378865152 Executing command: docker exec openuav-dd2ca371 ps aux | grep Xvnc
+INFO 2024-12-30 07:59:12,441 views 31 140641378865152 Command output - stdout: root          67 17.3  0.0 162296 65580 ?        R    07:59   0:00 /opt/TurboVNC/bin/Xvnc :1 -desktop TurboVNC: 1bc26bd22a22:1 () -auth /root/.Xauthority -geometry 1920x1080 -depth 24 -rfbauth /root/.vnc/passwd -x509cert /root/.vnc/x509_cert.pem -x509key /root/.vnc/x509_private.pem -rfbport 5901 -fp /usr/share/fonts/X11/misc -deferupdate 1 -dridir /usr/lib/x86_64-linux-gnu/dri -registrydir /usr/lib/xorg
+INFO 2024-12-30 07:59:12,441 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:12,442 views 31 140641378865152 Executing command: docker logs openuav-dd2ca371 --tail 20
+INFO 2024-12-30 07:59:12,470 views 31 140641378865152 Command output - stdout: Warning: could not find self.pem
+Using installed websockify at /usr/bin/websockify
+Starting webserver and WebSockets proxy on port 6080
+
+
+Navigate to this URL:
+
+    http://1bc26bd22a22:6080/vnc.html?host=1bc26bd22a22&port=6080
+
+Press Ctrl-C to exit
+ERROR 2024-12-30 07:59:12,470 views 31 140641378865152 Command error - stderr: WARNING: 1bc26bd22a22:1 is taken because of /tmp/.X11-unix/X1
+Remove this file if there is no X server 1bc26bd22a22:1
+A VNC server is already running as :1
+WebSocket server settings:
+  - Listen on :6080
+  - Web server. Web root: /usr/share/novnc
+  - No SSL/TLS support (no cert file)
+  - proxying from :6080 to localhost:5901
+INFO 2024-12-30 07:59:12,470 views 31 140641378865152 Command return code: 0
+INFO 2024-12-30 07:59:12,470 views 31 140641378865152 Container recent logs: Warning: could not find self.pem
+Using installed websockify at /usr/bin/websockify
+Starting webserver and WebSockets proxy on port 6080
+
+
+Navigate to this URL:
+
+    http://1bc26bd22a22:6080/vnc.html?host=1bc26bd22a22&port=6080
+
+Press Ctrl-C to exit
+WARNING 2024-12-30 07:59:12,470 views 31 140641378865152 Container logs errors: WARNING: 1bc26bd22a22:1 is taken because of /tmp/.X11-unix/X1
+Remove this file if there is no X server 1bc26bd22a22:1
+A VNC server is already running as :1
+WebSocket server settings:
+  - Listen on :6080
+  - Web server. Web root: /usr/share/novnc
+  - No SSL/TLS support (no cert file)
+  - proxying from :6080 to localhost:5901
+INFO 2024-12-30 07:59:12,503 views 31 140641378865152 Executing command: docker ps --format '{{json .}}' --filter name=openuav
+INFO 2024-12-30 07:59:12,536 views 31 140641378865152 Command output - stdout: {"Command":"\"/usr/local/bin/star…\"","CreatedAt":"2024-12-30 07:59:00 +0000 UTC","ID":"1bc26bd22a22","Image":"openuav:px4-sitl","Labels":"maintainer=NVIDIA CORPORATION \u003ccudatools@nvidia.com\u003e","LocalVolumes":"0","Mounts":"/tmp/.X11-unix","Names":"openuav-dd2ca371","Networks":"bridge","Ports":"0.0.0.0:5901-\u003e5901/tcp, :::5901-\u003e5901/tcp, 0.0.0.0:6080-\u003e6080/tcp, :::6080-\u003e6080/tcp","RunningFor":"12 seconds ago","Size":"358kB (virtual 10.3GB)","State":"running","Status":"Up 11 seconds"}
+INFO 2024-12-30 07:59:12,536 views 31 140641378865152 Command return code: 0
+WARNING 2024-12-30 08:00:47,547 log 31 140641378865152 Not Found: /favicon.ico
+WARNING 2024-12-30 08:00:57,554 log 31 140641378865152 Not Found: /webclient/get_available_layers
