@@ -1013,10 +1013,24 @@ def dreamslab_home(request):
     }
     return render(request, 'home.html', context)
 
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
+@csrf_exempt
+@require_http_methods(["GET", "OPTIONS"])
 def get_available_layers(request):
     """Return available map layers organized by category"""
+    if request.method == "OPTIONS":
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
+        
     try:
-        # Define the two layer groups
+        logger.info("Fetching available layers...")
+        
+        # Define the two layer groups with default layers
         layers = {
             "tiles_media": {
                 "name": "Media Tiles",
@@ -1024,18 +1038,94 @@ def get_available_layers(request):
             },
             "tileserver": {
                 "name": "Base Layers",
-                "layers": ["rocks", "wildfire"]
+                "layers": [
+                    "v3",
+                    "v3color",
+                    "bf_latest",
+                    "bf_vector",
+                    "landsat_combined",
+                    "kmeans",
+                    "rock_poly",
+                    "merged_crowns"
+                ]
             }
         }
         
         # Scan tiles_media directory for available layers
         media_tiles_path = os.path.join(settings.MEDIA_ROOT, 'tiles')
+        logger.info(f"Checking media tiles path: {media_tiles_path}")
+        
         if os.path.exists(media_tiles_path):
+            logger.info("Media tiles directory exists")
             for item in os.listdir(media_tiles_path):
                 if os.path.isdir(os.path.join(media_tiles_path, item)):
                     layers["tiles_media"]["layers"].append(item)
+                    logger.info(f"Found media tile layer: {item}")
+        else:
+            logger.warning(f"Media tiles directory does not exist: {media_tiles_path}")
         
-        return JsonResponse(layers)
+        # Log the final layer configuration
+        logger.info(f"Returning layers configuration: {json.dumps(layers, indent=2)}")
+        
+        response = JsonResponse(layers)
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
     except Exception as e:
-        logger.error(f"Error in get_available_layers: {e}")
-        return JsonResponse({"error": str(e)}, status=500)
+        logger.error(f"Error in get_available_layers: {e}", exc_info=True)
+        response = JsonResponse({"error": str(e)}, status=500)
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
+
+@csrf_exempt
+@require_http_methods(["GET", "OPTIONS"])
+def get_category_info(request):
+    """Return category information for map layers"""
+    logger.info(f"Received {request.method} request for get_category_info")
+    logger.info(f"Request headers: {dict(request.headers)}")
+    
+    if request.method == "OPTIONS":
+        logger.info("Handling OPTIONS request")
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        logger.info(f"OPTIONS response headers: {dict(response.headers)}")
+        return response
+        
+    try:
+        logger.info("Fetching category information...")
+        
+        # Define the categories in the format expected by the frontend
+        categories = {
+            'Rock': { 
+                'color': '#FF0000', 
+                'id': 1,
+                'description': 'Rock features and formations'
+            },
+            'Vegetation': { 
+                'color': '#00FF00', 
+                'id': 2,
+                'description': 'Vegetation and plant life'
+            },
+            'Shadow': { 
+                'color': '#0000FF', 
+                'id': 3,
+                'description': 'Shadow areas and dark regions'
+            }
+        }
+        
+        logger.info(f"Returning category information: {json.dumps(categories, indent=2)}")
+        
+        response = JsonResponse(categories)
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        logger.info(f"GET response headers: {dict(response.headers)}")
+        return response
+    except Exception as e:
+        logger.error(f"Error in get_category_info: {e}", exc_info=True)
+        response = JsonResponse({"error": str(e)}, status=500)
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response

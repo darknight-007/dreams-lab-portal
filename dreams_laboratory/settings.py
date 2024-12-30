@@ -43,12 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'dreams_laboratory.apps.DreamsLaboratoryConfig',
     'openuav_manager',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -229,3 +231,21 @@ else:
 
 # Update allowed hosts
 ALLOWED_HOSTS = ['deepgis.org', 'localhost', '127.0.0.1', '192.168.0.186']
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # For development, you might want to restrict this in production
+CORS_ALLOW_METHODS = [
+    'GET',
+    'OPTIONS',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
