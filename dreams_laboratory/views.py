@@ -535,7 +535,7 @@ def ransac_demo_data(request):
         'x_random': x_random.tolist(),
         'y_random': y_random.tolist()
     })
-    
+
 def ses598_quiz(request):
     """Render the SES598 quiz page with MCQs and interactive components"""
     # Create quiz components with enhanced features
@@ -594,8 +594,8 @@ def ses598_quiz(request):
                 'target_params': {'amplitude': 2.0, 'frequency': 0.5, 'phase': 0.785},
                 'noise_level': 0.1,
                 'num_points': 50
-            },
-            'validation_rules': {
+                },
+                'validation_rules': {
                 'type': 'numeric',
                 'tolerance': 0.01,
                 'correctValue': 0.1
@@ -611,7 +611,7 @@ def ses598_quiz(request):
         'q4': '1',  # GPS challenge
         'q5': '2',  # Path planning
     }
-    
+
     context = {
         'quiz_id': request.session.get('quiz_id', 'Not assigned'),
         'quiz_components': quiz_components,
@@ -1012,6 +1012,11 @@ def dreamslab_home(request):
         'assets': Asset.objects.all()
     }
     return render(request, 'home.html', context)
+
+# Update the OpenUAV URL to use the consolidated view
+def openuav_home(request):
+    """OpenUAV home page using the consolidated interface"""
+    return redirect('openuav_manager:container_list')
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods

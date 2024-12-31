@@ -1,106 +1,534 @@
-{% extends "base.html" %}
+{% extends "openuav_base.html" %}
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Container Management</h2>
-    
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
+<div class="container-fluid mt-4">
+    <!-- Navigation Links -->
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <a href="/" class="text-decoration-none">
+            <i class="fas fa-chevron-left"></i> Back to DeepGIS
+        </a>
+        <a href="/dreamslab" class="text-decoration-none" target="_blank">
+            <i class="fas fa-external-link-alt"></i> DREAMS Laboratory
+        </a>
     </div>
-    {% endif %}
     
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Created</th>
-                    <th>Ports</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for container in containers %}
-                <tr>
-                    <td>{{ container.name }}</td>
-                    <td>
-                        <span class="badge {% if container.status == 'running' %}badge-success{% else %}badge-secondary{% endif %}">
-                            {{ container.status }}
-                        </span>
-                    </td>
-                    <td>{{ container.image }}</td>
-                    <td>{{ container.created|date:"Y-m-d H:i:s" }}</td>
-                    <td>
-                        {% for host_port, container_port in container.ports.items %}
-                            {{ host_port }} → {{ container_port }}<br>
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% if container.status != 'running' %}
-                        <button class="btn btn-success btn-sm action-btn" 
-                                data-container="{{ container.container_id }}" 
-                                data-action="start">
-                            Start
+    <div class="row">
+        <!-- Left Column: System Status and Quick Actions -->
+        <div class="col-md-3">
+            <!-- System Status Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tachometer-alt"></i> System Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Resource Usage</h6>
+                        <div class="mb-2">
+                            <label class="small mb-1">CPU Usage</label>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" id="cpuUsage" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="small mb-1">Memory Usage</label>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" role="progressbar" id="memoryUsage" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="small mb-1">Disk Usage</label>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" id="diskUsage" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Instance Summary</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Total Instances</span>
+                            <span class="badge bg-primary" id="totalInstances">{{ containers|length }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Running</span>
+                            <span class="badge bg-success" id="runningInstances">
+                                {{ running_count }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="small">Stopped</span>
+                            <span class="badge bg-warning" id="stoppedInstances">
+                                {{ stopped_count }}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-2">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-outline-primary" id="systemStatsBtn">
+                                <i class="fas fa-chart-line"></i> Detailed Stats
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" id="configureBtn">
+                                <i class="fas fa-cog"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Instance Management -->
+        <div class="col-md-9">
+            <!-- Instance Management Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-server"></i> Instance Management
+                    </h5>
+                    <div class="d-flex gap-2 align-items-center">
+                        <button class="btn btn-outline-primary btn-sm" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        {% else %}
-                        <button class="btn btn-danger btn-sm action-btn" 
-                                data-container="{{ container.container_id }}" 
-                                data-action="stop">
-                            Stop
+                        <button class="btn btn-success btn-sm" id="launchNewBtn">
+                            <i class="fas fa-plus"></i> Launch Instance
                         </button>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center">No containers found</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <div class="form-check form-switch ms-3">
+                            <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                            <label class="form-check-label small" for="autoRefreshToggle">Auto-refresh</label>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm" id="batchActionBtn" disabled>
+                            <i class="fas fa-tasks"></i> Batch Actions
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">
+                                        <input type="checkbox" class="form-check-input" id="selectAll">
+                                    </th>
+                                    <th>Instance Name</th>
+                                    <th>Status</th>
+                                    <th>Resources</th>
+                                    <th>Image</th>
+                                    <th>Created</th>
+                                    <th>Access</th>
+                                    <th class="text-end pe-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for container in containers %}
+                                <tr>
+                                    <td class="ps-3">
+                                        <input type="checkbox" class="form-check-input instance-select" 
+                                               data-container="{{ container.container_id }}">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-drone me-2 text-primary"></i>
+                                            {{ container.name }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if container.status == 'running' %}bg-success{% elif container.status == 'stopped' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                            <i class="fas {% if container.status == 'running' %}fa-play{% elif container.status == 'stopped' %}fa-stop{% else %}fa-question{% endif %}"></i>
+                                            {{ container.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if container.status == 'running' %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height: 6px;" title="CPU Usage">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <div class="progress flex-grow-1" style="height: 6px;" title="Memory Usage">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <button class="btn btn-link btn-sm p-0 view-stats-btn" 
+                                                    data-container="{{ container.container_id }}"
+                                                    title="View detailed stats">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted small">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ container.image }}</small>
+                                    </td>
+                                    <td>
+                                        <span title="{{ container.created|date:'Y-m-d H:i:s' }}" class="small">
+                                            {{ container.created|timesince }} ago
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if container.status == 'running' %}
+                                        <div class="btn-group">
+                                            <a href="http://deepgis.org:6080/vnc_lite.html?resize=remote&reconnect=1&autoconnect=1" 
+                                               target="_blank" 
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fas fa-desktop"></i> VNC
+                                            </a>
+                                            <button type="button" 
+                                                    class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" 
+                                                    data-bs-toggle="dropdown">
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <button class="dropdown-item copy-vnc-btn" 
+                                                            data-port="5901">
+                                                        <i class="fas fa-copy"></i> Copy VNC Address
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button class="dropdown-item copy-ssh-btn"
+                                                            data-container="{{ container.name }}">
+                                                        <i class="fas fa-terminal"></i> Copy SSH Command
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted small">
+                                            <i class="fas fa-minus-circle"></i> Not available
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group">
+                                            {% if container.status != 'running' %}
+                                            <button class="btn btn-success btn-sm action-btn" 
+                                                    data-container="{{ container.container_id }}" 
+                                                    data-action="start"
+                                                    title="Start instance">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-warning btn-sm action-btn" 
+                                                    data-container="{{ container.container_id }}" 
+                                                    data-action="stop"
+                                                    title="Stop instance">
+                                                <i class="fas fa-stop"></i>
+                                            </button>
+                                            {% endif %}
+                                            <button class="btn btn-info btn-sm logs-btn"
+                                                    data-container="{{ container.container_id }}"
+                                                    title="View logs">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm delete-btn"
+                                                    data-container="{{ container.container_id }}"
+                                                    title="Delete instance">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">
+                                        <div class="text-muted">
+                                            <i class="fas fa-drone fa-3x mb-3"></i>
+                                            <p>No OpenUAV instances found</p>
+                                            <button class="btn btn-primary btn-sm" id="firstInstanceBtn">
+                                                Launch your first instance
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-{% block extra_js %}
+<!-- Loading Spinner Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mb-0" id="loadingMessage">Processing request...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logs Modal -->
+<div class="modal fade" id="logsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Container Logs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary" id="refreshLogs">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" id="downloadLogs">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="autoScrollLogs" checked>
+                        <label class="form-check-label" for="autoScrollLogs">Auto-scroll</label>
+                    </div>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded" style="height: 400px; overflow: auto;"><code id="logsContent"></code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Configure Modal -->
+<div class="modal fade" id="configureModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Instance Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="configForm">
+                    <div class="mb-3">
+                        <label class="form-label">Default Image</label>
+                        <select class="form-select" name="default_image">
+                            <option value="openuav:px4-sitl">OpenUAV PX4 SITL</option>
+                            <option value="openuav:latest">OpenUAV Latest</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resource Limits</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">CPU</span>
+                            <input type="number" class="form-control" name="cpu_limit" value="2">
+                            <span class="input-group-text">cores</span>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">Memory</span>
+                            <input type="number" class="form-control" name="memory_limit" value="4">
+                            <span class="input-group-text">GB</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">VNC Settings</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Resolution</span>
+                            <input type="text" class="form-control" name="vnc_resolution" value="1920x1080">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">Password</span>
+                            <input type="password" class="form-control" name="vnc_password" value="liftoff">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveConfig">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Modal -->
+<div class="modal fade" id="statsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resource Usage Statistics</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="cpuChart"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="memoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <h6>System Resources</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <tbody id="systemStatsTable">
+                                    <!-- Filled dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle container actions
-    document.querySelectorAll('.action-btn').forEach(button => {
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    
+    // Auto-refresh functionality
+    let autoRefreshInterval;
+    function startAutoRefresh() {
+        autoRefreshInterval = setInterval(() => {
+            if (document.getElementById('autoRefreshToggle').checked) {
+                window.location.reload();
+            }
+        }, 30000);
+    }
+    startAutoRefresh();
+    
+    // Manual refresh
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        window.location.reload();
+    });
+    
+    // First instance button
+    document.getElementById('firstInstanceBtn')?.addEventListener('click', () => {
+        document.getElementById('launchNewBtn').click();
+    });
+    
+    // Copy VNC address functionality
+    document.querySelectorAll('.copy-vnc-btn').forEach(button => {
         button.addEventListener('click', function() {
-            const containerId = this.dataset.container;
-            const action = this.dataset.action;
-            
-            // Disable button during action
-            this.disabled = true;
-            
-            fetch(`/openuav/containers/${containerId}/${action}/`, {
+            const vncAddress = `deepgis.org:${this.dataset.port}`;
+            navigator.clipboard.writeText(vncAddress).then(() => {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+    });
+
+    // Launch new container
+    document.getElementById('launchNewBtn').addEventListener('click', async () => {
+        loadingModal.show();
+        document.getElementById('loadingMessage').textContent = 'Launching new OpenUAV instance...';
+        
+        try {
+            const response = await fetch('/openuav/launch/', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRFToken': getCookie('csrftoken')
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Reload page to show updated status
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.disabled = false;
             });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                window.location.reload();
+            } else {
+                showAlert('danger', 'Failed to launch instance: ' + data.message);
+            }
+        } catch (error) {
+            showAlert('danger', 'Error launching instance: ' + error.message);
+        } finally {
+            loadingModal.hide();
+        }
+    });
+
+    // Handle container actions
+    document.querySelectorAll('.action-btn').forEach(button => {
+        button.addEventListener('click', async function() {
+            const containerId = this.dataset.container;
+            const action = this.dataset.action;
+            
+            this.disabled = true;
+            loadingModal.show();
+            document.getElementById('loadingMessage').textContent = 
+                `${action.charAt(0).toUpperCase() + action.slice(1)}ing container...`;
+            
+            try {
+                const response = await fetch(`/openuav/containers/${containerId}/${action}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    showAlert('danger', `Failed to ${action} container`);
+                    this.disabled = false;
+                }
+            } catch (error) {
+                showAlert('danger', `Error ${action}ing container: ` + error.message);
+                this.disabled = false;
+            } finally {
+                loadingModal.hide();
+            }
         });
     });
+    
+    // Delete container functionality
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', async function() {
+            if (!confirm('Are you sure you want to delete this container?')) {
+                return;
+            }
+            
+            const containerId = this.dataset.container;
+            this.disabled = true;
+            loadingModal.show();
+            document.getElementById('loadingMessage').textContent = 'Deleting container...';
+            
+            try {
+                const response = await fetch(`/openuav/containers/${containerId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    showAlert('danger', 'Failed to delete container');
+                    this.disabled = false;
+                }
+            } catch (error) {
+                showAlert('danger', 'Error deleting container: ' + error.message);
+                this.disabled = false;
+            } finally {
+                loadingModal.hide();
+            }
+        });
+    });
+    
+    // Helper function to show alerts
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.querySelector('.messages').appendChild(alertDiv);
+    }
     
     // Helper function to get CSRF token
     function getCookie(name) {
@@ -118,6 +546,204 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
 });
+
+// Initialize charts
+const cpuChart = new Chart(document.getElementById('cpuChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'CPU Usage %',
+            data: [],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+
+const memoryChart = new Chart(document.getElementById('memoryChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Memory Usage %',
+            data: [],
+            borderColor: 'rgb(255, 159, 64)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+
+// Batch selection handling
+document.getElementById('selectAll').addEventListener('change', function() {
+    document.querySelectorAll('.instance-select').forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+    updateBatchActionButton();
+});
+
+document.querySelectorAll('.instance-select').forEach(checkbox => {
+    checkbox.addEventListener('change', updateBatchActionButton);
+});
+
+function updateBatchActionButton() {
+    const selectedCount = document.querySelectorAll('.instance-select:checked').length;
+    const batchBtn = document.getElementById('batchActionBtn');
+    batchBtn.disabled = selectedCount === 0;
+    batchBtn.innerHTML = `<i class="fas fa-tasks"></i> Batch Actions (${selectedCount})`;
+}
+
+// Logs handling
+let currentLogContainer = null;
+let logsModal = new bootstrap.Modal(document.getElementById('logsModal'));
+let autoScrollEnabled = true;
+
+document.querySelectorAll('.logs-btn').forEach(button => {
+    button.addEventListener('click', async function() {
+        currentLogContainer = this.dataset.container;
+        await refreshLogs();
+        logsModal.show();
+    });
+});
+
+async function refreshLogs() {
+    if (!currentLogContainer) return;
+    
+    try {
+        const response = await fetch(`/openuav/containers/${currentLogContainer}/logs/`);
+        const data = await response.json();
+        
+        const logsContent = document.getElementById('logsContent');
+        logsContent.textContent = data.logs;
+        
+        if (autoScrollEnabled) {
+            logsContent.parentElement.scrollTop = logsContent.parentElement.scrollHeight;
+        }
+    } catch (error) {
+        showAlert('danger', 'Error fetching logs: ' + error.message);
+    }
+}
+
+document.getElementById('refreshLogs').addEventListener('click', refreshLogs);
+document.getElementById('autoScrollLogs').addEventListener('change', function() {
+    autoScrollEnabled = this.checked;
+});
+
+// Resource monitoring
+async function updateResourceStats() {
+    try {
+        const response = await fetch('/openuav/system/stats/');
+        const data = await response.json();
+        
+        // Update progress bars
+        document.querySelectorAll('[data-container]').forEach(container => {
+            const stats = data.containers[container.dataset.container];
+            if (stats) {
+                const row = container.closest('tr');
+                const cpuBar = row.querySelector('.progress-bar.bg-info');
+                const memBar = row.querySelector('.progress-bar.bg-warning');
+                
+                if (cpuBar) cpuBar.style.width = `${stats.cpu_percent}%`;
+                if (memBar) memBar.style.width = `${stats.memory_percent}%`;
+            }
+        });
+        
+        // Update charts if stats modal is open
+        if (document.getElementById('statsModal').classList.contains('show')) {
+            updateCharts(data.system);
+        }
+    } catch (error) {
+        console.error('Error updating resource stats:', error);
+    }
+}
+
+function updateCharts(systemStats) {
+    const timestamp = new Date().toLocaleTimeString();
+    
+    // Update CPU chart
+    cpuChart.data.labels.push(timestamp);
+    cpuChart.data.datasets[0].data.push(systemStats.cpu_percent);
+    if (cpuChart.data.labels.length > 20) {
+        cpuChart.data.labels.shift();
+        cpuChart.data.datasets[0].data.shift();
+    }
+    cpuChart.update();
+    
+    // Update memory chart
+    memoryChart.data.labels.push(timestamp);
+    memoryChart.data.datasets[0].data.push(systemStats.memory_percent);
+    if (memoryChart.data.labels.length > 20) {
+        memoryChart.data.labels.shift();
+        memoryChart.data.datasets[0].data.shift();
+    }
+    memoryChart.update();
+    
+    // Update system stats table
+    document.getElementById('systemStatsTable').innerHTML = `
+        <tr>
+            <td>CPU Usage</td>
+            <td>${systemStats.cpu_percent}%</td>
+        </tr>
+        <tr>
+            <td>Memory Usage</td>
+            <td>${systemStats.memory_percent}% (${systemStats.memory_used}GB / ${systemStats.memory_total}GB)</td>
+        </tr>
+        <tr>
+            <td>Disk Usage</td>
+            <td>${systemStats.disk_percent}% (${systemStats.disk_used}GB / ${systemStats.disk_total}GB)</td>
+        </tr>
+    `;
+}
+
+// Start resource monitoring
+setInterval(updateResourceStats, 5000);
+
+// Configuration handling
+document.getElementById('configureBtn').addEventListener('click', () => {
+    new bootstrap.Modal(document.getElementById('configureModal')).show();
+});
+
+document.getElementById('saveConfig').addEventListener('click', async function() {
+    const formData = new FormData(document.getElementById('configForm'));
+    const config = Object.fromEntries(formData.entries());
+    
+    try {
+        const response = await fetch('/openuav/config/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(config)
+        });
+        
+        if (response.ok) {
+            showAlert('success', 'Configuration saved successfully');
+            bootstrap.Modal.getInstance(document.getElementById('configureModal')).hide();
+        } else {
+            showAlert('danger', 'Failed to save configuration');
+        }
+    } catch (error) {
+        showAlert('danger', 'Error saving configuration: ' + error.message);
+    }
+});
 </script>
-{% endblock %}
-{% endblock %} 
+{% endblock content %} 

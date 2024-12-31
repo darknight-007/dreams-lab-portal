@@ -9,6 +9,8 @@ from datetime import datetime
 from .models import Container
 import logging
 import uuid
+import psutil
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ def sync_containers():
     """Sync container states with database"""
     try:
         # Get all running containers
-        stdout, stderr, code = run_command("docker ps -a --format '{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}'")
+        stdout, stderr, code = run_command("docker ps -a --format '{{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Ports}}'")
         if code != 0:
             logger.error(f"Error getting container list: {stderr}")
             return
@@ -40,12 +42,27 @@ def sync_containers():
         current_containers = {}
         for line in stdout.splitlines():
             if line.strip():
-                container_id, name, status, image = line.split('\t')
-                current_containers[container_id] = {
-                    'name': name,
-                    'status': status.lower(),
-                    'image': image
-                }
+                try:
+                    container_id, name, status, image, ports = line.split('\t')
+                    # Parse ports information
+                    port_dict = {}
+                    if ports:
+                        port_mappings = ports.split(',')
+                        for mapping in port_mappings:
+                            if '->' in mapping:
+                                host_port = mapping.split('->')[0].strip().split(':')[-1]
+                                container_port = mapping.split('->')[1].strip().split('/')[0]
+                                port_dict[host_port] = container_port
+                    
+                    current_containers[container_id] = {
+                        'name': name,
+                        'status': 'running' if 'Up' in status else 'stopped',
+                        'image': image,
+                        'ports': port_dict
+                    }
+                except ValueError as e:
+                    logger.error(f"Error parsing container info: {str(e)}")
+                    continue
         
         # Update database records
         db_containers = Container.objects.all()
@@ -54,39 +71,24 @@ def sync_containers():
         for container in db_containers:
             if container.container_id in current_containers:
                 info = current_containers[container.container_id]
-                container.status = 'running' if 'up' in info['status'].lower() else 'stopped'
+                container.status = info['status']
+                container.ports = info['ports']
                 container.save()
                 del current_containers[container.container_id]
             else:
                 # Container no longer exists
-                container.status = 'removed'
-                container.save()
+                container.delete()
         
         # Add new containers that match our naming pattern
         for container_id, info in current_containers.items():
             if info['name'].startswith('openuav-'):
-                # Extract unique_id from name if possible
-                name_parts = info['name'].split('-')
-                unique_id = None
-                if len(name_parts) > 1:
-                    # Try to reconstruct full UUID from the 8-char prefix
-                    uuid_prefix = name_parts[1]
-                    matching_containers = Container.objects.filter(unique_id__startswith=uuid_prefix)
-                    if matching_containers.exists():
-                        unique_id = matching_containers.first().unique_id
-                    else:
-                        # Generate new UUID if we can't find a match
-                        unique_id = str(uuid.uuid4())
-                else:
-                    unique_id = str(uuid.uuid4())
-                
                 Container.objects.create(
                     container_id=container_id,
-                    unique_id=unique_id,
+                    unique_id=str(uuid.uuid4()),
                     name=info['name'],
-                    status='running' if 'up' in info['status'].lower() else 'stopped',
+                    status=info['status'],
                     created=datetime.now(),
-                    ports={'6080': '6080', '5901': '5901'},
+                    ports=info['ports'],
                     image=info['image']
                 )
                 
@@ -94,13 +96,48 @@ def sync_containers():
         logger.error(f"Error syncing containers: {str(e)}", exc_info=True)
 
 def container_list(request):
-    """Display list of containers and their status"""
-    sync_containers()
-    containers = Container.objects.all().order_by('-created')
-    return render(request, 'openuav_manager/container_list.html', {'containers': containers})
+    """Display consolidated OpenUAV management interface"""
+    try:
+        sync_containers()
+        containers = Container.objects.all().order_by('-created')
+        
+        # Get filtered container counts
+        running_count = containers.filter(status='running').count()
+        stopped_count = containers.filter(status='stopped').count()
+        
+        # Get system stats for initial display
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        system_stats = {
+            'cpu_percent': cpu_percent,
+            'memory_percent': memory.percent,
+            'memory_used': round(memory.used / (1024**3), 2),
+            'memory_total': round(memory.total / (1024**3), 2),
+            'disk_percent': disk.percent,
+            'disk_used': round(disk.used / (1024**3), 2),
+            'disk_total': round(disk.total / (1024**3), 2)
+        }
+        
+        return render(request, 'openuav_manager/container_list.html', {
+            'containers': containers,
+            'system_stats': system_stats,
+            'running_count': running_count,
+            'stopped_count': stopped_count
+        })
+    except Exception as e:
+        logger.error(f"Error in container_list: {str(e)}", exc_info=True)
+        messages.error(request, f'Error: {str(e)}')
+        return render(request, 'openuav_manager/container_list.html', {
+            'containers': [],
+            'system_stats': {},
+            'running_count': 0,
+            'stopped_count': 0
+        })
 
 def container_action(request, container_id, action):
-    """Handle container actions (start/stop)"""
+    """Handle container actions (start/stop/delete)"""
     try:
         if action == 'start':
             stdout, stderr, code = run_command(f"docker start {container_id}")
@@ -114,6 +151,17 @@ def container_action(request, container_id, action):
                 messages.success(request, f'Container {container_id} stopped successfully')
             else:
                 messages.error(request, f'Error stopping container: {stderr}')
+        elif action == 'delete':
+            # First stop the container if it's running
+            run_command(f"docker stop {container_id}")
+            # Then remove it
+            stdout, stderr, code = run_command(f"docker rm {container_id}")
+            if code == 0:
+                messages.success(request, f'Container {container_id} deleted successfully')
+                # Remove from database
+                Container.objects.filter(container_id=container_id).delete()
+            else:
+                messages.error(request, f'Error deleting container: {stderr}')
         
         # Allow time for container status to update
         import time
@@ -121,6 +169,7 @@ def container_action(request, container_id, action):
         sync_containers()
         
     except Exception as e:
+        logger.error(f"Error in container_action: {str(e)}", exc_info=True)
         messages.error(request, f'Error: {str(e)}')
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -387,3 +436,144 @@ def manage_openuav(request):
         'status': status,
         'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1'
     })
+
+@require_http_methods(["GET"])
+def container_logs(request, container_id):
+    """Get container logs"""
+    try:
+        stdout, stderr, code = run_command(f"docker logs {container_id}")
+        if code != 0:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error getting logs: {stderr}'
+            }, status=500)
+        
+        return JsonResponse({
+            'status': 'success',
+            'logs': stdout
+        })
+    except Exception as e:
+        logger.error(f"Error getting container logs: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@require_http_methods(["GET"])
+def system_stats(request):
+    """Get system resource statistics"""
+    try:
+        # Get system stats
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        # Get container stats
+        container_stats = {}
+        stdout, stderr, code = run_command("docker stats --no-stream --format '{{.ID}}\t{{.CPUPerc}}\t{{.MemPerc}}'")
+        if code == 0:
+            for line in stdout.splitlines():
+                if line.strip():
+                    container_id, cpu_perc, mem_perc = line.split('\t')
+                    container_stats[container_id] = {
+                        'cpu_percent': float(cpu_perc.strip('%')),
+                        'memory_percent': float(mem_perc.strip('%'))
+                    }
+        
+        return JsonResponse({
+            'status': 'success',
+            'system': {
+                'cpu_percent': cpu_percent,
+                'memory_percent': memory.percent,
+                'memory_used': round(memory.used / (1024**3), 2),  # GB
+                'memory_total': round(memory.total / (1024**3), 2),  # GB
+                'disk_percent': disk.percent,
+                'disk_used': round(disk.used / (1024**3), 2),  # GB
+                'disk_total': round(disk.total / (1024**3), 2)  # GB
+            },
+            'containers': container_stats
+        })
+    except Exception as e:
+        logger.error(f"Error getting system stats: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@require_http_methods(["POST"])
+def save_config(request):
+    """Save instance configuration"""
+    try:
+        config = json.loads(request.body)
+        
+        # Validate configuration
+        required_fields = ['default_image', 'cpu_limit', 'memory_limit', 'vnc_resolution']
+        if not all(field in config for field in required_fields):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Missing required configuration fields'
+            }, status=400)
+        
+        # Save configuration to settings or database
+        # For now, we'll just validate and return success
+        return JsonResponse({'status': 'success'})
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid JSON data'
+        }, status=400)
+    except Exception as e:
+        logger.error(f"Error saving configuration: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@require_http_methods(["POST"])
+def batch_action(request):
+    """Perform batch actions on containers"""
+    try:
+        data = json.loads(request.body)
+        action = data.get('action')
+        container_ids = data.get('containers', [])
+        
+        if not action or not container_ids:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Missing action or container IDs'
+            }, status=400)
+        
+        results = {}
+        for container_id in container_ids:
+            if action == 'start':
+                stdout, stderr, code = run_command(f"docker start {container_id}")
+            elif action == 'stop':
+                stdout, stderr, code = run_command(f"docker stop {container_id}")
+            elif action == 'delete':
+                stdout, stderr, code = run_command(f"docker rm -f {container_id}")
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Invalid action: {action}'
+                }, status=400)
+            
+            results[container_id] = {
+                'success': code == 0,
+                'message': stderr if code != 0 else 'Success'
+            }
+        
+        return JsonResponse({
+            'status': 'success',
+            'results': results
+        })
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid JSON data'
+        }, status=400)
+    except Exception as e:
+        logger.error(f"Error performing batch action: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
