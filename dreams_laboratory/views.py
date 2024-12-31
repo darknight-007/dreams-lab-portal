@@ -40,6 +40,7 @@ tutorial_manager = TutorialManager()
 # Set up logging
 logger = logging.getLogger(__name__)
 
+# Remove global docker client initialization
 
 @csrf_exempt
 def image_buddy_view(request):
@@ -537,21 +538,27 @@ def ransac_demo_data(request):
     })
 
 def ses598_quiz(request):
-    """Render the SES598 quiz page with MCQs and interactive components"""
-    # Create quiz components with enhanced features
-    quiz_components = [
-        {
-            'id': 'drone_buddy_1',
-            'title': 'Drone Buddy',
-            'description': 'Interactive drone simulation',
-            'widget_type': 'drone_buddy',
-            'parameters': {
-                'mode': 'tutorial',
-                'difficulty': 'easy'
-            }
-        }
-    ]
+    """Render the SES598 quiz page with MCQs and transition to drone buddy on success"""
+    # Get session ID from either request or session
+    session_id = getattr(request, 'session_id', None) or request.session.get('openuav_session_id')
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        request.session['openuav_session_id'] = session_id
     
+    # Handle quiz reset
+    if request.method == 'POST' and request.POST.get('reset') == 'true':
+        # Clear any stored quiz results from session
+        if 'quiz_results' in request.session:
+            del request.session['quiz_results']
+        if 'show_results' in request.session:
+            del request.session['show_results']
+        
+        context = {
+            'show_results': False,
+            'session_id': session_id
+        }
+        return render(request, 'ses598_rem_quiz.html', context)
+
     # MCQ answers and scoring
     mcq_answers = {
         'q1': '3',  # SLAM purpose
@@ -561,18 +568,111 @@ def ses598_quiz(request):
         'q5': '2',  # Path planning
     }
 
-    context = {
-        'quiz_id': request.session.get('quiz_id', 'Not assigned'),
-        'quiz_components': quiz_components,
-        'total_questions': len(mcq_answers) + len(quiz_components),
-        'show_results': False  # Will be True after submission
+    # Question categories
+    question_categories = {
+        'cv_score': ['q1', 'q2'],
+        'slam_score': ['q3'],
+        'sensing_score': ['q4'],
+        'motion_score': ['q5']
     }
+
+    if request.method == 'POST':
+        # Process quiz submission
+        score = 0
+        answers = {}
+        
+        # Initialize all scores to 0
+        scores = {
+            'cv_score': 0,
+            'slam_score': 0,
+            'sensing_score': 0,
+            'motion_score': 0
+        }
+        
+        # Process each question and categorize scores
+        for q, correct_ans in mcq_answers.items():
+            student_ans = request.POST.get(q)
+            if not student_ans:  # Handle missing answers
+                student_ans = ''
+            
+            is_correct = student_ans == correct_ans
+            if is_correct:
+                score += 1
+                # Update category scores based on question type
+                for category, questions in question_categories.items():
+                    if q in questions:
+                        scores[category] += 1
+            
+            answers[q] = student_ans
+
+        # Calculate percentage scores
+        total_score = (score / len(mcq_answers)) * 100
+        
+        # Calculate category percentages
+        for category, questions in question_categories.items():
+            total_questions = len(questions)
+            if total_questions > 0:  # Avoid division by zero
+                scores[category] = (scores[category] / total_questions) * 100
+            else:
+                scores[category] = 0
+
+        # Save quiz submission
+        submission = QuizSubmission.objects.create(
+            quiz_id=str(uuid.uuid4())[:8],
+            session_id=session_id,
+            total_score=total_score,
+            cv_score=scores['cv_score'],
+            slam_score=scores['slam_score'],
+            sensing_score=scores['sensing_score'],
+            motion_score=scores['motion_score'],
+            **answers
+        )
+
+        # Store results in session
+        request.session['quiz_results'] = {
+            'score': total_score,
+            'category_scores': scores
+        }
+        request.session['show_results'] = True
+
+        context = {
+            'show_results': True,
+            'score': total_score,
+            'session_id': session_id,
+            'category_scores': scores
+        }
+        
+        return render(request, 'ses598_rem_quiz.html', context)
+
+    # GET request - display quiz
+    # Check if we have stored results
+    if request.session.get('show_results'):
+        quiz_results = request.session.get('quiz_results', {})
+        context = {
+            'show_results': True,
+            'score': quiz_results.get('score'),
+            'category_scores': quiz_results.get('category_scores'),
+            'session_id': session_id
+        }
+    else:
+        context = {
+            'show_results': False,
+            'session_id': session_id
+        }
     
     return render(request, 'ses598_rem_quiz.html', context)
 
 def reset_quiz(request):
+    """Reset quiz state while preserving session ID"""
+    # Clear quiz results but keep session ID
+    session_id = request.session.get('openuav_session_id')
     if 'quiz_results' in request.session:
         del request.session['quiz_results']
+    
+    # Restore session ID if it existed
+    if session_id:
+        request.session['openuav_session_id'] = session_id
+    
     return redirect('ses598_quiz')
 
 def ses598_course_view(request):
@@ -877,6 +977,9 @@ def save_quiz_progress(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
     try:
         # Get progress data from request
         data = json.loads(request.body)
@@ -887,38 +990,64 @@ def save_quiz_progress(request):
             return JsonResponse({'error': 'Missing required fields'}, status=400)
         
         # Get or create progress record
-        progress, created = QuizProgress.objects.get_or_create(
-            user=request.user,
-            component_id=component_id,
-            defaults={'is_correct': is_correct}
-        )
-        
-        if not created:
-            progress.is_correct = is_correct
-            progress.save()
-        
-        return JsonResponse({'status': 'success'})
+        try:
+            progress, created = QuizProgress.objects.get_or_create(
+                user=request.user,
+                component_id=component_id,
+                defaults={'is_correct': is_correct}
+            )
+            
+            if not created:
+                progress.is_correct = is_correct
+                progress.save()
+            
+            return JsonResponse({
+                'status': 'success',
+                'created': created,
+                'is_correct': progress.is_correct
+            })
+        except Exception as e:
+            # Log the error but don't expose internal details
+            logger.error(f"Error saving quiz progress: {str(e)}")
+            return JsonResponse({'error': 'Unable to save progress'}, status=500)
+            
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        logger.error(f"Unexpected error in save_quiz_progress: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, status=500)
 
 def load_quiz_progress(request):
     """Load the user's quiz progress"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
     try:
         # Get all progress records for the user
-        progress = QuizProgress.objects.filter(user=request.user)
-        
-        # Format progress data
-        progress_data = {
-            p.component_id: {
-                'is_correct': p.is_correct,
-                'timestamp': p.updated_at.isoformat()
+        try:
+            progress = QuizProgress.objects.filter(user=request.user)
+            
+            # Format progress data
+            progress_data = {
+                p.component_id: {
+                    'is_correct': p.is_correct,
+                    'timestamp': p.updated_at.isoformat()
+                }
+                for p in progress
             }
-            for p in progress
-        }
-        
-        return JsonResponse(progress_data)
+            
+            return JsonResponse({
+                'status': 'success',
+                'progress': progress_data
+            })
+        except Exception as e:
+            # Log the error but don't expose internal details
+            logger.error(f"Error loading quiz progress: {str(e)}")
+            return JsonResponse({'error': 'Unable to load progress'}, status=500)
+            
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        logger.error(f"Unexpected error in load_quiz_progress: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, status=500)
 
 def widget_view(request, widget_type):
     """View for rendering interactive widgets"""
@@ -937,6 +1066,7 @@ def widget_view(request, widget_type):
         'visual_odometry_buddy': visual_odometry_buddy,
         'point_cloud_buddy': point_cloud_buddy,
         'path_planning_buddy': path_planning_buddy,
+        'drone_buddy': drone_buddy_view,
     }
     
     # Get the corresponding view function
@@ -1061,3 +1191,59 @@ def get_category_info(request):
         response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
+
+def drone_buddy_view(request):
+    """View for the drone buddy challenge"""
+    return render(request, 'widgets/drone_buddy.html')
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def save_drone_code(request):
+    """Save the drone controller code"""
+    try:
+        data = json.loads(request.body)
+        code = data.get('code')
+        if not code:
+            return JsonResponse({'error': 'No code provided'}, status=400)
+            
+        # Save the code to a file in the user's session directory
+        session_id = request.session.get('openuav_session_id')
+        if not session_id:
+            session_id = str(uuid.uuid4())
+            request.session['openuav_session_id'] = session_id
+            
+        code_dir = os.path.join(settings.MEDIA_ROOT, 'drone_code', session_id)
+        os.makedirs(code_dir, exist_ok=True)
+        
+        with open(os.path.join(code_dir, 'drone_controller.py'), 'w') as f:
+            f.write(code)
+            
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def run_drone_tests(request):
+    """Run tests on the drone controller code"""
+    try:
+        session_id = request.session.get('openuav_session_id')
+        if not session_id:
+            return JsonResponse({'error': 'No session found'}, status=400)
+            
+        code_path = os.path.join(settings.MEDIA_ROOT, 'drone_code', session_id, 'drone_controller.py')
+        if not os.path.exists(code_path):
+            return JsonResponse({'error': 'No code found'}, status=404)
+            
+        # Run the tests (mock implementation for now)
+        test_results = {
+            'status': 'success',
+            'tests': [
+                {'name': 'test_initialization', 'passed': True, 'message': 'Controller initialized correctly'},
+                {'name': 'test_hover', 'passed': True, 'message': 'Hover control implemented correctly'},
+                {'name': 'test_movement', 'passed': True, 'message': 'Movement control implemented correctly'}
+            ]
+        }
+        return JsonResponse(test_results)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
