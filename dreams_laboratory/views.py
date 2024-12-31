@@ -679,9 +679,9 @@ def ses598_course_view(request):
     syllabus = {
         'course_info': {
             'title': 'SES 598: Robotics and AI for Planetary Exploration',
-            'semester': 'Spring 2024',
+            'semester': 'Spring 2025',
             'meeting_times': 'Tu/Th 3:00 PM - 4:15 PM',
-            'location': 'ISTB4 401',
+            'location': 'Tempe Campus, Room TBD',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'By appointment',
             'contact': 'jdas@asu.edu'

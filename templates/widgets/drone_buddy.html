@@ -10,11 +10,28 @@
     height: 100%;
     min-height: 0;
 }
+.navigation-links {
+    margin-bottom: 1rem;
+}
+.navigation-links a {
+    margin-right: 1rem;
+    color: #6c757d;
+    text-decoration: none;
+}
+.navigation-links a:hover {
+    color: #0d6efd;
+    text-decoration: underline;
+}
 </style>
 {% endblock %}
 
 {% block widget_content %}
 <div class="drone-buddy-container">
+    <div class="navigation-links">
+        <a href="{% url 'dreamslab_home' %}">← Back to Dreams Lab</a>
+        <a href="{% url 'ses598_course' %}">← Back to SES 598 Course</a>
+    </div>
+
     <div class="challenge-info mb-4">
         <h3>Welcome to the Drone Buddy Challenge!</h3>
         <p>Complete the drone control implementation and test it in the simulator.</p>
