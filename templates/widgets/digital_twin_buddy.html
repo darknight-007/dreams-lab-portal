@@ -1,0 +1,383 @@
+{% extends "base_widget.html" %}
+
+{% block widget_content %}
+<div class="digital-twin-container">
+    <!-- Parameter Configuration Panel -->
+    <div class="config-panel">
+        <h3>Digital Twin Parameters</h3>
+        <div class="param-group">
+            <h4>Rate Controller</h4>
+            <div class="param-item">
+                <label for="mc_rollrate_p">Roll Rate P:</label>
+                <input type="range" id="mc_rollrate_p" name="MC_ROLLRATE_P" 
+                       min="0.1" max="0.3" step="0.01" value="0.15">
+                <span class="param-value">0.15</span>
+            </div>
+            <div class="param-item">
+                <label for="mc_pitchrate_p">Pitch Rate P:</label>
+                <input type="range" id="mc_pitchrate_p" name="MC_PITCHRATE_P"
+                       min="0.1" max="0.3" step="0.01" value="0.15">
+                <span class="param-value">0.15</span>
+            </div>
+            <div class="param-item">
+                <label for="mc_yawrate_p">Yaw Rate P:</label>
+                <input type="range" id="mc_yawrate_p" name="MC_YAWRATE_P"
+                       min="0.1" max="0.3" step="0.01" value="0.2">
+                <span class="param-value">0.2</span>
+            </div>
+        </div>
+        <div class="param-group">
+            <h4>Attitude Controller</h4>
+            <div class="param-item">
+                <label for="mc_roll_p">Roll P:</label>
+                <input type="range" id="mc_roll_p" name="MC_ROLL_P"
+                       min="6.0" max="8.0" step="0.1" value="6.5">
+                <span class="param-value">6.5</span>
+            </div>
+            <div class="param-item">
+                <label for="mc_pitch_p">Pitch P:</label>
+                <input type="range" id="mc_pitch_p" name="MC_PITCH_P"
+                       min="6.0" max="8.0" step="0.1" value="6.5">
+                <span class="param-value">6.5</span>
+            </div>
+            <div class="param-item">
+                <label for="mc_yaw_p">Yaw P:</label>
+                <input type="range" id="mc_yaw_p" name="MC_YAW_P"
+                       min="2.0" max="4.0" step="0.1" value="2.8">
+                <span class="param-value">2.8</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visualization Panel -->
+    <div class="viz-panel">
+        <div class="trajectory-view">
+            <canvas id="trajectoryCanvas"></canvas>
+        </div>
+        <div class="metrics-panel">
+            <div class="metric-item">
+                <span class="label">Position RMSE:</span>
+                <span class="value" id="position-rmse">0.0 m</span>
+            </div>
+            <div class="metric-item">
+                <span class="label">Attitude Error:</span>
+                <span class="value" id="attitude-error">0.0 deg</span>
+            </div>
+            <div class="metric-item">
+                <span class="label">Velocity Match:</span>
+                <span class="value" id="velocity-match">0.0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <div class="simulation-controls">
+            <button id="start-sim" class="action-button">Start Simulation</button>
+            <button id="reset-sim" class="action-button" disabled>Reset</button>
+            <select id="maneuver-select">
+                <option value="figure8">Figure 8</option>
+                <option value="circle">Circle</option>
+                <option value="square">Square</option>
+            </select>
+        </div>
+        <div class="sim-status">
+            <span class="label">Status:</span>
+            <span class="value" id="sim-status">Ready</span>
+        </div>
+        <div class="score-panel">
+            <span class="label">Overall Score:</span>
+            <span class="value" id="overall-score">0.0</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.digital-twin-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 1rem;
+    padding: 1rem;
+    height: 600px;
+}
+
+.config-panel {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+.viz-panel {
+    grid-column: 2;
+    grid-row: 1;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    position: relative;
+}
+
+.control-panel {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.param-group {
+    margin-bottom: 1.5rem;
+}
+
+.param-group h4 {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.param-item {
+    margin-bottom: 0.8rem;
+}
+
+.param-item label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.param-item input[type="range"] {
+    width: 100%;
+    margin-bottom: 0.2rem;
+}
+
+.param-value {
+    font-size: 0.8rem;
+    color: #444;
+}
+
+.trajectory-view {
+    height: 100%;
+    width: 100%;
+}
+
+#trajectoryCanvas {
+    width: 100%;
+    height: 100%;
+    background: #f8f8f8;
+}
+
+.metrics-panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 0.8rem;
+    border-radius: 4px;
+}
+
+.metric-item {
+    margin-bottom: 0.5rem;
+}
+
+.metric-item:last-child {
+    margin-bottom: 0;
+}
+
+.simulation-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#start-sim {
+    background: #4CAF50;
+    color: white;
+}
+
+#reset-sim {
+    background: #ff9800;
+    color: white;
+}
+
+.action-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+#maneuver-select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.score-panel {
+    background: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+}
+
+#overall-score {
+    font-weight: bold;
+    color: #4CAF50;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize WebSocket connection to the container
+    const ws = new WebSocket('ws://' + window.location.host + '/ws/digital-twin/');
+    
+    // Canvas setup
+    const canvas = document.getElementById('trajectoryCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Parameter update handlers
+    const paramInputs = document.querySelectorAll('input[type="range"]');
+    paramInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const valueSpan = this.nextElementSibling;
+            valueSpan.textContent = this.value;
+            
+            // Send parameter update to container
+            ws.send(JSON.stringify({
+                type: 'param_update',
+                param: this.name,
+                value: parseFloat(this.value)
+            }));
+        });
+    });
+    
+    // Simulation control handlers
+    const startButton = document.getElementById('start-sim');
+    const resetButton = document.getElementById('reset-sim');
+    const maneuverSelect = document.getElementById('maneuver-select');
+    
+    startButton.addEventListener('click', function() {
+        ws.send(JSON.stringify({
+            type: 'sim_command',
+            command: 'start',
+            maneuver: maneuverSelect.value
+        }));
+        
+        this.disabled = true;
+        resetButton.disabled = false;
+        maneuverSelect.disabled = true;
+    });
+    
+    resetButton.addEventListener('click', function() {
+        ws.send(JSON.stringify({
+            type: 'sim_command',
+            command: 'reset'
+        }));
+        
+        this.disabled = true;
+        startButton.disabled = false;
+        maneuverSelect.disabled = false;
+    });
+    
+    // WebSocket message handlers
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        
+        switch(data.type) {
+            case 'trajectory_update':
+                updateTrajectoryVisualization(data);
+                updateMetrics(data);
+                break;
+            case 'status':
+                document.getElementById('sim-status').textContent = data.status;
+                break;
+            case 'sim_complete':
+                handleSimComplete(data);
+                break;
+        }
+    };
+    
+    function updateTrajectoryVisualization(data) {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw real trajectory
+        drawTrajectory(data.real_trajectory, '#2196F3');
+        
+        // Draw simulated trajectory
+        drawTrajectory(data.sim_trajectory, '#FF5722');
+        
+        // Draw legend
+        drawLegend();
+    }
+    
+    function drawTrajectory(points, color) {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        
+        points.forEach((point, index) => {
+            if (index === 0) {
+                ctx.moveTo(point.x, point.y);
+            } else {
+                ctx.lineTo(point.x, point.y);
+            }
+        });
+        
+        ctx.stroke();
+    }
+    
+    function drawLegend() {
+        const legendX = 20;
+        const legendY = 20;
+        
+        // Real trajectory
+        ctx.beginPath();
+        ctx.strokeStyle = '#2196F3';
+        ctx.moveTo(legendX, legendY);
+        ctx.lineTo(legendX + 30, legendY);
+        ctx.stroke();
+        ctx.fillStyle = '#000';
+        ctx.fillText('Real', legendX + 40, legendY + 4);
+        
+        // Simulated trajectory
+        ctx.beginPath();
+        ctx.strokeStyle = '#FF5722';
+        ctx.moveTo(legendX, legendY + 20);
+        ctx.lineTo(legendX + 30, legendY + 20);
+        ctx.stroke();
+        ctx.fillText('Simulated', legendX + 40, legendY + 24);
+    }
+    
+    function updateMetrics(data) {
+        document.getElementById('position-rmse').textContent = data.position_rmse.toFixed(3) + ' m';
+        document.getElementById('attitude-error').textContent = data.attitude_error.toFixed(2) + ' deg';
+        document.getElementById('velocity-match').textContent = (data.velocity_match * 100).toFixed(1) + '%';
+        document.getElementById('overall-score').textContent = data.overall_score.toFixed(2);
+    }
+    
+    function handleSimComplete(data) {
+        startButton.disabled = false;
+        resetButton.disabled = true;
+        maneuverSelect.disabled = false;
+        
+        // Show completion message
+        const status = document.getElementById('sim-status');
+        status.textContent = data.success ? 'Simulation Completed Successfully' : 'Simulation Failed';
+        status.style.color = data.success ? '#4CAF50' : '#f44336';
+    }
+});
+</script>
+{% endblock %} 

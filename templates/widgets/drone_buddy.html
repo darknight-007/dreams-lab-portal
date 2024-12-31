@@ -1,0 +1,269 @@
+{% extends "base_widget.html" %}
+
+{% block widget_content %}
+<div class="drone-buddy-container">
+    <!-- Parameter Configuration Panel -->
+    <div class="config-panel">
+        <h3>Flight Parameters</h3>
+        <div class="param-group">
+            <label for="mpc_xy_vel">Maximum Horizontal Velocity:</label>
+            <input type="range" id="mpc_xy_vel" name="MPC_XY_VEL_MAX" 
+                   min="0.5" max="5.0" step="0.1" value="2.0">
+            <span class="param-value">2.0 m/s</span>
+        </div>
+        <div class="param-group">
+            <label for="mpc_z_vel">Maximum Vertical Velocity:</label>
+            <input type="range" id="mpc_z_vel" name="MPC_Z_VEL_MAX"
+                   min="0.5" max="3.0" step="0.1" value="1.0">
+            <span class="param-value">1.0 m/s</span>
+        </div>
+        <div class="param-group">
+            <label for="mpc_tilt">Maximum Tilt Angle:</label>
+            <input type="range" id="mpc_tilt" name="MPC_TILTMAX_AIR"
+                   min="10.0" max="45.0" step="1.0" value="20.0">
+            <span class="param-value">20.0 deg</span>
+        </div>
+    </div>
+
+    <!-- Visualization Panel -->
+    <div class="viz-panel">
+        <div class="drone-view">
+            <canvas id="droneCanvas"></canvas>
+        </div>
+        <div class="telemetry">
+            <div class="telemetry-item">
+                <span class="label">Height:</span>
+                <span class="value" id="current-height">0.0 m</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="label">Velocity:</span>
+                <span class="value" id="current-velocity">0.0 m/s</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="label">Attitude:</span>
+                <span class="value" id="current-attitude">0.0, 0.0, 0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <button id="start-mission" class="action-button">Start Mission</button>
+        <button id="abort-mission" class="action-button" disabled>Abort</button>
+        <div class="mission-status">
+            <span class="label">Status:</span>
+            <span class="value" id="mission-status">Ready</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.drone-buddy-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 1rem;
+    padding: 1rem;
+    height: 600px;
+}
+
+.config-panel {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.viz-panel {
+    grid-column: 2;
+    grid-row: 1;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.control-panel {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.param-group {
+    margin-bottom: 1rem;
+}
+
+.param-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.param-group input[type="range"] {
+    width: 100%;
+}
+
+.drone-view {
+    height: 100%;
+    width: 100%;
+}
+
+#droneCanvas {
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0;
+}
+
+.telemetry {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#start-mission {
+    background: #4CAF50;
+    color: white;
+}
+
+#abort-mission {
+    background: #f44336;
+    color: white;
+}
+
+.action-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize WebSocket connection to the drone container
+    const ws = new WebSocket('ws://' + window.location.host + '/ws/drone/');
+    
+    // Canvas setup
+    const canvas = document.getElementById('droneCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Parameter update handlers
+    const paramInputs = document.querySelectorAll('input[type="range"]');
+    paramInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const valueSpan = this.nextElementSibling;
+            valueSpan.textContent = this.value + (this.name.includes('VEL') ? ' m/s' : ' deg');
+            
+            // Send parameter update to container
+            ws.send(JSON.stringify({
+                type: 'param_update',
+                param: this.name,
+                value: parseFloat(this.value)
+            }));
+        });
+    });
+    
+    // Mission control handlers
+    const startButton = document.getElementById('start-mission');
+    const abortButton = document.getElementById('abort-mission');
+    
+    startButton.addEventListener('click', function() {
+        ws.send(JSON.stringify({
+            type: 'mission_command',
+            command: 'start'
+        }));
+        
+        this.disabled = true;
+        abortButton.disabled = false;
+    });
+    
+    abortButton.addEventListener('click', function() {
+        ws.send(JSON.stringify({
+            type: 'mission_command',
+            command: 'abort'
+        }));
+        
+        this.disabled = true;
+        startButton.disabled = false;
+    });
+    
+    // WebSocket message handlers
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        
+        switch(data.type) {
+            case 'telemetry':
+                updateTelemetry(data);
+                updateDroneVisualization(data);
+                break;
+            case 'status':
+                document.getElementById('mission-status').textContent = data.status;
+                break;
+            case 'mission_complete':
+                handleMissionComplete(data);
+                break;
+        }
+    };
+    
+    function updateTelemetry(data) {
+        document.getElementById('current-height').textContent = data.height.toFixed(2) + ' m';
+        document.getElementById('current-velocity').textContent = data.velocity.toFixed(2) + ' m/s';
+        document.getElementById('current-attitude').textContent = 
+            `${data.roll.toFixed(1)}, ${data.pitch.toFixed(1)}, ${data.yaw.toFixed(1)}`;
+    }
+    
+    function updateDroneVisualization(data) {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw drone representation
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const droneSize = 20;
+        
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(data.yaw * Math.PI / 180);
+        
+        // Draw drone body
+        ctx.beginPath();
+        ctx.arc(0, 0, droneSize, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#333';
+        ctx.stroke();
+        
+        // Draw direction indicator
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(droneSize * 1.5, 0);
+        ctx.strokeStyle = '#f00';
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function handleMissionComplete(data) {
+        startButton.disabled = false;
+        abortButton.disabled = true;
+        
+        // Show completion message
+        const status = document.getElementById('mission-status');
+        status.textContent = data.success ? 'Mission Completed Successfully' : 'Mission Failed';
+        status.style.color = data.success ? '#4CAF50' : '#f44336';
+    }
+});
+</script>
+{% endblock %} 

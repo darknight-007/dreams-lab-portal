@@ -112,7 +112,7 @@ class StereoVisionComponent(InteractiveComponent):
             component_id=component_id,
             title='Stereo Vision Challenge',
             description=self._get_description(mode, difficulty),
-            widget_type='stereo_buddy',
+            widget_type='stereo-buddy',
             parameters=params,
             validation_rules=validation
         )
@@ -189,7 +189,7 @@ class RansacComponent(InteractiveComponent):
             component_id=component_id,
             title='RANSAC Model Fitting',
             description=self._get_description(mode, difficulty),
-            widget_type='ransac_buddy',
+            widget_type='ransac-buddy',
             parameters=params,
             validation_rules=validation
         )

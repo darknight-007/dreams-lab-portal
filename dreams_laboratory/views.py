@@ -339,38 +339,38 @@ def home_view(request):
 
 
 def stereo_buddy_view(request):
-    return render(request, 'stereo-buddy.html')
+    return render(request, 'widgets/stereo_buddy.html')
 
 
 def cart_pole_buddy_view(request):
-    return render(request, 'cart-pole-buddy.html')
+    return render(request, 'widgets/cart_pole_buddy.html')
 
 
 def gaussian_processes_buddy_view(request):
-    return render(request, 'gaussian-processes-buddy.html')
+    return render(request, 'widgets/gaussian_processes_buddy.html')
 
 
 def param_estimation_buddy_view(request):
-    return render(request, 'param-estimation-buddy.html')
+    return render(request, 'param_estimation_buddy.html')
 
 
 def image_buddy_view(request):
-    return render(request, 'image-buddy.html')
+    return render(request, 'image_buddy.html')
 
 
 def slam_buddy_view(request):
-    return render(request, 'slam-buddy.html')
+    return render(request, 'slam_buddy.html')
 
 
 def ses598_robotic_exploration_and_mapping_quiz(request):
-    return render(request, 'ses-598-robotic-exploration-and-mapping-quiz.html')
+    return render(request, 'ses598_rem_quiz.html')
 
 def ransac_buddy(request):
     """
     View function for the RANSAC tutorial page.
     Demonstrates RANSAC algorithm for point cloud matching and outlier rejection.
     """
-    return render(request, 'ransac-buddy.html') 
+    return render(request, 'ransac_buddy.html') 
 
 def multiview_geometry_view(request):
     """
@@ -541,64 +541,13 @@ def ses598_quiz(request):
     # Create quiz components with enhanced features
     quiz_components = [
         {
-            'id': 'stereo_challenge',
-            'title': 'Stereo Vision Challenge',
-            'description': 'Use the stereo vision widget to determine the depth of the marked point.',
-            'widget_type': 'stereo_buddy',
-            'difficulty': 'medium',
-            'hint': 'Consider the relationship between disparity and depth. Remember that depth is inversely proportional to disparity.',
-            'example': 'For a baseline of 20cm and focal length of 50mm, a disparity of 100 pixels corresponds to a depth of approximately 2 meters.',
+            'id': 'drone_buddy_1',
+            'title': 'Drone Buddy',
+            'description': 'Interactive drone simulation',
+            'widget_type': 'drone_buddy',
             'parameters': {
-                'baseline': 0.2,
-                'focal_length': 50.0,
-                'sensor_width': 36.0,
-                'point_depth': 2.0,
-                'noise_level': 0.02,
-                'num_points': 10
-            },
-            'validation_rules': {
-                'type': 'numeric',
-                'tolerance': 0.1,
-                'correctValue': 2.0
-            }
-        },
-        {
-            'id': 'ransac_challenge',
-            'title': 'RANSAC Model Fitting',
-            'description': 'Use RANSAC to fit a line to the noisy data and identify outliers.',
-            'widget_type': 'ransac_buddy',
-            'difficulty': 'hard',
-            'hint': 'Try different threshold values. A good threshold should balance between including valid points and excluding outliers.',
-            'example': 'With 100 points and 30% outliers, a threshold of 1.0 typically works well.',
-            'parameters': {
-                'num_points': 100,
-                'outlier_ratio': 0.3,
-                'noise_std': 0.2,
-                'model_params': {'slope': 1.0, 'intercept': 0.0}
-            },
-            'validation_rules': {
-                'type': 'numeric',
-                'tolerance': 2,
-                'correctValue': 30
-            }
-        },
-        {
-            'id': 'param_estimation',
-            'title': 'Parameter Estimation Challenge',
-            'description': 'Estimate the optimal learning rate for fastest convergence using the parameter estimation tool.',
-            'widget_type': 'param_estimation_buddy',
-            'difficulty': 'medium',
-            'hint': 'A good learning rate should converge quickly without overshooting. Watch the convergence plot.',
-            'example': 'If the error oscillates, the learning rate is too high. If it converges very slowly, the learning rate is too low.',
-            'parameters': {
-                'target_params': {'amplitude': 2.0, 'frequency': 0.5, 'phase': 0.785},
-                'noise_level': 0.1,
-                'num_points': 50
-                },
-                'validation_rules': {
-                'type': 'numeric',
-                'tolerance': 0.01,
-                'correctValue': 0.1
+                'mode': 'tutorial',
+                'difficulty': 'easy'
             }
         }
     ]

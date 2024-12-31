@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Widget{% endblock %}</title>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="widget-wrapper">
+        <div class="widget-container">
+            {% block widget_content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+    }
+    .widget-wrapper {
+        padding: 0;
+        margin: 0;
+    }
+    .widget-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    </style>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html> 
