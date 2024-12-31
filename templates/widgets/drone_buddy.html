@@ -1,269 +1,567 @@
 {% extends "base_widget.html" %}
 
+{% block widget_title %}Drone Buddy Challenge{% endblock %}
+
+{% block extra_head %}
+<!-- Monaco Editor CSS -->
+<style>
+#editor {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+</style>
+{% endblock %}
+
 {% block widget_content %}
 <div class="drone-buddy-container">
-    <!-- Parameter Configuration Panel -->
-    <div class="config-panel">
-        <h3>Flight Parameters</h3>
-        <div class="param-group">
-            <label for="mpc_xy_vel">Maximum Horizontal Velocity:</label>
-            <input type="range" id="mpc_xy_vel" name="MPC_XY_VEL_MAX" 
-                   min="0.5" max="5.0" step="0.1" value="2.0">
-            <span class="param-value">2.0 m/s</span>
-        </div>
-        <div class="param-group">
-            <label for="mpc_z_vel">Maximum Vertical Velocity:</label>
-            <input type="range" id="mpc_z_vel" name="MPC_Z_VEL_MAX"
-                   min="0.5" max="3.0" step="0.1" value="1.0">
-            <span class="param-value">1.0 m/s</span>
-        </div>
-        <div class="param-group">
-            <label for="mpc_tilt">Maximum Tilt Angle:</label>
-            <input type="range" id="mpc_tilt" name="MPC_TILTMAX_AIR"
-                   min="10.0" max="45.0" step="1.0" value="20.0">
-            <span class="param-value">20.0 deg</span>
-        </div>
+    <div class="challenge-info mb-4">
+        <h3>Welcome to the Drone Buddy Challenge!</h3>
+        <p>Complete the drone control implementation and test it in the simulator.</p>
     </div>
 
-    <!-- Visualization Panel -->
-    <div class="viz-panel">
-        <div class="drone-view">
-            <canvas id="droneCanvas"></canvas>
-        </div>
-        <div class="telemetry">
-            <div class="telemetry-item">
-                <span class="label">Height:</span>
-                <span class="value" id="current-height">0.0 m</span>
+    <div class="split-view">
+        <!-- Left side: VSCode editor -->
+        <div class="editor-section">
+            <div class="editor-header">
+                <h4>Drone Controller Implementation</h4>
+                <div class="file-tabs">
+                    <button class="tab active" data-file="drone_controller.py">drone_controller.py</button>
+                    <button class="tab" data-file="test_controller.py">test_controller.py</button>
+                </div>
             </div>
-            <div class="telemetry-item">
-                <span class="label">Velocity:</span>
-                <span class="value" id="current-velocity">0.0 m/s</span>
-            </div>
-            <div class="telemetry-item">
-                <span class="label">Attitude:</span>
-                <span class="value" id="current-attitude">0.0, 0.0, 0.0</span>
+            <div id="editor" class="code-editor"></div>
+            <div class="editor-footer">
+                <button class="btn btn-primary" id="save-code">Save Changes</button>
+                <button class="btn btn-success" id="run-tests">Run Tests</button>
             </div>
         </div>
-    </div>
 
-    <!-- Control Panel -->
-    <div class="control-panel">
-        <button id="start-mission" class="action-button">Start Mission</button>
-        <button id="abort-mission" class="action-button" disabled>Abort</button>
-        <div class="mission-status">
-            <span class="label">Status:</span>
-            <span class="value" id="mission-status">Ready</span>
+        <!-- Right side: NoVNC container -->
+        <div class="simulator-section">
+            <div class="simulator-header">
+                <h4>Drone Simulator</h4>
+                <div class="simulator-controls">
+                    <button class="btn btn-primary btn-sm" id="start-sim">Start Simulation</button>
+                    <button class="btn btn-danger btn-sm" id="reset-sim">Reset</button>
+                </div>
+            </div>
+            <div class="novnc-container">
+                <iframe id="novnc-frame" src="" frameborder="0"></iframe>
+            </div>
+            <div class="telemetry-panel">
+                <h5>Telemetry</h5>
+                <div class="telemetry-data">
+                    <div class="telemetry-item">
+                        <span class="label">Position:</span>
+                        <span id="position" class="value">x: 0.0, y: 0.0, z: 0.0</span>
+                    </div>
+                    <div class="telemetry-item">
+                        <span class="label">Attitude:</span>
+                        <span id="attitude" class="value">roll: 0.0°, pitch: 0.0°, yaw: 0.0°</span>
+                    </div>
+                    <div class="telemetry-item">
+                        <span class="label">Battery:</span>
+                        <span id="battery" class="value">100%</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
-<style>
-.drone-buddy-container {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    grid-template-rows: 1fr auto;
-    gap: 1rem;
-    padding: 1rem;
-    height: 600px;
-}
-
-.config-panel {
-    grid-column: 1;
-    grid-row: 1;
-    padding: 1rem;
-    background: #f5f5f5;
-    border-radius: 8px;
-}
-
-.viz-panel {
-    grid-column: 2;
-    grid-row: 1;
-    background: #fff;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-.control-panel {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    padding: 1rem;
-    background: #f5f5f5;
-    border-radius: 8px;
-}
-
-.param-group {
-    margin-bottom: 1rem;
-}
-
-.param-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.param-group input[type="range"] {
-    width: 100%;
-}
-
-.drone-view {
-    height: 100%;
-    width: 100%;
-}
-
-#droneCanvas {
-    width: 100%;
-    height: 100%;
-    background: #f0f0f0;
-}
-
-.telemetry {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(0,0,0,0.7);
-    color: #fff;
-    padding: 0.5rem;
-    border-radius: 4px;
-}
-
-.action-button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-#start-mission {
-    background: #4CAF50;
-    color: white;
-}
-
-#abort-mission {
-    background: #f44336;
-    color: white;
-}
-
-.action-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-}
-</style>
+{% block widget_scripts %}
+<!-- Monaco Editor Loader -->
+<script>
+    var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/editor/editor.main.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize WebSocket connection to the drone container
-    const ws = new WebSocket('ws://' + window.location.host + '/ws/drone/');
+    // Initialize Monaco Editor
+    require(['vs/editor/editor.main'], function() {
+        const editor = monaco.editor.create(document.getElementById('editor'), {
+            value: `# Drone Controller Implementation
+
+class DroneController:
+    def __init__(self):
+        """Initialize the drone controller with default parameters."""
+        self.position = [0, 0, 0]  # Current position [x, y, z]
+        self.target = [0, 0, 0]    # Target position [x, y, z]
+        self.velocity = [0, 0, 0]  # Current velocity [vx, vy, vz]
+        self.max_velocity = 1.0    # Maximum velocity in m/s
+        self.kp = 0.5             # Proportional gain
+        self.kd = 0.1             # Derivative gain
+        
+    def update_setpoints(self, current_state):
+        """
+        Update the drone's setpoints based on current state and target position.
+        
+        Args:
+            current_state (dict): Dictionary containing current drone state
+                - position (list): Current position [x, y, z]
+                - velocity (list): Current velocity [vx, vy, vz]
+                - attitude (list): Current attitude [roll, pitch, yaw]
+                
+        Returns:
+            dict: Control commands
+                - velocity (list): Desired velocity [vx, vy, vz]
+                - yaw (float): Desired yaw angle
+                
+        Example implementation:
+            1. Calculate position error
+            2. Apply PD control to get desired velocity
+            3. Limit velocity to max_velocity
+            4. Calculate desired yaw to face direction of motion
+        """
+        # TODO: Implement your control logic here
+        # Step 1: Get current position from state
+        current_pos = current_state['position']
+        
+        # Step 2: Calculate position error (distance to target)
+        pos_error = [
+            self.target[0] - current_pos[0],  # X error
+            self.target[1] - current_pos[1],  # Y error
+            self.target[2] - current_pos[2]   # Z error
+        ]
+        
+        # Step 3: Get current velocity from state
+        current_vel = current_state['velocity']
+        
+        # Step 4: Calculate desired velocity using PD control
+        desired_velocity = [
+            # TODO: Implement PD control for each axis
+            # Use self.kp for proportional gain
+            # Use self.kd for derivative gain
+            # Formula: v = kp * pos_error - kd * current_velocity
+            0,  # vx
+            0,  # vy
+            0   # vz
+        ]
+        
+        # Step 5: Limit velocity to max_velocity
+        # TODO: Implement velocity limiting
+        
+        # Step 6: Calculate desired yaw (optional)
+        # TODO: Calculate yaw to face direction of motion
+        desired_yaw = 0.0
+        
+        return {
+            'velocity': desired_velocity,
+            'yaw': desired_yaw
+        }
     
-    // Canvas setup
-    const canvas = document.getElementById('droneCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Parameter update handlers
-    const paramInputs = document.querySelectorAll('input[type="range"]');
-    paramInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            const valueSpan = this.nextElementSibling;
-            valueSpan.textContent = this.value + (this.name.includes('VEL') ? ' m/s' : ' deg');
-            
-            // Send parameter update to container
-            ws.send(JSON.stringify({
-                type: 'param_update',
-                param: this.name,
-                value: parseFloat(this.value)
-            }));
+    def set_target(self, target_position):
+        """Set a new target position for the drone."""
+        self.target = target_position.copy()`,
+            language: 'python',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            minimap: { enabled: true },
+            scrollBeyondLastLine: false,
+            fontSize: 14,
+            lineNumbers: 'on',
+            renderLineHighlight: 'all',
+            suggestOnTriggerCharacters: true,
+            parameterHints: { enabled: true },
+            folding: true,
+            showFoldingControls: 'always',
+            formatOnPaste: true,
+            formatOnType: true,
+            wordWrap: 'on',
+            wrappingIndent: 'indent',
+            mouseWheelZoom: true,
+            suggest: {
+                snippetsPreventQuickSuggestions: false
+            }
+        });
+
+        // Add custom hover provider for documentation
+        monaco.languages.registerHoverProvider('python', {
+            provideHover: function(model, position) {
+                const word = model.getWordAtPosition(position);
+                if (!word) return;
+
+                const docs = {
+                    'update_setpoints': 'Updates the drone\'s velocity and yaw setpoints based on current state and target position.',
+                    'position': 'Current position of the drone in [x, y, z] coordinates.',
+                    'velocity': 'Current velocity of the drone in [vx, vy, vz] coordinates.',
+                    'target': 'Target position for the drone to reach.',
+                    'kp': 'Proportional gain for PD control.',
+                    'kd': 'Derivative gain for PD control.',
+                    'max_velocity': 'Maximum allowed velocity in m/s.'
+                };
+
+                if (docs[word.word]) {
+                    return {
+                        contents: [{ value: docs[word.word] }]
+                    };
+                }
+            }
+        });
+
+        // Add custom code completion provider
+        monaco.languages.registerCompletionItemProvider('python', {
+            provideCompletionItems: function(model, position) {
+                const suggestions = [
+                    {
+                        label: 'pd_control',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: [
+                            '# PD control implementation',
+                            'error = target - current',
+                            'derivative = -velocity',
+                            'output = kp * error + kd * derivative',
+                            'return output'
+                        ].join('\n'),
+                        documentation: 'Basic PD control implementation'
+                    },
+                    {
+                        label: 'limit_velocity',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        insertText: [
+                            '# Velocity limiting',
+                            'magnitude = (vx**2 + vy**2 + vz**2)**0.5',
+                            'if magnitude > max_velocity:',
+                            '    scale = max_velocity / magnitude',
+                            '    vx *= scale',
+                            '    vy *= scale',
+                            '    vz *= scale'
+                        ].join('\n'),
+                        documentation: 'Limit velocity to maximum allowed value'
+                    }
+                ];
+                return { suggestions };
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            editor.layout();
         });
     });
-    
-    // Mission control handlers
-    const startButton = document.getElementById('start-mission');
-    const abortButton = document.getElementById('abort-mission');
-    
-    startButton.addEventListener('click', function() {
-        ws.send(JSON.stringify({
-            type: 'mission_command',
-            command: 'start'
-        }));
-        
-        this.disabled = true;
-        abortButton.disabled = false;
+
+    // Initialize NoVNC connection
+    function initNoVNC() {
+        const frame = document.getElementById('novnc-frame');
+        // Get the container URL from the OpenUAV manager
+        fetch('/openuav/manage/containers/active')
+            .then(response => response.json())
+            .then(data => {
+                if (data.vnc_url) {
+                    frame.src = data.vnc_url;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching container URL:', error);
+            });
+    }
+
+    // Handle simulation controls
+    document.getElementById('start-sim').addEventListener('click', function() {
+        // Start the simulation using OpenUAV manager
+        fetch('/openuav/manage/launch/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                initNoVNC();
+            }
+        });
     });
-    
-    abortButton.addEventListener('click', function() {
-        ws.send(JSON.stringify({
-            type: 'mission_command',
-            command: 'abort'
-        }));
-        
-        this.disabled = true;
-        startButton.disabled = false;
+
+    document.getElementById('reset-sim').addEventListener('click', function() {
+        // Reset the simulation using OpenUAV manager
+        fetch('/openuav/manage/containers/restart/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
     });
-    
-    // WebSocket message handlers
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        
-        switch(data.type) {
-            case 'telemetry':
-                updateTelemetry(data);
-                updateDroneVisualization(data);
-                break;
-            case 'status':
-                document.getElementById('mission-status').textContent = data.status;
-                break;
-            case 'mission_complete':
-                handleMissionComplete(data);
-                break;
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
         }
-    };
-    
-    function updateTelemetry(data) {
-        document.getElementById('current-height').textContent = data.height.toFixed(2) + ' m';
-        document.getElementById('current-velocity').textContent = data.velocity.toFixed(2) + ' m/s';
-        document.getElementById('current-attitude').textContent = 
-            `${data.roll.toFixed(1)}, ${data.pitch.toFixed(1)}, ${data.yaw.toFixed(1)}`;
+        return cookieValue;
     }
-    
-    function updateDroneVisualization(data) {
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw drone representation
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const droneSize = 20;
-        
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(data.yaw * Math.PI / 180);
-        
-        // Draw drone body
-        ctx.beginPath();
-        ctx.arc(0, 0, droneSize, 0, 2 * Math.PI);
-        ctx.strokeStyle = '#333';
-        ctx.stroke();
-        
-        // Draw direction indicator
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(droneSize * 1.5, 0);
-        ctx.strokeStyle = '#f00';
-        ctx.stroke();
-        
-        ctx.restore();
+
+    // Handle code saving
+    document.getElementById('save-code').addEventListener('click', function() {
+        const code = editor.getValue();
+        fetch('/dreamslab/drone-buddy/save-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ code })
+        });
+    });
+
+    // Handle test running
+    document.getElementById('run-tests').addEventListener('click', function() {
+        fetch('/dreamslab/drone-buddy/run-tests', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display test results
+            console.log('Test results:', data);
+        });
+    });
+
+    // Initialize telemetry updates
+    function updateTelemetry() {
+        fetch('/openuav/manage/containers/telemetry')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('position').textContent = 
+                    `x: ${data.x.toFixed(1)}, y: ${data.y.toFixed(1)}, z: ${data.z.toFixed(1)}`;
+                document.getElementById('attitude').textContent = 
+                    `roll: ${data.roll.toFixed(1)}°, pitch: ${data.pitch.toFixed(1)}°, yaw: ${data.yaw.toFixed(1)}°`;
+                document.getElementById('battery').textContent = `${data.battery}%`;
+            });
     }
-    
-    function handleMissionComplete(data) {
-        startButton.disabled = false;
-        abortButton.disabled = true;
-        
-        // Show completion message
-        const status = document.getElementById('mission-status');
-        status.textContent = data.success ? 'Mission Completed Successfully' : 'Mission Failed';
-        status.style.color = data.success ? '#4CAF50' : '#f44336';
-    }
+    setInterval(updateTelemetry, 1000);
 });
 </script>
+
+<style>
+.drone-buddy-container {
+    padding: 10px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
+.challenge-info {
+    flex: 0 0 auto;
+    margin-bottom: 10px;
+}
+
+.challenge-info h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #ffffff;
+}
+
+.challenge-info p {
+    margin: 5px 0 0 0;
+    color: #cccccc;
+}
+
+.split-view {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    min-height: 0;
+}
+
+.editor-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #252526;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #3d3d3d;
+}
+
+.editor-header {
+    padding: 8px 10px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.editor-header h4 {
+    color: #e0e0e0;
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+}
+
+.file-tabs {
+    display: flex;
+    gap: 3px;
+}
+
+.tab {
+    padding: 3px 10px;
+    background: #3d3d3d;
+    border: none;
+    color: #e0e0e0;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.tab.active {
+    background: #4d4d4d;
+    color: #ffffff;
+}
+
+.code-editor {
+    flex: 1;
+    min-height: 0;
+}
+
+.editor-footer {
+    padding: 8px 10px;
+    background: #2d2d2d;
+    border-top: 1px solid #3d3d3d;
+    display: flex;
+    gap: 8px;
+}
+
+.simulator-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #252526;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    border: 1px solid #3d3d3d;
+}
+
+.simulator-header {
+    padding: 8px 10px;
+    border-bottom: 1px solid #3d3d3d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2d2d2d;
+}
+
+.simulator-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #e0e0e0;
+}
+
+.simulator-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.novnc-container {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    background: #1e1e1e;
+}
+
+#novnc-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+.telemetry-panel {
+    padding: 8px 10px;
+    background: #2d2d2d;
+    border-top: 1px solid #3d3d3d;
+}
+
+.telemetry-panel h5 {
+    margin: 0 0 5px 0;
+    font-size: 0.875rem;
+    color: #e0e0e0;
+}
+
+.telemetry-data {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 5px;
+}
+
+.telemetry-item {
+    display: flex;
+    flex-direction: column;
+    background: #333333;
+    padding: 5px 8px;
+    border-radius: 3px;
+    border: 1px solid #3d3d3d;
+}
+
+.telemetry-item .label {
+    font-size: 0.75rem;
+    color: #a0a0a0;
+}
+
+.telemetry-item .value {
+    font-family: monospace;
+    font-size: 0.875rem;
+    color: #e0e0e0;
+}
+
+/* Make buttons more compact */
+.btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Adjust editor container size */
+#editor {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+/* Override Bootstrap button styles for dark theme */
+.btn-primary {
+    background-color: #0e639c;
+    border-color: #1177bb;
+}
+
+.btn-primary:hover {
+    background-color: #1177bb;
+    border-color: #1488cc;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+</style>
 {% endblock %} 
