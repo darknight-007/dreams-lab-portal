@@ -1,0 +1,482 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="tutorial-container">
+    <div class="control-panel">
+        <h2>Path Planning Algorithms</h2>
+        
+        <!-- Algorithm Selection -->
+        <div class="algorithm-select">
+            <h3>Select Algorithm</h3>
+            <select id="algorithm-type">
+                <option value="rrt">RRT (Rapidly-exploring Random Tree)</option>
+                <option value="rrt-star">RRT* (Optimal RRT)</option>
+                <option value="prm">PRM (Probabilistic Roadmap)</option>
+                <option value="astar">A* Search</option>
+                <option value="potential">Potential Fields</option>
+            </select>
+        </div>
+
+        <!-- Environment Controls -->
+        <div class="environment-controls">
+            <h3>Environment</h3>
+            <button id="clear-obstacles">Clear Obstacles</button>
+            <button id="add-random-obstacles">Add Random Obstacles</button>
+            <button id="add-maze">Generate Maze</button>
+            <div class="obstacle-type">
+                <label>Obstacle Type:</label>
+                <select id="obstacle-shape">
+                    <option value="rectangle">Rectangle</option>
+                    <option value="circle">Circle</option>
+                    <option value="polygon">Polygon</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Algorithm Parameters -->
+        <div class="algorithm-params">
+            <h3>Parameters</h3>
+            <div class="param-group rrt-params">
+                <label>Step Size:</label>
+                <input type="range" id="step-size" min="1" max="50" value="20">
+                <label>Goal Bias:</label>
+                <input type="range" id="goal-bias" min="0" max="100" value="20">
+                <label>Max Iterations:</label>
+                <input type="range" id="max-iterations" min="100" max="10000" value="5000">
+            </div>
+            <div class="param-group astar-params">
+                <label>Heuristic Weight:</label>
+                <input type="range" id="heuristic-weight" min="0" max="200" value="100">
+                <label>Grid Resolution:</label>
+                <input type="range" id="grid-resolution" min="10" max="100" value="50">
+            </div>
+            <div class="param-group potential-params">
+                <label>Attractive Force:</label>
+                <input type="range" id="attractive-force" min="0" max="200" value="100">
+                <label>Repulsive Force:</label>
+                <input type="range" id="repulsive-force" min="0" max="200" value="100">
+            </div>
+        </div>
+
+        <!-- Visualization Controls -->
+        <div class="visualization-controls">
+            <h3>Visualization</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="show-tree" checked>
+                <label for="show-tree">Show Tree/Graph</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="show-samples" checked>
+                <label for="show-samples">Show Samples</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="show-path" checked>
+                <label for="show-path">Show Final Path</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="animate" checked>
+                <label for="animate">Animate Growth</label>
+            </div>
+        </div>
+
+        <!-- Execution Controls -->
+        <div class="execution-controls">
+            <button id="start-planning" class="primary-button">Start Planning</button>
+            <button id="pause-planning">Pause</button>
+            <button id="reset-planning">Reset</button>
+            <button id="step-planning">Step Forward</button>
+        </div>
+
+        <!-- Statistics Display -->
+        <div class="statistics">
+            <h3>Statistics</h3>
+            <div id="path-length">Path Length: --</div>
+            <div id="computation-time">Time: -- ms</div>
+            <div id="nodes-explored">Nodes Explored: --</div>
+            <div id="path-cost">Path Cost: --</div>
+        </div>
+    </div>
+
+    <!-- Main Visualization Area -->
+    <div class="visualization-container">
+        <canvas id="planning-canvas"></canvas>
+        <div class="canvas-overlay">
+            <div class="instructions">
+                <p>Click and drag to place start point (green)</p>
+                <p>Right-click and drag to place goal point (red)</p>
+                <p>Click and drag while holding SHIFT to draw obstacles</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Content -->
+    <div class="tutorial-content">
+        <div class="algorithm-description">
+            <h3>Algorithm Description</h3>
+            <div id="rrt-description" class="algo-desc">
+                <h4>RRT (Rapidly-exploring Random Tree)</h4>
+                <p>RRT is a sampling-based algorithm that incrementally builds a tree by:</p>
+                <ol>
+                    <li>Sampling random points in the configuration space</li>
+                    <li>Finding the nearest node in the tree</li>
+                    <li>Extending the tree towards the sampled point</li>
+                    <li>Checking for collisions along the extension</li>
+                </ol>
+                <p>Key advantages:</p>
+                <ul>
+                    <li>Probabilistically complete</li>
+                    <li>Efficient in high-dimensional spaces</li>
+                    <li>Handles complex obstacles well</li>
+                </ul>
+            </div>
+            <!-- Other algorithm descriptions will be shown/hidden based on selection -->
+            <div id="rrt-star-description" class="algo-desc" style="display: none;">
+                <h4>RRT* (Optimal RRT)</h4>
+                <p>RRT* is an asymptotically optimal variant of RRT that improves path quality by:</p>
+                <ol>
+                    <li>Finding the best parent node within a radius</li>
+                    <li>Rewiring the tree to maintain lower-cost paths</li>
+                    <li>Continuously improving the solution over time</li>
+                </ol>
+                <p>Key features:</p>
+                <ul>
+                    <li>Guarantees asymptotic optimality</li>
+                    <li>Dynamic radius based on tree size</li>
+                    <li>Cost-aware path planning</li>
+                </ul>
+            </div>
+
+            <div id="prm-description" class="algo-desc" style="display: none;">
+                <h4>PRM (Probabilistic Roadmap)</h4>
+                <p>PRM is a multi-query planning algorithm that works in two phases:</p>
+                <ol>
+                    <li>Learning Phase: Build a roadmap of connected configurations</li>
+                    <li>Query Phase: Find paths through the roadmap</li>
+                </ol>
+                <p>Advantages:</p>
+                <ul>
+                    <li>Efficient for multiple queries</li>
+                    <li>Handles high-dimensional spaces</li>
+                    <li>Parallelizable construction</li>
+                </ul>
+            </div>
+
+            <div id="astar-description" class="algo-desc" style="display: none;">
+                <h4>A* Search</h4>
+                <p>A* is a best-first search algorithm that uses:</p>
+                <ol>
+                    <li>Cost from start (g-score)</li>
+                    <li>Heuristic estimate to goal (h-score)</li>
+                    <li>Total estimated cost (f-score = g + h)</li>
+                </ol>
+                <p>Properties:</p>
+                <ul>
+                    <li>Optimal with admissible heuristics</li>
+                    <li>Complete on finite graphs</li>
+                    <li>Efficient for grid-based planning</li>
+                </ul>
+            </div>
+
+            <div id="potential-description" class="algo-desc" style="display: none;">
+                <h4>Potential Fields</h4>
+                <p>Potential field planning uses virtual forces:</p>
+                <ol>
+                    <li>Attractive force from the goal</li>
+                    <li>Repulsive forces from obstacles</li>
+                    <li>Combined field guides the robot</li>
+                </ol>
+                <p>Characteristics:</p>
+                <ul>
+                    <li>Simple and intuitive</li>
+                    <li>Real-time capable</li>
+                    <li>Can get stuck in local minima</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="interactive-exercises">
+            <h3>Exercises</h3>
+            <div class="exercise-list">
+                <div class="exercise">
+                    <h4>Exercise 1: Algorithm Comparison</h4>
+                    <p>Compare different algorithms in various scenarios:</p>
+                    <ul>
+                        <li>RRT vs RRT*: Observe path quality improvement</li>
+                        <li>A* vs RRT in maze-like environments</li>
+                        <li>Potential fields in local minima situations</li>
+                    </ul>
+                </div>
+                <div class="exercise">
+                    <h4>Exercise 2: Parameter Tuning</h4>
+                    <p>Experiment with algorithm parameters:</p>
+                    <ul>
+                        <li>RRT/RRT*: Step size and goal bias effects</li>
+                        <li>A*: Heuristic weight impact</li>
+                        <li>Potential fields: Force balance</li>
+                    </ul>
+                </div>
+                <div class="exercise">
+                    <h4>Exercise 3: Challenge Scenarios</h4>
+                    <p>Test algorithms in difficult environments:</p>
+                    <ul>
+                        <li>Narrow passages</li>
+                        <li>Bug trap scenarios</li>
+                        <li>Cluttered spaces</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="algorithm-tips">
+            <h3>Tips & Best Practices</h3>
+            <div class="tips-list">
+                <div class="tip">
+                    <h4>When to Use Each Algorithm</h4>
+                    <ul>
+                        <li>RRT: Quick solutions in high-dimensional spaces</li>
+                        <li>RRT*: When path quality matters more than computation time</li>
+                        <li>PRM: Multiple queries in the same environment</li>
+                        <li>A*: Grid-based environments with clear heuristics</li>
+                        <li>Potential Fields: Real-time navigation in dynamic environments</li>
+                    </ul>
+                </div>
+                <div class="tip">
+                    <h4>Performance Optimization</h4>
+                    <ul>
+                        <li>Adjust step size based on environment scale</li>
+                        <li>Balance exploration vs exploitation with goal bias</li>
+                        <li>Use appropriate collision checking resolution</li>
+                        <li>Consider environment preprocessing for PRM</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tutorial-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 100px);
+}
+
+.control-panel {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow-y: auto;
+}
+
+.visualization-container {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tutorial-content {
+    grid-column: 2;
+    grid-row: 2;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow-y: auto;
+}
+
+#planning-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.param-group {
+    margin: 10px 0;
+}
+
+.param-group label {
+    display: block;
+    margin: 5px 0;
+}
+
+.param-group input[type="range"] {
+    width: 100%;
+}
+
+.execution-controls {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.primary-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.primary-button:hover {
+    background: #0056b3;
+}
+
+.statistics {
+    margin-top: 20px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.canvas-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.8);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.algorithm-description {
+    margin-bottom: 20px;
+}
+
+.exercise {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.algorithm-tips {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.tip {
+    margin-bottom: 15px;
+}
+
+.tip h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.tip ul {
+    padding-left: 20px;
+}
+
+.tip li {
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.algo-desc {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.algo-desc h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.algo-desc ol, .algo-desc ul {
+    padding-left: 20px;
+}
+
+.algo-desc li {
+    margin-bottom: 5px;
+    color: #666;
+}
+
+/* Add smooth transitions for algorithm switching */
+.algo-desc {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Improve button styles */
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Add hover effects to parameter controls */
+.param-group input[type="range"] {
+    transition: opacity 0.2s;
+}
+
+.param-group input[type="range"]:hover {
+    opacity: 0.8;
+}
+
+/* Improve select dropdown styling */
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+}
+
+select:hover {
+    border-color: #aaa;
+}
+
+/* Add animation for statistics updates */
+.statistics div {
+    transition: color 0.3s;
+}
+
+.statistics div.updated {
+    color: #007bff;
+}
+</style>
+
+<script>
+// Add this script to handle algorithm description switching
+document.getElementById('algorithm-type').addEventListener('change', function(e) {
+    // Hide all descriptions
+    document.querySelectorAll('.algo-desc').forEach(desc => {
+        desc.style.display = 'none';
+    });
+    
+    // Show selected algorithm description
+    const selectedDesc = document.getElementById(`${e.target.value}-description`);
+    if (selectedDesc) {
+        selectedDesc.style.display = 'block';
+    }
+});
+</script>
+
+<script src="{% static 'js/path_planning_buddy.js' %}"></script>
+{% endblock %} 
