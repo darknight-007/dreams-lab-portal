@@ -11,7 +11,8 @@ from dreams_laboratory.views import (
     ransac_buddy_view, gaussian_processes_buddy_view,
     path_planning_buddy_view, cart_pole_lqr_buddy_view,
     particle_filter_buddy_view, point_cloud_buddy, sensor_fusion_buddy,
-    image_buddy_view, ses598_course_view, ses598_quiz
+    image_buddy_view, ses598_course_view, ses598_quiz,
+    drone_buddy_view, save_drone_code, run_drone_tests
 )
 from django.http import HttpResponse
 
@@ -38,6 +39,9 @@ urlpatterns = [
     path('tutorials/particle-filter-buddy/', particle_filter_buddy_view, name='particle_filter_buddy'),
     path('tutorials/point-cloud-buddy/', point_cloud_buddy, name='point_cloud_buddy'),
     path('tutorials/sensor-fusion-buddy/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
+    path('tutorials/drone-buddy/', drone_buddy_view, name='drone_buddy'),
+    path('dreamslab/drone-buddy/save-code', save_drone_code, name='save_drone_code'),
+    path('dreamslab/drone-buddy/run-tests', run_drone_tests, name='run_drone_tests'),
 ]
 
 if settings.DEBUG:
