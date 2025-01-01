@@ -33,7 +33,7 @@
                                 <li><a class="dropdown-item" href="{% url 'loop_closure_buddy' %}">Loop Closure</a></li>
                                 <li><a class="dropdown-item" href="{% url 'sensor_fusion_buddy' %}">Sensor Fusion</a></li>
                                 <li><a class="dropdown-item" href="{% url 'path_planning_buddy' %}">Path Planning</a></li>
-                                <li><a class="dropdown-item" href="{% url 'cart_pole_buddy' %}">Cart Pole Control</a></li>
+                                <li><a class="dropdown-item" href="{% url 'cart_pole_lqr_buddy' %}">Cart Pole Control</a></li>
                             </ul>
                         </li>
                         <li>
@@ -41,7 +41,6 @@
                             <ul class="dropdown-menu dropdown-submenu">
                                 <li><a class="dropdown-item" href="{% url 'gaussian_processes_buddy' %}">Gaussian Processes</a></li>
                                 <li><a class="dropdown-item" href="{% url 'param_estimation_buddy' %}">Parameter Estimation</a></li>
-                                <li><a class="dropdown-item" href="{% url 'image_buddy' %}">Image Processing</a></li>
                             </ul>
                         </li>
                         <li>
@@ -56,9 +55,7 @@
 
             <!-- User Authentication -->
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'initiate_login_form' %}">Login</a>
-                </li>
+                <!-- Login removed -->
             </ul>
         </div>
     </div>
