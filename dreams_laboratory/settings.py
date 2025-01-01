@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'openuav_manager.middleware.SessionIDMiddleware',
 ]
 
 ROOT_URLCONF = 'dreams_laboratory.urls'
@@ -199,6 +200,9 @@ SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 
+# OpenUAV Manager settings
+VNC_PASSWORD = os.getenv('VNC_PASSWORD', 'liftoff')  # Default VNC password
+
 # Add STATIC_FILES configuration
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
@@ -208,7 +212,7 @@ STATICFILES_DIRS = [
 if DEBUG:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 else:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Security settings - make them dependent on DEBUG mode
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -230,13 +234,14 @@ else:
     SECURE_HSTS_PRELOAD = True
 
 # Update allowed hosts
-ALLOWED_HOSTS = ['deepgis.org', 'localhost', '127.0.0.1', '192.168.0.186']
+ALLOWED_HOSTS = ['deepgis.org', 'localhost', '127.0.0.1', '192.168.0.186', '.deepgis.org']
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # For development, you might want to restrict this in production
 CORS_ALLOW_METHODS = [
     'GET',
     'OPTIONS',
+    'POST',
 ]
 CORS_ALLOW_HEADERS = [
     'accept',

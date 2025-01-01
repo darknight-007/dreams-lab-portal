@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def image_buddy_view(request):
     """Render the Image Buddy interface."""
-    return render(request, "image_buddy.html")
+    return render(request, 'widgets/image_buddy.html')
 
 
 @csrf_exempt
@@ -352,15 +352,22 @@ def gaussian_processes_buddy_view(request):
 
 
 def param_estimation_buddy_view(request):
-    return render(request, 'param_estimation_buddy.html')
+    return render(request, 'widgets/param_estimation_buddy.html')
 
 
 def image_buddy_view(request):
-    return render(request, 'image_buddy.html')
+    """Render the Image Buddy interface."""
+    return render(request, 'widgets/image_buddy.html')
 
 
 def slam_buddy_view(request):
-    return render(request, 'slam_buddy.html')
+    """
+    View function for the SLAM tutorial page.
+    """
+    return render(request, 'widgets/slam_buddy.html', {
+        'title': 'SLAM Tutorial',
+        'description': 'Interactive tutorial for Simultaneous Localization and Mapping (SLAM)',
+    })
 
 
 def ses598_robotic_exploration_and_mapping_quiz(request):
@@ -371,47 +378,40 @@ def ransac_buddy(request):
     View function for the RANSAC tutorial page.
     Demonstrates RANSAC algorithm for point cloud matching and outlier rejection.
     """
-    return render(request, 'ransac_buddy.html') 
+    return render(request, 'widgets/ransac_buddy.html')
 
 def multiview_geometry_view(request):
     """
     View function for the multi-view geometry tutorial page.
-    Can include computed matrices as context if needed.
+    Demonstrates epipolar geometry, fundamental matrix, and camera calibration.
     """
     context = {
         'title': 'Multi-View Geometry Tutorial',
-        # Add any computed matrices to the context if needed
-        # 'essential_matrix': computed_essential_matrix,
-        # 'fundamental_matrix': computed_fundamental_matrix,
-        # 'camera_matrix': computed_camera_matrix,
     }
-    return render(request, 'multiview-geometry.html', context)
+    return render(request, 'widgets/multiview_geometry.html', context)
 
 
 def ses598_robotic_exploration_and_mapping(request):
+    """Render the SES598 course page"""
     return render(request, 'SES598_robotic_exploration_and_mapping.html')
 
 def particle_filter_buddy(request):
-    return render(request, 'particle_filter_buddy.html')
+    return render(request, 'widgets/particle_filter_buddy.html')
 
 def loop_closure_buddy(request):
-    return render(request, 'loop_closure_buddy.html')
+    return render(request, 'widgets/loop_closure_buddy.html')
 
 def sensor_fusion_buddy(request):
-    return render(request, 'sensor_fusion_buddy.html')
+    return render(request, 'widgets/sensor_fusion_buddy.html')
 
 def visual_odometry_buddy(request):
-    return render(request, 'visual_odometry_buddy.html')
+    return render(request, 'widgets/visual_odometry_buddy.html')
 
 def point_cloud_buddy(request):
-    return render(request, 'point_cloud_buddy.html')
+    return render(request, 'widgets/point_cloud_buddy.html')
 
 def path_planning_buddy(request):
-    """
-    View function for the path planning tutorial page.
-    Covers algorithms like A*, RRT, and potential fields with interactive demonstrations.
-    """
-    return render(request, 'path_planning_buddy.html')
+    return render(request, 'widgets/path_planning_buddy.html')
 
 
 def generate_curved_line():
@@ -552,6 +552,7 @@ def ses598_quiz(request):
             del request.session['quiz_results']
         if 'show_results' in request.session:
             del request.session['show_results']
+        request.session.modified = True
         
         context = {
             'show_results': False,
@@ -576,7 +577,7 @@ def ses598_quiz(request):
         'motion_score': ['q5']
     }
 
-    if request.method == 'POST':
+    if request.method == 'POST' and not request.POST.get('reset'):
         # Process quiz submission
         score = 0
         answers = {}
@@ -634,6 +635,7 @@ def ses598_quiz(request):
             'category_scores': scores
         }
         request.session['show_results'] = True
+        request.session.modified = True
 
         context = {
             'show_results': True,
@@ -659,7 +661,7 @@ def ses598_quiz(request):
             'show_results': False,
             'session_id': session_id
         }
-    
+
     return render(request, 'ses598_rem_quiz.html', context)
 
 def reset_quiz(request):
@@ -1051,31 +1053,32 @@ def load_quiz_progress(request):
 
 def widget_view(request, widget_type):
     """View for rendering interactive widgets"""
-    # Map widget types to their corresponding views
-    widget_map = {
-        'stereo_buddy': stereo_buddy_view,
-        'ransac_buddy': ransac_buddy,
-        'param_estimation_buddy': param_estimation_buddy_view,
-        'slam_buddy': slam_buddy_view,
-        'cart_pole_buddy': cart_pole_buddy_view,
-        'gaussian_processes_buddy': gaussian_processes_buddy_view,
-        'image_buddy': image_buddy_view,
-        'particle_filter_buddy': particle_filter_buddy,
-        'loop_closure_buddy': loop_closure_buddy,
-        'sensor_fusion_buddy': sensor_fusion_buddy,
-        'visual_odometry_buddy': visual_odometry_buddy,
-        'point_cloud_buddy': point_cloud_buddy,
-        'path_planning_buddy': path_planning_buddy,
-        'drone_buddy': drone_buddy_view,
+    # Map widget types to their corresponding templates
+    widget_templates = {
+        'stereo_buddy': 'widgets/stereo_buddy.html',
+        'ransac_buddy': 'widgets/ransac_buddy.html',
+        'param_estimation_buddy': 'widgets/param_estimation_buddy.html',
+        'slam_buddy': 'widgets/slam_buddy.html',
+        'cart_pole_buddy': 'widgets/cart_pole_buddy.html',
+        'gaussian_processes_buddy': 'widgets/gaussian_processes_buddy.html',
+        'image_buddy': 'widgets/image_buddy.html',
+        'particle_filter_buddy': 'widgets/particle_filter_buddy.html',
+        'loop_closure_buddy': 'widgets/loop_closure_buddy.html',
+        'sensor_fusion_buddy': 'widgets/sensor_fusion_buddy.html',
+        'visual_odometry_buddy': 'widgets/visual_odometry_buddy.html',
+        'point_cloud_buddy': 'widgets/point_cloud_buddy.html',
+        'path_planning_buddy': 'widgets/path_planning_buddy.html',
+        'cart_pole_lqr_buddy': 'widgets/cart_pole_lqr.html',
+        'drone_buddy': 'widgets/drone_buddy.html',
     }
     
-    # Get the corresponding view function
-    view_func = widget_map.get(widget_type)
-    if not view_func:
+    # Get the corresponding template
+    template_name = widget_templates.get(widget_type)
+    if not template_name:
         return JsonResponse({'error': f'Widget type {widget_type} not found'}, status=404)
     
-    # Pass all query parameters to the view
-    return view_func(request)
+    # Render the template
+    return render(request, template_name)
 
 def deepgis_home(request):
     """New home page for deepgis.org"""
@@ -1247,3 +1250,7 @@ def run_drone_tests(request):
         return JsonResponse(test_results)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def cart_pole_lqr_view(request):
+    """View function for the Cart Pole LQR tutorial."""
+    return render(request, 'widgets/cart_pole_lqr.html')

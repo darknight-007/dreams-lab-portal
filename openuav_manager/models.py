@@ -13,11 +13,12 @@ class Container(models.Model):
     name = models.CharField(max_length=255)
     status = models.CharField(max_length=20)
     created = models.DateTimeField()
-    ports = models.JSONField(default=dict)
+    ports = models.JSONField(default=dict, help_text='Mapping of host ports to container ports')
     image = models.CharField(max_length=255)
     
     # Session information
     session_type = models.CharField(max_length=10, choices=SESSION_TYPES, default='guest')
+    session_id = models.CharField(max_length=64, null=True, blank=True, db_index=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -26,12 +27,14 @@ class Container(models.Model):
         related_name='containers'
     )
     last_accessed = models.DateTimeField(auto_now=True)
+    vnc_url = models.URLField(max_length=255, blank=True, null=True, help_text='URL for VNC access')
     
     class Meta:
         ordering = ['-created']
         indexes = [
             models.Index(fields=['session_type', 'status']),
             models.Index(fields=['user', 'status']),
+            models.Index(fields=['session_id', 'status']),
         ]
     
     def __str__(self):
@@ -39,3 +42,23 @@ class Container(models.Model):
     
     def is_active(self):
         return self.status == 'running'
+    
+    def get_vnc_url(self):
+        """Get the VNC URL for this container"""
+        if not self.is_active():
+            return None
+        
+        # Extract container ID from name (format: openuav-xxxxxxxx)
+        container_id = self.name.split('-')[1] if '-' in self.name else None
+        if not container_id:
+            return None
+        
+        # Use digital-twin subdomain format
+        return f"https://digital-twin-{container_id}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+
+    def get_port_mappings(self):
+        """Get the port mappings for this container"""
+        return {
+            'vnc': self.ports.get('5901', '5901'),
+            'novnc': self.ports.get('6080', '6080')
+        }

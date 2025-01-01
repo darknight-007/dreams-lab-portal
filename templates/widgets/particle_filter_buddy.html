@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Particle Filter Tutorial</h1>
+    
+    <!-- Introduction Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2>Introduction to Particle Filters</h2>
+            <p>
+                Particle filters, also known as Sequential Monte Carlo methods, are powerful probabilistic algorithms 
+                for estimating the state of a system over time. Unlike Kalman filters, particle filters can handle:
+            </p>
+            <ul>
+                <li>Non-linear motion and measurement models</li>
+                <li>Non-Gaussian noise distributions</li>
+                <li>Multi-modal probability distributions</li>
+                <li>Global localization problems</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Interactive Demo Section -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2>Interactive Demonstration</h2>
+                    <p>
+                        This demo shows a robot (green) moving in a circular path among landmarks (red). 
+                        The particle filter estimates the robot's position and orientation using noisy motion 
+                        and distance measurements. The blue particles represent possible robot states, with 
+                        opacity indicating their weights. The blue circle shows the weighted average estimate.
+                    </p>
+                    <canvas id="particleFilterCanvas" width="600" height="400" class="border"></canvas>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" id="startSimulation">Start</button>
+                        <button class="btn btn-secondary" id="resetSimulation">Reset</button>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            ● Landmarks &nbsp;
+                            <span style="color: green">● True Robot Position</span> &nbsp;
+                            <span style="color: blue">● Particles & Estimate</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>How Particle Filters Work</h3>
+                    <p>
+                        Particle filters approximate the probability distribution of the robot's state using a set 
+                        of weighted samples (particles). The algorithm consists of three main steps:
+                    </p>
+                    <ol>
+                        <li>
+                            <strong>Prediction (Motion Update):</strong>
+                            <ul>
+                                <li>Move each particle according to the motion model</li>
+                                <li>Add random noise to simulate motion uncertainty</li>
+                                <li>Particles spread out to represent growing uncertainty</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Update (Measurement Update):</strong>
+                            <ul>
+                                <li>Compare expected measurements with actual sensor readings</li>
+                                <li>Update particle weights based on measurement likelihood</li>
+                                <li>Higher weights indicate better state estimates</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Resampling:</strong>
+                            <ul>
+                                <li>Randomly select particles with probability proportional to their weights</li>
+                                <li>Replace low-weight particles with copies of high-weight ones</li>
+                                <li>Maintains particle diversity in high-probability regions</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Parameters</h3>
+                    <div class="form-group">
+                        <label for="numParticles">Number of Particles</label>
+                        <input type="range" class="form-control-range" id="numParticles" min="10" max="1000" value="100">
+                        <small class="text-muted">Current: <span id="numParticlesValue">100</span></small>
+                        <p class="mt-2">More particles increase accuracy but require more computation.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="noiseLevel">Noise Level</label>
+                        <input type="range" class="form-control-range" id="noiseLevel" min="0" max="100" value="20">
+                        <small class="text-muted">Current: <span id="noiseLevelValue">20</span>%</small>
+                        <p class="mt-2">Higher noise makes motion and measurements less reliable.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Implementation Details</h3>
+                    <div class="alert alert-info">
+                        <h4>Key Features</h4>
+                        <ul>
+                            <li>Systematic resampling for better particle diversity</li>
+                            <li>Adaptive noise based on motion magnitude</li>
+                            <li>Weighted mean for pose estimation</li>
+                            <li>Angle wrapping for orientation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3>Applications</h3>
+                    <ul>
+                        <li>Robot localization</li>
+                        <li>Object tracking</li>
+                        <li>SLAM (FastSLAM algorithm)</li>
+                        <li>State estimation in robotics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mathematical Details Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h3>Mathematical Foundation</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Motion Model</h4>
+                    <div class="math-block">
+                        <p>x[t] = f(x[t-1], u[t]) + ε</p>
+                        <p>where:</p>
+                        <ul>
+                            <li>x[t] is the robot state at time t</li>
+                            <li>u[t] is the control input</li>
+                            <li>f() is the motion model</li>
+                            <li>ε is motion noise</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Measurement Model</h4>
+                    <div class="math-block">
+                        <p>z[t] = h(x[t]) + δ</p>
+                        <p>where:</p>
+                        <ul>
+                            <li>z[t] is the measurement</li>
+                            <li>h() is the measurement model</li>
+                            <li>δ is measurement noise</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/particle_filter.js"></script>
+<script src="/static/js/particle_filter_demo.js"></script>
+
+<style>
+.math-block {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: "Computer Modern", serif;
+}
+
+.math-block p {
+    margin-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+}
+
+.alert-info h4 {
+    color: #1976d2;
+}
+
+canvas {
+    background-color: white;
+}
+</style>
+
+<script>
+// Update parameter value displays
+document.getElementById('numParticles').addEventListener('input', function(e) {
+    document.getElementById('numParticlesValue').textContent = e.target.value;
+});
+
+document.getElementById('noiseLevel').addEventListener('input', function(e) {
+    document.getElementById('noiseLevelValue').textContent = e.target.value;
+});
+</script>
+{% endblock %} 

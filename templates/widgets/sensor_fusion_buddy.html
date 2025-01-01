@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Sensor Fusion Tutorial</h1>
+    
+    <!-- Introduction Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2>Introduction to Sensor Fusion</h2>
+            <p>
+                Sensor fusion is the process of combining data from multiple sensors to achieve more accurate and reliable 
+                information than what could be obtained from any individual sensor. In robotics and autonomous systems, 
+                sensor fusion is crucial for:
+            </p>
+            <ul>
+                <li>Improving accuracy and reliability of measurements</li>
+                <li>Compensating for individual sensor limitations</li>
+                <li>Handling sensor noise and uncertainties</li>
+                <li>Providing redundancy in case of sensor failures</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Interactive Demo Section -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2>Kalman Filter Demonstration</h2>
+                    <p>
+                        This interactive demo shows how a Kalman filter combines noisy GPS position measurements with 
+                        IMU velocity readings to estimate a robot's true position. The robot follows a circular path, 
+                        and you can adjust the noise levels to see how the filter performs under different conditions.
+                    </p>
+                    <svg id="sensorFusionSVG" width="600" height="400" class="border"></svg>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" id="startFusion">Start</button>
+                        <button class="btn btn-secondary" id="resetFusion">Reset</button>
+                        <button class="btn btn-info" id="togglePath">Toggle Paths</button>
+                        <button class="btn btn-warning" id="toggleUncertainty">Toggle Uncertainty</button>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            ● True Position &nbsp;
+                            <span class="text-danger">● GPS Reading</span> &nbsp;
+                            <span class="text-success">● IMU Path</span> &nbsp;
+                            <span class="text-primary">● Kalman Estimate</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Kalman Filter Explanation</h3>
+                    <p>
+                        The Kalman filter is an optimal estimation algorithm that combines predictions based on system 
+                        dynamics with noisy measurements. It maintains both a state estimate and its uncertainty, 
+                        working in two steps:
+                    </p>
+                    <ol>
+                        <li>
+                            <strong>Prediction Step:</strong> Uses the system model to predict the next state
+                            based on previous estimates and optional control inputs:
+                            <ul>
+                                <li>State prediction: x̂ₖ₋ = Fₖx̂ₖ₋₁ + Bₖuₖ</li>
+                                <li>Uncertainty prediction: Pₖ₋ = FₖPₖ₋₁Fₖᵀ + Qₖ</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Update Step:</strong> Incorporates new measurements to correct the prediction,
+                            weighing each source based on its uncertainty:
+                            <ul>
+                                <li>Innovation: yₖ = zₖ - Hₖx̂ₖ₋</li>
+                                <li>Innovation covariance: Sₖ = HₖPₖ₋Hₖᵀ + Rₖ</li>
+                                <li>Kalman gain: Kₖ = Pₖ₋Hₖᵀ(Sₖ)⁻¹</li>
+                                <li>State update: x̂ₖ = x̂ₖ₋ + Kₖyₖ</li>
+                                <li>Uncertainty update: Pₖ = (I - KₖHₖ)Pₖ₋</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <p>Where:</p>
+                    <ul>
+                        <li>x̂ₖ₋ is the predicted state estimate</li>
+                        <li>Pₖ₋ is the predicted error covariance</li>
+                        <li>Fₖ is the state transition matrix</li>
+                        <li>Bₖ is the control input matrix</li>
+                        <li>uₖ is the control input</li>
+                        <li>Qₖ is the process noise covariance</li>
+                        <li>zₖ is the measurement</li>
+                        <li>Hₖ is the measurement matrix</li>
+                        <li>Rₖ is the measurement noise covariance</li>
+                        <li>Kₖ is the Kalman gain</li>
+                        <li>yₖ is the innovation (measurement residual)</li>
+                        <li>Sₖ is the innovation covariance</li>
+                    </ul>
+                    <div class="alert alert-info">
+                        <h4>Implementation Details</h4>
+                        <p>In this demo:</p>
+                        <ul>
+                            <li>State vector: [x, y, vx, vy] (position and velocity)</li>
+                            <li>GPS provides position measurements [x, y]</li>
+                            <li>IMU provides velocity measurements [vx, vy]</li>
+                            <li>Innovation gating is used to reject outliers</li>
+                            <li>Covariance matrices are kept symmetric and positive definite</li>
+                            <li>The blue ellipse shows the 95% confidence region (2σ)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Sensor Settings</h3>
+                    <p>Adjust the noise levels to see how they affect the filter's performance:</p>
+                    <div class="form-group">
+                        <label>GPS Noise (R)</label>
+                        <input type="range" class="form-control-range" id="gpsNoise" min="0" max="100" value="30">
+                        <small class="text-muted">Current: <span id="gpsNoiseValue">30</span></small>
+                        <p class="mt-2">Higher values simulate less accurate GPS readings.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>IMU Noise (Q)</label>
+                        <input type="range" class="form-control-range" id="imuNoise" min="0" max="100" value="10">
+                        <small class="text-muted">Current: <span id="imuNoiseValue">10</span></small>
+                        <p class="mt-2">Higher values simulate more drift in IMU measurements.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3>Performance Metrics</h3>
+                    <div class="metrics-container">
+                        <p>Error (RMSE):</p>
+                        <p>GPS: <span id="gpsError">0.00</span></p>
+                        <p>Kalman: <span id="kalmanError">0.00</span></p>
+                    </div>
+                    <p class="mt-3">
+                        The Root Mean Square Error (RMSE) shows how far the estimates deviate from the true position.
+                        Lower values indicate better accuracy.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3>Learning Objectives</h3>
+                    <ul>
+                        <li>Understand the principles of sensor fusion</li>
+                        <li>Learn how Kalman filters combine multiple sensor inputs</li>
+                        <li>Observe the effects of sensor noise on estimation accuracy</li>
+                        <li>Compare raw sensor data with filtered estimates</li>
+                        <li>Visualize estimation uncertainty</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Resources Section -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h3>Additional Resources</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Applications in Robotics</h4>
+                    <ul>
+                        <li>Robot localization and navigation</li>
+                        <li>State estimation in autonomous vehicles</li>
+                        <li>Drone flight control systems</li>
+                        <li>Multi-sensor perception systems</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4>Related Topics</h4>
+                    <ul>
+                        <li>Extended Kalman Filter (EKF) for nonlinear systems</li>
+                        <li>Unscented Kalman Filter (UKF) for strong nonlinearities</li>
+                        <li>Particle Filters for non-Gaussian noise</li>
+                        <li>Multi-sensor calibration and synchronization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="/static/js/kalman_filter.js"></script>
+<script src="/static/js/sensor_fusion_demo.js"></script>
+
+<style>
+.math-block {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: "Computer Modern", serif;
+}
+
+.math-block p {
+    margin-bottom: 0.5rem;
+}
+
+.metrics-container {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.metrics-container p {
+    margin-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+}
+
+.alert-info h4 {
+    color: #1976d2;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Loop Closure Detection Tutorial</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2>Visual Loop Closure Detection</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <canvas id="loopClosureCanvas" width="600" height="400"></canvas>
+                </div>
+                <div class="col-md-4">
+                    <h3>Controls</h3>
+                    <button class="btn btn-primary mb-2" id="addKeyframe">Add Keyframe</button>
+                    <button class="btn btn-success mb-2" id="detectLoops">Detect Loops</button>
+                    <div class="form-group">
+                        <label for="similarityThreshold">Similarity Threshold</label>
+                        <input type="range" class="form-control-range" id="similarityThreshold">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

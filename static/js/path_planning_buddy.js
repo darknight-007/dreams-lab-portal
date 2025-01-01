@@ -1,120 +1,79 @@
 class PathPlanningBuddy {
     constructor() {
-        this.canvas = document.getElementById('planning-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.resizeCanvas();
-
-        // State
+        // Initialize state first
+        this.start = null;
+        this.goal = null;
         this.obstacles = [];
-        this.startPoint = null;
-        this.goalPoint = null;
-        this.rrtTree = [];
         this.path = [];
+        this.tree = [];
         this.samples = [];
-        this.isPlanning = false;
-        this.isPaused = false;
-        this.currentAlgorithm = 'rrt';
-
-        // RRT Parameters
+        this.isRunning = false;
+        
+        // Initialize parameters
         this.stepSize = 20;
         this.goalBias = 0.2;
         this.maxIterations = 5000;
-
-        // Visualization flags
-        this.showTree = true;
-        this.showSamples = true;
-        this.showPath = true;
-        this.animate = true;
-
-        // Bind event listeners
-        this.bindEventListeners();
         
-        // Initialize
-        this.setupCanvas();
+        // Then setup canvas
+        this.canvas = document.getElementById('path-planning-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
+        
+        // Bind event listeners
+        window.addEventListener('resize', () => this.resizeCanvas());
+        this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
     resizeCanvas() {
         const container = this.canvas.parentElement;
         this.canvas.width = container.clientWidth;
         this.canvas.height = container.clientHeight;
+        this.draw();
     }
 
-    bindEventListeners() {
-        // Algorithm selection
-        document.getElementById('algorithm-type').addEventListener('change', (e) => {
-            this.currentAlgorithm = e.target.value;
-            this.updateUIForAlgorithm();
-        });
-
-        // Canvas interactions
-        this.canvas.addEventListener('mousedown', this.handleMouseDown.bind(this));
-        this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
-
-        // Control buttons
-        document.getElementById('start-planning').addEventListener('click', () => this.startPlanning());
-        document.getElementById('pause-planning').addEventListener('click', () => this.togglePause());
-        document.getElementById('reset-planning').addEventListener('click', () => this.reset());
-        document.getElementById('step-planning').addEventListener('click', () => this.step());
-        document.getElementById('clear-obstacles').addEventListener('click', () => this.clearObstacles());
-        document.getElementById('add-random-obstacles').addEventListener('click', () => this.addRandomObstacles());
-        document.getElementById('add-maze').addEventListener('click', () => this.generateMaze());
-
-        // Parameter controls
-        document.getElementById('step-size').addEventListener('input', (e) => {
-            this.stepSize = parseInt(e.target.value);
-        });
-        document.getElementById('goal-bias').addEventListener('input', (e) => {
-            this.goalBias = parseInt(e.target.value) / 100;
-        });
-        document.getElementById('max-iterations').addEventListener('input', (e) => {
-            this.maxIterations = parseInt(e.target.value);
-        });
-
-        // Visualization controls
-        document.getElementById('show-tree').addEventListener('change', (e) => {
-            this.showTree = e.target.checked;
-            this.draw();
-        });
-        document.getElementById('show-samples').addEventListener('change', (e) => {
-            this.showSamples = e.target.checked;
-            this.draw();
-        });
-        document.getElementById('show-path').addEventListener('change', (e) => {
-            this.showPath = e.target.checked;
-            this.draw();
-        });
-        document.getElementById('animate').addEventListener('change', (e) => {
-            this.animate = e.target.checked;
-        });
-
-        // Window resize
-        window.addEventListener('resize', () => {
-            this.resizeCanvas();
-            this.draw();
-        });
+    reset() {
+        this.start = null;
+        this.goal = null;
+        this.obstacles = [];
+        this.path = [];
+        this.tree = [];
+        this.samples = [];
+        this.isRunning = false;
+        this.draw();
     }
 
-    setupCanvas() {
-        this.resizeCanvas();
-        this.ctx.lineWidth = 2;
+    handleMouseDown(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Left click: Add obstacle
+        if (e.button === 0) {
+            this.obstacles.push({ x, y, radius: 20 });
+        }
+        // Right click: Set goal
+        else if (e.button === 2) {
+            this.goal = { x, y };
+        }
+        // Middle click: Set start
+        else if (e.button === 1) {
+            this.start = { x, y };
+        }
+        
         this.draw();
     }
 
     // RRT Implementation
     rrtStep() {
-        if (this.rrtTree.length === 0) {
-            this.rrtTree.push({
-                x: this.startPoint.x,
-                y: this.startPoint.y,
-                parent: null
-            });
+        if (this.tree.length === 0 && this.start) {
+            this.tree.push([null, this.start]);
         }
 
-        // Sample point
+        // Sample point with goal bias
         let sample;
-        if (Math.random() < this.goalBias) {
-            sample = { x: this.goalPoint.x, y: this.goalPoint.y };
+        if (Math.random() < this.goalBias && this.goal) {
+            sample = { x: this.goal.x, y: this.goal.y };
         } else {
             sample = {
                 x: Math.random() * this.canvas.width,
@@ -125,23 +84,19 @@ class PathPlanningBuddy {
 
         // Find nearest node
         const nearest = this.findNearestNode(sample);
+        if (!nearest) return false;
 
         // Extend tree
         const newNode = this.extend(nearest, sample);
-        if (newNode && !this.checkCollision(nearest, newNode)) {
-            this.rrtTree.push({
-                x: newNode.x,
-                y: newNode.y,
-                parent: nearest
-            });
+        if (!newNode) return false;
+
+        // Check for collisions
+        if (this.isValidPath(nearest, newNode)) {
+            this.tree.push([nearest, newNode]);
 
             // Check if we reached the goal
-            if (this.distanceBetween(newNode, this.goalPoint) < this.stepSize) {
-                this.rrtTree.push({
-                    x: this.goalPoint.x,
-                    y: this.goalPoint.y,
-                    parent: newNode
-                });
+            if (this.goal && this.distanceBetween(newNode, this.goal) < this.stepSize) {
+                this.tree.push([newNode, this.goal]);
                 return true;
             }
         }
@@ -150,10 +105,11 @@ class PathPlanningBuddy {
     }
 
     findNearestNode(point) {
-        let nearest = this.rrtTree[0];
-        let minDist = this.distanceBetween(point, nearest);
+        let nearest = null;
+        let minDist = Infinity;
 
-        for (const node of this.rrtTree) {
+        for (const [_, node] of this.tree) {
+            if (!node) continue;
             const dist = this.distanceBetween(point, node);
             if (dist < minDist) {
                 nearest = node;
@@ -175,309 +131,88 @@ class PathPlanningBuddy {
         };
     }
 
-    distanceBetween(p1, p2) {
-        return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
-    }
-
-    checkCollision(p1, p2) {
+    isValidPath(from, to) {
         for (const obstacle of this.obstacles) {
-            if (this.lineIntersectsRectangle(p1, p2, obstacle)) {
-                return true;
-            }
+            // Check if line intersects with obstacle
+            const d = this.pointToLineDistance(obstacle, from, to);
+            if (d < obstacle.radius) return false;
         }
-        return false;
+        return true;
     }
 
-    lineIntersectsRectangle(p1, p2, rect) {
-        const lines = [
-            [{x: rect.x, y: rect.y}, {x: rect.x + rect.width, y: rect.y}],
-            [{x: rect.x + rect.width, y: rect.y}, {x: rect.x + rect.width, y: rect.y + rect.height}],
-            [{x: rect.x + rect.width, y: rect.y + rect.height}, {x: rect.x, y: rect.y + rect.height}],
-            [{x: rect.x, y: rect.y + rect.height}, {x: rect.x, y: rect.y}]
-        ];
-
-        for (const line of lines) {
-            if (this.lineIntersectsLine(p1, p2, line[0], line[1])) {
-                return true;
-            }
-        }
-
-        return false;
+    pointToLineDistance(point, lineStart, lineEnd) {
+        const numerator = Math.abs(
+            (lineEnd.y - lineStart.y) * point.x -
+            (lineEnd.x - lineStart.x) * point.y +
+            lineEnd.x * lineStart.y -
+            lineEnd.y * lineStart.x
+        );
+        const denominator = Math.sqrt(
+            Math.pow(lineEnd.y - lineStart.y, 2) +
+            Math.pow(lineEnd.x - lineStart.x, 2)
+        );
+        return numerator / denominator;
     }
 
-    lineIntersectsLine(p1, p2, p3, p4) {
-        const denominator = ((p4.y - p3.y) * (p2.x - p1.x)) - ((p4.x - p3.x) * (p2.y - p1.y));
-        if (denominator === 0) return false;
-
-        const ua = (((p4.x - p3.x) * (p1.y - p3.y)) - ((p4.y - p3.y) * (p1.x - p3.x))) / denominator;
-        const ub = (((p2.x - p1.x) * (p1.y - p3.y)) - ((p2.y - p1.y) * (p1.x - p3.x))) / denominator;
-
-        return (ua >= 0 && ua <= 1) && (ub >= 0 && ub <= 1);
+    distanceBetween(p1, p2) {
+        return Math.sqrt(
+            Math.pow(p2.x - p1.x, 2) +
+            Math.pow(p2.y - p1.y, 2)
+        );
     }
 
     reconstructPath() {
-        this.path = [];
-        let current = this.rrtTree[this.rrtTree.length - 1];
-        while (current) {
-            this.path.unshift(current);
-            current = current.parent;
-        }
-    }
-
-    // RRT* Implementation
-    rrtStarStep() {
-        if (this.rrtTree.length === 0) {
-            this.rrtTree.push({
-                x: this.startPoint.x,
-                y: this.startPoint.y,
-                parent: null,
-                cost: 0
-            });
-        }
-
-        // Sample point
-        let sample;
-        if (Math.random() < this.goalBias) {
-            sample = { x: this.goalPoint.x, y: this.goalPoint.y };
-        } else {
-            sample = {
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height
-            };
-        }
-        this.samples.push(sample);
-
-        // Find nearest node
-        const nearest = this.findNearestNode(sample);
-
-        // Extend tree
-        const newNode = this.extend(nearest, sample);
-        if (newNode && !this.checkCollision(nearest, newNode)) {
-            // Find nearby nodes for rewiring
-            const radius = Math.min(this.stepSize * 5, 
-                Math.max(20, 50 * Math.log(this.rrtTree.length) / this.rrtTree.length));
-            const nearbyNodes = this.findNodesInRadius(newNode, radius);
-
-            // Connect to best parent
-            let bestParent = nearest;
-            let bestCost = nearest.cost + this.distanceBetween(nearest, newNode);
-
-            for (const node of nearbyNodes) {
-                const potentialCost = node.cost + this.distanceBetween(node, newNode);
-                if (potentialCost < bestCost && !this.checkCollision(node, newNode)) {
-                    bestParent = node;
-                    bestCost = potentialCost;
-                }
-            }
-
-            // Add new node
-            const addedNode = {
-                x: newNode.x,
-                y: newNode.y,
-                parent: bestParent,
-                cost: bestCost
-            };
-            this.rrtTree.push(addedNode);
-
-            // Rewire nearby nodes
-            for (const node of nearbyNodes) {
-                const potentialCost = bestCost + this.distanceBetween(addedNode, node);
-                if (potentialCost < node.cost && !this.checkCollision(addedNode, node)) {
-                    node.parent = addedNode;
-                    node.cost = potentialCost;
-                    this.updateDescendantsCosts(node);
-                }
-            }
-
-            // Check if we reached the goal
-            if (this.distanceBetween(newNode, this.goalPoint) < this.stepSize) {
-                const finalCost = bestCost + this.distanceBetween(newNode, this.goalPoint);
-                this.rrtTree.push({
-                    x: this.goalPoint.x,
-                    y: this.goalPoint.y,
-                    parent: addedNode,
-                    cost: finalCost
-                });
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    findNodesInRadius(point, radius) {
-        return this.rrtTree.filter(node => 
-            this.distanceBetween(node, point) <= radius);
-    }
-
-    updateDescendantsCosts(node) {
-        const descendants = this.rrtTree.filter(n => n.parent === node);
-        for (const descendant of descendants) {
-            descendant.cost = node.cost + this.distanceBetween(node, descendant);
-            this.updateDescendantsCosts(descendant);
-        }
-    }
-
-    // Planning Control
-    async startPlanning() {
-        if (!this.startPoint || !this.goalPoint) {
-            alert('Please set start and goal points first');
-            return;
-        }
-
-        this.isPlanning = true;
-        this.isPaused = false;
+        if (!this.goal) return;
         
-        let iterations = 0;
-        const startTime = performance.now();
-
-        while (this.isPlanning && !this.isPaused && iterations < this.maxIterations) {
-            let success = false;
-            
-            switch (this.currentAlgorithm) {
-                case 'rrt':
-                    success = this.rrtStep();
-                    break;
-                case 'rrt-star':
-                    success = this.rrtStarStep();
-                    break;
-                // Add other algorithms here
-            }
-
-            if (success) {
-                this.reconstructPath();
-                this.updateStatistics(iterations, startTime);
-                break;
-            }
-            iterations++;
-
-            if (this.animate) {
-                this.draw();
-                await new Promise(resolve => setTimeout(resolve, 10));
-            }
+        this.path = [this.goal];
+        let current = this.goal;
+        
+        while (current) {
+            const edge = this.tree.find(([from, to]) => to === current);
+            if (!edge) break;
+            current = edge[0];
+            if (current) this.path.unshift(current);
         }
-
-        if (!this.path.length && iterations >= this.maxIterations) {
-            alert('Maximum iterations reached without finding a path');
-        }
-
-        this.draw();
     }
 
-    togglePause() {
-        this.isPaused = !this.isPaused;
-        if (!this.isPaused) this.startPlanning();
-    }
-
-    reset() {
-        this.rrtTree = [];
-        this.path = [];
-        this.samples = [];
-        this.isPlanning = false;
-        this.isPaused = false;
-        this.draw();
-    }
-
-    step() {
-        if (this.rrtStep()) {
-            this.reconstructPath();
-        }
-        this.draw();
-    }
-
-    // Environment Modification
-    clearObstacles() {
-        this.obstacles = [];
-        this.draw();
-    }
-
-    addRandomObstacles() {
-        for (let i = 0; i < 10; i++) {
-            this.obstacles.push({
-                x: Math.random() * (this.canvas.width - 50),
-                y: Math.random() * (this.canvas.height - 50),
-                width: 30 + Math.random() * 40,
-                height: 30 + Math.random() * 40
-            });
-        }
-        this.draw();
-    }
-
-    generateMaze() {
-        // Simple maze generation
-        const cellSize = 40;
-        const cols = Math.floor(this.canvas.width / cellSize);
-        const rows = Math.floor(this.canvas.height / cellSize);
-
-        this.obstacles = [];
-        for (let i = 0; i < cols; i++) {
-            for (let j = 0; j < rows; j++) {
-                if (Math.random() < 0.3) {
-                    this.obstacles.push({
-                        x: i * cellSize,
-                        y: j * cellSize,
-                        width: cellSize - 2,
-                        height: cellSize - 2
-                    });
-                }
-            }
-        }
-        this.draw();
-    }
-
-    // Drawing
     draw() {
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+        
         // Draw obstacles
         this.ctx.fillStyle = '#666';
         for (const obstacle of this.obstacles) {
-            this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            this.ctx.beginPath();
+            this.ctx.arc(obstacle.x, obstacle.y, obstacle.radius, 0, Math.PI * 2);
+            this.ctx.fill();
         }
-
-        // Draw RRT tree with cost coloring for RRT*
-        if (this.showTree) {
-            for (const node of this.rrtTree) {
-                if (node.parent) {
-                    // Color based on cost for RRT*
-                    if (this.currentAlgorithm === 'rrt-star' && node.cost !== undefined) {
-                        const maxCost = Math.max(...this.rrtTree.map(n => n.cost || 0));
-                        const normalizedCost = node.cost / maxCost;
-                        const hue = (1 - normalizedCost) * 240; // Blue (240) to Red (0)
-                        this.ctx.strokeStyle = `hsl(${hue}, 70%, 50%)`;
-                    } else {
-                        this.ctx.strokeStyle = '#aaa';
-                    }
-                    
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(node.parent.x, node.parent.y);
-                    this.ctx.lineTo(node.x, node.y);
-                    this.ctx.stroke();
-                }
+        
+        // Draw tree if enabled
+        if (document.getElementById('show-tree')?.checked && this.tree.length > 0) {
+            this.ctx.strokeStyle = '#aaa';
+            this.ctx.lineWidth = 1;
+            for (const [from, to] of this.tree) {
+                if (!from || !to) continue;
+                this.ctx.beginPath();
+                this.ctx.moveTo(from.x, from.y);
+                this.ctx.lineTo(to.x, to.y);
+                this.ctx.stroke();
             }
         }
-
-        // Draw samples
-        if (this.showSamples) {
-            this.ctx.fillStyle = '#ccc';
+        
+        // Draw samples if enabled
+        if (document.getElementById('show-samples')?.checked && this.samples.length > 0) {
+            this.ctx.fillStyle = '#999';
             for (const sample of this.samples) {
                 this.ctx.beginPath();
                 this.ctx.arc(sample.x, sample.y, 2, 0, Math.PI * 2);
                 this.ctx.fill();
             }
         }
-
-        // Draw path with gradient
-        if (this.showPath && this.path.length > 0) {
-            const gradient = this.ctx.createLinearGradient(
-                this.path[0].x, this.path[0].y,
-                this.path[this.path.length - 1].x, this.path[this.path.length - 1].y
-            );
-            gradient.addColorStop(0, '#0f0');   // Start: Green
-            gradient.addColorStop(0.5, '#ff0');  // Middle: Yellow
-            gradient.addColorStop(1, '#f00');    // End: Red
-            
-            this.ctx.strokeStyle = gradient;
+        
+        // Draw path
+        if (this.path.length > 0) {
+            this.ctx.strokeStyle = '#4CAF50';
             this.ctx.lineWidth = 3;
             this.ctx.beginPath();
             this.ctx.moveTo(this.path[0].x, this.path[0].y);
@@ -485,113 +220,115 @@ class PathPlanningBuddy {
                 this.ctx.lineTo(this.path[i].x, this.path[i].y);
             }
             this.ctx.stroke();
-            this.ctx.lineWidth = 2;
         }
-
-        // Draw start and goal with glow effect
-        if (this.startPoint) {
-            this.ctx.shadowColor = '#0f0';
-            this.ctx.shadowBlur = 15;
-            this.ctx.fillStyle = '#0f0';
-            this.ctx.beginPath();
-            this.ctx.arc(this.startPoint.x, this.startPoint.y, 8, 0, Math.PI * 2);
-            this.ctx.fill();
-        }
-        if (this.goalPoint) {
-            this.ctx.shadowColor = '#f00';
-            this.ctx.shadowBlur = 15;
-            this.ctx.fillStyle = '#f00';
-            this.ctx.beginPath();
-            this.ctx.arc(this.goalPoint.x, this.goalPoint.y, 8, 0, Math.PI * 2);
-            this.ctx.fill();
-        }
-        this.ctx.shadowBlur = 0;
-    }
-
-    // Mouse Interaction
-    handleMouseDown(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        if (e.shiftKey) {
-            // Start drawing obstacle
-            this.isDrawingObstacle = true;
-            this.currentObstacle = { x, y, width: 0, height: 0 };
-        } else if (e.button === 0) {
-            // Left click - set start point
-            this.startPoint = { x, y };
-        } else if (e.button === 2) {
-            // Right click - set goal point
-            this.goalPoint = { x, y };
-        }
-        this.draw();
-    }
-
-    handleMouseMove(e) {
-        if (!this.isDrawingObstacle) return;
-
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        this.currentObstacle.width = x - this.currentObstacle.x;
-        this.currentObstacle.height = y - this.currentObstacle.y;
-        this.draw();
-
-        // Draw current obstacle
-        this.ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
-        this.ctx.fillRect(
-            this.currentObstacle.x,
-            this.currentObstacle.y,
-            this.currentObstacle.width,
-            this.currentObstacle.height
-        );
-    }
-
-    handleMouseUp(e) {
-        if (this.isDrawingObstacle) {
-            this.isDrawingObstacle = false;
-            if (Math.abs(this.currentObstacle.width) > 5 && Math.abs(this.currentObstacle.height) > 5) {
-                // Normalize rectangle coordinates
-                const obstacle = {
-                    x: this.currentObstacle.width > 0 ? this.currentObstacle.x : this.currentObstacle.x + this.currentObstacle.width,
-                    y: this.currentObstacle.height > 0 ? this.currentObstacle.y : this.currentObstacle.y + this.currentObstacle.height,
-                    width: Math.abs(this.currentObstacle.width),
-                    height: Math.abs(this.currentObstacle.height)
-                };
-                this.obstacles.push(obstacle);
-            }
-            this.currentObstacle = null;
-            this.draw();
-        }
-    }
-
-    // UI Updates
-    updateUIForAlgorithm() {
-        const rrtParams = document.querySelector('.rrt-params');
-        const astarParams = document.querySelector('.astar-params');
-        const potentialParams = document.querySelector('.potential-params');
-
-        rrtParams.style.display = this.currentAlgorithm.startsWith('rrt') ? 'block' : 'none';
-        astarParams.style.display = this.currentAlgorithm === 'astar' ? 'block' : 'none';
-        potentialParams.style.display = this.currentAlgorithm === 'potential' ? 'block' : 'none';
-    }
-
-    updateStatistics(iterations, startTime) {
-        const time = performance.now() - startTime;
-        document.getElementById('computation-time').textContent = `Time: ${time.toFixed(2)} ms`;
-        document.getElementById('nodes-explored').textContent = `Nodes Explored: ${this.rrtTree.length}`;
         
-        let pathLength = 0;
-        for (let i = 1; i < this.path.length; i++) {
-            pathLength += this.distanceBetween(this.path[i-1], this.path[i]);
+        // Draw start point
+        if (this.start) {
+            this.ctx.fillStyle = '#4CAF50';
+            this.ctx.beginPath();
+            this.ctx.arc(this.start.x, this.start.y, 8, 0, Math.PI * 2);
+            this.ctx.fill();
         }
-        document.getElementById('path-length').textContent = `Path Length: ${pathLength.toFixed(2)}`;
+        
+        // Draw goal point
+        if (this.goal) {
+            this.ctx.fillStyle = '#f44336';
+            this.ctx.beginPath();
+            this.ctx.arc(this.goal.x, this.goal.y, 8, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+    }
+
+    // Add random obstacles
+    generateRandomObstacles() {
+        const numObstacles = 10;
+        this.obstacles = [];
+        for (let i = 0; i < numObstacles; i++) {
+            this.obstacles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: 20 + Math.random() * 30
+            });
+        }
+        this.draw();
+    }
+
+    // Start planning
+    async startPlanning() {
+        if (!this.start || !this.goal) {
+            alert('Please set start and goal points first');
+            return;
+        }
+
+        // Reset planning state
+        this.isRunning = true;
+        this.path = [];
+        this.tree = [];
+        this.samples = [];
+
+        // Get parameters from UI
+        this.stepSize = parseInt(document.getElementById('step-size').value);
+        this.goalBias = parseInt(document.getElementById('goal-bias').value) / 100;
+        this.maxIterations = parseInt(document.getElementById('max-iterations').value);
+
+        // Start RRT
+        let iterations = 0;
+        const startTime = performance.now();
+
+        while (this.isRunning && iterations < this.maxIterations) {
+            if (this.rrtStep()) {
+                this.reconstructPath();
+                const endTime = performance.now();
+                
+                // Update statistics
+                document.getElementById('path-length').textContent = 
+                    `Path Length: ${this.calculatePathLength().toFixed(2)}`;
+                document.getElementById('iterations').textContent = 
+                    `Iterations: ${iterations}`;
+                document.getElementById('computation-time').textContent = 
+                    `Time: ${(endTime - startTime).toFixed(2)} ms`;
+                document.getElementById('success-rate').textContent = 
+                    `Success Rate: 100%`;
+                
+                break;
+            }
+            iterations++;
+            
+            // Update visualization periodically
+            if (iterations % 10 === 0) {
+                this.draw();
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        }
+
+        this.isRunning = false;
+        this.draw();
+    }
+
+    calculatePathLength() {
+        let length = 0;
+        for (let i = 1; i < this.path.length; i++) {
+            length += this.distanceBetween(this.path[i-1], this.path[i]);
+        }
+        return length;
     }
 }
 
-// Initialize when the page loads
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const planner = new PathPlanningBuddy();
+    
+    // Add event listeners for controls
+    document.getElementById('start-planning').addEventListener('click', () => planner.startPlanning());
+    document.getElementById('reset-planning').addEventListener('click', () => planner.reset());
+    document.getElementById('clear-obstacles').addEventListener('click', () => {
+        planner.obstacles = [];
+        planner.draw();
+    });
+    document.getElementById('generate-random').addEventListener('click', () => planner.generateRandomObstacles());
+    
+    // Add listeners for visualization toggles
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => planner.draw());
+    });
 }); 

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Point Cloud Processing Tutorial</h1>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div id="pointCloudViewer"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h3>Tools</h3>
+                    <div class="btn-group-vertical w-100">
+                        <button class="btn btn-primary mb-2">Load Point Cloud</button>
+                        <button class="btn btn-secondary mb-2">Filter Outliers</button>
+                        <button class="btn btn-info mb-2">Segment Ground</button>
+                        <button class="btn btn-warning mb-2">Cluster Objects</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

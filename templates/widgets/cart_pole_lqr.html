@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Cart Pole Control with LQR</h1>
+    
+    <div class="row">
+        <!-- Visualization -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="cartPoleCanvas" width="800" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>System Parameters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="cartMass">Cart Mass (kg)</label>
+                        <input type="range" class="form-range" id="cartMass" min="0.1" max="5" step="0.1" value="1">
+                        <span id="cartMassValue">1.0</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="poleMass">Pole Mass (kg)</label>
+                        <input type="range" class="form-range" id="poleMass" min="0.1" max="2" step="0.1" value="0.1">
+                        <span id="poleMassValue">0.1</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="poleLength">Pole Length (m)</label>
+                        <input type="range" class="form-range" id="poleLength" min="0.1" max="2" step="0.1" value="1">
+                        <span id="poleLengthValue">1.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>LQR Cost Parameters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="positionCost">Position Cost (Q1)</label>
+                        <input type="range" class="form-range" id="positionCost" min="0" max="100" step="1" value="1">
+                        <span id="positionCostValue">1.0</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="angleCost">Angle Cost (Q2)</label>
+                        <input type="range" class="form-range" id="angleCost" min="0" max="100" step="1" value="10">
+                        <span id="angleCostValue">10.0</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="controlCost">Control Cost (R)</label>
+                        <input type="range" class="form-range" id="controlCost" min="0.1" max="10" step="0.1" value="1">
+                        <span id="controlCostValue">1.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Controls</h5>
+                </div>
+                <div class="card-body">
+                    <button id="startBtn" class="btn btn-primary me-2">Start</button>
+                    <button id="resetBtn" class="btn btn-secondary me-2">Reset</button>
+                    <button id="perturbBtn" class="btn btn-warning">Add Perturbation</button>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>State Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>Position: <span id="positionValue">0.00</span> m</p>
+                    <p>Angle: <span id="angleValue">0.00</span> rad</p>
+                    <p>Control Force: <span id="controlValue">0.00</span> N</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Explanation Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Theory and Implementation</h5>
+                </div>
+                <div class="card-body">
+                    <h6>System Dynamics</h6>
+                    <p>The cart-pole system is described by four state variables:</p>
+                    <ul>
+                        <li>x: Cart position</li>
+                        <li>θ: Pole angle from vertical</li>
+                        <li>ẋ: Cart velocity</li>
+                        <li>θ̇: Pole angular velocity</li>
+                    </ul>
+
+                    <h6>LQR Control</h6>
+                    <p>The Linear Quadratic Regulator (LQR) finds an optimal control law by minimizing the cost function:</p>
+                    <div class="text-center">
+                        <p>J = ∫(x'Qx + u'Ru)dt</p>
+                    </div>
+                    <p>where:</p>
+                    <ul>
+                        <li>Q: State cost matrix (penalizes state deviation)</li>
+                        <li>R: Control cost matrix (penalizes control effort)</li>
+                    </ul>
+
+                    <h6>Parameter Effects</h6>
+                    <ul>
+                        <li>Higher position cost (Q1) makes the controller more aggressive in maintaining cart position</li>
+                        <li>Higher angle cost (Q2) prioritizes keeping the pole upright</li>
+                        <li>Higher control cost (R) makes the controller more conservative with control effort</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjs@9.4.4/lib/browser/math.min.js"></script>
+<script src="{% static 'js/cart_pole_lqr.js' %}"></script>
+{% endblock %} 

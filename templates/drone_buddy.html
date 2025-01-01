@@ -1,0 +1,71 @@
+function initNoVNC(hostname) {
+    const iframe = document.getElementById('novnc-iframe');
+    const status = document.getElementById('simulation-status');
+    
+    // Update status
+    status.textContent = 'Connecting to simulation...';
+    status.className = 'status-connecting';
+    
+    // Set iframe source
+    iframe.src = `https://${hostname}/vnc.html`;
+    iframe.style.display = 'block';
+    
+    // Add load event listener
+    iframe.onload = () => {
+        status.textContent = 'Simulation running';
+        status.className = 'status-running';
+    };
+    
+    // Add error event listener
+    iframe.onerror = () => {
+        status.textContent = 'Failed to connect to simulation';
+        status.className = 'status-error';
+    };
+}
+
+function startSimulation() {
+    const status = document.getElementById('simulation-status');
+    status.textContent = 'Starting simulation...';
+    status.className = 'status-starting';
+    
+    fetch('/openuav/manage/launch/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Container launched:', data);
+            initNoVNC(data.hostname);
+        } else {
+            console.error('Launch failed:', data.error);
+            status.textContent = `Failed to start simulation: ${data.error || 'Unknown error'}`;
+            status.className = 'status-error';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        status.textContent = `Error starting simulation: ${error.message}`;
+        status.className = 'status-error';
+    });
+}
+
+// Add CSS for status classes
+const style = document.createElement('style');
+style.textContent = `
+    .status-starting { color: #f39c12; }
+    .status-connecting { color: #3498db; }
+    .status-running { color: #2ecc71; }
+    .status-error { color: #e74c3c; }
+`;
+document.head.appendChild(style);
+
+// ... existing code ... 

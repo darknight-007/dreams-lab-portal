@@ -10,13 +10,20 @@
     height: 100%;
     min-height: 0;
 }
-.navigation-links {
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1rem;
 }
+.navigation-links {
+    display: flex;
+    gap: 1rem;
+}
 .navigation-links a {
-    margin-right: 1rem;
     color: #6c757d;
     text-decoration: none;
+    font-size: 0.9rem;
 }
 .navigation-links a:hover {
     color: #0d6efd;
@@ -27,14 +34,15 @@
 
 {% block widget_content %}
 <div class="drone-buddy-container">
-    <div class="navigation-links">
-        <a href="{% url 'dreamslab_home' %}">← Back to Dreams Lab</a>
-        <a href="{% url 'ses598_course' %}">← Back to SES 598 Course</a>
-    </div>
-
-    <div class="challenge-info mb-4">
-        <h3>Welcome to the Drone Buddy Challenge!</h3>
-        <p>Complete the drone control implementation and test it in the simulator.</p>
+    <div class="challenge-header">
+        <div class="challenge-info">
+            <h3>Welcome to the Drone Buddy Challenge!</h3>
+            <p>Complete the drone control implementation and test it in the simulator.</p>
+        </div>
+        <div class="navigation-links">
+            <a href="{% url 'dreamslab_home' %}">← Back to DREAMS Lab</a>
+            <a href="{% url 'ses598_course' %}">← Back to SES 598 Course</a>
+        </div>
     </div>
 
     <div class="split-view">
@@ -263,35 +271,44 @@ class DroneController:
     });
 
     // Initialize NoVNC connection
-    function initNoVNC() {
+    function initNoVNC(hostname) {
         const frame = document.getElementById('novnc-frame');
-        // Get the container URL from the OpenUAV manager
-        fetch('/openuav/manage/containers/active')
-            .then(response => response.json())
-            .then(data => {
-                if (data.vnc_url) {
-                    frame.src = data.vnc_url;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching container URL:', error);
-            });
+        frame.src = `https://${hostname}/vnc.html?resize=remote&reconnect=1&autoconnect=1`;
     }
 
     // Handle simulation controls
     document.getElementById('start-sim').addEventListener('click', function() {
+        // Show loading state
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+
         // Start the simulation using OpenUAV manager
         fetch('/openuav/manage/launch/', {
             method: 'POST',
             headers: {
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
             }
         })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                initNoVNC();
+                console.log('Container launched:', data);
+                initNoVNC(data.hostname);
+                document.getElementById('reset-sim').disabled = false;
+            } else {
+                console.error('Launch failed:', data.message);
+                alert('Failed to start simulation: ' + data.message);
+                this.disabled = false;
             }
+        })
+        .catch(error => {
+            console.error('Launch error:', error);
+            alert('Error starting simulation: ' + error.message);
+            this.disabled = false;
+        })
+        .finally(() => {
+            this.innerHTML = 'Start Simulation';
         });
     });
 

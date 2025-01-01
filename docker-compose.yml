@@ -15,6 +15,7 @@ services:
       - TWILIO_AUTH_TOKEN=key
       - TWILIO_VERIFY_SERVICE_SID=key
       - ALLOWED_HOSTS=dreamslab.deepgis.org,localhost,127.0.0.1,192.168.0.186,172.20.0.10
+      - VNC_PASSWORD=liftoff
     volumes:
       - .:/app
       - static_volume:/app/staticfiles

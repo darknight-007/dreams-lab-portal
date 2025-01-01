@@ -6,8 +6,11 @@ import os
 VNC_BASE_DOMAIN = "digital-twin.deepgis.org"
 
 # Container configuration
-CONTAINER_PREFIX = "digital-twin"
+CONTAINER_PREFIX = "openuav"
 CONTAINER_IMAGE = "openuav:px4-sitl"
+CONTAINER_NETWORK = "dreamslab"
+
+# Container ports (internal only)
 CONTAINER_PORTS = {
     "vnc": 5901,
     "novnc": 6080

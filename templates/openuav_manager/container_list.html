@@ -3,6 +3,9 @@
 
 {% block content %}
 <div class="container-fluid mt-4">
+    <!-- Messages container -->
+    <div class="messages mb-4"></div>
+    
     <!-- Navigation Links -->
     <div class="mb-4 d-flex justify-content-between align-items-center">
         <a href="/" class="text-decoration-none">
@@ -47,6 +50,10 @@
                     </div>
                     <div class="mb-3">
                         <h6 class="text-muted mb-2">Instance Summary</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Session ID</span>
+                            <span class="badge bg-info text-wrap" style="max-width: 200px; font-family: monospace;">{{ request.session_id }}</span>
+                        </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="small">Total Instances</span>
                             <span class="badge bg-primary" id="totalInstances">{{ containers|length }}</span>
@@ -382,7 +389,28 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap components
     const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    const logsModal = new bootstrap.Modal(document.getElementById('logsModal'));
+    
+    // Helper function to show alerts
+    function showAlert(type, message) {
+        const messagesContainer = document.querySelector('.messages');
+        if (!messagesContainer) return;
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        messagesContainer.appendChild(alertDiv);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
     
     // Auto-refresh functionality
     let autoRefreshInterval;
@@ -420,28 +448,62 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Launch new container
-    document.getElementById('launchNewBtn').addEventListener('click', async () => {
+    document.getElementById('launchNewBtn').addEventListener('click', async function() {
+        this.disabled = true;
         loadingModal.show();
         document.getElementById('loadingMessage').textContent = 'Launching new OpenUAV instance...';
         
         try {
-            const response = await fetch('/openuav/launch/', {
+            // First cleanup any stale containers
+            await fetch('/openuav/manage/batch-action/', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'cleanup',
+                    containers: []
+                })
+            });
+            
+            // Launch new container
+            const response = await fetch('/openuav/manage/launch/', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRFToken': getCookie('csrftoken')
                 }
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to launch instance');
+            }
+            
             const data = await response.json();
             
             if (data.status === 'success') {
-                window.location.reload();
+                showAlert('success', 'OpenUAV instance launched successfully. Initializing...');
+                // Wait a moment for the container to initialize
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000); // Increased wait time to 5 seconds
             } else {
-                showAlert('danger', 'Failed to launch instance: ' + data.message);
+                throw new Error(data.message || 'Failed to launch OpenUAV instance');
             }
         } catch (error) {
-            showAlert('danger', 'Error launching instance: ' + error.message);
+            showAlert('danger', 'Error: ' + error.message);
+            // If there's a specific error about another container running
+            if (error.message.includes('already running')) {
+                showAlert('info', 'Attempting to clean up existing containers...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
         } finally {
+            this.disabled = false;
             loadingModal.hide();
         }
     });
@@ -451,6 +513,10 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', async function() {
             const containerId = this.dataset.container;
             const action = this.dataset.action;
+            
+            if (!confirm(`Are you sure you want to ${action} this container?`)) {
+                return;
+            }
             
             this.disabled = true;
             loadingModal.show();
@@ -468,13 +534,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (data.status === 'success') {
+                    showAlert('success', `Container ${action}ed successfully`);
                     window.location.reload();
                 } else {
-                    showAlert('danger', `Failed to ${action} container`);
+                    showAlert('danger', `Failed to ${action} container: ${data.message}`);
                     this.disabled = false;
                 }
             } catch (error) {
-                showAlert('danger', `Error ${action}ing container: ` + error.message);
+                showAlert('danger', `Error ${action}ing container: ${error.message}`);
                 this.disabled = false;
             } finally {
                 loadingModal.hide();
@@ -518,17 +585,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Helper function to show alerts
-    function showAlert(type, message) {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        document.querySelector('.messages').appendChild(alertDiv);
-    }
     
     // Helper function to get CSRF token
     function getCookie(name) {

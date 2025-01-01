@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from dreams_laboratory.views import (
     # Core views
-    deepgis_home, dreamslab_home, run_blender, get_models, get_available_layers,
+    deepgis_home, dreamslab_home, openuav_home, run_blender, get_models, get_available_layers,
     get_category_info,
     # Authentication views
     initiate_login, verify_login, initiate_login_view, verify_login_view,
@@ -33,7 +33,7 @@ from dreams_laboratory.views import (
     particle_filter_buddy, loop_closure_buddy, sensor_fusion_buddy,
     visual_odometry_buddy, point_cloud_buddy, path_planning_buddy,
     # API views
-    apply_filters, ransac_demo_data, ses598_robotic_exploration_and_mapping_quiz,
+    apply_filters, ransac_demo_data,
     ses598_robotic_exploration_and_mapping, ses598_quiz,
     # Course view
     ses598_course_view,
@@ -47,6 +47,11 @@ from dreams_laboratory.views import (
     load_quiz_progress,
     # Widget views
     widget_view,
+    # Drone buddy views
+    drone_buddy_view,
+    save_drone_code,
+    run_drone_tests,
+    cart_pole_lqr_view,
 )
 from django.http import HttpResponse
 
@@ -63,26 +68,36 @@ urlpatterns = [
     path('api/get_category_info', get_category_info, name='get_category_info'),
     
     # OpenUAV URLs
-    path('openuav/', include('openuav_manager.urls')),
+    path('openuav/', openuav_home, name='openuav_home'),  # Main OpenUAV entry point
+    path('openuav/manage/', include('openuav_manager.urls')),  # OpenUAV management interface
     
     # DREAMS Lab URLs (moved under dreamslab/ prefix)
     path('dreamslab/run_blender/', run_blender, name='run_blender'),
     path('dreamslab/get_models/', get_models, name='get_models'),
-    path('dreamslab/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
-    path('dreamslab/slam-buddy/', slam_buddy_view, name='slam_buddy'),
-    path('dreamslab/cart-pole-buddy/', cart_pole_buddy_view, name='cart_pole_buddy'),
-    path('dreamslab/gaussian-processes-buddy/', gaussian_processes_buddy_view, name='gaussian_processes_buddy'),
-    path('dreamslab/param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
-    path('dreamslab/image-buddy/', image_buddy_view, name='image_buddy'),
+    path('dreamslab/stereo_buddy/', stereo_buddy_view, name='stereo_buddy'),
+    path('dreamslab/slam_buddy/', slam_buddy_view, name='slam_buddy'),
+    path('dreamslab/cart_pole_buddy/', cart_pole_buddy_view, name='cart_pole_buddy'),
+    path('dreamslab/gaussian_processes_buddy/', gaussian_processes_buddy_view, name='gaussian_processes_buddy'),
+    path('dreamslab/param_estimation_buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
+    path('dreamslab/image_buddy/', image_buddy_view, name='image_buddy'),  # Underscore version
+    path('dreamslab/image-buddy/', image_buddy_view, name='image_buddy_hyphen'),  # Hyphen version for backward compatibility
+    path('dreamslab/widget/<str:widget_type>/', widget_view, name='widget'),
+    
+    # Drone buddy specific URLs
+    path('dreamslab/drone_buddy/', drone_buddy_view, name='drone_buddy'),
+    path('dreamslab/drone-buddy/save-code', save_drone_code, name='save_drone_code'),
+    path('dreamslab/drone-buddy/run-tests', run_drone_tests, name='run_drone_tests'),
+    
     path('dreamslab/generate_batch_report/', generate_batch_report, name='generate_batch_report'),
-    path('dreamslab/ransac_buddy/', ransac_buddy, name='ransac-buddy'),
-    path('dreamslab/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
-    path('dreamslab/particle-filter/', particle_filter_buddy, name='particle_filter_buddy'),
-    path('dreamslab/loop-closure/', loop_closure_buddy, name='loop_closure_buddy'),
-    path('dreamslab/sensor-fusion/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
-    path('dreamslab/visual-odometry/', visual_odometry_buddy, name='visual_odometry_buddy'),
-    path('dreamslab/point-cloud/', point_cloud_buddy, name='point_cloud_buddy'),
-    path('dreamslab/path-planning/', path_planning_buddy, name='path_planning_buddy'),
+    path('dreamslab/ransac_buddy/', ransac_buddy, name='ransac_buddy'),
+    path('dreamslab/multiview_geometry_buddy/', multiview_geometry_view, name='multiview_geometry'),
+    path('dreamslab/particle_filter_buddy/', particle_filter_buddy, name='particle_filter_buddy'),
+    path('dreamslab/loop_closure_buddy/', loop_closure_buddy, name='loop_closure_buddy'),
+    path('dreamslab/sensor_fusion_buddy/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
+    path('dreamslab/visual_odometry_buddy/', visual_odometry_buddy, name='visual_odometry_buddy'),
+    path('dreamslab/point_cloud_buddy/', point_cloud_buddy, name='point_cloud_buddy'),
+    path('dreamslab/path_planning_buddy/', path_planning_buddy, name='path_planning_buddy'),
+    path('dreamslab/cart_pole_lqr_buddy/', cart_pole_lqr_view, name='cart_pole_lqr_buddy'),
     path('dreamslab/ses598/', ses598_course_view, name='ses598_course'),
     path('dreamslab/ses598/quiz/', ses598_quiz, name='ses598_quiz'),
     
@@ -103,9 +118,6 @@ urlpatterns = [
     path('tutorial/<str:tutorial_type>/<str:tutorial_id>/hints/', get_tutorial_hints, name='tutorial_hints'),
     path('quiz/progress/save', save_quiz_progress, name='save_quiz_progress'),
     path('quiz/progress/load', load_quiz_progress, name='load_quiz_progress'),
-    
-    # Widget URLs
-    path('widget/<str:widget_type>/', widget_view, name='widget'),
     
     # Health check
     path('health/', health_check),

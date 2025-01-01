@@ -30,7 +30,7 @@ class QuizManager {
         // Handle answer submissions
         document.querySelectorAll('.answer-form').forEach(form => {
             form.addEventListener('submit', (e) => {
-                e.preventDefault();
+            e.preventDefault();
                 const componentId = form.dataset.componentId;
                 this.submitAnswer(componentId, form);
             });
@@ -78,12 +78,12 @@ class QuizManager {
     async saveProgress(componentId, isCorrect) {
         try {
             await fetch('/quiz/progress/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
                     'X-CSRFToken': this.getCsrfToken()
-                },
-                body: JSON.stringify({
+        },
+        body: JSON.stringify({
                     component_id: componentId,
                     is_correct: isCorrect
                 })
@@ -99,12 +99,12 @@ class QuizManager {
         
         try {
             const response = await fetch(`/quiz/validate/${componentId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
                     'X-CSRFToken': this.getCsrfToken()
-                },
-                body: JSON.stringify({
+        },
+        body: JSON.stringify({
                     answer: answerInput.value
                 })
             });
