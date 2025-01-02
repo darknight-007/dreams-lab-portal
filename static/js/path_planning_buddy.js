@@ -8,11 +8,24 @@ class PathPlanningBuddy {
         this.tree = [];
         this.samples = [];
         this.isRunning = false;
+        this.costs = new Map(); // Store costs from start to each node
+        this.comparisonPaths = new Map(); // Initialize comparison paths
+        this.comparisonStats = new Map(); // Initialize comparison stats
+        
+        // Algorithm colors
+        this.algorithmColors = {
+            'rrt': '#4CAF50',
+            'rrtstar': '#2196F3',
+            'informed': '#9C27B0',
+            'prm': '#FF9800'
+        };
         
         // Initialize parameters
         this.stepSize = 20;
         this.goalBias = 0.2;
         this.maxIterations = 5000;
+        this.searchRadius = 50; // For RRT*
+        this.algorithm = 'rrt'; // Default algorithm
         
         // Then setup canvas
         this.canvas = document.getElementById('path-planning-canvas');
@@ -23,6 +36,15 @@ class PathPlanningBuddy {
         window.addEventListener('resize', () => this.resizeCanvas());
         this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        
+        // Add algorithm change listener
+        document.getElementById('algorithm').addEventListener('change', (e) => {
+            this.algorithm = e.target.value;
+            // Show/hide relevant parameters
+            document.querySelectorAll('.rrtstar-only').forEach(el => {
+                el.style.display = (this.algorithm === 'rrt') ? 'none' : 'block';
+            });
+        });
     }
 
     resizeCanvas() {
@@ -39,6 +61,7 @@ class PathPlanningBuddy {
         this.path = [];
         this.tree = [];
         this.samples = [];
+        this.costs = new Map();
         this.isRunning = false;
         this.draw();
     }
@@ -48,26 +71,30 @@ class PathPlanningBuddy {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        // Left click: Add obstacle
+        // Only handle left clicks
         if (e.button === 0) {
-            this.obstacles.push({ x, y, radius: 20 });
-        }
-        // Right click: Set goal
-        else if (e.button === 2) {
-            this.goal = { x, y };
-        }
-        // Middle click: Set start
-        else if (e.button === 1) {
-            this.start = { x, y };
+            // Shift + Left click: Set start point
+            if (e.shiftKey) {
+                this.start = { x, y };
+            }
+            // Ctrl + Left click: Set goal point 
+            else if (e.ctrlKey) {
+                this.goal = { x, y };
+            }
+            // Left click only: Add obstacle
+            else {
+                this.obstacles.push({ x, y, radius: 20 });
+            }
         }
         
         this.draw();
     }
 
-    // RRT Implementation
+    // RRT/RRT* Implementation
     rrtStep() {
         if (this.tree.length === 0 && this.start) {
             this.tree.push([null, this.start]);
+            this.costs.set(this.start, 0); // Initialize cost for start node
         }
 
         // Sample point with goal bias
@@ -88,17 +115,52 @@ class PathPlanningBuddy {
 
         // Extend tree
         const newNode = this.extend(nearest, sample);
-        if (!newNode) return false;
+        if (!newNode || !this.isValidPath(nearest, newNode)) return false;
 
-        // Check for collisions
-        if (this.isValidPath(nearest, newNode)) {
+        if (this.algorithm === 'rrt') {
+            // Standard RRT
             this.tree.push([nearest, newNode]);
+            this.costs.set(newNode, this.costs.get(nearest) + this.distanceBetween(nearest, newNode));
+        } else {
+            // RRT* with rewiring
+            const nearNodes = this.findNodesInRadius(newNode, this.searchRadius);
+            let minParent = nearest;
+            let minCost = this.costs.get(nearest) + this.distanceBetween(nearest, newNode);
 
-            // Check if we reached the goal
-            if (this.goal && this.distanceBetween(newNode, this.goal) < this.stepSize) {
-                this.tree.push([newNode, this.goal]);
-                return true;
+            // Find best parent
+            for (const node of nearNodes) {
+                if (node === nearest) continue;
+                const potentialCost = this.costs.get(node) + this.distanceBetween(node, newNode);
+                if (potentialCost < minCost && this.isValidPath(node, newNode)) {
+                    minParent = node;
+                    minCost = potentialCost;
+                }
             }
+
+            // Add new node with best parent
+            this.tree.push([minParent, newNode]);
+            this.costs.set(newNode, minCost);
+
+            // Rewire tree
+            for (const node of nearNodes) {
+                if (node === minParent || node === newNode) continue;
+                const potentialCost = minCost + this.distanceBetween(newNode, node);
+                if (potentialCost < this.costs.get(node) && this.isValidPath(newNode, node)) {
+                    // Remove old edge
+                    this.tree = this.tree.filter(([from, to]) => to !== node);
+                    // Add new edge
+                    this.tree.push([newNode, node]);
+                    // Update cost
+                    this.costs.set(node, potentialCost);
+                }
+            }
+        }
+
+        // Check if we reached the goal
+        if (this.goal && this.distanceBetween(newNode, this.goal) < this.stepSize) {
+            this.tree.push([newNode, this.goal]);
+            this.costs.set(this.goal, this.costs.get(newNode) + this.distanceBetween(newNode, this.goal));
+            return true;
         }
 
         return false;
@@ -210,9 +272,23 @@ class PathPlanningBuddy {
             }
         }
         
-        // Draw path
-        if (this.path.length > 0) {
-            this.ctx.strokeStyle = '#4CAF50';
+        // Draw comparison paths if they exist
+        for (const [algo, path] of this.comparisonPaths.entries()) {
+            if (path.length > 0) {
+                this.ctx.strokeStyle = this.algorithmColors[algo];
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(path[0].x, path[0].y);
+                for (let i = 1; i < path.length; i++) {
+                    this.ctx.lineTo(path[i].x, path[i].y);
+                }
+                this.ctx.stroke();
+            }
+        }
+        
+        // Draw current path if not in comparison mode
+        if (this.comparisonPaths.size === 0 && this.path.length > 0) {
+            this.ctx.strokeStyle = this.algorithmColors[this.algorithm];
             this.ctx.lineWidth = 3;
             this.ctx.beginPath();
             this.ctx.moveTo(this.path[0].x, this.path[0].y);
@@ -239,16 +315,46 @@ class PathPlanningBuddy {
         }
     }
 
-    // Add random obstacles
-    generateRandomObstacles() {
-        const numObstacles = 10;
+    clearAll() {
+        this.start = null;
+        this.goal = null;
         this.obstacles = [];
+        this.path = [];
+        this.tree = [];
+        this.samples = [];
+        this.costs = new Map();
+        this.isRunning = false;
+        this.draw();
+    }
+
+    generateRandomScene() {
+        // Clear everything first
+        this.clearAll();
+
+        // Set random start and goal points
+        const margin = 50;
+        this.start = {
+            x: margin + Math.random() * (this.canvas.width - 2 * margin),
+            y: margin + Math.random() * (this.canvas.height - 2 * margin)
+        };
+        this.goal = {
+            x: margin + Math.random() * (this.canvas.width - 2 * margin),
+            y: margin + Math.random() * (this.canvas.height - 2 * margin)
+        };
+
+        // Add random obstacles
+        const numObstacles = 10 + Math.floor(Math.random() * 10);
         for (let i = 0; i < numObstacles; i++) {
-            this.obstacles.push({
+            const obstacle = {
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                radius: 20 + Math.random() * 30
-            });
+                radius: 15 + Math.random() * 15
+            };
+            // Don't add if too close to start or goal
+            if (this.distanceBetween(obstacle, this.start) > obstacle.radius * 2 &&
+                this.distanceBetween(obstacle, this.goal) > obstacle.radius * 2) {
+                this.obstacles.push(obstacle);
+            }
         }
         this.draw();
     }
@@ -265,18 +371,23 @@ class PathPlanningBuddy {
         this.path = [];
         this.tree = [];
         this.samples = [];
+        this.costs = new Map();
 
         // Get parameters from UI
         this.stepSize = parseInt(document.getElementById('step-size').value);
         this.goalBias = parseInt(document.getElementById('goal-bias').value) / 100;
         this.maxIterations = parseInt(document.getElementById('max-iterations').value);
+        this.searchRadius = parseInt(document.getElementById('search-radius').value);
+        this.algorithm = document.getElementById('algorithm').value;
 
-        // Start RRT
+        // Start RRT/RRT*
         let iterations = 0;
         const startTime = performance.now();
+        let success = false;
 
         while (this.isRunning && iterations < this.maxIterations) {
             if (this.rrtStep()) {
+                success = true;
                 this.reconstructPath();
                 const endTime = performance.now();
                 
@@ -301,6 +412,10 @@ class PathPlanningBuddy {
             }
         }
 
+        if (!success) {
+            document.getElementById('success-rate').textContent = 'Success Rate: 0%';
+        }
+
         this.isRunning = false;
         this.draw();
     }
@@ -312,6 +427,99 @@ class PathPlanningBuddy {
         }
         return length;
     }
+
+    findNodesInRadius(point, radius) {
+        return this.tree
+            .map(([_, node]) => node)
+            .filter(node => node && this.distanceBetween(point, node) <= radius);
+    }
+
+    async compareAllAlgorithms() {
+        if (!this.start || !this.goal) {
+            alert('Please set start and goal points first');
+            return;
+        }
+
+        // Clear previous comparison results
+        this.comparisonPaths.clear();
+        this.comparisonStats.clear();
+
+        // Get parameters from UI
+        const stepSize = parseInt(document.getElementById('step-size').value);
+        const goalBias = parseInt(document.getElementById('goal-bias').value) / 100;
+        const maxIterations = parseInt(document.getElementById('max-iterations').value);
+        const searchRadius = parseInt(document.getElementById('search-radius').value);
+
+        // Create comparison table in statistics section
+        const statsDiv = document.getElementById('statistics');
+        statsDiv.innerHTML = `
+            <h3>Comparison Results</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Algorithm</th>
+                    <th>Path Length</th>
+                    <th>Time (ms)</th>
+                    <th>Iterations</th>
+                </tr>
+            </table>
+        `;
+        const table = statsDiv.querySelector('.comparison-table');
+
+        // Run each algorithm
+        const algorithms = ['rrt', 'rrtstar', 'informed', 'prm'];
+        for (const algo of algorithms) {
+            // Reset state
+            this.path = [];
+            this.tree = [];
+            this.samples = [];
+            this.costs = new Map();
+            this.algorithm = algo;
+
+            // Set parameters
+            this.stepSize = stepSize;
+            this.goalBias = goalBias;
+            this.maxIterations = maxIterations;
+            this.searchRadius = searchRadius;
+
+            // Run algorithm
+            const startTime = performance.now();
+            let iterations = 0;
+            let success = false;
+
+            while (iterations < maxIterations) {
+                if (this.rrtStep()) {
+                    success = true;
+                    this.reconstructPath();
+                    const endTime = performance.now();
+                    
+                    // Store results
+                    this.comparisonPaths.set(algo, [...this.path]);
+                    this.comparisonStats.set(algo, {
+                        pathLength: this.calculatePathLength(),
+                        time: endTime - startTime,
+                        iterations: iterations
+                    });
+                    
+                    break;
+                }
+                iterations++;
+            }
+
+            // Add results to table
+            const stats = this.comparisonStats.get(algo);
+            const row = table.insertRow();
+            row.innerHTML = `
+                <td><span class="legend-color" style="background: ${this.algorithmColors[algo]}"></span>${algo.toUpperCase()}</td>
+                <td>${stats ? stats.pathLength.toFixed(2) : 'Failed'}</td>
+                <td>${stats ? stats.time.toFixed(2) : '-'}</td>
+                <td>${stats ? stats.iterations : '-'}</td>
+            `;
+
+            // Update visualization
+            this.draw();
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
 }
 
 // Initialize when DOM is loaded
@@ -320,12 +528,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add event listeners for controls
     document.getElementById('start-planning').addEventListener('click', () => planner.startPlanning());
-    document.getElementById('reset-planning').addEventListener('click', () => planner.reset());
+    document.getElementById('reset-planning').addEventListener('click', () => {
+        planner.reset();
+        planner.comparisonPaths.clear();
+        planner.comparisonStats.clear();
+    });
     document.getElementById('clear-obstacles').addEventListener('click', () => {
         planner.obstacles = [];
         planner.draw();
     });
-    document.getElementById('generate-random').addEventListener('click', () => planner.generateRandomObstacles());
+    document.getElementById('generate-random').addEventListener('click', () => planner.generateRandomScene());
+    document.getElementById('compare-all').addEventListener('click', () => planner.compareAllAlgorithms());
     
     // Add listeners for visualization toggles
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {

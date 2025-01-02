@@ -8,13 +8,22 @@
             <h3>Instructions</h3>
             <ul>
                 <li>Left click: Add obstacle</li>
-                <li>Middle click: Set start point</li>
-                <li>Right click: Set goal point</li>
+                <li>Shift + Left click: Set start point</li>
+                <li>Ctrl + Left click: Set goal point</li>
             </ul>
         </div>
 
         <div class="control-section">
-            <h3>RRT Parameters</h3>
+            <h3>Planning Parameters</h3>
+            <div class="parameter">
+                <label for="algorithm">Algorithm:</label>
+                <select id="algorithm" class="algorithm-select">
+                    <option value="rrt">RRT (Rapidly-exploring Random Tree)</option>
+                    <option value="rrtstar">RRT* (Optimal RRT)</option>
+                    <option value="informed">Informed RRT*</option>
+                    <option value="prm">PRM (Probabilistic Roadmap)</option>
+                </select>
+            </div>
             <div class="parameter">
                 <label for="step-size">Step Size:</label>
                 <input type="range" id="step-size" min="10" max="50" value="20">
@@ -30,6 +39,16 @@
                 <input type="range" id="max-iterations" min="1000" max="10000" value="5000">
                 <span class="value">5000</span>
             </div>
+            <div class="parameter prm-only" style="display: none;">
+                <label for="num-vertices">PRM Vertices:</label>
+                <input type="range" id="num-vertices" min="50" max="500" value="200">
+                <span class="value">200</span>
+            </div>
+            <div class="parameter rrtstar-only" style="display: none;">
+                <label for="search-radius">Search Radius:</label>
+                <input type="range" id="search-radius" min="20" max="100" value="50">
+                <span class="value">50</span>
+            </div>
         </div>
 
         <div class="control-section">
@@ -37,7 +56,30 @@
             <button id="start-planning" class="primary">Start Planning</button>
             <button id="reset-planning">Reset</button>
             <button id="clear-obstacles">Clear Obstacles</button>
-            <button id="generate-random">Random Obstacles</button>
+            <button id="generate-random">Random Scene</button>
+            <button id="compare-all" class="primary">Compare All Algorithms</button>
+        </div>
+
+        <div class="control-section">
+            <h3>Path Legend</h3>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #4CAF50;"></span>
+                    <span>RRT</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #2196F3;"></span>
+                    <span>RRT*</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #9C27B0;"></span>
+                    <span>Informed RRT*</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #FF9800;"></span>
+                    <span>PRM</span>
+                </div>
+            </div>
         </div>
 
         <div class="control-section">
@@ -54,6 +96,7 @@
 
         <div class="control-section">
             <h3>Statistics</h3>
+            <div id="statistics"></div>
             <div id="path-length">Path Length: -</div>
             <div id="iterations">Iterations: -</div>
             <div id="computation-time">Time: -</div>
@@ -171,6 +214,51 @@ ul {
 li {
     margin: 5px 0;
     color: #666;
+}
+
+.legend {
+    margin-top: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 3px;
+    margin-right: 10px;
+}
+
+/* Comparison table styles */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+}
+
+.comparison-table th,
+.comparison-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.comparison-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.comparison-table .legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-radius: 2px;
 }
 </style>
 

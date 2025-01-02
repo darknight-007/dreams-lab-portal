@@ -1,0 +1,88 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Virtual Environment
+venv/
+.venv/
+ENV/
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.breakpoints
+
+# Development and Debug files
+django_debug.log
+.upm/
+.cache/
+.pythonlibs/
+.config/
+.replit
+replit.nix
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Project specific
+*.pyc
+.env
+.env.local
+*.bak
+logs/
+temp/
+uploads/
+data/
+
+# Blender
+/blender-4.2.2-linux-x64/
+
+# DeepGIS specific
+/deepgis-xr/static/rock-tiles/
+/deepgis-xr/media/
+/deepgis-xr/data/
+/deepgis-xr/db.sqlite3
+/deepgis-xr/__pycache__/
+
+# Static files - track js, css, images but ignore large directories
+/static/*
+!/static/js/
+!/static/css/
+!/static/images/
+
+# Large static directories to ignore
+/static/rock-tiles/
+/static/scripts/paperjs/
+/static/scripts/spinjs/
+/tiles-media/
+/moon-rocks/
