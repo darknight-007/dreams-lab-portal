@@ -1,85 +1,269 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
+<!-- Add html2pdf.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-.tutorial-container {
-    display: flex;
-    gap: 20px;
-    margin: 20px;
+/* Base Typography */
+:root {
+    --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-base: 18px;
+    --line-height-base: 1.7;
+    --text-color-primary: #2c3e50;
+    --text-color-secondary: #546e7a;
 }
 
-.tutorial-text {
-    flex: 1;
-    max-width: 60%;
+/* Print-specific styles for PDF generation */
+@media print {
+    body {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    
+    .syllabus-container {
+        padding: 0.5rem;
+    }
+    
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    h3 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+    h4 { font-size: 1.1rem; margin-bottom: 0.2rem; }
+    p { font-size: 0.9rem; line-height: 1.4; margin: 0.3rem 0; }
+    
+    .enrollment-quiz-banner {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+    }
+    
+    .course-meta {
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .module-card {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .module-content ul {
+        margin: 0.25rem 0;
+        padding-left: 1rem;
+    }
+    
+    .module-content li {
+        margin-bottom: 0.25rem;
+    }
+    
+    .grading-chart {
+        padding: 0.75rem;
+    }
+    
+    .grading-item {
+        margin-bottom: 0.75rem;
+    }
+    
+    .tutorials-table td, .tutorials-table th {
+        padding: 0.5rem;
+    }
+    
+    .tutorial-description {
+        font-size: 0.85rem;
+        margin: 0.25rem 0;
+    }
+    
+    .quick-nav, .footer, .start-link {
+        display: none;
+    }
 }
 
-.tutorial-viz {
-    flex: 1;
-    min-width: 40%;
+body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--text-color-primary);
+    margin: 0;
+    padding: 0;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
+/* Typography Scale */
+h1 { font-size: 2.5rem; line-height: 1.2; margin-top: 0; }
+h2 { font-size: 2rem; line-height: 1.3; margin-top: 0; }
+h3 { font-size: 1.75rem; line-height: 1.4; margin-top: 0; }
+h4 { font-size: 1.5rem; line-height: 1.4; margin-top: 0; }
+p { font-size: 1.125rem; line-height: 1.7; }
 
-.card {
+/* Quick Navigation */
+.quick-nav {
+    position: sticky;
+    top: 0;
     background: #fff;
-    border-radius: 8px;
-    padding: 20px;
+    padding: 0.5rem 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    z-index: 100;
+    margin: 0;
 }
 
-.card:hover {
-    transform: translateY(-5px);
+.quick-nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1rem;
 }
 
-.card h2 {
-    margin-top: 0;
-    color: #333;
-}
-
-.card p {
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.card a {
-    display: inline-block;
-    padding: 10px 20px;
-    background: #007bff;
-    color: white;
+.quick-nav a {
+    color: var(--text-color-primary);
     text-decoration: none;
-    border-radius: 4px;
-    transition: background 0.2s;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-size: 1.125rem;
 }
 
-.card a:hover {
-    background: #0056b3;
+.quick-nav a:hover {
+    background: #e3f2fd;
+    color: #1565c0;
 }
 
-.tutorial-group {
-    margin-bottom: 40px;
+/* Content Container */
+.syllabus-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
 }
 
-.tutorial-group h3 {
-    color: #333;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
+/* Enrollment Quiz Banner */
+.enrollment-quiz-banner {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.quiz-info h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+}
+
+.quiz-info p {
+    margin: 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.quiz-button {
+    background: white;
+    color: #ff6b6b;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.2s;
+    white-space: nowrap;
+}
+
+.quiz-button:hover {
+    transform: translateY(-2px);
+}
+
+/* Course Header */
+.course-header {
+    margin-bottom: 2rem;
+}
+
+.course-header h1 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1565c0;
+}
+
+.course-meta {
+    font-size: 1.125rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Course Description */
+.course-description {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    max-width: 70ch;
+    margin-bottom: 2rem;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Rest of your existing styles... */
+
+.pdf-button {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pdf-button:hover {
+    background-color: #0056b3;
+}
+.pdf-button i {
+    font-size: 1.2em;
 }
 </style>
+{% endblock %}
+
+{% block content %}
+<!-- Print button -->
+<button onclick="generatePDF()" class="pdf-button no-print">
+    <i class="fas fa-file-pdf"></i> Download Syllabus PDF
+</button>
+
+<!-- Quick Navigation -->
+<nav class="quick-nav">
+    <ul>
+        <li><a href="#course-info">Course Info</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#grading">Grading</a></li>
+        <li><a href="#tutorials">Tutorials</a></li>
+    </ul>
+</nav>
 
 <div class="syllabus-container">
     <!-- Enrollment Quiz Banner -->
     <div class="enrollment-quiz-banner">
         <div class="quiz-info">
             <h2>📝 Required Enrollment Quiz</h2>
-            <p>Students must complete this assessment quiz and share results with the instructor to receive enrollment consent.</p>
+            <p>Students must complete this quiz by first day of class to gauge foundation, and remain enrolled.</p>
         </div>
         <a href="{% url 'ses598_quiz' %}" class="quiz-button">
             Take Enrollment Quiz
@@ -88,7 +272,7 @@
     </div>
 
     <!-- Course Header and Info -->
-    <header class="course-header">
+    <header id="course-info" class="course-header">
         <h1>{{ syllabus.course_info.title }}</h1>
         <div class="course-meta">
             <div class="meta-item">
@@ -106,73 +290,110 @@
         </div>
     </header>
 
-    <!-- Instructor Info -->
-    <section class="instructor-info">
-        <h2>Instructor Information</h2>
-        <div class="info-grid">
-            <div class="info-item">
-                <strong>Instructor:</strong> {{ syllabus.course_info.instructor }}
-            </div>
-            <div class="info-item">
-                <strong>Office Hours:</strong> {{ syllabus.course_info.office_hours }}
-            </div>
-            <div class="info-item">
-                <strong>Contact:</strong> {{ syllabus.course_info.contact }}
-            </div>
-        </div>
-    </section>
-
     <!-- Course Description -->
     <section class="course-description">
         <h2>Course Description</h2>
-        <p>{{ syllabus.course_description }}</p>
+        <p>{{ syllabus.course_info.description }}</p>
+        <div class="instructor-info">
+            <h3>Instructor Information</h3>
+            <p><strong>Instructor:</strong> {{ syllabus.course_info.instructor }}</p>
+            <p><strong>Office Hours:</strong> {{ syllabus.course_info.office_hours }}</p>
+            <p><strong>Contact:</strong> {{ syllabus.course_info.contact }}</p>
+        </div>
     </section>
 
     <!-- Prerequisites -->
-    <section class="prerequisites">
+    <section id="prerequisites" class="prerequisites">
         <h2>Prerequisites</h2>
         <ul>
             {% for prereq in syllabus.prerequisites %}
-                <li>{{ prereq }}</li>
+                <li><strong>{{ prereq.category }}:</strong> {{ prereq.requirement }}</li>
             {% endfor %}
         </ul>
     </section>
 
-    <!-- Learning Outcomes -->
-    <section class="learning-outcomes">
-        <h2>Learning Outcomes</h2>
-        <div class="outcomes-list">
-            {% for outcome in syllabus.learning_outcomes %}
-                <div class="outcome-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ outcome }}</span>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <!-- Grading -->
-    <section class="grading">
-        <h2>Grading Distribution</h2>
-        <div class="grading-chart">
-            {% for component, percentage in syllabus.grading.items %}
-            <div class="grading-item">
-                <div class="grading-label">{{ component }}</div>
-                <div class="grading-bar" style="width: calc({{ percentage|cut:'%' }} * 1%)">
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
     <!-- Course Schedule -->
-    <section class="course-schedule">
+    <section id="schedule" class="course-schedule">
         <h2 class="section-title">Course Schedule</h2>
+        <style>
+        .module-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .module-header {
+            margin-bottom: 1rem;
+        }
+
+        .module-header .week {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #e3f2fd;
+            color: #1565c0;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-header h3 {
+            margin: 0;
+            color: #1565c0;
+            font-size: 1.5rem;
+        }
+
+        .module-content {
+            color: var(--text-color-primary);
+        }
+
+        .module-content h4 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .module-content ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .module-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .assignment {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .assignment strong {
+            color: #1565c0;
+        }
+
+        .assignment p {
+            margin: 0.5rem 0 0;
+            font-size: 1rem;
+        }
+        </style>
+
         <div class="module-grid">
             {% for module in syllabus.modules %}
             <div class="module-card">
                 <div class="module-header">
+                    {% if '-' in module.week %}
+                    <span class="week">Weeks {{ module.week }}</span>
+                    {% else %}
                     <span class="week">Week {{ module.week }}</span>
+                    {% endif %}
                     <h3>{{ module.title }}</h3>
                 </div>
                 <div class="module-content">
@@ -182,422 +403,361 @@
                             <li>{{ topic }}</li>
                         {% endfor %}
                     </ul>
+                    {% if module.assignment %}
                     <div class="assignment">
-                        <strong>Assignment:</strong>
                         <p>{{ module.assignment }}</p>
                     </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
     </section>
 
-    <!-- Interactive Tutorials Section -->
-    <section class="tutorials-section">
-        <h2 class="section-title">Interactive Learning Resources</h2>
-        
-        <!-- Computer Vision Fundamentals -->
-        <div class="tutorial-group">
-            <h3>Computer Vision Fundamentals</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Multi-View Geometry</h2>
-                    <p>Learn about epipolar geometry, fundamental matrix, and camera calibration with interactive 3D visualizations.</p>
-                    <a href="{% url 'multiview_geometry' %}">Start Tutorial</a>
+    <!-- Grading -->
+    <section id="grading" class="grading">
+        <h2>Grading Distribution</h2>
+        <style>
+        .grading-chart {
+            margin-top: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .grading-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2rem;
+        }
+
+        .grading-row {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .grading-row:hover {
+            background: #f8f9fa;
+        }
+
+        .grading-label {
+            flex: 0 0 200px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .grading-bar-container {
+            flex: 1;
+            height: 24px;
+            background: #e3f2fd;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .grading-bar {
+            height: 100%;
+            background: #1565c0;
+            border-radius: 12px;
+            transition: width 1s ease-in-out;
+        }
+
+        .grading-percentage {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .grading-description {
+            font-size: 0.95rem;
+            color: #546e7a;
+            margin-left: 200px;
+            margin-top: 0.5rem;
+            padding-right: 1rem;
+        }
+        </style>
+
+        <div class="grading-chart">
+            <div class="grading-item">
+                <div class="grading-row">
+                    <div class="grading-label">Assignments</div>
+                    <div class="grading-bar-container">
+                        <div class="grading-bar" style="width: 20%">
+                            <span class="grading-percentage">20%</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="card">
-                    <h2>Stereo Vision</h2>
-                    <p>Understand stereo vision concepts and depth estimation techniques.</p>
-                    <a href="{% url 'stereo_buddy' %}">Start Tutorial</a>
+                <div class="grading-description">
+                    Regular assignments throughout the semester to reinforce learning concepts and practical skills.
                 </div>
             </div>
-        </div>
-
-        <!-- SLAM and Mapping -->
-        <div class="tutorial-group">
-            <h3>SLAM and Mapping</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>SLAM Tutorial</h2>
-                    <p>Interactive tool for understanding Simultaneous Localization and Mapping.</p>
-                    <a href="{% url 'slam_buddy' %}">Start Tutorial</a>
+            <div class="grading-item">
+                <div class="grading-row">
+                    <div class="grading-label">Midterm Project</div>
+                    <div class="grading-bar-container">
+                        <div class="grading-bar" style="width: 20%">
+                            <span class="grading-percentage">20%</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="card">
-                    <h2>Visual Odometry</h2>
-                    <p>Understand how to estimate camera motion from sequential images.</p>
-                    <a href="{% url 'visual_odometry_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Loop Closure</h2>
-                    <p>Explore place recognition and loop closure detection in SLAM systems.</p>
-                    <a href="{% url 'loop_closure_buddy' %}">Start Tutorial</a>
+                <div class="grading-description">
+                    A comprehensive project due mid-semester that integrates core concepts covered in the first half.
                 </div>
             </div>
-        </div>
-
-        <!-- Estimation and Optimization -->
-        <div class="tutorial-group">
-            <h3>Estimation and Optimization</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Parameter Estimation</h2>
-                    <p>Interactive tool for understanding parameter estimation in computer vision.</p>
-                    <a href="{% url 'param_estimation_buddy' %}">Start Tutorial</a>
+            <div class="grading-item">
+                <div class="grading-row">
+                    <div class="grading-label">Final Project</div>
+                    <div class="grading-bar-container">
+                        <div class="grading-bar" style="width: 50%">
+                            <span class="grading-percentage">50%</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="card">
-                    <h2>RANSAC Tutorial</h2>
-                    <p>Explore Random Sample Consensus algorithm with interactive demonstrations.</p>
-                    <a href="{% url 'ransac_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Gaussian Processes</h2>
-                    <p>Explore Gaussian processes and their applications in computer vision.</p>
-                    <a href="{% url 'gaussian_processes_buddy' %}">Start Tutorial</a>
+                <div class="grading-description">
+                    A major project that demonstrates mastery of course concepts, including implementation and documentation.
                 </div>
             </div>
-        </div>
-
-        <!-- Sensing and Perception -->
-        <div class="tutorial-group">
-            <h3>Sensing and Perception</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Sensor Fusion</h2>
-                    <p>Learn about combining data from multiple sensors using Kalman filters.</p>
-                    <a href="{% url 'sensor_fusion_buddy' %}">Start Tutorial</a>
+            <div class="grading-item">
+                <div class="grading-row">
+                    <div class="grading-label">Class Participation</div>
+                    <div class="grading-bar-container">
+                        <div class="grading-bar" style="width: 10%">
+                            <span class="grading-percentage">10%</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="card">
-                    <h2>Point Cloud Processing</h2>
-                    <p>Learn techniques for processing and analyzing 3D point cloud data.</p>
-                    <a href="{% url 'point_cloud_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Particle Filters</h2>
-                    <p>Understand Monte Carlo localization and particle filtering techniques.</p>
-                    <a href="{% url 'particle_filter_buddy' %}">Start Tutorial</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Motion Planning and Control -->
-        <div class="tutorial-group">
-            <h3>Motion Planning and Control</h3>
-            <div class="grid">
-                <div class="card">
-                    <h2>Path Planning</h2>
-                    <p>Learn about various path planning algorithms including A*, RRT, and potential fields.</p>
-                    <a href="{% url 'path_planning_buddy' %}">Start Tutorial</a>
-                </div>
-                <div class="card">
-                    <h2>Cart Pole Control with LQR</h2>
-                    <p>Interactive tutorial demonstrating Linear Quadratic Regulator (LQR) control for balancing an inverted pendulum on a cart.</p>
-                    <a href="{% url 'cart_pole_lqr_buddy' %}">Start Tutorial</a>
+                <div class="grading-description">
+                    Active participation in class discussions, group activities, and engagement with course material.
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Interactive Tutorials Section -->
+    <section id="tutorials" class="tutorials-section">
+        <h2 class="section-title">Interactive Learning Resources</h2>
+        
+        <style>
+        .tutorials-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tutorials-table th {
+            background: #1565c0;
+            color: white;
+            text-align: left;
+            padding: 1rem;
+            font-weight: 500;
+        }
+
+        .tutorials-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .tutorials-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tutorials-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .tutorial-title {
+            font-weight: 600;
+            color: #1565c0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tutorial-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #546e7a;
+            font-size: 0.9rem;
+        }
+
+        .tutorial-description {
+            color: #2c3e50;
+            margin: 0.5rem 0;
+        }
+
+        .category-header {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .start-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #1565c0;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .start-link:hover {
+            background: #0d47a1;
+            transform: translateY(-1px);
+        }
+
+        .difficulty-tag {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .difficulty-tag.beginner { background: #e8f5e9; color: #2e7d32; }
+        .difficulty-tag.intermediate { background: #fff3e0; color: #ef6c00; }
+        .difficulty-tag.advanced { background: #fce4ec; color: #c2185b; }
+        </style>
+
+        <table class="tutorials-table">
+            <thead>
+                <tr>
+                    <th style="width: 80%">Tutorial</th>
+                    <th style="width: 20%">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category, tutorials in syllabus.tutorials.items %}
+                <tr class="category-header">
+                    <td colspan="2">{{ category }}</td>
+                </tr>
+                {% for tutorial in tutorials %}
+                <tr>
+                    <td>
+                        <div class="tutorial-title">
+                            {{ tutorial.title }}
+                            <span class="difficulty-tag {{ tutorial.difficulty|lower }}">{{ tutorial.difficulty }}</span>
+                        </div>
+                        <div class="tutorial-description">{{ tutorial.description }}</div>
+                    </td>
+                    <td>
+                        <a href="{% url tutorial.url %}" class="start-link">
+                            Start <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 </div>
 
-<style>
-    .syllabus-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-        font-family: 'Arial', sans-serif;
-    }
+<script>
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
 
-    .course-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, #1a237e, #0d47a1);
-        color: white;
-        border-radius: 10px;
-    }
-
-    .course-meta {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-top: 1rem;
-    }
-
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    section {
-        margin-bottom: 3rem;
-        padding: 2rem;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .module-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .module-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 1.5rem;
-        transition: transform 0.2s;
-    }
-
-    .module-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .week {
-        background: #1a237e;
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 15px;
-        font-size: 0.9rem;
-    }
-
-    .grading-chart {
-        margin-top: 1.5rem;
-    }
-
-    .grading-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .grading-bar {
-        background: #1a237e;
-        color: white;
-        padding: 0.5rem;
-        border-radius: 4px;
-        margin-left: 1rem;
-        transition: width 1s ease-in-out;
-    }
-
-    .outcomes-list {
-        display: grid;
-        gap: 1rem;
-    }
-
-    .outcome-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .outcome-item i {
-        color: #1a237e;
-    }
-
-    .enrollment-quiz-banner {
-        background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-        color: white;
-        padding: 2rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 2rem;
-    }
-
-    .quiz-info {
-        flex: 1;
-    }
-
-    .quiz-info h2 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1.5rem;
-    }
-
-    .quiz-info p {
-        margin: 0;
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
-
-    .quiz-button {
-        background: white;
-        color: #ff6b6b;
-        padding: 1rem 2rem;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .quiz-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    @media (max-width: 768px) {
-        .course-meta {
-            flex-direction: column;
-            gap: 1rem;
+// Highlight current section in navigation
+window.addEventListener('scroll', () => {
+    let current = '';
+    document.querySelectorAll('section[id]').forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 60) {
+            current = section.getAttribute('id');
         }
+    });
 
-        .module-grid {
-            grid-template-columns: 1fr;
+    document.querySelectorAll('.quick-nav a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').slice(1) === current) {
+            link.classList.add('active');
         }
+    });
+});
 
-        .enrollment-quiz-banner {
-            flex-direction: column;
-            text-align: center;
+function generatePDF() {
+    // Show loading state
+    const button = document.querySelector('.pdf-button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+    button.disabled = true;
+
+    // Configure PDF options
+    const options = {
+        margin: [0.5, 0.5],
+        filename: 'SES598_Course_Syllabus.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+            scale: 1.5,
+            useCORS: true,
+            logging: false
+        },
+        jsPDF: { 
+            unit: 'in', 
+            format: 'letter', 
+            orientation: 'portrait',
+            compress: true
+        },
+        pagebreak: { 
+            mode: ['avoid-all', 'css', 'legacy'],
+            before: '.page-break',
+            avoid: ['tr', 'li', '.module-card']
         }
+    };
 
-        .quiz-button {
-            width: 100%;
-            justify-content: center;
-        }
-    }
+    // Get the content element
+    const element = document.querySelector('.syllabus-container');
 
-    .tutorials-section {
-        margin: 3rem 0;
-    }
+    // Generate PDF
+    html2pdf().set(options).from(element).save()
+        .then(() => {
+            console.log('PDF generated successfully');
+            button.innerHTML = '<i class="fas fa-check"></i> PDF Generated!';
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('PDF generation failed:', err);
+            button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to generate PDF';
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000);
+        });
+}
 
-    .tutorial-group {
-        margin-bottom: 3rem;
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+// Add print button to browser's print dialog
+window.addEventListener('beforeprint', function() {
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+});
 
-    .tutorial-group h3 {
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 0.5rem;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .card {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 1.5rem;
-        transition: transform 0.2s;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .card h2 {
-        color: #3498db;
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-    }
-
-    .card a {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background: #3498db;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        margin-top: 1rem;
-        transition: background 0.2s;
-    }
-
-    .card a:hover {
-        background: #2980b9;
-    }
-
-    @media (max-width: 768px) {
-        .tutorial-group {
-            padding: 1rem;
-        }
-        
-        .grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .tutorial-container {
-        display: flex;
-        gap: 20px;
-        margin: 20px;
-    }
-
-    .tutorial-text {
-        flex: 1;
-        max-width: 60%;
-    }
-
-    .tutorial-viz {
-        flex: 1;
-        min-width: 40%;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin: 20px 0;
-    }
-
-    .card {
-        background: #fff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-    }
-
-    .card h2 {
-        margin-top: 0;
-        color: #333;
-    }
-
-    .card p {
-        color: #666;
-        margin-bottom: 20px;
-    }
-
-    .card a {
-        display: inline-block;
-        padding: 10px 20px;
-        background: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-        transition: background 0.2s;
-    }
-
-    .card a:hover {
-        background: #0056b3;
-    }
-
-    .tutorial-group {
-        margin-bottom: 40px;
-    }
-
-    .tutorial-group h3 {
-        color: #333;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 10px;
-    }
-</style>
+window.addEventListener('afterprint', function() {
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+});
+</script>
 {% endblock %} 
