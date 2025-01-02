@@ -660,14 +660,14 @@ def reset_quiz(request):
     
     return redirect('ses598_quiz')
 
-def ses598_course_view(request):
-    """View function for the SES598 course page"""
-    syllabus = {
+def get_ses598_course_data():
+    """Return the SES598 course data that can be used across different views"""
+    return {
         'course_info': {
-            'title': 'SES 598: Robotics and AI for Planetary Exploration',
+            'title': 'SES 598: Robotics and AI for Space Exploration',
             'semester': 'Spring 2025',
             'meeting_times': 'Tu/Th 10:30-11:45pm',
-            'location': 'ASU Tempe Campus, TBD',
+            'location': 'ASU Tempe Campus, Room TBD',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'By appointment',
             'contact': 'jdas@asu.edu',
@@ -696,7 +696,7 @@ def ses598_course_view(request):
             },
             {
                 'week': '3-4',
-                'title': 'Computer Vision & 3D Reconstruction',
+                'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
                     'Feature detection and matching',
@@ -708,26 +708,24 @@ def ses598_course_view(request):
             },
             {
                 'week': '5',
-                'title': 'Advanced Scene Representation & Neural Rendering',
+                'title': 'Scene Representation and View Synthesis',
                 'topics': [
-                    'View synthesis techniques',
-                    'Neural Radiance Fields (NeRF)', 
-                    'Gaussian Splatting',
-                    'Real-time rendering strategies',
+                    'Scene  representation and view synthesis techniques',
+                    'Neural Radiance Fields (NeRF) and Gaussian Splatting',
                     'Fusing with photogrammetry workflows'
                 ],
-                'assignment': 'Assignment 4: Photogrammetry and Gaussian Splatting exploration'
+                'assignment': 'Assignment 4: Photogrammetry and Gaussian splatting experiments on Apollo 17 andLunar analog datasets.'
             },
             {
                 'week': '6',
-                'title': 'Sampling Strategies & Information Theory',
+                'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
                     'Active sampling and exploration',
                     'Multi-armed bandits and Bayesian optimization',
                     'Information gain in exploration'
                 ],
-                'assignment': 'Assignment 5: Optimal sample collection challenge'
+                'assignment': 'Assignment 5: Optimal space telescope sampling challenge'
             },
             {
                 'week': '7-8',
@@ -738,7 +736,7 @@ def ses598_course_view(request):
                     'Case study 2 - ecological digital and physical twins',
                     'Closing the loop on model improvement with cyber-physical twins'
                 ],
-                'assignment': 'Project 3: Adaptive digital twin system involving seismic studies'
+                'assignment': 'Assignment 6: Adaptive digital twin system involving seismic studies with virtual shake robot and ShakeBot.'
             },
             {
                 'week': '9-10',
@@ -750,7 +748,7 @@ def ses598_course_view(request):
                     'Exploration-exploitation trade-offs',
                     'Resource-constrained planning'
                 ],
-                'assignment': 'Midterm Project: Information-driven mapping system'
+                'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge'
             },
             {
                 'week': '11-12',
@@ -762,7 +760,7 @@ def ses598_course_view(request):
                     'Decentralized decision making',
                     'Communication-aware sampling'
                 ],
-                'assignment': 'Project 4: Multi-robot exploration system'
+                'assignment': 'Assignment 7: Multi-robot exploration system'
             },
             {
                 'week': '13-14',
@@ -774,7 +772,7 @@ def ses598_course_view(request):
                     'Environmental uncertainty modeling',
                     'Safety-constrained learning'
                 ],
-                'assignment': 'Assignment 6: Robust exploration system'
+                'assignment': 'Assignment 8: Robust exploration system'
             },
             {
                 'week': '15-16',
@@ -792,7 +790,7 @@ def ses598_course_view(request):
         'grading': {
             'Assignments': {
                 'percentage': 20,
-                'description': 'Six assignments throughout the semester to reinforce learning concepts and practical skills.'
+                'description': 'Eight assignments throughout the semester to reinforce learning concepts and practical skills.'
             },
             'Midterm Project': {
                 'percentage': 20,
@@ -830,10 +828,10 @@ def ses598_course_view(request):
                     'url': 'slam_buddy'
                 },
                 {
-                    'title': 'Loop Closure',
-                    'description': 'Place recognition and loop closure detection',
+                    'title': 'Bundle Adjustment',
+                    'description': 'Interactive demo of bundle adjustment with multiple cameras',
                     'difficulty': 'Advanced',
-                    'url': 'loop_closure_buddy'
+                    'url': 'bundle_adjustment_buddy'
                 }
             ],
             'Estimation and Optimization': [
@@ -854,6 +852,12 @@ def ses598_course_view(request):
                     'description': 'Gaussian processes in computer vision',
                     'difficulty': 'Advanced',
                     'url': 'gaussian_processes_buddy'
+                },
+                {
+                    'title': 'Uncertainty-based Sampling',
+                    'description': 'Interactive demo of uncertainty-based sampling using CEM',
+                    'difficulty': 'Intermediate',
+                    'url': 'sampling_buddy'
                 },
                 {
                     'title': 'Particle Filter',
@@ -878,272 +882,10 @@ def ses598_course_view(request):
             ]
         }
     }
-    return render(request, 'ses598_course.html', {'syllabus': syllabus})
 
-# Define correct answers
-correct_answers = {
-    'q1': 'a',  # Perspective projection matrix
-    'q2': 'b',  # Feature tracking for SfM
-    'q3': 'a',  # SLAM chicken-and-egg problem
-    'q4': 'b',  # Information gain in SLAM
-    'q5': 'b',  # Bayesian optimization
-    'q6': 'a',  # Thompson sampling
-    'q7': 'b',  # Multi-modal sensing
-    'q8': 'b',  # Uncertainty modeling
-    'q9': 'a',  # Local vs global planning
-    'q10': 'b'  # Distributed decision-making
-}
-
-def validate_interactive_answer(question_id, student_answer, correct_answer, tolerance):
-    try:
-        student_val = float(student_answer)
-        correct_val = float(correct_answer)
-        return abs(student_val - correct_val) <= tolerance
-    except ValueError:
-        return False
-
-def process_quiz_submission(request):
-    if request.method == 'POST':
-        interactive_scores = []
-        for component in quiz_questions['interactive_components']:
-            answer_key = f"{component['id']}_answer"
-            student_answer = request.POST.get(answer_key)
-            is_correct = validate_interactive_answer(
-                component['id'],
-                student_answer,
-                component['correct_answer'],
-                component['tolerance']
-            )
-            interactive_scores.append(is_correct)
-
-def tutorial_view(request, tutorial_type, tutorial_id):
-    """View for rendering a tutorial component"""
-    try:
-        # Create tutorial component
-        tutorial = tutorial_manager.create_tutorial(
-            tutorial_type,
-            tutorial_id,
-            difficulty='medium'  # Could be passed as a parameter
-        )
-        
-        # Get context for rendering
-        context = tutorial.get_context()
-        
-        return render(request, 'interactive_component.html', context)
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
-def quiz_view(request, quiz_type, quiz_id):
-    """View for rendering a quiz component"""
-    try:
-        # Create quiz component
-        quiz = tutorial_manager.create_quiz(
-            quiz_type,
-            quiz_id,
-            difficulty=request.GET.get('difficulty', 'medium')
-        )
-        
-        # Get context for rendering
-        context = quiz.get_context(mode='quiz')
-        
-        return render(request, 'interactive_component.html', context)
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
-def validate_quiz_answer(request, component_id):
-    """Validate a quiz answer and return feedback"""
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-    
-    try:
-        # Get the quiz component
-        component = tutorial_manager.create_quiz(
-            component_id.split('_')[0],  # Extract type from id
-            component_id,
-            difficulty=request.GET.get('difficulty', 'medium')
-        )
-        
-        # Get student answer from POST data
-        student_answer = request.POST.get('answer')
-        if student_answer is None:
-            return JsonResponse({'error': 'No answer provided'}, status=400)
-        
-        # Generate correct answer
-        if hasattr(component, 'generate_ground_truth'):
-            ground_truth = component.generate_ground_truth()
-            correct_answer = ground_truth['depth']  # For stereo vision
-        else:
-            # For other types of quizzes, get correct answer differently
-            correct_answer = component.get_correct_answer()
-        
-        # Validate the answer
-        is_correct = tutorial_manager.validate_answer(
-            component,
-            student_answer,
-            correct_answer
-        )
-        
-        # Save progress
-        if request.user.is_authenticated:
-            QuizProgress.objects.update_or_create(
-                user=request.user,
-                component_id=component_id,
-                defaults={'is_correct': is_correct}
-            )
-        
-        # Return detailed feedback
-        feedback = {
-            'is_correct': is_correct,
-            'correct_answer': correct_answer,
-            'message': 'Correct! Well done!' if is_correct else 'Not quite right. Try again!',
-            'hint': component.get_hint() if hasattr(component, 'get_hint') else None
-        }
-        
-        return JsonResponse(feedback)
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
-def get_tutorial_hints(request, component_id):
-    """Get hints for a quiz component"""
-    try:
-        # Create tutorial component
-        component = tutorial_manager.create_tutorial(
-            component_id.split('_')[0],  # Extract type from id
-            component_id
-        )
-        
-        # Get hints
-        hints = component.get_hints() if hasattr(component, 'get_hints') else []
-        
-        return JsonResponse({'hints': hints})
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
-def save_quiz_progress(request):
-    """Save the user's quiz progress"""
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-    
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Authentication required'}, status=401)
-    
-    try:
-        # Get progress data from request
-        data = json.loads(request.body)
-        component_id = data.get('component_id')
-        is_correct = data.get('is_correct')
-        
-        if not component_id or is_correct is None:
-            return JsonResponse({'error': 'Missing required fields'}, status=400)
-        
-        # Get or create progress record
-        try:
-            progress, created = QuizProgress.objects.get_or_create(
-                user=request.user,
-                component_id=component_id,
-                defaults={'is_correct': is_correct}
-            )
-            
-            if not created:
-                progress.is_correct = is_correct
-                progress.save()
-            
-            return JsonResponse({
-                'status': 'success',
-                'created': created,
-                'is_correct': progress.is_correct
-            })
-        except Exception as e:
-            # Log the error but don't expose internal details
-            logger.error(f"Error saving quiz progress: {str(e)}")
-            return JsonResponse({'error': 'Unable to save progress'}, status=500)
-            
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-    except Exception as e:
-        logger.error(f"Unexpected error in save_quiz_progress: {str(e)}")
-        return JsonResponse({'error': 'Internal server error'}, status=500)
-
-def load_quiz_progress(request):
-    """Load the user's quiz progress"""
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Authentication required'}, status=401)
-    
-    try:
-        # Get all progress records for the user
-        try:
-            progress = QuizProgress.objects.filter(user=request.user)
-            
-            # Format progress data
-            progress_data = {
-                p.component_id: {
-                    'is_correct': p.is_correct,
-                    'timestamp': p.updated_at.isoformat()
-                }
-                for p in progress
-            }
-            
-            return JsonResponse({
-                'status': 'success',
-                'progress': progress_data
-            })
-        except Exception as e:
-            # Log the error but don't expose internal details
-            logger.error(f"Error loading quiz progress: {str(e)}")
-            return JsonResponse({'error': 'Unable to load progress'}, status=500)
-            
-    except Exception as e:
-        logger.error(f"Unexpected error in load_quiz_progress: {str(e)}")
-        return JsonResponse({'error': 'Internal server error'}, status=500)
-
-def widget_view(request, widget_type):
-    """View for rendering interactive widgets"""
-    # Map widget types to their corresponding templates
-    widget_templates = {
-        'stereo_buddy': 'widgets/stereo_buddy.html',
-        'ransac_buddy': 'widgets/ransac_buddy.html',
-        'param_estimation_buddy': 'widgets/param_estimation_buddy.html',
-        'slam_buddy': 'widgets/slam_buddy.html',
-        'cart_pole_lqr_buddy': 'widgets/cart_pole_lqr_buddy.html',
-        'gaussian_processes_buddy': 'widgets/gaussian_processes_buddy.html',
-        'image_buddy': 'widgets/image_buddy.html',
-        'particle_filter_buddy': 'widgets/particle_filter_buddy.html',
-        'loop_closure_buddy': 'widgets/loop_closure_buddy.html',
-        'sensor_fusion_buddy': 'widgets/sensor_fusion_buddy.html',
-        'visual_odometry_buddy': 'widgets/visual_odometry_buddy.html',
-        'point_cloud_buddy': 'widgets/point_cloud_buddy.html',
-        'path_planning_buddy': 'widgets/path_planning_buddy.html',
-        'drone_buddy': 'widgets/drone_buddy.html',
-    }
-    
-    # Get the corresponding template
-    template_name = widget_templates.get(widget_type)
-    if not template_name:
-        return JsonResponse({'error': f'Widget type {widget_type} not found'}, status=404)
-    
-    # Render the template
-    return render(request, template_name)
-
-def deepgis_home_view(request):
-    """View function for the DeepGIS home page"""
-    # Fetch model objects from database
-    people = People.objects.order_by('-role')
-    research_areas = Research.objects.all().order_by('-effort')
-    publications = Publication.objects.exclude(title__iexact='Generic')
-    projects = Project.objects.all()
-    assets = Asset.objects.all()
-    funding_source = FundingSource.objects.all()
-    
-    # Pass data to the template
-    context = {
-        'people': people,
-        'research_areas': research_areas,
-        'publications': publications,
-        'projects': projects,
-        'assets': assets,
-        'funding_source': funding_source,
-    }
-    return render(request, 'deepgis_home.html', context)
+def ses598_course_view(request):
+    """View function for the SES598 course page"""
+    return render(request, 'ses598_course.html', {'syllabus': get_ses598_course_data()})
 
 def dreamslab_home_view(request):
     """DREAMS Lab home page"""
@@ -1152,7 +894,8 @@ def dreamslab_home_view(request):
         'people': People.objects.all(),
         'publications': Publication.objects.all(),
         'funding_source': FundingSource.objects.all(),
-        'assets': Asset.objects.all()
+        'assets': Asset.objects.all(),
+        'course': get_ses598_course_data()['course_info']  # Only pass the course info section
     }
     return render(request, 'home.html', context)
 
@@ -1315,3 +1058,13 @@ def run_drone_tests(request):
 def cart_pole_lqr_buddy_view(request):
     """View function for the cart pole LQR tutorial"""
     return render(request, 'widgets/cart_pole_lqr_buddy.html')
+
+def sampling_buddy_view(request):
+    return render(request, 'widgets/sampling_buddy.html')
+
+def gp_ucb_buddy_view(request):
+    return render(request, 'widgets/gp_ucb_buddy.html')
+
+def bundle_adjustment_buddy_view(request):
+    """View function for the bundle adjustment tutorial page."""
+    return render(request, 'widgets/bundle_adjustment_buddy.html')

@@ -4,7 +4,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from dreams_laboratory.views import (
-    home_view, deepgis_home_view, dreamslab_home_view,
+    home_view, dreamslab_home_view,
     multiview_geometry_view, stereo_buddy_view,
     slam_buddy_view, loop_closure_buddy_view,
     param_estimation_buddy_view, ransac_buddy_view,
@@ -12,7 +12,9 @@ from dreams_laboratory.views import (
     cart_pole_lqr_buddy_view, particle_filter_buddy_view,
     point_cloud_buddy, sensor_fusion_buddy,
     image_buddy_view, ses598_course_view, ses598_quiz,
-    drone_buddy_view, save_drone_code, run_drone_tests
+    drone_buddy_view, save_drone_code, run_drone_tests,
+    sampling_buddy_view, gp_ucb_buddy_view,
+    bundle_adjustment_buddy_view
 )
 from django.http import HttpResponse
 
@@ -22,17 +24,18 @@ def health_check(request):
 urlpatterns = [
     path('admin/', admin.site.urls),  # Django admin URLs
     path('', home_view, name='home'),
-    path('deepgis/', deepgis_home_view, name='deepgis_home'),
     path('dreamslab/', dreamslab_home_view, name='dreamslab_home'),
     path('dreamslab/ses598/', ses598_course_view, name='ses598_course'),
     path('dreamslab/ses598/quiz/', ses598_quiz, name='ses598_quiz'),
     path('tutorials/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
     path('tutorials/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
     path('tutorials/slam-buddy/', slam_buddy_view, name='slam_buddy'),
-    path('tutorials/loop-closure-buddy/', loop_closure_buddy_view, name='loop_closure_buddy'),
+    path('tutorials/bundle-adjustment-buddy/', bundle_adjustment_buddy_view, name='bundle_adjustment_buddy'),
     path('tutorials/param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
     path('tutorials/ransac-buddy/', ransac_buddy_view, name='ransac_buddy'),
     path('tutorials/gaussian-processes-buddy/', gaussian_processes_buddy_view, name='gaussian_processes_buddy'),
+    path('tutorials/sampling-buddy/', sampling_buddy_view, name='sampling_buddy'),
+    path('tutorials/gp-ucb-buddy/', gp_ucb_buddy_view, name='gp_ucb_buddy'),
     path('tutorials/path-planning-buddy/', path_planning_buddy_view, name='path_planning_buddy'),
     path('tutorials/cart-pole-lqr-buddy/', cart_pole_lqr_buddy_view, name='cart_pole_lqr_buddy'),
     path('tutorials/image-buddy/', image_buddy_view, name='image_buddy'),

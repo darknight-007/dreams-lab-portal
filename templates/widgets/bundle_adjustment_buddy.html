@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    .demo-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    .visualization-container {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .canvas-container {
+        background: #000;
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    #scene-canvas {
+        width: 100%;
+        height: 700px;
+        border-radius: 8px;
+        background: #1a1a1a;
+    }
+
+    .controls-container {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        height: fit-content;
+    }
+
+    .control-group {
+        margin-bottom: 25px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .control-group h3 {
+        margin-bottom: 15px;
+        color: #2c3e50;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .slider-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        padding: 8px;
+        background: white;
+        border-radius: 6px;
+    }
+
+    .slider-container label {
+        min-width: 150px;
+        color: #34495e;
+        font-weight: 500;
+    }
+
+    .slider-container input[type="range"] {
+        flex: 1;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .slider-container span {
+        min-width: 60px;
+        text-align: right;
+        font-family: monospace;
+        font-size: 1.1em;
+        color: #2c3e50;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        margin-right: 12px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        font-size: 1.1em;
+    }
+
+    button:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .metrics {
+        margin-top: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .metrics h4 {
+        margin-bottom: 15px;
+        color: #2c3e50;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .metrics table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .metrics th, .metrics td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .metrics th {
+        background: #f1f3f5;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .metrics td {
+        font-family: monospace;
+        font-size: 1.1em;
+        color: #34495e;
+    }
+
+    .legend {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        color: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 4px;
+    }
+
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        margin-right: 12px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .intro-text {
+        max-width: 800px;
+        margin: 0 auto 30px;
+        line-height: 1.6;
+        color: #2c3e50;
+        font-size: 1.1em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-container">
+    <h1>Bundle Adjustment Demo</h1>
+    <p class="intro-text">
+        This interactive demo demonstrates bundle adjustment optimization with four cameras observing a set of 3D points. 
+        The optimization process minimizes reprojection error by adjusting camera poses and 3D point positions, 
+        illustrating the core principles of multi-view geometry and optimization in computer vision.
+    </p>
+
+    <div class="visualization-container">
+        <div class="canvas-container">
+            <div id="scene-canvas"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff4444"></div>
+                    <span>Cameras</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #44ff44"></div>
+                    <span>3D Points</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4444ff"></div>
+                    <span>Projections</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff0000"></div>
+                    <span>Error</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-container">
+            <div class="control-group">
+                <h3>Optimization Parameters</h3>
+                <div class="slider-container">
+                    <label>Learning Rate</label>
+                    <input type="range" id="learning-rate" min="1" max="100" value="10">
+                    <span id="learning-rate-value">0.1</span>
+                </div>
+                <div class="slider-container">
+                    <label>Max Iterations</label>
+                    <input type="range" id="max-iterations" min="10" max="200" value="50">
+                    <span id="max-iterations-value">50</span>
+                </div>
+                <div class="slider-container">
+                    <label>Noise Level</label>
+                    <input type="range" id="noise-level" min="0" max="100" value="10">
+                    <span id="noise-level-value">0.1</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Scene Controls</h3>
+                <div class="slider-container">
+                    <label>Number of Points</label>
+                    <input type="range" id="num-points" min="10" max="100" value="30">
+                    <span id="num-points-value">30</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="reset-btn">Reset Scene</button>
+                <button id="step-btn">Step</button>
+                <button id="run-btn">Run Optimization</button>
+                <button id="pause-btn" disabled>Pause</button>
+            </div>
+
+            <div class="metrics">
+                <h4>Optimization Progress</h4>
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Reprojection Error</td>
+                        <td id="reprojection-error">-</td>
+                    </tr>
+                    <tr>
+                        <td>Iteration</td>
+                        <td id="iteration-count">0</td>
+                    </tr>
+                    <tr>
+                        <td>Camera Error</td>
+                        <td id="camera-error">-</td>
+                    </tr>
+                    <tr>
+                        <td>Point Error</td>
+                        <td id="point-error">-</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td id="status">Ready</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@9.4.4/lib/browser/math.min.js"></script>
+<script src="{% static 'js/bundle_adjustment_demo.js' %}"></script>
+{% endblock %} 
