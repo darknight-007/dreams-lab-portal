@@ -48,6 +48,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code
 COPY . /app/
 
+# Remove symlink and create openuav2 directory
+RUN rm -f /app/openuav2 && mkdir -p /app/openuav2
+
+# Copy run_container.sh to openuav2
+COPY run_container.sh /app/openuav2/
+RUN chmod +x /app/openuav2/run_container.sh
+
 # Create docker group with same GID as host
 RUN groupadd -g 999 docker && \
     usermod -aG docker root
@@ -60,10 +67,6 @@ EXPOSE 8000
 
 # Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "600", "dreams_laboratory.wsgi:application"]
-
-# Copy startup script
-COPY startup.sh /root/startup.sh
-RUN chmod +x /root/startup.sh
 
 # Install VNC and X11 dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \

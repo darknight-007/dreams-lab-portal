@@ -1,206 +1,265 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parameter Estimation Buddy</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.js"></script>
-    <script>
-        MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: auto;
-            gap: 20px;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        .widget {
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+{% block content %}
+<script>
+MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: {
+        fontCache: 'global'
+    }
+};
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-        .title {
-            grid-column: 1 / -1;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        input[type="number"],
-        input[type="range"],
-        textarea {
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        canvas {
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
-    </style>
-</head>
-<body>
-    <div class="title widget">
-        <h1>Parameter Estimation Buddy</h1>
-    </div>
-
-    <div class="widget">
-        <h2>Introduction</h2>
-        <p>
-            Learn about parameter estimation using the Least Squares (LS) method and its connection to Maximum Likelihood Estimation (MLE). We assume Gaussian noise for all scenarios.
-        </p>
-    </div>
-
-    <div class="widget">
-        <h2>Least Squares Estimation</h2>
-        <p>
-            Given observations $y$ and model $y = X\beta + \epsilon$, where $\epsilon \sim \mathcal{N}(0, \sigma^2 I)$, the goal is to estimate the parameter vector $\beta$.
-        </p>
-        <p>
-            The Least Squares solution minimizes the residual sum of squares:
-        </p>
-        <p>
-            \[
-            \hat{\beta} = \text{argmin}_{\beta} \|y - X\beta\|^2 = (X^TX)^{-1}X^Ty
-            \]
-        </p>
-    </div>
-
-    <div class="widget">
-        <h2>Connection to Maximum Likelihood</h2>
-        <p>
-            Assuming Gaussian noise, the likelihood function is:
-        </p>
-        <p>
-            \[
-            \mathcal{L}(\beta) = \frac{1}{(2\pi\sigma^2)^{n/2}}\exp\left(-\frac{1}{2\sigma^2}\|y - X\beta\|^2\right)
-            \]
-        </p>
-        <p>
-            Taking the log and maximizing with respect to $\beta$, we recover the Least Squares formulation:
-        </p>
-        <p>
-            \[
-            \text{argmax}_{\beta} \log \mathcal{L}(\beta) \equiv \text{argmin}_{\beta} \|y - X\beta\|^2
-            \]
-        </p>
-    </div>
-
-    <div class="widget">
-        <h2>Input Parameters</h2>
-        <div>
-            <label for="numData">Number of Data Points:</label>
-            <input type="number" id="numData" value="100" min="10" max="1000" step="10" oninput="updateEstimation()">
-        </div>
-        <div>
-            <label for="noiseStd">Noise Standard Deviation (\(\sigma\)):</label>
-            <input type="number" id="noiseStd" value="1" step="0.1" oninput="updateEstimation()">
-        </div>
-        <div>
-            <label for="trueBeta">True Parameters (\(\beta\)):</label>
-            <textarea id="trueBeta" rows="2" oninput="updateEstimation()">1, 2, 3</textarea>
+<div class="param-estimation-container">
+    <div class="intro-section">
+        <h2>Parameter Estimation Tutorial</h2>
+        <p>Interactive demonstration comparing Least Squares and Bayesian approaches to parameter estimation.</p>
+        
+        <div class="math-section">
+            <h3>Key Equations</h3>
+            <div class="equations-grid">
+                <div class="equation-block">
+                    <h4>Least Squares</h4>
+                    <p>Minimizing squared error:</p>
+                    $$\hat{\theta}_{LS} = \arg\min_{\theta} \sum_{i=1}^n (y_i - f(x_i; \theta))^2$$
+                    $$\hat{\theta}_{LS} = (X^TX)^{-1}X^Ty$$
+                </div>
+                <div class="equation-block">
+                    <h4>Bayesian Regression</h4>
+                    <p>Posterior distribution:</p>
+                    $$p(\theta|D) \propto p(D|\theta)p(\theta)$$
+                    $$\theta|D \sim \mathcal{N}(\mu_N, \Sigma_N)$$
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="widget">
-        <h2>Results</h2>
-        <p>Estimated Parameters (\(\hat{\beta}\)): <span id="estimatedBeta">--</span></p>
+    <div class="visualization-section">
+        <div class="view-controls">
+            <h3>View Options</h3>
+            <div class="radio-group">
+                <input type="radio" id="functionSpace" name="viewType" value="function" checked>
+                <label for="functionSpace">Function Space</label>
+                <input type="radio" id="weightSpace" name="viewType" value="weight">
+                <label for="weightSpace">Weight Space</label>
+            </div>
+            <div class="checkbox-group">
+                <div class="checkbox">
+                    <input type="checkbox" id="showLS" checked>
+                    <label for="showLS">Show Least Squares</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" id="showBayes" checked>
+                    <label for="showBayes">Show Bayesian</label>
+                </div>
+                <div class="checkbox">
+                    <input type="checkbox" id="showUncertainty" checked>
+                    <label for="showUncertainty">Show Uncertainty</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="plot-grid">
+            <div class="plot-container">
+                <h4>Function Space View</h4>
+                <canvas id="functionCanvas" width="600" height="300"></canvas>
+            </div>
+            <div class="plot-container">
+                <h4>Weight Space View</h4>
+                <canvas id="weightCanvas" width="600" height="300"></canvas>
+            </div>
+            <div class="plot-container">
+                <h4>Parameter Evolution</h4>
+                <canvas id="evolutionCanvas" width="600" height="300"></canvas>
+            </div>
+            <div class="plot-container">
+                <h4>Comparative Results</h4>
+                <canvas id="comparisonCanvas" width="600" height="300"></canvas>
+            </div>
+        </div>
+
+        <div class="parameter-controls">
+            <h3>Model Parameters</h3>
+            <div class="parameter-grid">
+                <div class="parameter">
+                    <label for="polynomialOrder">Polynomial Order:</label>
+                    <input type="range" id="polynomialOrder" min="1" max="10" value="3">
+                    <span class="value">3</span>
+                </div>
+                <div class="parameter">
+                    <label for="priorVariance">Prior Variance:</label>
+                    <input type="range" id="priorVariance" min="-2" max="2" step="0.1" value="0">
+                    <span class="value">1.0</span>
+                </div>
+                <div class="parameter">
+                    <label for="noiseLevel">Noise Level:</label>
+                    <input type="range" id="noiseLevel" min="-4" max="0" step="0.1" value="-2">
+                    <span class="value">0.01</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-controls">
+            <button id="generateData">Generate Random Data</button>
+            <button id="clearData">Clear Data</button>
+            <button id="optimizeParams">Optimize Parameters</button>
+            <div class="example-buttons">
+                <button class="example-btn" data-example="linear">Linear</button>
+                <button class="example-btn" data-example="quadratic">Quadratic</button>
+                <button class="example-btn" data-example="sinusoidal">Sinusoidal</button>
+                <button class="example-btn" data-example="outliers">With Outliers</button>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="widget">
-        <h2>Visualize</h2>
-        <canvas id="plotCanvas" width="800" height="400"></canvas>
-    </div>
+<style>
+.param-estimation-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
-    <script>
-        const plotCanvas = document.getElementById('plotCanvas');
-        const ctx = plotCanvas.getContext('2d');
+.equations-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 15px;
+}
 
-        function generateGaussianNoise(mean = 0, stdDev = 1) {
-            const u1 = Math.random();
-            const u2 = Math.random();
-            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            return z0 * stdDev + mean;
-        }
+.equation-block {
+    background: white;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 
-        function updateEstimation() {
-            const numData = parseInt(document.getElementById('numData').value);
-            const noiseStd = parseFloat(document.getElementById('noiseStd').value);
-            const trueBeta = document.getElementById('trueBeta').value.split(',').map(Number);
+.visualization-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
-            // Generate data
-            const X = Array.from({ length: numData }, () => [1, Math.random() * 10, Math.random() * 10]);
-            const y = X.map(row =>
-                row.reduce((sum, xi, i) => sum + xi * trueBeta[i], 0) + generateGaussianNoise(0, noiseStd)
-            );
+.view-controls {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
 
-            // Compute Least Squares solution
-            const XT = math.transpose(X);
-            const XTX = math.multiply(XT, X);
-            const XTy = math.multiply(XT, y);
-            const betaHat = math.multiply(math.inv(XTX), XTy);
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
 
-            document.getElementById('estimatedBeta').innerText = betaHat.map(b => b.toFixed(2)).join(', ');
+.checkbox-group {
+    display: flex;
+    gap: 20px;
+}
 
-            // Plotting
-            ctx.clearRect(0, 0, plotCanvas.width, plotCanvas.height);
+.plot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
 
-            // Draw axes
-            ctx.beginPath();
-            ctx.moveTo(50, 350);
-            ctx.lineTo(750, 350); // x-axis
-            ctx.moveTo(50, 50);
-            ctx.lineTo(50, 350); // y-axis
-            ctx.stroke();
+.plot-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
 
-            // Plot data points
-            ctx.fillStyle = 'blue';
-            y.forEach((yi, i) => {
-                const xi = X[i][1]; // Use the first feature for x-axis
-                ctx.beginPath();
-                ctx.arc(50 + xi * 70, 350 - yi * 10, 3, 0, 2 * Math.PI);
-                ctx.fill();
-            });
+.plot-container h4 {
+    margin: 0 0 10px 0;
+    text-align: center;
+}
 
-            // Plot regression line
-            ctx.strokeStyle = 'red';
-            ctx.beginPath();
-            for (let x = 0; x <= 10; x += 0.1) {
-                const yPred = betaHat[0] + betaHat[1] * x + betaHat[2] * x; // Assuming 3 parameters
-                const canvasX = 50 + x * 70;
-                const canvasY = 350 - yPred * 10;
-                if (x === 0) ctx.moveTo(canvasX, canvasY);
-                else ctx.lineTo(canvasX, canvasY);
-            }
-            ctx.stroke();
-        }
+.parameter-controls {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
 
-        // Initial run
-        updateEstimation();
-    </script>
-</body>
-</html>
+.parameter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.data-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.example-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.example-btn {
+    background: #6c757d;
+}
+
+.example-btn:hover {
+    background: #545b62;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+.parameter {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.value {
+    font-size: 0.9em;
+    color: #666;
+}
+</style>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<script src="{% static 'js/parameter_estimation.js' %}"></script>
+{% endblock %}

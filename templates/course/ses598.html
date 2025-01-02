@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
+{% endblock %}
+
+{% block content %}
+<!-- Print button -->
+<div class="print-controls no-print" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+    <button onclick="generatePDF()" class="btn btn-primary">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </button>
+</div>
+
+<!-- Course content -->
+<div class="course-content">
+    {{ block.super }}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function generatePDF() {
+    // Configure PDF options
+    const options = {
+        margin: 1,
+        filename: 'SES598_Course_Syllabus.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false
+        },
+        jsPDF: { 
+            unit: 'in', 
+            format: 'letter', 
+            orientation: 'portrait' 
+        },
+        pagebreak: { 
+            mode: ['avoid-all', 'css', 'legacy'],
+            before: '.page-break'
+        }
+    };
+
+    // Get the content element
+    const element = document.querySelector('.course-content');
+
+    // Generate PDF
+    html2pdf().set(options).from(element).save().then(() => {
+        console.log('PDF generated successfully');
+    }).catch(err => {
+        console.error('PDF generation failed:', err);
+    });
+}
+
+// Add print button to browser's print dialog
+window.addEventListener('beforeprint', function() {
+    // Any pre-print preparations can go here
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+});
+
+window.addEventListener('afterprint', function() {
+    // Restore elements after printing
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+});
+</script>
+{% endblock %} 

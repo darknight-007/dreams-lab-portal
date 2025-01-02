@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}GP-UCB Tutorial{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>GP-UCB Tutorial</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Introduction</h5>
+                    <p>
+                        This tutorial demonstrates Gaussian Process Upper Confidence Bound (GP-UCB) optimization.
+                        GP-UCB balances exploration and exploitation by selecting points that maximize the upper confidence bound:
+                    </p>
+                    <p class="text-center">
+                        $$\text{UCB}(x) = \mu(x) + \beta\sigma(x)$$
+                    </p>
+                    <p>
+                        where $\mu(x)$ is the GP mean prediction, $\sigma(x)$ is the GP standard deviation,
+                        and $\beta$ is an exploration parameter that controls the trade-off between exploration and exploitation.
+                    </p>
+                    
+                    <div class="mt-4">
+                        <canvas id="gpucbCanvas" width="800" height="400" style="border: 1px solid #ddd;"></canvas>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Legend</h6>
+                        <div class="d-flex flex-wrap">
+                            <div class="me-4">
+                                <span class="badge bg-secondary">- - -</span> True Function
+                            </div>
+                            <div class="me-4">
+                                <span class="badge bg-primary">—</span> GP Mean
+                            </div>
+                            <div class="me-4">
+                                <span class="badge bg-info">■</span> Uncertainty
+                            </div>
+                            <div class="me-4">
+                                <span class="badge bg-success">—</span> Acquisition
+                            </div>
+                            <div class="me-4">
+                                <span class="badge bg-dark">●</span> Observations
+                            </div>
+                            <div>
+                                <span class="badge bg-danger">○</span> Best Point
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Controls</h5>
+                    
+                    <div class="form-group">
+                        <label for="beta">Exploration Parameter (β)</label>
+                        <input type="range" class="form-control-range" id="beta" min="-1" max="2" step="0.1" value="0.693">
+                        <small class="form-text text-muted">Value: <span>2.00</span></small>
+                    </div>
+                    
+                    <div class="form-group mt-3">
+                        <label for="lengthScale">Length Scale</label>
+                        <input type="range" class="form-control-range" id="lengthScale" min="-2" max="2" step="0.1" value="0">
+                        <small class="form-text text-muted">Value: <span>1.00</span></small>
+                    </div>
+                    
+                    <div class="form-group mt-3">
+                        <label for="noiseLevel">Noise Level</label>
+                        <input type="range" class="form-control-range" id="noiseLevel" min="-6" max="-2" step="0.1" value="-4">
+                        <small class="form-text text-muted">Value: <span>0.010</span></small>
+                    </div>
+                    
+                    <div class="form-group mt-3">
+                        <label>Test Function</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="testFunction" id="sine" value="sine" checked>
+                            <label class="form-check-label" for="sine">Sine</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="testFunction" id="bump" value="bump">
+                            <label class="form-check-label" for="bump">Bump</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="testFunction" id="step" value="step">
+                            <label class="form-check-label" for="step">Step</label>
+                        </div>
+                    </div>
+                    
+                    <button id="reset" class="btn btn-secondary mt-3">Reset</button>
+                    <button id="step" class="btn btn-primary mt-3">Step</button>
+                    <button id="optimize" class="btn btn-success mt-3">Start Optimization</button>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Optimization Progress</h5>
+                    
+                    <div class="mt-2">
+                        <strong>Iteration:</strong> <span id="iterationValue">0</span>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <strong>Best Value:</strong> <span id="bestValue">0.000</span>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <strong>Best Point:</strong> <span id="bestPoint">0.000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="{% static 'js/gaussian_process.js' %}"></script>
+<script src="{% static 'js/gp_ucb_demo.js' %}"></script>
+{% endblock %} 

@@ -8,11 +8,13 @@ class Container(models.Model):
         ('user', 'User Session'),
     ]
 
-    container_id = models.CharField(max_length=64, unique=True)
-    unique_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    # Container identification
+    container_id = models.CharField(max_length=64, unique=True, help_text='Full container ID')
+    short_id = models.CharField(max_length=12, help_text='Short container ID (first 12 characters)')
     name = models.CharField(max_length=255)
     status = models.CharField(max_length=20)
-    created = models.DateTimeField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     ports = models.JSONField(default=dict, help_text='Mapping of host ports to container ports')
     image = models.CharField(max_length=255)
     
@@ -35,10 +37,17 @@ class Container(models.Model):
             models.Index(fields=['session_type', 'status']),
             models.Index(fields=['user', 'status']),
             models.Index(fields=['session_id', 'status']),
+            models.Index(fields=['short_id']),
         ]
     
     def __str__(self):
-        return f"{self.name} ({self.status})"
+        return f"{self.name} ({self.short_id})"
+    
+    def save(self, *args, **kwargs):
+        # Set short_id from container_id if not already set
+        if self.container_id and not self.short_id:
+            self.short_id = self.container_id[:12]
+        super().save(*args, **kwargs)
     
     def is_active(self):
         return self.status == 'running'

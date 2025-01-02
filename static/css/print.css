@@ -1,0 +1,74 @@
+/* Print-specific styles */
+@media print {
+    /* Hide non-essential elements */
+    nav, footer, button, .no-print {
+        display: none !important;
+    }
+
+    /* Ensure dark text on white background */
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+        line-height: 1.5;
+        margin: 2cm;
+    }
+
+    /* Improve headings for print */
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    h1 { font-size: 24pt; }
+    h2 { font-size: 20pt; }
+    h3 { font-size: 16pt; }
+
+    /* Ensure tables fit on pages nicely */
+    table {
+        page-break-inside: avoid;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    /* Add URLs after links */
+    a[href^="http"]:after {
+        content: " (" attr(href) ")";
+        font-size: 90%;
+    }
+
+    /* Ensure code blocks don't break across pages */
+    pre, code {
+        page-break-inside: avoid;
+        white-space: pre-wrap;
+    }
+
+    /* Add page numbers */
+    @page {
+        margin: 2cm;
+        @bottom-center {
+            content: "Page " counter(page);
+        }
+    }
+
+    /* Course schedule improvements */
+    .course-schedule {
+        break-inside: avoid;
+        margin-bottom: 20pt;
+    }
+
+    /* Improve list readability */
+    ul, ol {
+        padding-left: 20pt;
+        margin-bottom: 10pt;
+    }
+
+    li {
+        line-height: 1.4;
+    }
+} 

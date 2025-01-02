@@ -22,6 +22,7 @@ services:
       - media_volume:/app/media
       - ./db.sqlite3:/app/db.sqlite3
       - /var/run/docker.sock:/var/run/docker.sock
+      - /home/jdas/openuav2:/app/openuav2
     ports:
       - "8080:80"
     command: ["bash", "/app/entrypoint.sh"]

@@ -270,8 +270,9 @@
             <h2>Courses</h2>
             <div class="courses-container grid-container">
                 <div class="course grid-item">
-                    <h3>SES 598: Robotics and AI for Planetary Exploration</h3>
-                    <p>Spring 2025 - A comprehensive course covering robotic exploration and mapping, focusing on fundamental concepts and advanced techniques in computer vision, SLAM, and autonomous navigation.</p>
+                    <h3>{{ course.title }}</h3>
+                    <p><strong>{{ course.semester }}</strong> | {{ course.meeting_times }} | {{ course.location }}</p>
+                    <p>{{ course.description }}</p>
                     <a href="{% url 'ses598_course' %}" class="course-link">View Course Details →</a>
                 </div>
             </div>

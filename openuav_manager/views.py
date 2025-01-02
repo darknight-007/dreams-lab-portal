@@ -14,6 +14,8 @@ import uuid
 import psutil
 from django.conf import settings
 import os
+import random
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -36,50 +38,57 @@ def sync_containers():
     """Sync container status with database"""
     try:
         # Get list of all containers with openuav prefix
-        stdout, stderr, code = run_command("docker ps -a --filter name=openuav --format '{{json .}}'")
+        stdout, stderr, code = run_command("docker ps -a --filter name=openuav --format '{{.ID}}'")
         if code != 0:
             logger.error(f"Error getting container list: {stderr}")
             return
         
-        # Parse container data
-        containers = []
-        for line in stdout.split('\n'):
-            if line:
-                try:
-                    container_data = json.loads(line)
-                    containers.append(container_data)
-                except json.JSONDecodeError:
-                    continue
+        # Get container IDs
+        container_ids = [id.strip() for id in stdout.split('\n') if id.strip()]
         
-        # Update database records
-        for container_data in containers:
-            container_id = container_data.get('ID')
-            name = container_data.get('Names')
-            status = container_data.get('Status', '').lower()
-            
-            if not all([container_id, name]):
-                continue
-            
-            # Determine container status
-            if 'up' in status:
-                status = 'running'
-            elif 'exited' in status:
-                status = 'stopped'
-            else:
-                status = 'unknown'
-            
-            # Update or create container record
-            Container.objects.update_or_create(
-                container_id=container_id,
-                defaults={
+        # Get detailed container info using inspect
+        containers = {}
+        for container_id in container_ids:
+            inspect_cmd = f"""docker inspect --format='{{{{.Id}}}}\\t{{{{.Name}}}}\\t{{{{.State.Status}}}}\\t{{{{.Created}}}}\\t{{{{.Config.Image}}}}' {container_id}"""
+            stdout, stderr, code = run_command(inspect_cmd)
+            if code == 0:
+                full_id, name, status, created, image = stdout.strip().split('\t')
+                # Remove leading slash from name
+                name = name.lstrip('/')
+                containers[full_id] = {
+                    'full_id': full_id,
+                    'short_id': container_id,
                     'name': name,
                     'status': status,
-                    'created': timezone.now(),
-                    'image': container_data.get('Image', '')
+                    'created': created,
+                    'image': image
+                }
+        
+        # Get all container records from database
+        db_containers = Container.objects.all()
+        db_container_ids = set(db_containers.values_list('container_id', flat=True))
+        current_container_ids = set(containers.keys())
+        
+        # Remove stale records (containers that no longer exist)
+        stale_ids = db_container_ids - current_container_ids
+        if stale_ids:
+            Container.objects.filter(container_id__in=stale_ids).delete()
+            logger.info(f"Removed {len(stale_ids)} stale container records")
+        
+        # Update or create records for existing containers
+        for container_id, container_data in containers.items():
+            # Update or create container record
+            Container.objects.update_or_create(
+                container_id=container_data['full_id'],
+                defaults={
+                    'name': container_data['name'],
+                    'status': container_data['status'],
+                    'image': container_data['image'],
+                    'short_id': container_data['short_id']
                 }
             )
-            
-            time.sleep(1)  # Small delay to prevent overwhelming the system
+        
+        logger.info(f"Successfully synced {len(containers)} containers")
     except Exception as e:
         logger.error(f"Error in sync_containers: {str(e)}", exc_info=True)
 
@@ -199,26 +208,31 @@ def launch_openuav(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
-    # Generate unique container ID
-    container_id = str(uuid.uuid4()).split('-')[0]
-    container_name = f'openuav-{container_id}'
-    
-    # Set environment variables for the script
-    env = os.environ.copy()
-    env['CONTAINER_NAME'] = container_name
-    
-    # Get absolute path to run_container.sh
-    script_path = os.path.join(settings.BASE_DIR, 'run_container.sh')
-    
-    if not os.path.exists(script_path):
-        logger.error(f"Container launch script not found at {script_path}")
-        return JsonResponse({
-            'error': 'Container launch script not found',
-            'details': 'Internal server error'
-        }, status=500)
-    
-    # Run the container launch script
     try:
+        # Clean up old containers first
+        stdout, stderr, code = run_command("docker ps -a --filter name=digital-twin --format '{{.ID}}' | xargs -r docker rm -f")
+        if code != 0:
+            logger.warning(f"Error cleaning up old containers: {stderr}")
+
+        # Generate unique container ID (12 chars)
+        container_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=12))
+        container_name = f'digital-twin-{container_id}'
+        
+        # Get absolute path to run_container.sh in openuav2 folder
+        script_path = '/app/openuav2/run_container.sh'
+        
+        if not os.path.exists(script_path):
+            logger.error(f"Container launch script not found at {script_path}")
+            return JsonResponse({
+                'error': 'Container launch script not found',
+                'details': 'Internal server error'
+            }, status=500)
+        
+        # Set environment variables for the script
+        env = os.environ.copy()
+        env['CONTAINER_NAME'] = container_name
+        
+        # Run the container launch script
         result = subprocess.run(
             ['bash', script_path],
             env=env,
@@ -227,30 +241,76 @@ def launch_openuav(request):
             text=True
         )
         
-        # Check if container is actually running
-        check_result = subprocess.run(
-            ['docker', 'ps', '--filter', f'name={container_name}', '--format', '{{.Names}}'],
-            capture_output=True,
-            text=True
-        )
-        
-        if container_name not in check_result.stdout:
-            logger.error(f"Container {container_name} not running after launch")
+        try:
+            # Parse the JSON output from the script
+            container_info = json.loads(result.stdout)
+            
+            # Wait for container to be running with retries
+            max_retries = 5
+            retry_delay = 1  # seconds
+            container_running = False
+            
+            for attempt in range(max_retries):
+                check_result = subprocess.run(
+                    ['docker', 'ps', '--filter', f'name={container_name}', '--format', '{{.Names}}'],
+                    capture_output=True,
+                    text=True
+                )
+                
+                if container_name in check_result.stdout:
+                    container_running = True
+                    break
+                    
+                logger.info(f"Container not running yet, attempt {attempt + 1}/{max_retries}")
+                time.sleep(retry_delay)
+            
+            if not container_running:
+                logger.error(f"Container {container_name} not running after {max_retries} attempts")
+                return JsonResponse({
+                    'error': 'Container failed to start',
+                    'details': 'Container is not running after launch'
+                }, status=500)
+            
+            # Get full container info using inspect
+            inspect_cmd = f"""docker inspect --format='{{{{.Id}}}}\\t{{{{.Name}}}}\\t{{{{.State.Status}}}}\\t{{{{.Created}}}}\\t{{{{.Config.Image}}}}' {container_info['container_id']}"""
+            stdout, stderr, code = run_command(inspect_cmd)
+            if code == 0:
+                full_id, name, status, created, image = stdout.strip().split('\t')
+                # Remove leading slash from name
+                name = name.lstrip('/')
+                
+                # Create container record
+                Container.objects.create(
+                    container_id=full_id,
+                    short_id=container_info['short_id'],
+                    name=name,
+                    status=status,
+                    image=image,
+                    ports={'vnc': container_info.get('vnc_port', 5901)},
+                    vnc_url=container_info['vnc_url']
+                )
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'OpenUAV instance launched successfully',
+                    'container': {
+                        'id': container_info['container_id'],
+                        'short_id': container_info['short_id'],
+                        'name': container_name,
+                        'url': container_info['url'],
+                        'vnc_url': container_info['vnc_url']
+                    }
+                })
+            else:
+                raise Exception(f"Failed to inspect container: {stderr}")
+            
+        except json.JSONDecodeError:
+            logger.error(f"Failed to parse container launch output: {result.stdout}")
             return JsonResponse({
-                'error': 'Container failed to start',
-                'details': 'Container is not running after launch'
+                'error': 'Failed to parse container information',
+                'details': 'Internal server error'
             }, status=500)
-        
-        # Create container record
-        Container.objects.create(
-            container_id=container_id,
-            name=container_name,
-            status='running',
-            created=timezone.now(),
-            image='openuav:px4-sitl',
-            session_id=request.session.get('openuav_session_id')
-        )
-        
+            
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to launch container: {e.stderr}")
         return JsonResponse({
@@ -263,15 +323,6 @@ def launch_openuav(request):
             'error': 'Internal server error',
             'details': str(e)
         }, status=500)
-
-    # Return success response with hostname for VNC access
-    hostname = f'digital-twin-{container_id}.deepgis.org'
-    return JsonResponse({
-        'status': 'success',
-        'message': 'OpenUAV instance launched successfully',
-        'hostname': hostname,
-        'container_name': container_name
-    })
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -367,29 +418,6 @@ def openuav_status(request):
             'status': 'error',
             'message': str(e)
         }, status=500)
-
-def manage_openuav(request):
-    """Render the OpenUAV management interface"""
-    # Get current status
-    stdout, stderr, code = run_command("docker ps --format '{{json .}}' --filter name=openuav")
-    
-    status = {
-        'is_running': False,
-        'instance_count': 0
-    }
-    
-    if code == 0:
-        containers = [json.loads(line) for line in stdout.split('\n') if line]
-        if containers:
-            status = {
-                'is_running': True,
-                'instance_count': 1
-            }
-    
-    return render(request, 'openuav_manager/manage.html', {
-        'status': status,
-        'vnc_url': 'http://deepgis.org:6080/vnc.html?resize=remote&reconnect=1&autoconnect=1'
-    })
 
 @require_http_methods(["GET"])
 def container_logs(request, container_id):
@@ -491,10 +519,25 @@ def batch_action(request):
         action = data.get('action')
         container_ids = data.get('containers', [])
         
-        if not action or not container_ids:
+        if not action:
             return JsonResponse({
                 'status': 'error',
-                'message': 'Missing action or container IDs'
+                'message': 'Missing action'
+            }, status=400)
+        
+        if action == 'cleanup':
+            # Special case: cleanup all digital-twin containers
+            stdout, stderr, code = run_command("docker ps -a --filter name=digital-twin --format '{{.ID}}' | xargs -r docker rm -f")
+            success = code == 0
+            return JsonResponse({
+                'status': 'success' if success else 'error',
+                'message': stderr if not success else 'Cleanup successful'
+            })
+        
+        if not container_ids:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Missing container IDs'
             }, status=400)
         
         results = {}
@@ -527,6 +570,119 @@ def batch_action(request):
         }, status=400)
     except Exception as e:
         logger.error(f"Error performing batch action: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@require_http_methods(["GET"])
+def container_status_update(request):
+    """Get detailed status update of all OpenUAV containers and sync with database"""
+    try:
+        # Get list of all containers with openuav prefix
+        stdout, stderr, code = run_command("docker ps -a --filter name=openuav --format '{{json .}}'")
+        if code != 0:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error getting container list: {stderr}'
+            }, status=500)
+        
+        # Parse container data and build status maps
+        current_containers = {}
+        status_counts = {
+            'running': 0,
+            'stopped': 0,
+            'created': 0,
+            'restarting': 0,
+            'removing': 0,
+            'paused': 0,
+            'dead': 0,
+            'unknown': 0
+        }
+        
+        for line in stdout.split('\n'):
+            if line:
+                try:
+                    container_data = json.loads(line)
+                    container_id = container_data.get('ID')
+                    if container_id:
+                        status = container_data.get('Status', '').lower()
+                        
+                        # Determine detailed status
+                        if 'up' in status:
+                            container_status = 'running'
+                        elif 'exited' in status:
+                            container_status = 'stopped'
+                        elif 'created' in status:
+                            container_status = 'created'
+                        elif 'restarting' in status:
+                            container_status = 'restarting'
+                        elif 'removing' in status:
+                            container_status = 'removing'
+                        elif 'paused' in status:
+                            container_status = 'paused'
+                        elif 'dead' in status:
+                            container_status = 'dead'
+                        else:
+                            container_status = 'unknown'
+                        
+                        current_containers[container_id] = {
+                            'id': container_id,
+                            'name': container_data.get('Names'),
+                            'status': container_status,
+                            'image': container_data.get('Image', ''),
+                            'created': container_data.get('CreatedAt', ''),
+                            'ports': container_data.get('Ports', ''),
+                            'state': container_data.get('State', ''),
+                            'status_age': container_data.get('Status', '').replace('Up ', '').replace('Exited ', '')
+                        }
+                        status_counts[container_status] += 1
+                        
+                except json.JSONDecodeError:
+                    continue
+        
+        # Get all container records from database
+        db_containers = Container.objects.all()
+        db_container_ids = set(db_containers.values_list('container_id', flat=True))
+        current_container_ids = set(current_containers.keys())
+        
+        # Find containers to remove from database
+        removed_ids = db_container_ids - current_container_ids
+        removed_count = len(removed_ids)
+        if removed_ids:
+            Container.objects.filter(container_id__in=removed_ids).delete()
+        
+        # Update or create records for existing containers
+        updated_count = 0
+        created_count = 0
+        for container_id, container_data in current_containers.items():
+            container, created = Container.objects.update_or_create(
+                container_id=container_id,
+                defaults={
+                    'name': container_data['name'],
+                    'status': container_data['status'],
+                    'image': container_data['image']
+                }
+            )
+            if created:
+                created_count += 1
+            else:
+                updated_count += 1
+        
+        return JsonResponse({
+            'status': 'success',
+            'containers': list(current_containers.values()),
+            'status_counts': status_counts,
+            'database_changes': {
+                'removed': removed_count,
+                'updated': updated_count,
+                'created': created_count
+            },
+            'timestamp': timezone.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in container_status_update: {str(e)}", exc_info=True)
         return JsonResponse({
             'status': 'error',
             'message': str(e)
