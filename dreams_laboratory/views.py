@@ -700,7 +700,7 @@ def ses598_course_view(request):
             },
             {
                 'week': '3-4',
-                'title': 'Computer Vision & 3D Reconstruction Fundamentals',
+                'title': 'Computer Vision & 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
                     'Feature detection and matching',
@@ -714,11 +714,11 @@ def ses598_course_view(request):
                 'week': '5',
                 'title': 'Advanced Scene Representation & Neural Rendering',
                 'topics': [
-                    'Gaussian Splatting fundamentals',
-                    'Neural Radiance Fields (NeRF)',
                     'View synthesis techniques',
+                    'Neural Radiance Fields (NeRF)', 
+                    'Gaussian Splatting',
                     'Real-time rendering strategies',
-                    'Photogrammetry workflows'
+                    'Fusing with photogrammetry workflows'
                 ],
                 'assignment': 'Assignment 4: Photogrammetry and Gaussian Splatting exploration'
             },
@@ -728,8 +728,7 @@ def ses598_course_view(request):
                 'topics': [
                     'Information theory fundamentals',
                     'Active sampling and exploration',
-                    'Multi-armed bandits and Thompson sampling',
-                    'Bayesian optimization for parameter tuning',
+                    'Multi-armed bandits and Bayesian optimization',
                     'Information gain in exploration'
                 ],
                 'assignment': 'Assignment 5: Optimal sample collection challenge'
@@ -738,9 +737,9 @@ def ses598_course_view(request):
                 'week': '7-8',
                 'title': 'Digital and Cyber-physical Twins',
                 'topics': [
-                    'Modeling dynamical processes',
-                    'Virtual shake robot and particle dynamical studies',
-                    'Ecological digital and physical twins',
+                    'Self-supervised learning of stochastic dynamical processes',
+                    'Case study 1 - earthquake geology: Virtual shake robot and particle dynamical studies',
+                    'Case study 2 - ecological digital and physical twins',
                     'Closing the loop on model improvement with cyber-physical twins'
                 ],
                 'assignment': 'Project 3: Adaptive digital twin system involving seismic studies'
