@@ -183,7 +183,7 @@ dreams-lab-portal/
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
+This project is licensed under Creative Commons Legal Code CC0 1.0 Universal - see the LICENSE file for details. This means you can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
 
 ## Support
 
