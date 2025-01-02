@@ -1,216 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gaussian Processes</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
-    <script>
-        MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, auto);
-            gap: 20px;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        .widget {
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+{% block content %}
+<script>
+MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: {
+        fontCache: 'global'
+    }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<script src="{% static 'js/gaussian_process.js' %}"></script>
+<script src="{% static 'js/gaussian_process_demo.js' %}"></script>
 
-        .title {
-            grid-column: 1 / -1;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        canvas {
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
-
-        button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="title widget">
-        <h1>Gaussian Processes: 2D Sensor Placement</h1>
-    </div>
-
-    <div class="introduction widget">
-        <h2>Introduction</h2>
-        <p>
-            Gaussian Processes (GP) are powerful tools for spatial data modeling. This example demonstrates optimal sensor placement for temperature prediction in a 2D environment.
-        </p>
-        <p>
-            The GP model is defined as:
-        </p>
-        <div style="text-align: left;">
-            $$
-            f(x) \sim \mathcal{GP}(m(x), k(x, x'))
-            $$
-            <p>Where:</p>
-            <ul>
-                <li>$m(x)$ is the mean function (assumed to be 0 here).</li>
-                <li>$k(x, x')$ is the kernel function, typically a squared exponential kernel:
-                    $$k(x, x') = \sigma^2 \exp\left(-\frac{\|x - x'\|^2}{2l^2}\right)$$
-                    where $\sigma^2$ is the variance, and $l$ is the length scale.
-                </li>
-            </ul>
+<div class="gp-container">
+    <div class="intro-section">
+        <h2>Gaussian Process Tutorial</h2>
+        <p>Interactive demonstration of Gaussian Processes with different kernel functions.</p>
+        
+        <div class="math-section">
+            <div class="equation-block">
+                <h4>Kernel Functions</h4>
+                <p>RBF (Squared Exponential):</p>
+                $$k(x,x') = \sigma^2 \exp\left(-\frac{(x-x')^2}{2\ell^2}\right)$$
+                <p>Periodic:</p>
+                $$k(x,x') = \sigma^2 \exp\left(-\frac{2\sin^2(\pi|x-x'|/p)}{\ell^2}\right)$$
+                <p>Matérn 3/2:</p>
+                $$k(x,x') = \sigma^2(1 + \frac{\sqrt{3}|x-x'|}{\ell})\exp(-\frac{\sqrt{3}|x-x'|}{\ell})$$
+                <p>where $\ell$ is the length scale, $\sigma^2$ is the variance, and $p$ is the period.</p>
+            </div>
         </div>
     </div>
 
-    <div class="parameters widget">
-        <h2>Configure Parameters</h2>
-        <div>
-            <label for="numSensors">Number of Sensors:</label>
-            <input type="number" id="numSensors" value="5" min="1" max="20">
+    <div class="visualization-section">
+        <div class="plot-container">
+            <canvas id="functionCanvas" width="800" height="500"></canvas>
+            <div class="plot-legend">
+                <div class="legend-item">
+                    <span class="color-box data"></span>
+                    <span>Data Points</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box mean"></span>
+                    <span>Mean Function</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box uncertainty"></span>
+                    <span>95% Confidence</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box samples"></span>
+                    <span>Prior Samples</span>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="noiseLevel">Noise Level:</label>
-            <input type="number" id="noiseLevel" value="0.1" step="0.01" min="0">
+
+        <div class="parameter-controls">
+            <h3>Model Parameters</h3>
+            <div class="parameter-grid">
+                <div class="parameter">
+                    <label for="kernelType">Kernel Type:</label>
+                    <select id="kernelType">
+                        <option value="rbf">RBF (Squared Exponential)</option>
+                        <option value="periodic">Periodic</option>
+                        <option value="matern">Matérn 3/2</option>
+                    </select>
+                </div>
+                <div class="parameter">
+                    <label for="lengthScale">Length Scale (ℓ):</label>
+                    <input type="range" id="lengthScale" min="-2" max="2" step="0.1" value="0">
+                    <span class="value">1.0</span>
+                </div>
+                <div class="parameter">
+                    <label for="signalVariance">Signal Variance (σ²):</label>
+                    <input type="range" id="signalVariance" min="-2" max="2" step="0.1" value="0">
+                    <span class="value">1.0</span>
+                </div>
+                <div class="parameter">
+                    <label for="noiseLevel">Noise Level:</label>
+                    <input type="range" id="noiseLevel" min="-4" max="0" step="0.1" value="-2">
+                    <span class="value">0.01</span>
+                </div>
+                <div class="parameter">
+                    <label for="numSamples">Number of Samples:</label>
+                    <input type="range" id="numSamples" min="3" max="10" value="5">
+                    <span class="value">5</span>
+                </div>
+            </div>
         </div>
-        <div>
-            <label for="kernelLength">Kernel Length Scale:</label>
-            <input type="number" id="kernelLength" value="1.0" step="0.1" min="0.1">
+
+        <div class="data-controls">
+            <button id="clearData">Clear Data</button>
+            <button id="generateData">Generate Random Data</button>
+            <div class="example-buttons">
+                <button class="example-btn" data-example="linear">Linear</button>
+                <button class="example-btn" data-example="periodic">Periodic</button>
+                <button class="example-btn" data-example="nonlinear">Nonlinear</button>
+            </div>
         </div>
-        <button id="runGP">Run Gaussian Process</button>
     </div>
+</div>
 
-    <div class="results widget">
-        <h2>Results</h2>
-        <p>Mean Temperature Map:</p>
-        <canvas id="meanCanvas" width="400" height="400"></canvas>
-        <p>Variance Map:</p>
-        <canvas id="varianceCanvas" width="400" height="400"></canvas>
-        <p>Sensor Placement:</p>
-        <canvas id="sensorCanvas" width="400" height="400"></canvas>
-    </div>
+<style>
+.gp-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-    <script>
-        const meanCanvas = document.getElementById('meanCanvas');
-        const varianceCanvas = document.getElementById('varianceCanvas');
-        const sensorCanvas = document.getElementById('sensorCanvas');
-        const meanCtx = meanCanvas.getContext('2d');
-        const varianceCtx = varianceCanvas.getContext('2d');
-        const sensorCtx = sensorCanvas.getContext('2d');
+.math-section {
+    margin: 20px 0;
+}
 
-        function generateRandomField(width, height) {
-            // Create a field as a mixture of Gaussians
-            const field = Array.from({ length: width }, () => Array(height).fill(0));
-            const numGaussians = 5;
+.equation-block {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
 
-            for (let i = 0; i < numGaussians; i++) {
-                const centerX = Math.random() * width;
-                const centerY = Math.random() * height;
-                const amplitude = Math.random() * 2 - 1; // Random amplitude
-                const variance = Math.random() * 100 + 50; // Random spread
+.plot-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
 
-                for (let x = 0; x < width; x++) {
-                    for (let y = 0; y < height; y++) {
-                        const distanceSquared = (x - centerX) ** 2 + (y - centerY) ** 2;
-                        field[x][y] += amplitude * Math.exp(-distanceSquared / (2 * variance));
-                    }
-                }
-            }
+.plot-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
 
-            return field;
-        }
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 
-        function drawField(ctx, field) {
-            const width = field.length;
-            const height = field[0].length;
-            const imageData = ctx.createImageData(width, height);
+.color-box {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+}
 
-            for (let x = 0; x < width; x++) {
-                for (let y = 0; y < height; y++) {
-                    const value = Math.min(Math.max((field[x][y] + 1) / 2 * 255, 0), 255); // Normalize to [0, 255]
-                    const index = (y * width + x) * 4;
-                    imageData.data[index] = value;
-                    imageData.data[index + 1] = value;
-                    imageData.data[index + 2] = 255 - value;
-                    imageData.data[index + 3] = 255;
-                }
-            }
+.color-box.data {
+    background: #000;
+}
 
-            ctx.putImageData(imageData, 0, 0);
-        }
+.color-box.mean {
+    background: #007bff;
+}
 
-        function drawSensors(ctx, sensors) {
-            ctx.clearRect(0, 0, sensorCanvas.width, sensorCanvas.height);
-            ctx.fillStyle = 'red';
-            sensors.forEach(([x, y]) => {
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                ctx.fill();
-            });
-        }
+.color-box.uncertainty {
+    background: rgba(0,123,255,0.2);
+}
 
-        function placeSensors(numSensors, width, height) {
-            const sensors = [];
-            for (let i = 0; i < numSensors; i++) {
-                sensors.push([
-                    Math.random() * width,
-                    Math.random() * height
-                ]);
-            }
-            return sensors;
-        }
+.color-box.samples {
+    background: rgba(0,0,255,0.3);
+}
 
-        document.getElementById('runGP').addEventListener('click', () => {
-            const width = 400;
-            const height = 400;
-            const numSensors = parseInt(document.getElementById('numSensors').value);
+canvas {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
 
-            const randomField = generateRandomField(width, height);
-            drawField(meanCtx, randomField);
+.parameter-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
 
-            // Placeholder variance map
-            const varianceField = Array.from({ length: width }, () => Array(height).fill(0.5));
-            drawField(varianceCtx, varianceField);
+.parameter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
 
-            const sensors = placeSensors(numSensors, width, height);
-            drawSensors(sensorCtx, sensors);
-        });
-    </script>
-</body>
-</html>
+.parameter {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.data-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.example-btn {
+    background: #6c757d;
+}
+
+.example-btn:hover {
+    background: #545b62;
+}
+
+select, input[type="range"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.value {
+    font-size: 0.9em;
+    color: #666;
+}
+</style>
+{% endblock %}
