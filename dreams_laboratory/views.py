@@ -389,10 +389,6 @@ def loop_closure_buddy_view(request):
 def sensor_fusion_buddy(request):
     return render(request, 'widgets/sensor_fusion_buddy.html')
 
-def visual_odometry_buddy_view(request):
-    """View function for visual odometry tutorial"""
-    return render(request, 'widgets/visual_odometry_buddy.html')
-
 def point_cloud_buddy(request):
     return render(request, 'widgets/point_cloud_buddy.html')
 
@@ -668,14 +664,14 @@ def ses598_course_view(request):
     """View function for the SES598 course page"""
     syllabus = {
         'course_info': {
-            'title': 'SES 598: Robotic Exploration and Mapping',
-            'semester': 'Spring 2024',
-            'meeting_times': 'TBD',
-            'location': 'TBD',
+            'title': 'SES 598: Robotics and AI for Planetary Exploration',
+            'semester': 'Spring 2025',
+            'meeting_times': 'Tu/Th 10:30-11:45pm',
+            'location': 'ASU Tempe Campus, TBD',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'By appointment',
             'contact': 'jdas@asu.edu',
-            'description': 'This course provides a comprehensive introduction to robotic exploration and mapping for space robotics and earth science applications, spanning topics in Robotics, AI, information theory, computer vision, as well as domain knowledge from earth and space sciences. Students will learn fundamental concepts and advanced techniques through interactive tutorials and hands-on projects. The course covers essential topics in computer vision, state estimation, path planning, and control systems, with an emphasis on practical applications in environmental robotics, with focus on planetary surface applications.'
+            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping techniques, tailored for planetary and environmental applications. Students will gain expertise in state estimation, path planning, machine learning, and control systems, with a strong emphasis on real-world implementation. Topics include computer vision, SLAM, multi-robot coordination, and extreme environment operations. The curriculum combines lectures with hands-on projects, culminating in a final project where students design an end-to-end robotics system for planetary exploration. Prerequisites include proficiency in Python, linear algebra, and probability, alongside experience with Linux systems and basic computer vision.',
         },
         'prerequisites': [
             {'category': 'Mathematics', 'requirement': 'Linear algebra (vectors, matrices, eigenvalues), calculus (derivatives, gradients), and probability theory (Bayes rule, distributions)'},
@@ -790,7 +786,7 @@ def ses598_course_view(request):
                     'Integrated perception-planning-learning',
                     'Real-world deployment strategies'
                 ],
-                'assignment': 'Final Project: End-to-end space robotics system'
+                'assignment': 'Final Project: End-to-end planetary (earth or space) robotics system'
             }
         ],
         'grading': {
@@ -832,12 +828,6 @@ def ses598_course_view(request):
                     'description': 'Simultaneous Localization and Mapping fundamentals',
                     'difficulty': 'Advanced',
                     'url': 'slam_buddy'
-                },
-                {
-                    'title': 'Visual Odometry',
-                    'description': 'Camera motion estimation from sequential images',
-                    'difficulty': 'Intermediate',
-                    'url': 'visual_odometry_buddy'
                 },
                 {
                     'title': 'Loop Closure',

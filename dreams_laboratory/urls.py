@@ -6,11 +6,11 @@ from django.conf.urls.static import static
 from dreams_laboratory.views import (
     home_view, deepgis_home_view, dreamslab_home_view,
     multiview_geometry_view, stereo_buddy_view,
-    slam_buddy_view, visual_odometry_buddy_view,
-    loop_closure_buddy_view, param_estimation_buddy_view,
-    ransac_buddy_view, gaussian_processes_buddy_view,
-    path_planning_buddy_view, cart_pole_lqr_buddy_view,
-    particle_filter_buddy_view, point_cloud_buddy, sensor_fusion_buddy,
+    slam_buddy_view, loop_closure_buddy_view,
+    param_estimation_buddy_view, ransac_buddy_view,
+    gaussian_processes_buddy_view, path_planning_buddy_view,
+    cart_pole_lqr_buddy_view, particle_filter_buddy_view,
+    point_cloud_buddy, sensor_fusion_buddy,
     image_buddy_view, ses598_course_view, ses598_quiz,
     drone_buddy_view, save_drone_code, run_drone_tests
 )
@@ -20,6 +20,7 @@ def health_check(request):
     return HttpResponse("OK")
 
 urlpatterns = [
+    path('admin/', admin.site.urls),  # Django admin URLs
     path('', home_view, name='home'),
     path('deepgis/', deepgis_home_view, name='deepgis_home'),
     path('dreamslab/', dreamslab_home_view, name='dreamslab_home'),
@@ -28,7 +29,6 @@ urlpatterns = [
     path('tutorials/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
     path('tutorials/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
     path('tutorials/slam-buddy/', slam_buddy_view, name='slam_buddy'),
-    path('tutorials/visual-odometry-buddy/', visual_odometry_buddy_view, name='visual_odometry_buddy'),
     path('tutorials/loop-closure-buddy/', loop_closure_buddy_view, name='loop_closure_buddy'),
     path('tutorials/param-estimation-buddy/', param_estimation_buddy_view, name='param_estimation_buddy'),
     path('tutorials/ransac-buddy/', ransac_buddy_view, name='ransac_buddy'),
@@ -42,6 +42,7 @@ urlpatterns = [
     path('tutorials/drone-buddy/', drone_buddy_view, name='drone_buddy'),
     path('dreamslab/drone-buddy/save-code', save_drone_code, name='save_drone_code'),
     path('dreamslab/drone-buddy/run-tests', run_drone_tests, name='run_drone_tests'),
+    path('openuav/', include('openuav_manager.urls')),
 ]
 
 if settings.DEBUG:
