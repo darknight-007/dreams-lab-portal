@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="tutorials-container">
+    <h1>SES 598 Interactive Learning Modules</h1>
+    
+    <!-- Drone Buddy Tutorial -->
+    <section class="tutorial-section featured">
+        <div class="tutorial-card">
+            <div class="tutorial-header">
+                <h2>Drone Buddy Simulator</h2>
+                <span class="difficulty advanced">Advanced</span>
+            </div>
+            <p class="description">
+                Experience hands-on drone control and mission planning in a realistic simulation environment. 
+                Practice autonomous navigation, sensor integration, and mission execution.
+            </p>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-robot"></i>
+                    <span>Real-time Control</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Mission Planning</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Performance Analysis</span>
+                </div>
+            </div>
+            <a href="{% url 'drone_buddy' %}" class="start-button">Launch Simulator</a>
+        </div>
+    </section>
+
+    <!-- 4-Part Tutorial Series -->
+    <section class="tutorial-series">
+        <h2>Core Concepts Tutorial Series</h2>
+        <p class="series-description">
+            Master fundamental concepts through hands-on interactive modules. Each tutorial includes 
+            theory, practical exercises, and parameter optimization challenges.
+        </p>
+        
+        <div class="tutorial-grid">
+            <!-- Tutorial 1: Stereo Vision -->
+            <div class="tutorial-card">
+                <div class="tutorial-header">
+                    <h3>1. Stereo Vision for Planetary Mapping</h3>
+                    <span class="difficulty beginner">Beginner</span>
+                </div>
+                <p class="description">
+                    Learn stereo camera configuration and depth estimation for planetary surface mapping.
+                </p>
+                <ul class="learning-objectives">
+                    <li>Camera parameter optimization</li>
+                    <li>Depth estimation techniques</li>
+                    <li>Field coverage analysis</li>
+                </ul>
+                <a href="{% url 'stereo_buddy' %}" target="_blank" class="start-button">Start Tutorial</a>
+            </div>
+
+            <!-- Tutorial 2: SLAM -->
+            <div class="tutorial-card">
+                <div class="tutorial-header">
+                    <h3>2. SLAM Implementation</h3>
+                    <span class="difficulty intermediate">Intermediate</span>
+                </div>
+                <p class="description">
+                    Explore Simultaneous Localization and Mapping in unknown environments.
+                </p>
+                <ul class="learning-objectives">
+                    <li>Particle filter optimization</li>
+                    <li>Landmark detection</li>
+                    <li>Loop closure handling</li>
+                </ul>
+                <a href="{% url 'slam_buddy' %}" target="_blank" class="start-button">Start Tutorial</a>
+            </div>
+
+            <!-- Tutorial 3: Sensor Fusion -->
+            <div class="tutorial-card">
+                <div class="tutorial-header">
+                    <h3>3. Multi-Sensor Fusion</h3>
+                    <span class="difficulty intermediate">Intermediate</span>
+                </div>
+                <p class="description">
+                    Master sensor fusion techniques for robust navigation and state estimation.
+                </p>
+                <ul class="learning-objectives">
+                    <li>Kalman filter tuning</li>
+                    <li>Noise characterization</li>
+                    <li>Multi-sensor integration</li>
+                </ul>
+                <a href="{% url 'sensor_fusion_buddy' %}" target="_blank" class="start-button">Start Tutorial</a>
+            </div>
+
+            <!-- Tutorial 4: Multi-View Geometry -->
+            <div class="tutorial-card">
+                <div class="tutorial-header">
+                    <h3>4. Multi-View Reconstruction</h3>
+                    <span class="difficulty advanced">Advanced</span>
+                </div>
+                <p class="description">
+                    Learn advanced techniques for 3D reconstruction from multiple views.
+                </p>
+                <ul class="learning-objectives">
+                    <li>Camera network design</li>
+                    <li>3D point cloud generation</li>
+                    <li>Geometric error analysis</li>
+                </ul>
+                <a href="{% url 'multiview_geometry' %}" target="_blank" class="start-button">Start Tutorial</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+.tutorials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.tutorial-section.featured {
+    margin-bottom: 3rem;
+}
+
+.tutorial-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.tutorial-card:hover {
+    transform: translateY(-5px);
+}
+
+.tutorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.difficulty {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.beginner { background: #e8f5e9; color: #2e7d32; }
+.intermediate { background: #fff3e0; color: #ef6c00; }
+.advanced { background: #fce4ec; color: #c2185b; }
+
+.description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.features {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.feature i {
+    color: #1565c0;
+    font-size: 1.25rem;
+}
+
+.tutorial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.learning-objectives {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.learning-objectives li {
+    padding-left: 1.5rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.learning-objectives li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #1565c0;
+}
+
+.start-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #1565c0;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.start-button:hover {
+    background: #0d47a1;
+}
+
+.series-description {
+    max-width: 800px;
+    margin: 1rem 0 2rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .tutorial-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .features {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %} 

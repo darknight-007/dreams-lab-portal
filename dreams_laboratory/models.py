@@ -104,6 +104,7 @@ class Photo(models.Model):
 class QuizSubmission(models.Model):
     quiz_id = models.CharField(max_length=8)
     session_id = models.CharField(max_length=64, null=True, blank=True)
+    email = models.EmailField(help_text='Preferably your ASU email')  # Changed from asu_id to email
     submission_date = models.DateTimeField(auto_now_add=True)
     cv_score = models.FloatField(null=True, default=0)
     slam_score = models.FloatField(null=True, default=0)
@@ -134,7 +135,7 @@ class QuizSubmission(models.Model):
         db_table = 'dreams_laboratory_quizsubmission'
 
     def __str__(self):
-        return f"Quiz {self.quiz_id} - Score: {self.total_score}%"
+        return f"Quiz {self.quiz_id} - {self.email} - Score: {self.total_score}%"
 
 class QuizProgress(models.Model):
     """Model to store user progress in quizzes"""

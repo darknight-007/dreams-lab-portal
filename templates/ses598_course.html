@@ -263,7 +263,7 @@ p { font-size: 1.125rem; line-height: 1.7; }
     <div class="enrollment-quiz-banner">
         <div class="quiz-info">
             <h2>📝 Required Enrollment Quiz</h2>
-            <p>Students must complete this quiz by first day of class to gauge foundation, and remain enrolled.</p>
+            <p>Please complete this quiz using your ASU email to gauge your foundation in robotics and AI concepts. This quiz must be completed by the first day of class to remain enrolled.</p>
         </div>
         <a href="{% url 'ses598_quiz' %}" class="quiz-button">
             Take Enrollment Quiz
@@ -547,125 +547,104 @@ p { font-size: 1.125rem; line-height: 1.7; }
         <h2 class="section-title">Interactive Learning Resources</h2>
         
         <style>
-        .tutorials-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
+        .tutorials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .tutorial-category {
             background: white;
             border-radius: 8px;
-            overflow: hidden;
+            padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .tutorials-table th {
-            background: #1565c0;
-            color: white;
-            text-align: left;
-            padding: 1rem;
-            font-weight: 500;
-        }
-
-        .tutorials-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e1e8ed;
-        }
-
-        .tutorials-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .tutorials-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .tutorial-title {
-            font-weight: 600;
+        
+        .tutorial-category h3 {
             color: #1565c0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e3f2fd;
         }
-
-        .tutorial-info {
+        
+        .tutorial-list {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 1rem;
-            color: #546e7a;
-            font-size: 0.9rem;
         }
-
-        .tutorial-description {
-            color: #2c3e50;
-            margin: 0.5rem 0;
+        
+        .tutorial-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-
-        .category-header {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .start-link {
-            display: inline-flex;
+        
+        .tutorial-link {
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: #1565c0;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
             transition: all 0.2s;
         }
-
-        .start-link:hover {
-            background: #0d47a1;
-            transform: translateY(-1px);
+        
+        .tutorial-link:hover {
+            color: #0d47a1;
+            transform: translateX(4px);
         }
-
+        
+        .tutorial-description {
+            font-size: 0.9rem;
+            color: #546e7a;
+            margin: 0;
+        }
+        
         .difficulty-tag {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
             border-radius: 12px;
             font-weight: 500;
+            margin-left: auto;
         }
-
+        
         .difficulty-tag.beginner { background: #e8f5e9; color: #2e7d32; }
         .difficulty-tag.intermediate { background: #fff3e0; color: #ef6c00; }
         .difficulty-tag.advanced { background: #fce4ec; color: #c2185b; }
+        
+        @media (max-width: 1200px) {
+            .tutorials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tutorials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         </style>
 
-        <table class="tutorials-table">
-            <thead>
-                <tr>
-                    <th style="width: 80%">Tutorial</th>
-                    <th style="width: 20%">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for category, tutorials in syllabus.tutorials.items %}
-                <tr class="category-header">
-                    <td colspan="2">{{ category }}</td>
-                </tr>
-                {% for tutorial in tutorials %}
-                <tr>
-                    <td>
-                        <div class="tutorial-title">
+        <div class="tutorials-grid">
+            {% for category, tutorials in syllabus.tutorials.items %}
+            <div class="tutorial-category">
+                <h3>{{ category }}</h3>
+                <div class="tutorial-list">
+                    {% for tutorial in tutorials %}
+                    <div class="tutorial-item">
+                        <a href="{% url tutorial.url %}" class="tutorial-link">
                             {{ tutorial.title }}
                             <span class="difficulty-tag {{ tutorial.difficulty|lower }}">{{ tutorial.difficulty }}</span>
-                        </div>
-                        <div class="tutorial-description">{{ tutorial.description }}</div>
-                    </td>
-                    <td>
-                        <a href="{% url tutorial.url %}" class="start-link">
-                            Start <i class="fas fa-arrow-right"></i>
                         </a>
-                    </td>
-                </tr>
-                {% endfor %}
-                {% endfor %}
-            </tbody>
-        </table>
+                        <p class="tutorial-description">{{ tutorial.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </section>
 </div>
 

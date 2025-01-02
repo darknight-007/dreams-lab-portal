@@ -14,7 +14,9 @@ from dreams_laboratory.views import (
     image_buddy_view, ses598_course_view, ses598_quiz,
     drone_buddy_view, save_drone_code, run_drone_tests,
     sampling_buddy_view, gp_ucb_buddy_view,
-    bundle_adjustment_buddy_view
+    bundle_adjustment_buddy_view, tutorials_home,
+    stereo_buddy, slam_buddy, sensor_fusion_buddy,
+    multiview_geometry, ses598_quiz_part2
 )
 from django.http import HttpResponse
 
@@ -27,6 +29,7 @@ urlpatterns = [
     path('dreamslab/', dreamslab_home_view, name='dreamslab_home'),
     path('dreamslab/ses598/', ses598_course_view, name='ses598_course'),
     path('dreamslab/ses598/quiz/', ses598_quiz, name='ses598_quiz'),
+    path('dreamslab/ses598/quiz/part2/', ses598_quiz_part2, name='ses598_quiz_part2'),
     path('tutorials/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
     path('tutorials/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
     path('tutorials/slam-buddy/', slam_buddy_view, name='slam_buddy'),
@@ -46,6 +49,11 @@ urlpatterns = [
     path('dreamslab/drone-buddy/save-code', save_drone_code, name='save_drone_code'),
     path('dreamslab/drone-buddy/run-tests', run_drone_tests, name='run_drone_tests'),
     path('openuav/', include('openuav_manager.urls')),
+    path('tutorials/', tutorials_home, name='tutorials_home'),
+    path('tutorials/stereo-buddy/', stereo_buddy, name='stereo_buddy'),
+    path('tutorials/slam-buddy/', slam_buddy, name='slam_buddy'),
+    path('tutorials/sensor-fusion-buddy/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
+    path('tutorials/multiview-geometry/', multiview_geometry, name='multiview_geometry'),
 ]
 
 if settings.DEBUG:

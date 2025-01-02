@@ -720,7 +720,7 @@ def get_ses598_course_data():
             }
         },
         'tutorials': {
-            'Computer Vision Fundamentals': [
+            'Computer Vision': [
                 {
                     'title': 'Multi-View Geometry',
                     'description': 'Epipolar geometry, fundamental matrix, and camera calibration',
@@ -732,14 +732,6 @@ def get_ses598_course_data():
                     'description': 'Stereo vision concepts and depth estimation',
                     'difficulty': 'Beginner',
                     'url': 'stereo_buddy'
-                }
-            ],
-            'SLAM and Mapping': [
-                {
-                    'title': 'SLAM Tutorial',
-                    'description': 'Simultaneous Localization and Mapping fundamentals',
-                    'difficulty': 'Advanced',
-                    'url': 'slam_buddy'
                 },
                 {
                     'title': 'Bundle Adjustment',
@@ -748,39 +740,21 @@ def get_ses598_course_data():
                     'url': 'bundle_adjustment_buddy'
                 }
             ],
-            'Estimation and Optimization': [
+            'SLAM and Mapping': [
                 {
-                    'title': 'Parameter Estimation',
-                    'description': 'Parameter estimation in computer vision',
-                    'difficulty': 'Intermediate',
-                    'url': 'param_estimation_buddy'
-                },
-                {
-                    'title': 'RANSAC Tutorial',
-                    'description': 'Random Sample Consensus algorithm',
-                    'difficulty': 'Beginner',
-                    'url': 'ransac_buddy'
-                },
-                {
-                    'title': 'Gaussian Processes',
-                    'description': 'Gaussian processes in computer vision',
+                    'title': 'SLAM Tutorial',
+                    'description': 'Simultaneous Localization and Mapping fundamentals',
                     'difficulty': 'Advanced',
-                    'url': 'gaussian_processes_buddy'
-                },
-                {
-                    'title': 'Uncertainty-based Sampling',
-                    'description': 'Interactive demo of uncertainty-based sampling using CEM',
-                    'difficulty': 'Intermediate',
-                    'url': 'sampling_buddy'
-                },
-                {
-                    'title': 'Particle Filter',
-                    'description': 'Particle filtering for state estimation',
-                    'difficulty': 'Intermediate',
-                    'url': 'particle_filter_buddy'
+                    'url': 'slam_buddy'
                 }
             ],
-            'Motion Planning and Control': [
+            'Control and Planning': [
+                {
+                    'title': 'Drone Control Primer',
+                    'description': 'Interactive introduction to drone control and navigation',
+                    'difficulty': 'Advanced',
+                    'url': 'drone_buddy'
+                },
                 {
                     'title': 'Path Planning',
                     'description': 'A*, RRT, and potential fields algorithms',
@@ -792,6 +766,38 @@ def get_ses598_course_data():
                     'description': 'LQR control for inverted pendulum',
                     'difficulty': 'Advanced',
                     'url': 'cart_pole_lqr_buddy'
+                }
+            ],
+            'Estimation': [
+                {
+                    'title': 'Parameter Estimation',
+                    'description': 'Interactive exploration of parameter estimation techniques with real-time visualization of uncertainty',
+                    'difficulty': 'Intermediate',
+                    'url': 'param_estimation_buddy'
+                },
+                {
+                    'title': 'RANSAC Tutorial',
+                    'description': 'Hands-on implementation of RANSAC for robust model fitting with outlier rejection',
+                    'difficulty': 'Beginner',
+                    'url': 'ransac_buddy'
+                },
+                {
+                    'title': 'Gaussian Processes',
+                    'description': 'Interactive visualization of GP regression for spatial prediction and uncertainty estimation',
+                    'difficulty': 'Advanced',
+                    'url': 'gaussian_processes_buddy'
+                },
+                {
+                    'title': 'Information-based Sampling',
+                    'description': 'Explore different sampling strategies (random, grid-based, information gain) with real-time performance metrics',
+                    'difficulty': 'Intermediate',
+                    'url': 'sampling_buddy'
+                },
+                {
+                    'title': 'Sensor Fusion',
+                    'description': 'Interactive Kalman filter demo showing process vs measurement noise trade-offs in fast-moving systems',
+                    'difficulty': 'Advanced',
+                    'url': 'sensor_fusion_buddy'
                 }
             ]
         }
