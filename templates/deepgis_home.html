@@ -55,7 +55,7 @@
 
         .platforms {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
             margin-top: 4rem;
         }
@@ -67,6 +67,10 @@
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+        }
+
+        .platform-card.full-width {
+            grid-column: 1 / -1;
         }
 
         .platform-card:hover {
@@ -122,12 +126,43 @@
             margin-bottom: 1rem;
         }
 
+        .feature-grid-small {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-small {
+            text-align: center;
+        }
+
+        .feature-small i {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-small h4 {
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .feature-small p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
             }
             .platforms {
                 grid-template-columns: 1fr;
+            }
+            .feature-grid-small {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -155,44 +190,39 @@
                     <i class="fas fa-robot fa-4x" style="color: var(--primary-color)"></i>
                     <i class="fas fa-network-wired fa-2x" style="color: var(--primary-color); position: absolute; bottom: -10px; right: -10px;"></i>
                 </div>
-                <h3>OpenUAV Digital Twin</h3>
-                <p>Self-learning platform for understanding both robotic behaviors and environmental processes through high-fidelity simulations.</p>
-                <a href="/openuav/manage/" class="btn">Explore OpenUAV</a>
+                <h3>Digital Twins</h3>
+                <p>High-fidelity simulations and digital replicas for understanding robotic behaviors and environmental processes through interactive experimentation.</p>
+                <a href="{% url 'openuav_manager:manage' %}" class="btn">Explore Digital Twins</a>
             </div>
-            <div class="platform-card">
+            <div class="platform-card full-width">
                 <div style="text-align: center;">
                     <img src="https://lh3.googleusercontent.com/pw/AP1GczNPyI0kgpiaTxXRFmjMFGZR31shMfq5qIB4hhaLBTiri7hQbc33fVASZ4xusXyRfzZjfkz_Zr0Y2eOov6v5pekTGvZjd0fdVQFG-wdbQ8I0pG3xpEKKtaUv-QiBODdAS_XLWn5jECL6xFo9rxLsDKQG=w732-h717-s-no?authuser=0" alt="DREAMS Laboratory" style="width: 100px; height: 100px; margin-bottom: 1rem; object-fit: contain;">
                 </div>
                 <h3>DREAMS Laboratory</h3>
                 <p>Pioneering research in robotic exploration, digital twins, and intelligent systems at Arizona State University.</p>
-                <a href="/dreamslab" class="btn" target="_blank">Visit DREAMS Laboratory</a>
-            </div>
-        </div>
-
-        <div class="features">
-            <div class="container">
-                <div class="feature-grid">
-                    <div class="feature">
+                <div class="feature-grid-small">
+                    <div class="feature-small">
                         <i class="fas fa-satellite"></i>
-                        <h3>Space Exploration</h3>
+                        <h4>Space Exploration</h4>
                         <p>Digital twins for planetary science and robotic exploration missions.</p>
                     </div>
-                    <div class="feature">
+                    <div class="feature-small">
                         <i class="fas fa-robot"></i>
-                        <h3>Autonomous Systems</h3>
+                        <h4>Autonomous Systems</h4>
                         <p>Self-learning algorithms for intelligent robotic operations.</p>
                     </div>
-                    <div class="feature">
+                    <div class="feature-small">
                         <i class="fas fa-globe"></i>
-                        <h3>Earth Science</h3>
+                        <h4>Earth Science</h4>
                         <p>Data-driven insights for environmental monitoring and analysis.</p>
                     </div>
-                    <div class="feature">
+                    <div class="feature-small">
                         <i class="fas fa-network-wired"></i>
-                        <h3>Cyber-Physical Twins</h3>
+                        <h4>Cyber-Physical Twins</h4>
                         <p>Coupled twins reducing uncertainty in robotic and environmental process modeling.</p>
                     </div>
                 </div>
+                <a href="/dreamslab" class="btn" target="_blank">Visit DREAMS Laboratory</a>
             </div>
         </div>
     </div>
