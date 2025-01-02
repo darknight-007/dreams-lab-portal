@@ -521,29 +521,8 @@ def ransac_demo_data(request):
     })
 
 def ses598_quiz(request):
-    """Render the SES598 quiz page with MCQs and transition to drone buddy on success"""
-    # Get session ID from either request or session
-    session_id = getattr(request, 'session_id', None) or request.session.get('openuav_session_id')
-    if not session_id:
-        session_id = str(uuid.uuid4())
-        request.session['openuav_session_id'] = session_id
-    
-    # Handle quiz reset
-    if request.method == 'POST' and request.POST.get('reset') == 'true':
-        # Clear any stored quiz results from session
-        if 'quiz_results' in request.session:
-            del request.session['quiz_results']
-        if 'show_results' in request.session:
-            del request.session['show_results']
-        request.session.modified = True
-        
-        context = {
-            'show_results': False,
-            'session_id': session_id
-        }
-        return render(request, 'ses598_rem_quiz.html', context)
-
-    # MCQ answers and scoring
+    """Render the SES598 quiz page with user identification and MCQs"""
+    # MCQ answers
     mcq_answers = {
         'q1': '3',  # SLAM purpose
         'q2': '2',  # LiDAR
@@ -552,99 +531,32 @@ def ses598_quiz(request):
         'q5': '2',  # Path planning
     }
 
-    # Question categories
-    question_categories = {
-        'cv_score': ['q1', 'q2'],
-        'slam_score': ['q3'],
-        'sensing_score': ['q4'],
-        'motion_score': ['q5']
-    }
-
-    if request.method == 'POST' and not request.POST.get('reset'):
-        # Process quiz submission
+    if request.method == 'POST':
+        # Get user identification (empty string becomes Anonymous)
+        email = request.POST.get('email', '').strip() or 'Anonymous'
+        
+        # Calculate score
         score = 0
-        answers = {}
-        
-        # Initialize all scores to 0
-        scores = {
-            'cv_score': 0,
-            'slam_score': 0,
-            'sensing_score': 0,
-            'motion_score': 0
-        }
-        
-        # Process each question and categorize scores
         for q, correct_ans in mcq_answers.items():
-            student_ans = request.POST.get(q)
-            if not student_ans:  # Handle missing answers
-                student_ans = ''
-            
-            is_correct = student_ans == correct_ans
-            if is_correct:
+            student_ans = request.POST.get(q, '')
+            if student_ans == correct_ans:
                 score += 1
-                # Update category scores based on question type
-                for category, questions in question_categories.items():
-                    if q in questions:
-                        scores[category] += 1
-            
-            answers[q] = student_ans
 
-        # Calculate percentage scores
+        # Calculate total score percentage
         total_score = (score / len(mcq_answers)) * 100
-        
-        # Calculate category percentages
-        for category, questions in question_categories.items():
-            total_questions = len(questions)
-            if total_questions > 0:  # Avoid division by zero
-                scores[category] = (scores[category] / total_questions) * 100
-            else:
-                scores[category] = 0
-
-        # Save quiz submission
-        submission = QuizSubmission.objects.create(
-            quiz_id=str(uuid.uuid4())[:8],
-            session_id=session_id,
-            total_score=total_score,
-            cv_score=scores['cv_score'],
-            slam_score=scores['slam_score'],
-            sensing_score=scores['sensing_score'],
-            motion_score=scores['motion_score'],
-            **answers
-        )
-
-        # Store results in session
-        request.session['quiz_results'] = {
-            'score': total_score,
-            'category_scores': scores
-        }
-        request.session['show_results'] = True
-        request.session.modified = True
 
         context = {
             'show_results': True,
             'score': total_score,
-            'session_id': session_id,
-            'category_scores': scores
+            'email': email
         }
-        
         return render(request, 'ses598_rem_quiz.html', context)
 
-    # GET request - display quiz
-    # Check if we have stored results
-    if request.session.get('show_results'):
-        quiz_results = request.session.get('quiz_results', {})
-        context = {
-            'show_results': True,
-            'score': quiz_results.get('score'),
-            'category_scores': quiz_results.get('category_scores'),
-            'session_id': session_id
-        }
-    else:
-        context = {
-            'show_results': False,
-            'session_id': session_id
-        }
-
+    # GET request - always display fresh quiz
+    context = {
+        'show_results': False,
+        'email': 'Anonymous'
+    }
     return render(request, 'ses598_rem_quiz.html', context)
 
 def reset_quiz(request):
@@ -708,13 +620,14 @@ def get_ses598_course_data():
             },
             {
                 'week': '5',
-                'title': 'Scene Representation and View Synthesis',
+                'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
-                    'Scene  representation and view synthesis techniques',
-                    'Neural Radiance Fields (NeRF) and Gaussian Splatting',
-                    'Fusing with photogrammetry workflows'
+                    'Scene representation, pointcloud, mesh, voxel grids, and surfels',
+                    'View synthesis, Neural Radiance Fields (NeRF), and Gaussian Splatting',
+                    'Scene analysis, 3D point cloud processing, and semantic segmentation',
+                    'Diffusion models for generative scene modeling'
                 ],
-                'assignment': 'Assignment 4: Photogrammetry and Gaussian splatting experiments on Apollo 17 andLunar analog datasets.'
+                'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
                 'week': '6',
@@ -729,9 +642,10 @@ def get_ses598_course_data():
             },
             {
                 'week': '7-8',
-                'title': 'Digital and Cyber-physical Twins',
+                'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
-                    'Self-supervised learning of stochastic dynamical processes',
+                    'Decision support systems, geographic information systems (GIS), and digital twins',
+                    'Self-supervised learning of stochastic dynamical processes with physical twins',
                     'Case study 1 - earthquake geology: Virtual shake robot and particle dynamical studies',
                     'Case study 2 - ecological digital and physical twins',
                     'Closing the loop on model improvement with cyber-physical twins'
@@ -772,7 +686,7 @@ def get_ses598_course_data():
                     'Environmental uncertainty modeling',
                     'Safety-constrained learning'
                 ],
-                'assignment': 'Assignment 8: Robust exploration system'
+                'assignment': 'Assignment 8: Robust exploration system involving underwater, space, or extreme planetary environments.'
             },
             {
                 'week': '15-16',
@@ -1068,3 +982,81 @@ def gp_ucb_buddy_view(request):
 def bundle_adjustment_buddy_view(request):
     """View function for the bundle adjustment tutorial page."""
     return render(request, 'widgets/bundle_adjustment_buddy.html')
+
+def tutorials_home(request):
+    """Render the tutorials home page"""
+    return render(request, 'ses598_tutorials.html')
+
+def stereo_buddy(request):
+    """Render the stereo vision tutorial"""
+    context = {
+        'title': 'Stereo Vision for Planetary Mapping',
+        'difficulty': 'beginner',
+        'tutorial_id': 'stereo_vision'
+    }
+    return render(request, 'widgets/stereo_buddy.html', context)
+
+def slam_buddy(request):
+    """Render the SLAM tutorial"""
+    context = {
+        'title': 'SLAM Implementation',
+        'difficulty': 'intermediate',
+        'tutorial_id': 'slam'
+    }
+    return render(request, 'widgets/slam_buddy.html', context)
+
+def sensor_fusion_buddy(request):
+    """Render the sensor fusion tutorial"""
+    context = {
+        'title': 'Multi-Sensor Fusion',
+        'difficulty': 'intermediate',
+        'tutorial_id': 'sensor_fusion'
+    }
+    return render(request, 'widgets/sensor_fusion_buddy.html', context)
+
+def multiview_geometry(request):
+    """Render the multi-view geometry tutorial"""
+    context = {
+        'title': 'Multi-View Reconstruction',
+        'difficulty': 'advanced',
+        'tutorial_id': 'multiview'
+    }
+    return render(request, 'widgets/multiview_geometry.html', context)
+
+def ses598_quiz_part2(request):
+    """Render Part 2 of the SES598 quiz focusing on tutorial concepts"""
+    # Tutorial concept MCQ answers
+    mcq_answers = {
+        'q1': '2',  # Stereo vision baseline
+        'q2': '2',  # SLAM loop closure
+        'q3': '2',  # Kalman filter parameters
+        'q4': '3',  # Sampling strategy
+    }
+
+    if request.method == 'POST':
+        # Get user identification (empty string becomes Anonymous)
+        email = request.POST.get('email', '').strip() or 'Anonymous'
+        
+        # Calculate score
+        score = 0
+        for q, correct_ans in mcq_answers.items():
+            student_ans = request.POST.get(q, '')
+            if student_ans == correct_ans:
+                score += 1
+
+        # Calculate total score percentage
+        total_score = (score / len(mcq_answers)) * 100
+
+        context = {
+            'show_results': True,
+            'score': total_score,
+            'email': email
+        }
+        return render(request, 'ses598_rem_quiz_part2.html', context)
+
+    # GET request - always display fresh quiz
+    context = {
+        'show_results': False,
+        'email': 'Anonymous'
+    }
+    return render(request, 'ses598_rem_quiz_part2.html', context)

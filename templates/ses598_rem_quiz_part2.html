@@ -1,0 +1,384 @@
+{% extends "quiz_base.html" %}
+
+{% block quiz_title %}SES 598: Tutorial Concepts Quiz{% endblock %}
+
+{% block mcq_section_title %}Part 2: Interactive Tutorial Concepts{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        background-color: #fff;
+    }
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .option {
+        display: block;
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .option:hover {
+        background-color: #f8f9fa;
+    }
+    .progress {
+        height: 1.5rem;
+        background-color: #e9ecef;
+        border-radius: 0.25rem;
+    }
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+    .user-info {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+    .answer-explanations {
+        margin-top: 2rem;
+    }
+    .explanation {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #0d6efd;
+    }
+    .explanation h5 {
+        color: #0d6efd;
+        margin-bottom: 1rem;
+    }
+    .explanation ul {
+        margin-top: 0.5rem;
+        margin-bottom: 0;
+        padding-left: 1.5rem;
+    }
+    .explanation li {
+        margin-bottom: 0.5rem;
+    }
+    .tutorial-link {
+        margin-top: 1rem;
+    }
+    .tutorial-link a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+    .tutorial-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block mcq_questions %}
+    {% if show_results %}
+        <div class="alert alert-info">
+            <h4>Quiz Results</h4>
+            <p>Email: {{ email }}</p>
+            <div class="mb-3">
+                <p class="mb-2">Score: {{ score|floatformat:1 }}%</p>
+                <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: {{ score }}%" aria-valuenow="{{ score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            {% if score >= 60 %}
+                <div class="alert alert-success">
+                    <h5>Congratulations! You've passed the tutorial concepts quiz</h5>
+                    <p>You've demonstrated good understanding of the tutorial concepts.</p>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <h5>Please Try Again</h5>
+                    <p>Review the tutorials and try the quiz again.</p>
+                    <div class="mt-3">
+                        <a href="{% url 'ses598_quiz_part2' %}" class="btn btn-primary">Retake Quiz</a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <h4>Answer Explanations:</h4>
+                <div class="answer-explanations">
+                    <div class="explanation">
+                        <h5>1. Multi-view Geometry (Baseline)</h5>
+                        <p>Correct Answer: 0.5 meters (balanced parallax and matching with good depth resolution)</p>
+                        <p>Rationale: For a 35mm focal length camera at 10m distance:</p>
+                        <ul>
+                            <li>Depth Resolution Analysis:
+                                <ul>
+                                    <li>Error ∝ Z²/(B×f) where Z=depth, B=baseline, f=focal length</li>
+                                    <li>With f=35mm, Z=10m, B=0.5m gives practical resolution</li>
+                                    <li>Larger baselines improve resolution but complicate matching</li>
+                                </ul>
+                            </li>
+                            <li>Feature Matching Considerations:
+                                <ul>
+                                    <li>0.2m: Too small, poor depth resolution despite easy matching</li>
+                                    <li>0.5m: Optimal balance (about 1/20 of depth)</li>
+                                    <li>1.0m: Matching becomes difficult due to perspective changes</li>
+                                    <li>2.0m: Excessive, feature matching highly unreliable</li>
+                                </ul>
+                            </li>
+                            <li>Practical Constraints:
+                                <ul>
+                                    <li>Field of view overlap must be maintained</li>
+                                    <li>Feature appearance changes with baseline</li>
+                                    <li>Triangulation accuracy vs. matching reliability trade-off</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Common misconception: While larger baselines mathematically improve depth resolution, practical stereo systems are limited by feature matching reliability. The optimal baseline must balance these competing factors.</p>
+                    </div>
+
+                    <div class="explanation">
+                        <h5>2. SLAM Loop Closure</h5>
+                        <p>Correct Answer: To reduce accumulated drift by recognizing previously visited locations (global consistency)</p>
+                        <p>Rationale: Loop closure is fundamental to robust SLAM because:</p>
+                        <ul>
+                            <li>Error Accumulation:
+                                <ul>
+                                    <li>Wheel odometry drifts over time (wheel slip, uneven terrain)</li>
+                                    <li>IMU integration accumulates errors</li>
+                                    <li>Visual odometry can have scale drift</li>
+                                </ul>
+                            </li>
+                            <li>Global Consistency:
+                                <ul>
+                                    <li>Recognizing revisited locations provides absolute references</li>
+                                    <li>Allows correction of accumulated drift</li>
+                                    <li>Enables creation of globally consistent maps</li>
+                                </ul>
+                            </li>
+                            <li>Common Misconceptions:
+                                <ul>
+                                    <li>Moving object detection is important but handled separately</li>
+                                    <li>Path planning uses the map but isn't part of SLAM</li>
+                                    <li>Sensor calibration is a prerequisite, not a SLAM function</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Real-world impact: Without loop closure, a robot might create multiple inconsistent maps of the same location, leading to navigation failures.</p>
+                    </div>
+
+                    <div class="explanation">
+                        <h5>3. Kalman Filter Parameters</h5>
+                        <p>Correct Answer: High process noise, high measurement noise (conservative estimation)</p>
+                        <p>Rationale: For fast-moving robots, both noise parameters need careful consideration:</p>
+                        <ul>
+                            <li>High process noise is needed because:
+                                <ul>
+                                    <li>Robot state changes rapidly and may be unpredictable</li>
+                                    <li>Dynamic model might not capture all motion complexities</li>
+                                    <li>Acceleration and deceleration effects are significant</li>
+                                </ul>
+                            </li>
+                            <li>High measurement noise is also necessary because:
+                                <ul>
+                                    <li>Sensors suffer from motion blur and vibrations</li>
+                                    <li>Rapid movement can reduce sensor reliability</li>
+                                    <li>Environmental factors affect measurements more at speed</li>
+                                </ul>
+                            </li>
+                            <li>This conservative approach:
+                                <ul>
+                                    <li>Prevents overconfidence in both model and measurements</li>
+                                    <li>Provides more robust state estimation</li>
+                                    <li>Better handles the uncertainties in high-speed operation</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Common misconception: Trusting sensors more (low measurement noise) might seem intuitive for quick updates, but sensor reliability actually decreases with speed.</p>
+                    </div>
+
+                    <div class="explanation">
+                        <h5>4. Sampling Strategy</h5>
+                        <p>Correct Answer: Information gain-based sampling (adaptive and efficient)</p>
+                        <p>Rationale: In resource-constrained exploration:</p>
+                        <ul>
+                            <li>Strategy Comparison:
+                                <ul>
+                                    <li>Random: Simple but wastes resources on already-known areas</li>
+                                    <li>Grid-based: Systematic but rigid coverage</li>
+                                    <li>Information gain: Adapts to findings and uncertainty</li>
+                                    <li>Uniform: Predictable but ignores environment structure</li>
+                                </ul>
+                            </li>
+                            <li>Information Gain Benefits:
+                                <ul>
+                                    <li>Prioritizes high-uncertainty regions</li>
+                                    <li>Adapts sampling density to information content</li>
+                                    <li>Optimizes resource usage (energy, time, memory)</li>
+                                </ul>
+                            </li>
+                            <li>Practical Applications:
+                                <ul>
+                                    <li>Planetary rovers choosing sampling locations</li>
+                                    <li>Environmental monitoring with limited sensors</li>
+                                    <li>Search and rescue operations</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Common misconception: While random sampling ensures unbiased coverage, it's inefficient for resource-limited scenarios where intelligent decision-making is crucial.</p>
+                    </div>
+
+                    <div class="explanation">
+                        <h5>5. Error Types in Rock Mapping</h5>
+                        <p>Correct Answer: Type I Error (False Positives) - wasting resources on wrong samples is more costly</p>
+                        <p>Rationale: In resource-constrained planetary exploration:</p>
+                        <ul>
+                            <li>Cost Analysis:
+                                <ul>
+                                    <li>Sample collection requires significant energy and time</li>
+                                    <li>Storage capacity for samples is extremely limited</li>
+                                    <li>Each false positive wastes irreplaceable resources</li>
+                                </ul>
+                            </li>
+                            <li>Mission Impact:
+                                <ul>
+                                    <li>False positives lead to wasted collection attempts</li>
+                                    <li>Storage space filled with non-target samples</li>
+                                    <li>Opportunity cost of missing better samples later</li>
+                                </ul>
+                            </li>
+                            <li>Trade-off Considerations:
+                                <ul>
+                                    <li>While missing targets (Type II) is undesirable, more targets can be found later</li>
+                                    <li>Resources wasted on false positives (Type I) cannot be recovered</li>
+                                    <li>Conservative identification preserves resources for high-confidence targets</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Common misconception: While finding all potential targets seems important, in resource-constrained scenarios, avoiding resource waste on false positives takes precedence over catching every possible target.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <form method="post" id="quizForm">
+            {% csrf_token %}
+            <div class="user-info">
+                <h4>Student Information</h4>
+                <div class="form-group">
+                    <label for="email">Enter your email (optional):</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           placeholder="username@asu.edu">
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>1. In the multi-view geometry tutorial with a 35mm focal length camera observing a rock formation at 10 meters, what baseline setting provides the best balance between feature matching confidence and depth estimation accuracy?</h3>
+                <p class="question-context">Consider the following factors in the tutorial widget:</p>
+                <ul class="question-hints">
+                    <li>Depth resolution (proportional to baseline × focal_length / distance²)</li>
+                    <li>Feature matching reliability (decreases with larger baseline)</li>
+                    <li>Field of view overlap between cameras</li>
+                    <li>Triangulation geometry</li>
+                </ul>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q1" value="1" required> 0.2 meters (minimal parallax, easy matching but poor depth resolution)</label>
+                    <label class="option"><input type="radio" name="q1" value="2"> 0.5 meters (balanced parallax and matching with good depth resolution)</label>
+                    <label class="option"><input type="radio" name="q1" value="3"> 1.0 meters (strong depth resolution but challenging feature matching)</label>
+                    <label class="option"><input type="radio" name="q1" value="4"> 2.0 meters (optimal depth resolution but impractical for feature matching)</label>
+                </div>
+                <p class="tutorial-link mt-2">
+                    <a href="{% url 'multiview_geometry' %}" target="_blank">Open Multi-view Geometry Tutorial ↗</a>
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>2. In SLAM, what is the primary purpose of loop closure detection?</h3>
+                <p class="question-context">Consider the challenges in long-term robot navigation:</p>
+                <ul class="question-hints">
+                    <li>Accumulation of odometry errors over time</li>
+                    <li>Integration of multiple sensor measurements</li>
+                    <li>Maintaining global map consistency</li>
+                </ul>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q2" value="1" required> To detect moving objects (dynamic environment handling)</label>
+                    <label class="option"><input type="radio" name="q2" value="2"> To reduce accumulated drift by recognizing previously visited locations (global consistency)</label>
+                    <label class="option"><input type="radio" name="q2" value="3"> To plan the shortest path (navigation optimization)</label>
+                    <label class="option"><input type="radio" name="q2" value="4"> To calibrate sensors (hardware optimization)</label>
+                </div>
+                <p class="tutorial-link mt-2">
+                    <a href="{% url 'slam_buddy' %}" target="_blank">Open SLAM Tutorial ↗</a>
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>3. For a fast-moving robot using sensor fusion with a Kalman filter, which noise parameter configuration would provide the most robust state estimation?</h3>
+                <p class="question-context">Consider the trade-offs between:</p>
+                <ul class="question-hints">
+                    <li>Motion-induced sensor noise (vibrations, blur)</li>
+                    <li>Rapid state changes in dynamics</li>
+                    <li>Sensor measurement reliability at speed</li>
+                </ul>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q3" value="1" required> Low process noise, high measurement noise (trust model more than sensors)</label>
+                    <label class="option"><input type="radio" name="q3" value="2"> High process noise, low measurement noise (trust sensors more than model)</label>
+                    <label class="option"><input type="radio" name="q3" value="3"> High process noise, high measurement noise (conservative estimation)</label>
+                    <label class="option"><input type="radio" name="q3" value="4"> Low process noise, low measurement noise (aggressive estimation)</label>
+                </div>
+                <p class="tutorial-link mt-2">
+                    <a href="{% url 'sensor_fusion_buddy' %}" target="_blank">Open Sensor Fusion Tutorial ↗</a>
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>4. Which sampling strategy is most efficient for exploring an unknown environment with limited resources?</h3>
+                <p class="question-context">Consider a planetary exploration scenario with constraints:</p>
+                <ul class="question-hints">
+                    <li>Limited battery/computation power</li>
+                    <li>Unknown environment structure</li>
+                    <li>Need to maximize information gain</li>
+                    <li>Trade-off between exploration and exploitation</li>
+                </ul>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q4" value="1" required> Random sampling (unbiased but inefficient coverage)</label>
+                    <label class="option"><input type="radio" name="q4" value="2"> Grid-based sampling (systematic but rigid coverage)</label>
+                    <label class="option"><input type="radio" name="q4" value="3"> Information gain-based sampling (adaptive and efficient)</label>
+                    <label class="option"><input type="radio" name="q4" value="4"> Uniform sampling (consistent but inflexible coverage)</label>
+                </div>
+                <p class="tutorial-link mt-2">
+                    <a href="{% url 'sampling_buddy' %}" target="_blank">Open Sampling Tutorial ↗</a>
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>5. In automated rock mapping for planetary exploration, which error type would be more critical to minimize when identifying potential sample collection sites?</h3>
+                <p class="question-context">Consider a Mars rover scenario where:</p>
+                <ul class="question-hints">
+                    <li>Resources for sample collection are limited</li>
+                    <li>Each sample collection attempt is costly</li>
+                    <li>Mission success depends on collecting specific rock types</li>
+                    <li>Type I Error (False Positive): Incorrectly identifying a non-target rock as target</li>
+                    <li>Type II Error (False Negative): Missing a target rock by classifying it as non-target</li>
+                </ul>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q5" value="1" required> Type I Error (False Positives) - wasting resources on wrong samples is more costly</label>
+                    <label class="option"><input type="radio" name="q5" value="2"> Type II Error (False Negatives) - missing potential discoveries is more costly</label>
+                    <label class="option"><input type="radio" name="q5" value="3"> Both errors are equally important to minimize</label>
+                    <label class="option"><input type="radio" name="q5" value="4"> Neither error matters as long as some samples are collected</label>
+                </div>
+                <p class="tutorial-link mt-2">
+                    <a href="{% url 'image_buddy' %}" target="_blank">Open Image Processing Tutorial ↗</a>
+                </p>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Quiz</button>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block interactive_section %}{% endblock %} 
