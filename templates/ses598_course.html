@@ -263,7 +263,7 @@ p { font-size: 1.125rem; line-height: 1.7; }
     <div class="enrollment-quiz-banner">
         <div class="quiz-info">
             <h2>📝 Required Enrollment Quiz</h2>
-            <p>Please complete this quiz using your ASU email to gauge your foundation in robotics and AI concepts. This quiz must be completed by the first day of class to remain enrolled.</p>
+            <p>{{ syllabus.course_info.quiz_info }}</p>
         </div>
         <a href="{% url 'ses598_quiz' %}" class="quiz-button">
             Take Enrollment Quiz

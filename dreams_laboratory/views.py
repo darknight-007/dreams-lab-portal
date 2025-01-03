@@ -9,6 +9,14 @@ from scipy.signal import convolve2d  # Correct import for convolve2d
 from django.shortcuts import render, redirect
 from matplotlib.backends.backend_svg import FigureCanvasSVG
 from django.conf import settings
+from django.utils import timezone
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from io import BytesIO
+
 import subprocess
 import os
 from .models import People, Research, Publication, Project, Asset, FundingSource, QuizSubmission, QuizProgress
@@ -520,6 +528,80 @@ def ransac_demo_data(request):
         'y_random': y_random.tolist()
     })
 
+def get_certificate_eligibility(request):
+    """Check if user is eligible for a certificate and calculate final score"""
+    part1_completed = request.session.get('quiz_part1_completed', False)
+    part2_completed = request.session.get('quiz_part2_completed', False)
+    
+    if not (part1_completed and part2_completed):
+        return False, 0
+    
+    part1_score = request.session.get('quiz_part1_score', 0)
+    part2_score = request.session.get('quiz_part2_score', 0)
+    
+    # Calculate weighted average (part 1: 60%, part 2: 40%)
+    final_score = (part1_score * 0.6) + (part2_score * 0.4)
+    
+    # Eligible if final score is 70% or higher
+    return final_score >= 70, final_score
+
+@csrf_exempt
+def generate_certificate(request):
+    """Generate a PDF certificate for users who completed both quiz parts"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    eligible, final_score = get_certificate_eligibility(request)
+    if not eligible:
+        return JsonResponse({
+            'error': 'Not eligible for certificate. Complete both parts with minimum 70% score.'
+        }, status=400)
+    
+    email = request.session.get('quiz_email', 'Anonymous')
+    timestamp = timezone.now().strftime('%Y-%m-%d')
+    
+    # Create PDF certificate
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    # Certificate styling
+    p.setFont("Helvetica-Bold", 24)
+    p.drawCentredString(width/2, height-2*inch, "Certificate of Completion")
+    
+    p.setFont("Helvetica", 16)
+    p.drawCentredString(width/2, height-3*inch, "This is to certify that")
+    
+    p.setFont("Helvetica-Bold", 20)
+    p.drawCentredString(width/2, height-3.5*inch, email)
+    
+    p.setFont("Helvetica", 16)
+    p.drawCentredString(width/2, height-4*inch, "has successfully completed")
+    
+    p.setFont("Helvetica-Bold", 18)
+    p.drawCentredString(width/2, height-4.5*inch, "SES 598: Space Robotics and AI")
+    
+    p.setFont("Helvetica", 14)
+    p.drawCentredString(width/2, height-5.5*inch, f"Final Score: {round(final_score, 1)}%")
+    p.drawCentredString(width/2, height-6*inch, f"Part 1: {round(request.session.get('quiz_part1_score', 0), 1)}%")
+    p.drawCentredString(width/2, height-6.5*inch, f"Part 2: {round(request.session.get('quiz_part2_score', 0), 1)}%")
+    
+    p.setFont("Helvetica-Oblique", 12)
+    p.drawCentredString(width/2, height-7.5*inch, f"Issued on {timestamp}")
+    
+    p.setFont("Helvetica", 12)
+    p.drawCentredString(width/2, height-8*inch, "DREAMS Laboratory - Arizona State University")
+    
+    p.showPage()
+    p.save()
+    
+    # Get the value of the BytesIO buffer and return the PDF
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="SES598_Certificate_{email}_{timestamp}.pdf"'
+    
+    return response
+
 def ses598_quiz(request):
     """Render the SES598 quiz page with user identification and MCQs"""
     # MCQ answers
@@ -533,7 +615,13 @@ def ses598_quiz(request):
 
     if request.method == 'POST':
         # Get user identification (empty string becomes Anonymous)
-        email = request.POST.get('email', '').strip() or 'Anonymous'
+        email = request.POST.get('email', '').strip()
+        if email:
+            # Store email in session for part 2
+            request.session['quiz_email'] = email
+            request.session.modified = True  # Ensure session is saved
+        else:
+            email = 'Anonymous'
         
         # Calculate score
         score = 0
@@ -545,26 +633,111 @@ def ses598_quiz(request):
         # Calculate total score percentage
         total_score = (score / len(mcq_answers)) * 100
 
+        # Store the part 1 results in session
+        request.session['quiz_part1_score'] = total_score
+        request.session['quiz_part1_completed'] = True
+        request.session.modified = True  # Ensure session is saved
+
+        # Check certificate eligibility
+        eligible, final_score = get_certificate_eligibility(request)
+
         context = {
             'show_results': True,
             'score': total_score,
-            'email': email
+            'email': email,
+            'eligible_for_certificate': eligible,
+            'final_score': round(final_score, 1) if eligible else None,
+            'part2_completed': request.session.get('quiz_part2_completed', False)
         }
         return render(request, 'ses598_rem_quiz.html', context)
 
-    # GET request - always display fresh quiz
+    # GET request - display fresh quiz with stored email if available
+    stored_email = request.session.get('quiz_email', '')
     context = {
         'show_results': False,
-        'email': 'Anonymous'
+        'email': stored_email if stored_email else 'Anonymous',
+        'eligible_for_certificate': False
     }
     return render(request, 'ses598_rem_quiz.html', context)
+
+def ses598_quiz_part2(request):
+    """Render Part 2 of the SES598 quiz focusing on tutorial concepts"""
+    # Tutorial concept MCQ answers
+    mcq_answers = {
+        'q1': '2',  # Stereo vision baseline
+        'q2': '2',  # SLAM loop closure
+        'q3': '2',  # Kalman filter parameters
+        'q4': '3',  # Sampling strategy
+    }
+
+    # Get email from session, ensure it's properly retrieved
+    email = request.session.get('quiz_email', '')
+    part1_completed = request.session.get('quiz_part1_completed', False)
+    
+    # If part 1 is not completed, redirect to part 1
+    if not part1_completed:
+        return redirect('ses598_quiz')
+
+    if request.method == 'POST':
+        # Get user identification from POST, fallback to session email if empty
+        submitted_email = request.POST.get('email', '').strip()
+        if submitted_email:
+            email = submitted_email
+            # Store email in session for future use
+            request.session['quiz_email'] = email
+            request.session.modified = True  # Ensure session is saved
+        elif not email:
+            email = 'Anonymous'
+        
+        # Calculate score
+        score = 0
+        for q, correct_ans in mcq_answers.items():
+            student_ans = request.POST.get(q, '')
+            if student_ans == correct_ans:
+                score += 1
+
+        # Calculate total score percentage
+        total_score = (score / len(mcq_answers)) * 100
+
+        # Store the part 2 results in session
+        request.session['quiz_part2_score'] = total_score
+        request.session['quiz_part2_completed'] = True
+        request.session.modified = True  # Ensure session is saved
+
+        # Check certificate eligibility
+        eligible, final_score = get_certificate_eligibility(request)
+
+        context = {
+            'show_results': True,
+            'score': total_score,
+            'email': email,
+            'part1_completed': True,
+            'part1_score': request.session.get('quiz_part1_score', 0),
+            'eligible_for_certificate': eligible,
+            'final_score': round(final_score, 1) if eligible else None
+        }
+        return render(request, 'ses598_rem_quiz_part2.html', context)
+
+    # GET request - display quiz with stored email if available
+    context = {
+        'show_results': False,
+        'email': email if email else 'Anonymous',
+        'part1_completed': True,
+        'part1_score': request.session.get('quiz_part1_score', 0),
+        'eligible_for_certificate': False
+    }
+    return render(request, 'ses598_rem_quiz_part2.html', context)
 
 def reset_quiz(request):
     """Reset quiz state while preserving session ID"""
     # Clear quiz results but keep session ID
     session_id = request.session.get('openuav_session_id')
-    if 'quiz_results' in request.session:
-        del request.session['quiz_results']
+    quiz_keys = ['quiz_email', 'quiz_part1_score', 'quiz_part2_score', 
+                'quiz_part1_completed', 'quiz_part2_completed']
+    
+    for key in quiz_keys:
+        if key in request.session:
+            del request.session[key]
     
     # Restore session ID if it existed
     if session_id:
@@ -576,7 +749,7 @@ def get_ses598_course_data():
     """Return the SES598 course data that can be used across different views"""
     return {
         'course_info': {
-            'title': 'SES 598: Robotics and AI for Space Exploration',
+            'title': 'SES 598: Space Robotics and AI',
             'semester': 'Spring 2025',
             'meeting_times': 'Tu/Th 10:30-11:45pm',
             'location': 'ASU Tempe Campus, Room TBD',
@@ -584,6 +757,7 @@ def get_ses598_course_data():
             'office_hours': 'By appointment',
             'contact': 'jdas@asu.edu',
             'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping techniques, tailored for planetary and environmental applications. Students will gain expertise in state estimation, path planning, machine learning, and control systems, with a strong emphasis on real-world implementation. Topics include computer vision, SLAM, multi-robot coordination, and extreme environment operations. The curriculum combines lectures with hands-on projects, culminating in a final project where students design an end-to-end robotics system for planetary exploration. Prerequisites include proficiency in Python, linear algebra, and probability, alongside experience with Linux systems and basic computer vision.',
+            'quiz_info': 'Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.'
         },
         'prerequisites': [
             {'category': 'Mathematics', 'requirement': 'Linear algebra (vectors, matrices, eigenvalues), calculus (derivatives, gradients), and probability theory (Bayes rule, distributions)'},
@@ -599,7 +773,7 @@ def get_ses598_course_data():
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood',
-                    'State space models and linear systems',
+                    'State space models and linear dynamical systems',
                     'Kalman and Particle Filters',
                     'PID control, LQR, MPC',
                     'Cart pole problem and inverted pendulum'
@@ -638,7 +812,7 @@ def get_ses598_course_data():
                     'Multi-armed bandits and Bayesian optimization',
                     'Information gain in exploration'
                 ],
-                'assignment': 'Assignment 5: Optimal space telescope sampling challenge'
+                'assignment': 'Assignment 5: Optimal space telescope sampling challenge.'
             },
             {
                 'week': '7-8',
@@ -666,7 +840,7 @@ def get_ses598_course_data():
             },
             {
                 'week': '11-12',
-                'title': 'Multi-Robot Coordination & Distributed Learning',
+                'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
                     'Multi-agent exploration strategies',
@@ -1028,41 +1202,3 @@ def multiview_geometry(request):
         'tutorial_id': 'multiview'
     }
     return render(request, 'widgets/multiview_geometry.html', context)
-
-def ses598_quiz_part2(request):
-    """Render Part 2 of the SES598 quiz focusing on tutorial concepts"""
-    # Tutorial concept MCQ answers
-    mcq_answers = {
-        'q1': '2',  # Stereo vision baseline
-        'q2': '2',  # SLAM loop closure
-        'q3': '2',  # Kalman filter parameters
-        'q4': '3',  # Sampling strategy
-    }
-
-    if request.method == 'POST':
-        # Get user identification (empty string becomes Anonymous)
-        email = request.POST.get('email', '').strip() or 'Anonymous'
-        
-        # Calculate score
-        score = 0
-        for q, correct_ans in mcq_answers.items():
-            student_ans = request.POST.get(q, '')
-            if student_ans == correct_ans:
-                score += 1
-
-        # Calculate total score percentage
-        total_score = (score / len(mcq_answers)) * 100
-
-        context = {
-            'show_results': True,
-            'score': total_score,
-            'email': email
-        }
-        return render(request, 'ses598_rem_quiz_part2.html', context)
-
-    # GET request - always display fresh quiz
-    context = {
-        'show_results': False,
-        'email': 'Anonymous'
-    }
-    return render(request, 'ses598_rem_quiz_part2.html', context)
