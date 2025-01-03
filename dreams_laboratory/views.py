@@ -546,8 +546,16 @@ def get_certificate_eligibility(request):
     part1_any_correct = any(request.session.get(f'quiz_part1_q{i}_correct', False) for i in range(1, 6))
     part2_any_correct = any(request.session.get(f'quiz_part2_q{i}_correct', False) for i in range(1, 6))
     
-    # Eligible if at least one question was answered correctly in each part
-    return (part1_any_correct and part2_any_correct), final_score
+    # Eligible if:
+    # 1. At least one question was answered correctly in each part
+    # 2. Part 1 score >= 60%
+    # 3. Part 2 score >= 70%
+    is_eligible = (
+        part1_any_correct and part2_any_correct and
+        part1_score >= 60.0 and part2_score >= 70.0
+    )
+    
+    return is_eligible, final_score
 
 @csrf_exempt
 def generate_certificate(request):
@@ -937,7 +945,8 @@ def ses598_quiz_part2(request):
             'eligible_for_certificate': eligible,
             'final_score': final_score,
             'feedback': feedback,
-            'any_correct': any_correct  # Add this to context
+            'any_correct': any_correct,  # Add this to context
+            'part1_score': request.session.get('quiz_part1_score', 0.0)  # Add Part 1 score
         }
         return render(request, 'ses598_rem_quiz_part2.html', context)
 
