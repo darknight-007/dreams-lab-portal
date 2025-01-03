@@ -997,10 +997,33 @@ class MultiviewGeometry {
                     ctx.stroke();
                 }
 
+                // Draw target object projection
+                const targetPos = this.targetObject.position.clone();
+                const camera = side === 'left' ? this.camera1 : this.camera2;
+                const targetProj = this.projectToCamera(targetPos, camera, plane);
+                
+                if (targetProj) {
+                    const { sensorSize } = this.params;
+                    const x = (targetProj.x / sensorSize.width + 0.5) * plane.canvas.width;
+                    const y = (targetProj.y / sensorSize.height + 0.5) * plane.canvas.height;
+
+                    // Calculate target object size based on depth
+                    const depth = -targetProj.z;
+                    const baseRadius = 0.3; // Matches the sphere geometry radius
+                    const projectedRadius = (baseRadius * this.params.focalLength) / depth;
+                    const screenRadius = (projectedRadius / sensorSize.width) * plane.canvas.width;
+
+                    // Draw target object as a circle with depth-dependent size
+                    ctx.strokeStyle = '#808080';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, screenRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
                 // Draw features
                 this.features.forEach((feature, index) => {
                     const featurePos = feature.position;
-                    const camera = side === 'left' ? this.camera1 : this.camera2;
                     const proj = this.projectToCamera(featurePos, camera, plane);
                     
                     if (proj) {
