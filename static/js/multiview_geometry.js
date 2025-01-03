@@ -10,17 +10,17 @@ class MultiviewGeometry {
         this.camera1 = null;
         this.camera2 = null;
         this.point3D = null;
-        this.epipolarPlane = null;
-        this.epipolarLines = null;
         this.gridHelper = null;
         
         this.params = {
             focalLength: 35,
-            baseline: 0.5,
-            pointDepth: 10,
+            baseline: 50,
+            pointDepth: 1000,
             toeIn: 0,
             principalPoint: { x: 0, y: 0 },
-            sensorSize: { width: 36, height: 24 } // 35mm format
+            sensorSize: { width: 36, height: 24 }, // 35mm format
+            minBaseline: 10, // Minimum baseline in cm
+            maxBaselineRatio: 0.5 // Maximum baseline as ratio of point depth
         };
 
         this.views = {
@@ -86,23 +86,6 @@ class MultiviewGeometry {
         this.point3D = new THREE.Mesh(pointGeometry, pointMaterial);
         this.scene.add(this.point3D);
 
-        // Create epipolar plane
-        const planeGeometry = new THREE.PlaneGeometry(5, 5);
-        const planeMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-            transparent: true,
-            opacity: 0.2,
-            side: THREE.DoubleSide
-        });
-        this.epipolarPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        this.scene.add(this.epipolarPlane);
-
-        // Create epipolar lines
-        const lineGeometry = new THREE.BufferGeometry();
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
-        this.epipolarLines = new THREE.LineSegments(lineGeometry, lineMaterial);
-        this.scene.add(this.epipolarLines);
-
         // Add convergence point sphere
         const sphereGeometry = new THREE.SphereGeometry(0.15);
         const sphereMaterial = new THREE.MeshPhongMaterial({ 
@@ -164,28 +147,41 @@ class MultiviewGeometry {
     }
 
     updateScene() {
-        const { focalLength, baseline, pointDepth, toeIn } = this.params;
-
-        // Update camera positions (baseline now in meters)
-        this.camera1.position.set(-baseline/2, 0, 0);
-        this.camera2.position.set(baseline/2, 0, 0);
-
-        // Update camera rotations using toe-in angle
+        const { focalLength, baseline, pointDepth, toeIn, minBaseline, maxBaselineRatio } = this.params;
+        
+        // Enforce minimum baseline and maximum based on point depth
+        const maxBaseline = pointDepth * maxBaselineRatio;
+        const safeBaseline = Math.max(minBaseline, Math.min(baseline, maxBaseline));
+        
+        // Convert baseline to meters for THREE.js scene
+        const baselineMeters = safeBaseline / 100;
+        
+        // Update camera positions with safe baseline (in meters)
+        this.camera1.position.set(-baselineMeters/2, 0, 0);
+        this.camera2.position.set(baselineMeters/2, 0, 0);
+        
+        // Calculate convergence point with safety checks
         const toeInRad = (toeIn * Math.PI) / 180;
+        
+        // Update camera rotations using toe-in angle
         this.camera1.rotation.set(0, toeInRad, 0);
         this.camera2.rotation.set(0, -toeInRad, 0);
-
-        // Update convergence point
-        if (toeInRad !== 0) {
-            const convergenceDistance = (baseline/2) / Math.tan(Math.abs(toeInRad));
-            this.convergencePoint.position.set(0, 0, -convergenceDistance);
+        
+        if (Math.abs(toeInRad) > 0.001) {  // Non-zero toe-in
+            // Convert baseline to meters for convergence calculation
+            const convergenceDistance = (baselineMeters/2) / Math.tan(Math.abs(toeInRad));
+            // Limit convergence distance and convert point depth to meters
+            const safeDistance = Math.min(convergenceDistance, pointDepth/100 * 2);
+            this.convergencePoint.position.set(0, 0, -safeDistance);
+            this.convergencePoint.visible = true;
         } else {
-            this.convergencePoint.position.set(0, 0, -pointDepth);
+            // Convert point depth to meters
+            this.convergencePoint.position.set(0, 0, -pointDepth/100);
+            this.convergencePoint.visible = false;
         }
 
-        // Update feature projections and epipolar lines
+        // Update feature projections
         this.updateFeatureProjections();
-        this.updateEpipolarGeometry();
         this.updateMatrices();
 
         // Update camera views
@@ -200,16 +196,32 @@ class MultiviewGeometry {
 
             // Project features onto each camera's image plane
             this.features.forEach(feature => {
-                // Convert world coordinates to camera coordinates
+                // Get feature depth relative to camera
                 const featurePos = feature.position.clone();
+                const depth = -featurePos.z;
                 
+                // Skip features that are too close or too far
+                if (depth < 0.1 || depth > this.params.pointDepth * 2) {
+                    feature.visible = false;
+                    return;
+                }
+                
+                // Scale feature size based on depth
+                const scale = 0.1 / Math.max(1, Math.sqrt(depth));
+                feature.scale.setScalar(scale);
+                feature.visible = true;
+
                 // Project to left camera
                 const leftProj = this.projectToCamera(featurePos, this.camera1, this.projectionPlanes.left);
-                if (leftProj) this.featureProjections.left.push(leftProj);
+                if (leftProj && this.isFeatureVisible(leftProj)) {
+                    this.featureProjections.left.push(leftProj);
+                }
 
                 // Project to right camera
                 const rightProj = this.projectToCamera(featurePos, this.camera2, this.projectionPlanes.right);
-                if (rightProj) this.featureProjections.right.push(rightProj);
+                if (rightProj && this.isFeatureVisible(rightProj)) {
+                    this.featureProjections.right.push(rightProj);
+                }
             });
 
             // Update projection plane textures
@@ -217,6 +229,15 @@ class MultiviewGeometry {
         } catch (error) {
             console.error('Error in updateFeatureProjections:', error);
         }
+    }
+
+    isFeatureVisible(projection) {
+        const { sensorSize } = this.params;
+        // Check if projection is within sensor bounds with margin
+        const margin = 0.1;
+        return Math.abs(projection.x) <= (sensorSize.width/2 + margin) &&
+               Math.abs(projection.y) <= (sensorSize.height/2 + margin) &&
+               projection.z < 0;  // Check if in front of camera
     }
 
     projectToCamera(point, camera, projectionPlane) {
@@ -230,20 +251,26 @@ class MultiviewGeometry {
                 .sub(cameraPosition)
                 .applyMatrix4(cameraWorldMatrix.invert());
 
-            // Check if point is in front of camera
-            if (pointInCameraSpace.z > 0) return null;
-
-            // Project to image plane with principal point offset
-            const { focalLength, principalPoint, sensorSize } = this.params;
-            const x = -(pointInCameraSpace.x * focalLength) / pointInCameraSpace.z + principalPoint.x;
-            const y = -(pointInCameraSpace.y * focalLength) / pointInCameraSpace.z + principalPoint.y;
-
-            // Check if projection is within sensor bounds
-            if (Math.abs(x) > sensorSize.width/2 || Math.abs(y) > sensorSize.height/2) {
+            // Add epsilon to avoid division by zero
+            const epsilon = 1e-6;
+            if (Math.abs(pointInCameraSpace.z) < epsilon) {
                 return null;
             }
 
-            return { x, y, z: pointInCameraSpace.z };
+            // Robust projection calculation
+            const z = -pointInCameraSpace.z;  // Make sure z is positive for points in front
+            const { focalLength, principalPoint, sensorSize } = this.params;
+            const x = -(pointInCameraSpace.x * focalLength) / (z + epsilon) + principalPoint.x;
+            const y = -(pointInCameraSpace.y * focalLength) / (z + epsilon) + principalPoint.y;
+
+            // Check if projection is within sensor bounds with margin
+            const margin = 0.1;
+            if (Math.abs(x) > (sensorSize.width/2 + margin) || 
+                Math.abs(y) > (sensorSize.height/2 + margin)) {
+                return null;
+            }
+
+            return { x, y, z };
         } catch (error) {
             console.error('Error in projectToCamera:', error);
             return null;
@@ -252,41 +279,47 @@ class MultiviewGeometry {
 
     updateProjectionPlaneTextures() {
         try {
+            // Clean up old correspondence lines and container
+            const oldContainer = document.getElementById('correspondence-lines-container');
+            if (oldContainer) {
+                oldContainer.remove();
+            }
+
             Object.entries(this.projectionPlanes).forEach(([side, plane]) => {
-                if (!plane || !plane.renderer || !plane.renderer.domElement) {
+                if (!plane || !plane.canvas) {
                     console.warn(`Missing projection plane elements for ${side} camera`);
                     return;
                 }
 
-                const ctx = plane.renderer.domElement.getContext('2d');
+                const ctx = plane.canvas.getContext('2d');
                 if (!ctx) {
                     console.warn(`Could not get 2D context for ${side} camera`);
                     return;
                 }
 
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.clearRect(0, 0, plane.canvas.width, plane.canvas.height);
 
                 // Draw grid lines
                 ctx.strokeStyle = '#cccccc';
                 ctx.lineWidth = 1;
                 const gridSize = 20;
-                for (let i = 0; i <= ctx.canvas.width; i += gridSize) {
+                for (let i = 0; i <= plane.canvas.width; i += gridSize) {
                     ctx.beginPath();
                     ctx.moveTo(i, 0);
-                    ctx.lineTo(i, ctx.canvas.height);
+                    ctx.lineTo(i, plane.canvas.height);
                     ctx.stroke();
                 }
-                for (let i = 0; i <= ctx.canvas.height; i += gridSize) {
+                for (let i = 0; i <= plane.canvas.height; i += gridSize) {
                     ctx.beginPath();
                     ctx.moveTo(0, i);
-                    ctx.lineTo(ctx.canvas.width, i);
+                    ctx.lineTo(plane.canvas.width, i);
                     ctx.stroke();
                 }
 
                 // Draw principal point
                 const { principalPoint, sensorSize } = this.params;
-                const ppX = (principalPoint.x / sensorSize.width + 0.5) * ctx.canvas.width;
-                const ppY = (principalPoint.y / sensorSize.height + 0.5) * ctx.canvas.height;
+                const ppX = (principalPoint.x / sensorSize.width + 0.5) * plane.canvas.width;
+                const ppY = (principalPoint.y / sensorSize.height + 0.5) * plane.canvas.height;
                 ctx.strokeStyle = '#ff0000';
                 ctx.lineWidth = 2;
                 const crossSize = 10;
@@ -297,32 +330,15 @@ class MultiviewGeometry {
                 ctx.lineTo(ppX, ppY + crossSize);
                 ctx.stroke();
 
-                // Draw epipolar lines and feature correspondences
-                const otherSide = side === 'left' ? 'right' : 'left';
-                const otherCamera = side === 'left' ? this.camera2 : this.camera1;
-                const thisCamera = side === 'left' ? this.camera1 : this.camera2;
-                
-                // Calculate fundamental matrix once for all features
-                const F = this.calculateFundamentalMatrix(
-                    this.getCalibrationMatrix(),
-                    this.calculateEssentialMatrix(
-                        this.calculateRotationMatrix(this.params.toeIn * Math.PI / 180),
-                        [this.params.baseline/100, 0, 0]
-                    )
-                );
-
-                // Store current feature projections for correspondence lines
-                const currentProjections = [];
-                
+                // Draw feature projections
                 this.features.forEach((feature, index) => {
                     const featurePos = feature.position;
-                    const proj = this.projectToCamera(featurePos, thisCamera, plane);
+                    const proj = this.projectToCamera(featurePos, side === 'left' ? this.camera1 : this.camera2, plane);
                     
                     if (proj) {
                         // Convert to normalized image coordinates
-                        const x = (proj.x / sensorSize.width + 0.5) * ctx.canvas.width;
-                        const y = (proj.y / sensorSize.height + 0.5) * ctx.canvas.height;
-                        currentProjections.push({ x, y, index });
+                        const x = (proj.x / sensorSize.width + 0.5) * plane.canvas.width;
+                        const y = (proj.y / sensorSize.height + 0.5) * plane.canvas.height;
 
                         // Draw feature point
                         ctx.fillStyle = `hsl(${(index * 30) % 360}, 100%, 50%)`;
@@ -334,86 +350,57 @@ class MultiviewGeometry {
                         ctx.fillStyle = '#000000';
                         ctx.font = '12px Arial';
                         ctx.fillText(index + 1, x + 5, y - 5);
-
-                        // Calculate and draw epipolar line in other view
-                        const point = [x, y, 1];
-                        const line = side === 'left' ? 
-                            this.multiplyMatrixVector(F, point) :
-                            this.multiplyMatrixVector(this.transposeMatrix(F), point);
-
-                        // Draw epipolar line
-                        const [a, b, c] = line;
-                        ctx.strokeStyle = `hsla(${(index * 30) % 360}, 100%, 50%, 0.3)`;
-                        ctx.lineWidth = 1;
-                        
-                        const intersections = this.findLineImageIntersections(a, b, c, ctx.canvas.width, ctx.canvas.height);
-                        if (intersections.length === 2) {
-                            ctx.beginPath();
-                            ctx.moveTo(intersections[0].x, intersections[0].y);
-                            ctx.lineTo(intersections[1].x, intersections[1].y);
-                            ctx.stroke();
-                        }
                     }
                 });
-
-                // Draw correspondence lines between views
-                if (side === 'right') {
-                    const leftProjections = this.featureProjections.left;
-                    const rightProjections = this.featureProjections.right;
-                    
-                    if (leftProjections && rightProjections) {
-                        leftProjections.forEach((leftProj, index) => {
-                            const rightProj = rightProjections[index];
-                            if (leftProj && rightProj) {
-                                const leftX = (leftProj.x / sensorSize.width + 0.5) * ctx.canvas.width;
-                                const rightX = (rightProj.x / sensorSize.width + 0.5) * ctx.canvas.width;
-                                const leftY = (leftProj.y / sensorSize.height + 0.5) * ctx.canvas.height;
-                                const rightY = (rightProj.y / sensorSize.height + 0.5) * ctx.canvas.height;
-
-                                // Draw correspondence line
-                                const leftView = document.getElementById('leftView');
-                                const rightView = document.getElementById('rightView');
-                                if (leftView && rightView) {
-                                    const leftRect = leftView.getBoundingClientRect();
-                                    const rightRect = rightView.getBoundingClientRect();
-                                    
-                                    // Create or update correspondence line
-                                    const lineId = `correspondence-${index}`;
-                                    let line = document.getElementById(lineId);
-                                    if (!line) {
-                                        line = document.createElement('div');
-                                        line.id = lineId;
-                                        line.style.position = 'absolute';
-                                        line.style.pointerEvents = 'none';
-                                        line.style.zIndex = '1000';
-                                        document.body.appendChild(line);
-                                    }
-
-                                    // Calculate line position and angle
-                                    const x1 = leftRect.left + leftX;
-                                    const y1 = leftRect.top + leftY;
-                                    const x2 = rightRect.left + rightX;
-                                    const y2 = rightRect.top + rightY;
-                                    
-                                    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                                    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-                                    
-                                    line.style.width = `${length}px`;
-                                    line.style.height = '2px';
-                                    line.style.backgroundColor = `hsla(${(index * 30) % 360}, 100%, 50%, 0.5)`;
-                                    line.style.transform = `translate(${x1}px, ${y1}px) rotate(${angle}deg)`;
-                                    line.style.transformOrigin = '0 0';
-                                }
-                            }
-                        });
-                    }
-                }
 
                 // Update texture
                 if (plane.mesh && plane.mesh.material && plane.mesh.material.map) {
                     plane.mesh.material.map.needsUpdate = true;
                 }
             });
+
+            // Draw correspondence lines between views
+            const leftView = document.getElementById('leftView');
+            const rightView = document.getElementById('rightView');
+            if (leftView && rightView && this.featureProjections.left && this.featureProjections.right) {
+                const container = document.createElement('div');
+                container.id = 'correspondence-lines-container';
+                document.body.appendChild(container);
+
+                this.featureProjections.left.forEach((leftProj, index) => {
+                    const rightProj = this.featureProjections.right[index];
+                    if (leftProj && rightProj) {
+                        const leftX = (leftProj.x / this.params.sensorSize.width + 0.5) * this.projectionPlanes.left.canvas.width;
+                        const rightX = (rightProj.x / this.params.sensorSize.width + 0.5) * this.projectionPlanes.right.canvas.width;
+                        const leftY = (leftProj.y / this.params.sensorSize.height + 0.5) * this.projectionPlanes.left.canvas.height;
+                        const rightY = (rightProj.y / this.params.sensorSize.height + 0.5) * this.projectionPlanes.right.canvas.height;
+
+                        const leftRect = leftView.getBoundingClientRect();
+                        const rightRect = rightView.getBoundingClientRect();
+
+                        const line = document.createElement('div');
+                        line.className = 'correspondence-line';
+                        line.style.position = 'absolute';
+                        line.style.pointerEvents = 'none';
+                        line.style.zIndex = '1000';
+                        container.appendChild(line);
+
+                        const x1 = leftRect.left + leftX;
+                        const y1 = leftRect.top + leftY;
+                        const x2 = rightRect.left + rightX;
+                        const y2 = rightRect.top + rightY;
+
+                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+                        line.style.width = `${length}px`;
+                        line.style.height = '2px';
+                        line.style.backgroundColor = `hsla(${(index * 30) % 360}, 100%, 50%, 0.5)`;
+                        line.style.transform = `translate(${x1}px, ${y1}px) rotate(${angle}deg)`;
+                        line.style.transformOrigin = '0 0';
+                    }
+                });
+            }
         } catch (error) {
             console.error('Error in updateProjectionPlaneTextures:', error);
         }
@@ -467,66 +454,10 @@ class MultiviewGeometry {
         ];
     }
 
-    updateEpipolarGeometry() {
-        const point = this.point3D.position;
-        const cam1Pos = this.camera1.position;
-        const cam2Pos = this.camera2.position;
-
-        // Update epipolar plane
-        const normal = new THREE.Vector3().crossVectors(
-            new THREE.Vector3().subVectors(point, cam1Pos),
-            new THREE.Vector3().subVectors(point, cam2Pos)
-        ).normalize();
-
-        this.epipolarPlane.lookAt(normal);
-        this.epipolarPlane.position.copy(point);
-
-        // Update epipolar lines
-        const linePoints = new Float32Array([
-            cam1Pos.x, cam1Pos.y, cam1Pos.z,
-            point.x, point.y, point.z,
-            cam2Pos.x, cam2Pos.y, cam2Pos.z
-        ]);
-
-        this.epipolarLines.geometry.setAttribute(
-            'position',
-            new THREE.BufferAttribute(linePoints, 3)
-        );
-
-        // Add epipolar lines for each feature
-        this.features.forEach(feature => {
-            const featurePos = feature.position;
-            const cam1Pos = new THREE.Vector3();
-            const cam2Pos = new THREE.Vector3();
-            this.camera1.getWorldPosition(cam1Pos);
-            this.camera2.getWorldPosition(cam2Pos);
-
-            // Create epipolar line geometry
-            const lineGeometry = new THREE.BufferGeometry();
-            const linePoints = new Float32Array([
-                cam1Pos.x, cam1Pos.y, cam1Pos.z,
-                featurePos.x, featurePos.y, featurePos.z,
-                cam2Pos.x, cam2Pos.y, cam2Pos.z
-            ]);
-            lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePoints, 3));
-            
-            // Create line material
-            const lineMaterial = new THREE.LineBasicMaterial({ 
-                color: 0x0000ff,
-                transparent: true,
-                opacity: 0.3
-            });
-
-            // Add line to scene
-            const line = new THREE.Line(lineGeometry, lineMaterial);
-            this.scene.add(line);
-        });
-    }
-
     updateMatrices() {
         const { focalLength, baseline, principalPoint, sensorSize } = this.params;
 
-        // Calculate calibration matrix with principal point
+        // Calculate calibration matrix with principal point (using mm)
         const K = [
             [focalLength, 0, principalPoint.x + sensorSize.width/2],
             [0, focalLength, principalPoint.y + sensorSize.height/2],
@@ -537,8 +468,8 @@ class MultiviewGeometry {
         const toeInRad = (this.params.toeIn * Math.PI) / 180;
         const R = this.calculateRotationMatrix(toeInRad);
 
-        // Calculate translation vector
-        const t = [baseline/100, 0, 0]; // Convert cm to meters
+        // Calculate translation vector (convert baseline from cm to mm for consistency with K)
+        const t = [baseline * 10, 0, 0];  // cm to mm conversion
 
         // Calculate essential matrix
         const E = this.calculateEssentialMatrix(R, t);
@@ -547,8 +478,8 @@ class MultiviewGeometry {
         const F = this.calculateFundamentalMatrix(K, E);
 
         // Display matrices
-        this.displayMatrix('calibrationMatrix', K, 'K');
-        this.displayMatrix('essentialMatrix', E, 'E');
+        this.displayMatrix('calibrationMatrix', K, 'K (mm)');
+        this.displayMatrix('essentialMatrix', E, 'E (mm)');
         this.displayMatrix('fundamentalMatrix', F, 'F');
     }
 
@@ -564,25 +495,68 @@ class MultiviewGeometry {
     }
 
     calculateEssentialMatrix(R, t) {
-        // E = [t]× R
-        const tx = t[0], ty = t[1], tz = t[2];
-        const tCross = [
-            [0, -tz, ty],
-            [tz, 0, -tx],
-            [-ty, tx, 0]
-        ];
+        try {
+            // Check input matrices
+            if (!R || !t || !R.length || t.length !== 3) {
+                throw new Error('Invalid input matrices');
+            }
 
-        return this.multiplyMatrices(tCross, R);
+            // E = [t]× R
+            const tx = t[0], ty = t[1], tz = t[2];
+            const tCross = [
+                [0, -tz, ty],
+                [tz, 0, -tx],
+                [-ty, tx, 0]
+            ];
+
+            const E = this.multiplyMatrices(tCross, R);
+
+            // Normalize E to ensure numerical stability
+            const norm = Math.sqrt(E.flat().reduce((sum, val) => sum + val * val, 0));
+            if (norm > 1e-10) {
+                return E.map(row => row.map(val => val / norm));
+            }
+            return E;
+        } catch (error) {
+            console.error('Error calculating essential matrix:', error);
+            return [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ];
+        }
     }
 
     calculateFundamentalMatrix(K, E) {
-        // F = K^(-T) E K^(-1)
-        const Kinv = this.invertMatrix(K);
-        const KinvT = this.transposeMatrix(Kinv);
-        return this.multiplyMatrices(
-            KinvT,
-            this.multiplyMatrices(E, Kinv)
-        );
+        try {
+            // Check input matrices
+            if (!K || !E || !K.length || !E.length || 
+                K.length !== 3 || E.length !== 3) {
+                throw new Error('Invalid input matrices');
+            }
+
+            // F = K^(-T) E K^(-1)
+            const Kinv = this.invertMatrix(K);
+            const KinvT = this.transposeMatrix(Kinv);
+            const F = this.multiplyMatrices(
+                KinvT,
+                this.multiplyMatrices(E, Kinv)
+            );
+
+            // Normalize F to ensure numerical stability
+            const norm = Math.sqrt(F.flat().reduce((sum, val) => sum + val * val, 0));
+            if (norm > 1e-10) {
+                return F.map(row => row.map(val => val / norm));
+            }
+            return F;
+        } catch (error) {
+            console.error('Error calculating fundamental matrix:', error);
+            return [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ];
+        }
     }
 
     displayMatrix(elementId, matrix, name) {
@@ -609,36 +583,82 @@ class MultiviewGeometry {
     }
 
     multiplyMatrices(a, b) {
-        const result = Array(a.length).fill().map(() => Array(b[0].length).fill(0));
-        for (let i = 0; i < a.length; i++) {
-            for (let j = 0; j < b[0].length; j++) {
-                for (let k = 0; k < b.length; k++) {
-                    result[i][j] += a[i][k] * b[k][j];
+        try {
+            // Check matrix dimensions
+            if (!a || !b || !a.length || !b.length || !b[0] || 
+                a[0].length !== b.length) {
+                console.error('Invalid matrix dimensions for multiplication');
+                return [
+                    [1, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 1]
+                ];
+            }
+
+            const result = Array(a.length).fill().map(() => Array(b[0].length).fill(0));
+            for (let i = 0; i < a.length; i++) {
+                for (let j = 0; j < b[0].length; j++) {
+                    for (let k = 0; k < b.length; k++) {
+                        const val = a[i][k] * b[k][j];
+                        // Check for NaN or Infinity
+                        if (!isFinite(val)) {
+                            console.warn('Non-finite value in matrix multiplication');
+                            result[i][j] = 0;
+                        } else {
+                            result[i][j] += val;
+                        }
+                    }
                 }
             }
+            return result;
+        } catch (error) {
+            console.error('Error in matrix multiplication:', error);
+            return [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ];
         }
-        return result;
     }
 
     invertMatrix(m) {
-        // Simple 3x3 matrix inversion
-        const det = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
-                 - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
-                 + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+        try {
+            // Simple 3x3 matrix inversion
+            const det = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+                     - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+                     + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
 
-        const invDet = 1 / det;
-        
-        return [
-            [(m[1][1] * m[2][2] - m[1][2] * m[2][1]) * invDet,
-             (m[0][2] * m[2][1] - m[0][1] * m[2][2]) * invDet,
-             (m[0][1] * m[1][2] - m[0][2] * m[1][1]) * invDet],
-            [(m[1][2] * m[2][0] - m[1][0] * m[2][2]) * invDet,
-             (m[0][0] * m[2][2] - m[0][2] * m[2][0]) * invDet,
-             (m[0][2] * m[1][0] - m[0][0] * m[1][2]) * invDet],
-            [(m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet,
-             (m[0][1] * m[2][0] - m[0][0] * m[2][1]) * invDet,
-             (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet]
-        ];
+            // Check for singular matrix
+            if (Math.abs(det) < 1e-10) {
+                console.warn('Matrix is singular or nearly singular');
+                return [
+                    [1, 0, 0],
+                    [0, 1, 0],
+                    [0, 0, 1]
+                ];
+            }
+
+            const invDet = 1 / det;
+            
+            return [
+                [(m[1][1] * m[2][2] - m[1][2] * m[2][1]) * invDet,
+                 (m[0][2] * m[2][1] - m[0][1] * m[2][2]) * invDet,
+                 (m[0][1] * m[1][2] - m[0][2] * m[1][1]) * invDet],
+                [(m[1][2] * m[2][0] - m[1][0] * m[2][2]) * invDet,
+                 (m[0][0] * m[2][2] - m[0][2] * m[2][0]) * invDet,
+                 (m[0][2] * m[1][0] - m[0][0] * m[1][2]) * invDet],
+                [(m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet,
+                 (m[0][1] * m[2][0] - m[0][0] * m[2][1]) * invDet,
+                 (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet]
+            ];
+        } catch (error) {
+            console.error('Error in matrix inversion:', error);
+            return [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ];
+        }
     }
 
     transposeMatrix(m) {
@@ -712,6 +732,36 @@ class MultiviewGeometry {
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(container.clientWidth, container.clientHeight);
         });
+
+        // Update baseline slider for centimeter units
+        const baselineSlider = document.getElementById('baseline');
+        if (baselineSlider) {
+            baselineSlider.min = this.params.minBaseline;  // 10 cm
+            baselineSlider.max = 200;  // 200 cm (2 meters)
+            baselineSlider.step = 1;   // 1cm steps
+            baselineSlider.value = 50;  // Set default to 50 cm
+            this.params.baseline = 50;  // Ensure param is synced
+            document.getElementById('baselineValue').textContent = '50 cm';  // Update display
+            baselineSlider.addEventListener('input', (e) => {
+                this.params.baseline = Math.max(this.params.minBaseline, parseFloat(e.target.value));
+                document.getElementById('baselineValue').textContent = `${this.params.baseline} cm`;
+                this.updateScene();
+            });
+        }
+
+        // Update point depth slider for centimeter units
+        const depthSlider = document.getElementById('pointDepth');
+        if (depthSlider) {
+            depthSlider.min = 100;   // 1m in cm
+            depthSlider.max = 2000;  // 20m in cm
+            depthSlider.step = 50;   // 50cm steps
+            depthSlider.value = this.params.pointDepth;
+            depthSlider.addEventListener('input', (e) => {
+                this.params.pointDepth = parseFloat(e.target.value);
+                document.getElementById('pointDepthValue').textContent = `${this.params.pointDepth} cm`;
+                this.updateScene();
+            });
+        }
     }
 
     animateCamera(targetPosition, duration = 1000) {
@@ -768,7 +818,7 @@ class MultiviewGeometry {
     }
 
     createProjectionPlanes() {
-        // Create separate renderers for camera views
+        // Create separate canvases for camera views
         const planeGeometry = new THREE.PlaneGeometry(0.4, 0.3);
         const planeMaterial = new THREE.MeshPhongMaterial({
             color: 0xffffff,
@@ -776,9 +826,12 @@ class MultiviewGeometry {
         });
 
         // Left camera projection
+        const leftCanvas = document.createElement('canvas');
+        leftCanvas.width = 400;
+        leftCanvas.height = 300;
         this.projectionPlanes.left = {
             mesh: new THREE.Mesh(planeGeometry, planeMaterial.clone()),
-            renderer: new THREE.WebGLRenderer({ antialias: true }),
+            canvas: leftCanvas,
             camera: new THREE.PerspectiveCamera(60, 4/3, 0.1, 1000),
             scene: new THREE.Scene()
         };
@@ -787,9 +840,12 @@ class MultiviewGeometry {
         this.camera1.add(this.projectionPlanes.left.mesh);
 
         // Right camera projection
+        const rightCanvas = document.createElement('canvas');
+        rightCanvas.width = 400;
+        rightCanvas.height = 300;
         this.projectionPlanes.right = {
             mesh: new THREE.Mesh(planeGeometry, planeMaterial.clone()),
-            renderer: new THREE.WebGLRenderer({ antialias: true }),
+            canvas: rightCanvas,
             camera: new THREE.PerspectiveCamera(60, 4/3, 0.1, 1000),
             scene: new THREE.Scene()
         };
@@ -797,13 +853,20 @@ class MultiviewGeometry {
         this.projectionPlanes.right.mesh.position.z = 0.6;
         this.camera2.add(this.projectionPlanes.right.mesh);
 
-        // Set up renderers and mount them to the DOM
+        // Set up canvases and mount them to the DOM
         const leftView = document.getElementById('leftView');
         const rightView = document.getElementById('rightView');
 
+        if (!leftView || !rightView) {
+            console.error('Could not find view containers');
+            return;
+        }
+
         Object.entries(this.projectionPlanes).forEach(([side, plane]) => {
-            plane.renderer.setSize(400, 300);
-            plane.mesh.material.map = new THREE.CanvasTexture(plane.renderer.domElement);
+            // Create texture from canvas
+            const texture = new THREE.CanvasTexture(plane.canvas);
+            plane.mesh.material.map = texture;
+            plane.mesh.material.needsUpdate = true;
             
             // Add lights to camera scenes
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -816,27 +879,44 @@ class MultiviewGeometry {
             const gridHelper = new THREE.GridHelper(10, 10);
             plane.scene.add(gridHelper);
 
-            // Mount renderers to DOM
+            // Mount canvases to DOM
             const container = side === 'left' ? leftView : rightView;
-            container.appendChild(plane.renderer.domElement);
+            container.appendChild(plane.canvas);
         });
     }
 
     updateCameraViews() {
         try {
             Object.entries(this.projectionPlanes).forEach(([side, plane]) => {
-                // Clear previous features from scene
-                while(plane.scene.children.length > 0) { 
-                    plane.scene.remove(plane.scene.children[0]);
-                }
+                // Store references to important objects
+                const lights = plane.scene.children.filter(child => 
+                    child instanceof THREE.AmbientLight || 
+                    child instanceof THREE.DirectionalLight
+                );
+                const grid = plane.scene.children.find(child => 
+                    child instanceof THREE.GridHelper
+                );
 
-                // Add lights and grid back
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                directionalLight.position.set(5, 5, 5);
-                plane.scene.add(ambientLight);
-                plane.scene.add(directionalLight);
-                plane.scene.add(new THREE.GridHelper(10, 10));
+                // Clear previous features from scene, keeping lights and grid
+                plane.scene.children.forEach(child => {
+                    if (!lights.includes(child) && child !== grid) {
+                        plane.scene.remove(child);
+                        if (child.geometry) child.geometry.dispose();
+                        if (child.material) child.material.dispose();
+                    }
+                });
+
+                // Add lights and grid if they don't exist
+                if (lights.length === 0) {
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                    directionalLight.position.set(5, 5, 5);
+                    plane.scene.add(ambientLight);
+                    plane.scene.add(directionalLight);
+                }
+                if (!grid) {
+                    plane.scene.add(new THREE.GridHelper(10, 10));
+                }
 
                 // Add features to camera scene
                 this.features.forEach((feature, index) => {
