@@ -599,7 +599,9 @@ def generate_certificate(request):
     # Get the value of the BytesIO buffer and return the PDF
     buffer.seek(0)
     response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="SES598_Certificate_{email}_{timestamp}.pdf"'
+    # Clean up email for filename by removing special characters and replacing @ with _at_
+    clean_email = email.replace('@', '_at_').replace('.', '_')
+    response['Content-Disposition'] = f'attachment; filename="SES598_Certificate_{clean_email}_{timestamp.replace(" ", "_").replace(":", "-")}.pdf"'
     
     return response
 
@@ -626,12 +628,14 @@ def ses598_quiz(request):
         
         # Calculate score
         score = 0
+        part1_answers = {}
         for q, correct_ans in mcq_answers.items():
             student_ans = request.POST.get(q, '')
             if student_ans == correct_ans:
                 score += 1
-            # Store answer in session
+            # Store answer in session and answers dict
             request.session[f'quiz_part1_{q}'] = student_ans
+            part1_answers[q] = student_ans
 
         # Calculate total score percentage
         total_score = (score / len(mcq_answers)) * 100
@@ -640,6 +644,22 @@ def ses598_quiz(request):
         request.session['quiz_part1_score'] = total_score
         request.session['quiz_part1_completed'] = True
         request.session.modified = True  # Ensure session is saved
+
+        # Save Part 1 results to database
+        quiz_submission = QuizSubmission(
+            quiz_id='SES598',
+            session_id=request.session.session_key,
+            email=email,
+            total_score=total_score,
+            cv_score=total_score,  # Part 1 score
+            slam_score=0,  # Part 2 not completed yet
+            q1=part1_answers.get('q1', ''),
+            q2=part1_answers.get('q2', ''),
+            q3=part1_answers.get('q3', ''),
+            q4=part1_answers.get('q4', ''),
+            q5=part1_answers.get('q5', '')
+        )
+        quiz_submission.save()
 
         # Check certificate eligibility
         eligible, final_score = get_certificate_eligibility(request)
@@ -694,10 +714,13 @@ def ses598_quiz_part2(request):
         
         # Calculate score
         score = 0
+        part2_answers = {}
         for q, correct_ans in mcq_answers.items():
             student_ans = request.POST.get(q, '')
             if student_ans == correct_ans:
                 score += 1
+            # Store answer in answers dict
+            part2_answers[q] = student_ans
 
         # Calculate total score percentage
         total_score = (score / len(mcq_answers)) * 100
@@ -710,45 +733,25 @@ def ses598_quiz_part2(request):
         # Check certificate eligibility
         eligible, final_score = get_certificate_eligibility(request)
 
-        # Save quiz results to database if eligible for certificate
-        if eligible:
-            # Get answers from both parts
-            part1_answers = {
-                'q1': request.session.get('quiz_part1_q1', ''),
-                'q2': request.session.get('quiz_part1_q2', ''),
-                'q3': request.session.get('quiz_part1_q3', ''),
-                'q4': request.session.get('quiz_part1_q4', ''),
-                'q5': request.session.get('quiz_part1_q5', '')
-            }
-            part2_answers = {
-                'q6': request.POST.get('q1', ''),
-                'q7': request.POST.get('q2', ''),
-                'q8': request.POST.get('q3', ''),
-                'q9': request.POST.get('q4', ''),
-                'q10': request.POST.get('q5', '')
-            }
-
-            # Create quiz submission
-            quiz_submission = QuizSubmission(
-                quiz_id='SES598',
-                session_id=request.session.session_key,
-                email=email,
-                total_score=final_score,
-                # Store individual scores
-                cv_score=request.session.get('quiz_part1_score', 0),  # Part 1 score
-                slam_score=total_score,  # Part 2 score
-                # Store individual answers
-                **part1_answers,
-                **part2_answers
-            )
-            quiz_submission.save()
+        # Create a fresh submission for Part 2
+        quiz_submission = QuizSubmission(
+            quiz_id='SES598_Part2',  # Distinct quiz_id for Part 2
+            session_id=request.session.session_key,
+            email=email,
+            total_score=total_score,  # Just Part 2 score
+            cv_score=0,  # Not applicable for Part 2
+            slam_score=total_score,  # Part 2 score
+            q6=part2_answers.get('q1', ''),
+            q7=part2_answers.get('q2', ''),
+            q8=part2_answers.get('q3', ''),
+            q9=part2_answers.get('q4', '')
+        )
+        quiz_submission.save()
 
         context = {
             'show_results': True,
             'score': total_score,
             'email': email,
-            'part1_completed': True,
-            'part1_score': request.session.get('quiz_part1_score', 0),
             'eligible_for_certificate': eligible,
             'final_score': round(final_score, 1) if eligible else None
         }

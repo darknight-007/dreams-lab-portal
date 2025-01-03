@@ -1,6 +1,17 @@
 {% extends "quiz_base.html" %}
 
-{% block quiz_title %}SES 598: Robotics and AI for Planetary Exploration - Course Quiz{% endblock %}
+{% block quiz_title %}SES 598: Enrollment Quiz - Part 1{% endblock %}
+
+{% block mcq_section_title %}
+<div class="quiz-intro mb-4">
+    <p class="text-muted" style="font-size: 0.95rem;">
+        Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. 
+        A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.
+    </p>
+    <hr class="my-4">
+    <h5>Part 1: Robotics and AI Fundamentals</h5>
+</div>
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -75,25 +86,136 @@
             {% if score >= 60 %}
                 <div class="alert alert-success">
                     <h5>Congratulations! You've passed Part 1</h5>
-                    <p>You can now proceed to Part 2 to test your understanding of the tutorial concepts.</p>
+                    <p>You can now proceed to Part 2 to test your understanding of advanced robotics concepts.</p>
                     <div class="mt-3">
                         <a href="{% url 'ses598_quiz_part2' %}" class="btn btn-primary">Continue to Part 2</a>
-                        <a href="{% url 'tutorials_home' %}" class="btn btn-secondary ml-2">View All Tutorials</a>
                     </div>
                 </div>
             {% else %}
                 <div class="alert alert-warning">
-                    <h5>Please Try Again</h5>
-                    <p>Score at least 60% to proceed to the next section.</p>
-                    <div class="mt-3">
-                        <form method="post" action="{% url 'ses598_quiz' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="reset" value="true">
-                            <button type="submit" class="btn btn-primary">Retake Quiz</button>
-                        </form>
-                    </div>
+                    <h5>Quiz Results</h5>
+                    <p>Your score indicates that some foundational concepts may need strengthening. However, if you believe you have the necessary background and experience in robotics and AI, please:</p>
+                    <ul>
+                        <li>Contact the instructor at jdas5@asu.edu to discuss your background and experience, or</li>
+                        <li>Attend the first day of class (if the course is not at capacity) to evaluate if the course aligns with your preparation</li>
+                    </ul>
+                    <p class="text-muted mt-2">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
                 </div>
             {% endif %}
+
+            <div id="answer-explanations" class="answer-explanations mt-4">
+                <h4>Detailed Analysis:</h4>
+                <p class="text-muted mb-3">Review your understanding of these fundamental concepts:</p>
+                <div class="explanation">
+                    <h5>1. SLAM Purpose</h5>
+                    <p>Correct Answer: To build a map of an unknown environment while tracking the robot's position</p>
+                    <p>Rationale:</p>
+                    <ul>
+                        <li>Core SLAM Functionality:
+                            <ul>
+                                <li>Simultaneous mapping and localization</li>
+                                <li>Real-time environment understanding</li>
+                                <li>Position tracking relative to map</li>
+                            </ul>
+                        </li>
+                        <li>Common Misconceptions:
+                            <ul>
+                                <li>Control algorithms are separate from SLAM</li>
+                                <li>Object detection is a complementary but different task</li>
+                                <li>Obstacle avoidance uses SLAM data but isn't its primary purpose</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="explanation">
+                    <h5>2. 3D Mapping Sensors</h5>
+                    <p>Correct Answer: LiDAR</p>
+                    <p>Rationale:</p>
+                    <ul>
+                        <li>LiDAR Advantages:
+                            <ul>
+                                <li>Direct 3D point cloud measurements</li>
+                                <li>High accuracy and precision</li>
+                                <li>Large field of view and range</li>
+                            </ul>
+                        </li>
+                        <li>Other Sensors' Limitations:
+                            <ul>
+                                <li>Ultrasonic: Limited range and resolution</li>
+                                <li>Infrared: Affected by ambient light</li>
+                                <li>GPS: Position only, no mapping capability</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="explanation">
+                    <h5>3. Occupancy Grid Mapping</h5>
+                    <p>Correct Answer: The cell is likely to contain an obstacle</p>
+                    <p>Rationale:</p>
+                    <ul>
+                        <li>Probability Interpretation:
+                            <ul>
+                                <li>High probability (>0.5) indicates obstacle presence</li>
+                                <li>Low probability (<0.5) indicates free space</li>
+                                <li>0.5 typically represents unknown space</li>
+                            </ul>
+                        </li>
+                        <li>Map Building Process:
+                            <ul>
+                                <li>Updates based on sensor measurements</li>
+                                <li>Accounts for sensor uncertainty</li>
+                                <li>Integrates multiple observations over time</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="explanation">
+                    <h5>4. GPS Navigation Challenges</h5>
+                    <p>Correct Answer: Lack of precision in densely populated environments</p>
+                    <p>Rationale:</p>
+                    <ul>
+                        <li>Urban Environment Issues:
+                            <ul>
+                                <li>Signal multipath effects</li>
+                                <li>Satellite visibility limitations</li>
+                                <li>Building interference</li>
+                            </ul>
+                        </li>
+                        <li>Impact on Navigation:
+                            <ul>
+                                <li>Position accuracy degradation</li>
+                                <li>Unreliable height measurements</li>
+                                <li>Need for complementary sensors</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="explanation">
+                    <h5>5. Path Planning Algorithms</h5>
+                    <p>Correct Answer: Dijkstra's Algorithm</p>
+                    <p>Rationale:</p>
+                    <ul>
+                        <li>Algorithm Characteristics:
+                            <ul>
+                                <li>Guarantees optimal path</li>
+                                <li>Handles weighted edges (cost considerations)</li>
+                                <li>Efficient for grid-based maps</li>
+                            </ul>
+                        </li>
+                        <li>Comparison with Alternatives:
+                            <ul>
+                                <li>BFS: Unweighted paths only</li>
+                                <li>Gradient Descent: Local optimization</li>
+                                <li>Genetic Algorithm: Global but non-deterministic</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     {% else %}
         <form method="post" id="quizForm">
@@ -101,9 +223,9 @@
             <div class="user-info">
                 <h4>Student Information</h4>
                 <div class="form-group">
-                    <label for="email">Enter your email (optional):</label>
+                    <label for="email">Enter your email:</label>
                     <input type="email" class="form-control" id="email" name="email" 
-                           placeholder="username@asu.edu">
+                           placeholder="username@asu.edu" required>
                 </div>
             </div>
 
@@ -114,6 +236,7 @@
                     <label class="option"><input type="radio" name="q1" value="2"> To detect objects in the robot's environment</label>
                     <label class="option"><input type="radio" name="q1" value="3"> To build a map of an unknown environment while tracking the robot's position</label>
                     <label class="option"><input type="radio" name="q1" value="4"> To program robot behaviors for obstacle avoidance</label>
+                    <label class="option"><input type="radio" name="q1" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -124,6 +247,7 @@
                     <label class="option"><input type="radio" name="q2" value="2"> LiDAR</label>
                     <label class="option"><input type="radio" name="q2" value="3"> Infrared sensor</label>
                     <label class="option"><input type="radio" name="q2" value="4"> GPS</label>
+                    <label class="option"><input type="radio" name="q2" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -134,6 +258,7 @@
                     <label class="option"><input type="radio" name="q3" value="2"> The cell is unexplored</label>
                     <label class="option"><input type="radio" name="q3" value="3"> The cell is part of free space</label>
                     <label class="option"><input type="radio" name="q3" value="4"> The cell is a probable goal location</label>
+                    <label class="option"><input type="radio" name="q3" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -144,6 +269,7 @@
                     <label class="option"><input type="radio" name="q4" value="2"> High energy consumption</label>
                     <label class="option"><input type="radio" name="q4" value="3"> Difficulty in avoiding static obstacles</label>
                     <label class="option"><input type="radio" name="q4" value="4"> Difficulty in path planning</label>
+                    <label class="option"><input type="radio" name="q4" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -154,6 +280,7 @@
                     <label class="option"><input type="radio" name="q5" value="2"> Dijkstra's Algorithm</label>
                     <label class="option"><input type="radio" name="q5" value="3"> Gradient Descent</label>
                     <label class="option"><input type="radio" name="q5" value="4"> Genetic Algorithm</label>
+                    <label class="option"><input type="radio" name="q5" value="0"> I am not sure</label>
                 </div>
             </div>
 

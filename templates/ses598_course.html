@@ -5,738 +5,471 @@
 <link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
 <!-- Add html2pdf.js library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Add Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
-/* Base Typography */
+/* Base Variables */
 :root {
-    --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    --font-size-base: 18px;
-    --line-height-base: 1.7;
-    --text-color-primary: #2c3e50;
-    --text-color-secondary: #546e7a;
+    --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, monospace;
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-base: 16px;
+    --line-height-base: 1.6;
+    --color-bg: #FFFFFF;
+    --color-text: #1A1A1A;
+    --color-subtle: #F2F2F2;
+    --color-border: #E5E5E5;
+    --max-width: 1100px;
+    --radius: 3px;
 }
 
-/* Print-specific styles for PDF generation */
-@media print {
-    body {
-        font-size: 12px;
-        line-height: 1.4;
-    }
-    
-    .syllabus-container {
-        padding: 0.5rem;
-    }
-    
-    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-    h2 { font-size: 1.5rem; margin-bottom: 0.4rem; }
-    h3 { font-size: 1.3rem; margin-bottom: 0.3rem; }
-    h4 { font-size: 1.1rem; margin-bottom: 0.2rem; }
-    p { font-size: 0.9rem; line-height: 1.4; margin: 0.3rem 0; }
-    
-    .enrollment-quiz-banner {
-        padding: 0.75rem;
-        margin: 0.5rem 0;
-    }
-    
-    .course-meta {
-        gap: 1rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .module-card {
-        padding: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .module-content ul {
-        margin: 0.25rem 0;
-        padding-left: 1rem;
-    }
-    
-    .module-content li {
-        margin-bottom: 0.25rem;
-    }
-    
-    .grading-chart {
-        padding: 0.75rem;
-    }
-    
-    .grading-item {
-        margin-bottom: 0.75rem;
-    }
-    
-    .tutorials-table td, .tutorials-table th {
-        padding: 0.5rem;
-    }
-    
-    .tutorial-description {
-        font-size: 0.85rem;
-        margin: 0.25rem 0;
-    }
-    
-    .quick-nav, .footer, .start-link {
-        display: none;
-    }
-}
-
+/* Base Typography */
 body {
-    font-family: var(--font-primary);
+    font-family: var(--font-sans);
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
-    color: var(--text-color-primary);
-    margin: 0;
-    padding: 0;
 }
 
-/* Typography Scale */
-h1 { font-size: 2.5rem; line-height: 1.2; margin-top: 0; }
-h2 { font-size: 2rem; line-height: 1.3; margin-top: 0; }
-h3 { font-size: 1.75rem; line-height: 1.4; margin-top: 0; }
-h4 { font-size: 1.5rem; line-height: 1.4; margin-top: 0; }
-p { font-size: 1.125rem; line-height: 1.7; }
+.course-header h1 {
+    font-family: var(--font-mono);
+    font-size: 2.8rem;
+    margin-bottom: 2rem;
+}
 
-/* Quick Navigation */
+section h2 {
+    font-size: 1.8rem;
+}
+
+.meta-item {
+    font-size: 1rem;
+}
+
+p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+/* Course Schedule and Tutorial Tables */
+.course-schedule-table,
+.tutorials-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    margin: 2rem 0;
+}
+
+.course-schedule-table th,
+.course-schedule-table td,
+.tutorials-table th,
+.tutorials-table td {
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.course-schedule-table th,
+.tutorials-table th {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--color-subtle);
+}
+
+.tutorials-table td h4 {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.tutorials-table .difficulty {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-subtle);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.tutorials-table .start-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.tutorials-table .start-link:hover {
+    opacity: 0.7;
+}
+
+/* Container */
+.syllabus-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Navigation */
 .quick-nav {
     position: sticky;
     top: 0;
-    background: #fff;
-    padding: 0.5rem 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 0;
     z-index: 100;
-    margin: 0;
+    margin-bottom: 2rem;
 }
 
 .quick-nav ul {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
     display: flex;
     justify-content: center;
+    gap: 2rem;
     list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 1rem;
+    overflow-x: auto;
 }
 
 .quick-nav a {
-    color: var(--text-color-primary);
+    color: var(--color-text);
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    transition: all 0.3s ease;
-    font-size: 1.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
 }
 
 .quick-nav a:hover {
-    background: #e3f2fd;
-    color: #1565c0;
-}
-
-/* Content Container */
-.syllabus-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
-/* Enrollment Quiz Banner */
-.enrollment-quiz-banner {
-    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-}
-
-.quiz-info h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-}
-
-.quiz-info p {
-    margin: 0;
-    font-size: 1.1rem;
-    opacity: 0.9;
-}
-
-.quiz-button {
-    background: white;
-    color: #ff6b6b;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: transform 0.2s;
-    white-space: nowrap;
-}
-
-.quiz-button:hover {
-    transform: translateY(-2px);
+    border-bottom-color: var(--color-text);
 }
 
 /* Course Header */
 .course-header {
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
 }
 
 .course-header h1 {
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #1565c0;
+    font-family: var(--font-mono);
+    font-size: 2.75rem;
+    margin-bottom: 2rem;
 }
 
+/* Course Meta */
 .course-meta {
-    font-size: 1.125rem;
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem auto;
+    max-width: 900px;
 }
 
 .meta-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--color-subtle);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 1rem;
 }
 
-/* Course Description */
-.course-description {
-    font-size: 1.125rem;
-    line-height: 1.8;
-    max-width: 70ch;
-    margin-bottom: 2rem;
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* Quiz Banner */
+.enrollment-quiz-banner {
+    text-align: center;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
+    background: var(--color-subtle);
+    border-radius: var(--radius);
 }
 
-/* Rest of your existing styles... */
-
-.pdf-button {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    z-index: 1000;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex;
+.quiz-button {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-text);
+    color: var(--color-bg);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    border-radius: var(--radius);
+    transition: opacity 0.2s;
 }
-.pdf-button:hover {
-    background-color: #0056b3;
+
+.quiz-button:hover {
+    opacity: 0.9;
 }
-.pdf-button i {
-    font-size: 1.2em;
+
+/* Section Headers */
+section {
+    margin: 4rem 0;
+}
+
+section h2 {
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+section h2::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: var(--color-text);
+    margin: 1rem auto 0;
+}
+
+/* Prerequisites */
+.prerequisites-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.prerequisite-item {
+    padding: 1rem;
+    background: var(--color-subtle);
+    border-radius: var(--radius);
+}
+
+.prerequisite-item h4 {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.prerequisite-item p {
+    font-size: 1rem;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    :root {
+        --font-size-base: 14px;
+    }
+
+    .syllabus-container {
+        padding: 1rem;
+    }
+
+    .course-header h1 {
+        font-size: 2rem;
+    }
+
+    .quick-nav {
+        padding: 0.75rem 0;
+    }
+
+    .quick-nav ul {
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .course-schedule-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .quick-nav, .pdf-button {
+        display: none;
+    }
+
+    .syllabus-container {
+        padding: 0;
+    }
+
+    section {
+        margin: 2rem 0;
+    }
 }
 </style>
+
+<script>
+function generatePDF() {
+    const element = document.querySelector('.syllabus-container');
+    const opt = {
+        margin: 1,
+        filename: 'SES598_Syllabus.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Generate PDF
+    html2pdf().set(opt).from(element).save();
+}
+</script>
 {% endblock %}
 
 {% block content %}
-<!-- Print button -->
-<button onclick="generatePDF()" class="pdf-button no-print">
-    <i class="fas fa-file-pdf"></i> Download Syllabus PDF
-</button>
-
-<!-- Quick Navigation -->
-<nav class="quick-nav">
-    <ul>
-        <li><a href="#course-info">Course Info</a></li>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#schedule">Schedule</a></li>
-        <li><a href="#grading">Grading</a></li>
-        <li><a href="#tutorials">Tutorials</a></li>
-    </ul>
-</nav>
-
-<div class="syllabus-container">
-    <!-- Enrollment Quiz Banner -->
-    <div class="enrollment-quiz-banner">
-        <div class="quiz-info">
-            <h2>📝 Required Enrollment Quiz</h2>
-            <p>{{ syllabus.course_info.quiz_info }}</p>
-        </div>
-        <a href="{% url 'ses598_quiz' %}" class="quiz-button">
-            Take Enrollment Quiz
-            <i class="fas fa-arrow-right"></i>
-        </a>
-    </div>
-
-    <!-- Course Header and Info -->
-    <header id="course-info" class="course-header">
-        <h1>{{ syllabus.course_info.title }}</h1>
-        <div class="course-meta">
-            <div class="meta-item">
-                <i class="fas fa-calendar"></i>
-                <span>{{ syllabus.course_info.semester }}</span>
-            </div>
-            <div class="meta-item">
-                <i class="fas fa-clock"></i>
-                <span>{{ syllabus.course_info.meeting_times }}</span>
-            </div>
-            <div class="meta-item">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>{{ syllabus.course_info.location }}</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- Course Description -->
-    <section class="course-description">
-        <h2>Course Description</h2>
-        <p>{{ syllabus.course_info.description }}</p>
-        <div class="instructor-info">
-            <h3>Instructor Information</h3>
-            <p><strong>Instructor:</strong> {{ syllabus.course_info.instructor }}</p>
-            <p><strong>Office Hours:</strong> {{ syllabus.course_info.office_hours }}</p>
-            <p><strong>Contact:</strong> {{ syllabus.course_info.contact }}</p>
-        </div>
-    </section>
-
-    <!-- Prerequisites -->
-    <section id="prerequisites" class="prerequisites">
-        <h2>Prerequisites</h2>
+    <!-- Quick Navigation -->
+    <nav class="quick-nav">
         <ul>
-            {% for prereq in syllabus.prerequisites %}
-                <li><strong>{{ prereq.category }}:</strong> {{ prereq.requirement }}</li>
-            {% endfor %}
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+            <li><a href="#modules">Modules</a></li>
+            <li><a href="#grading">Grading</a></li>
+            <li><a href="#tutorials">Tutorials</a></li>
         </ul>
-    </section>
+    </nav>
 
-    <!-- Course Schedule -->
-    <section id="schedule" class="course-schedule">
-        <h2 class="section-title">Course Schedule</h2>
-        <style>
-        .module-grid {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .module-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .module-header {
-            margin-bottom: 1rem;
-        }
-
-        .module-header .week {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #e3f2fd;
-            color: #1565c0;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .module-header h3 {
-            margin: 0;
-            color: #1565c0;
-            font-size: 1.5rem;
-        }
-
-        .module-content {
-            color: var(--text-color-primary);
-        }
-
-        .module-content h4 {
-            font-size: 1.1rem;
-            margin: 1rem 0 0.5rem;
-        }
-
-        .module-content ul {
-            margin: 0;
-            padding-left: 1.5rem;
-        }
-
-        .module-content li {
-            margin-bottom: 0.5rem;
-            line-height: 1.5;
-        }
-
-        .assignment {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e1e8ed;
-        }
-
-        .assignment strong {
-            color: #1565c0;
-        }
-
-        .assignment p {
-            margin: 0.5rem 0 0;
-            font-size: 1rem;
-        }
-        </style>
-
-        <div class="module-grid">
-            {% for module in syllabus.modules %}
-            <div class="module-card">
-                <div class="module-header">
-                    {% if '-' in module.week %}
-                    <span class="week">Weeks {{ module.week }}</span>
-                    {% else %}
-                    <span class="week">Week {{ module.week }}</span>
-                    {% endif %}
-                    <h3>{{ module.title }}</h3>
+    <!-- Main content -->
+    <div class="syllabus-container">
+        <!-- Course Header -->
+        <header class="course-header" id="overview">
+            <h1>{{ syllabus.course_info.title }}</h1>
+            <div class="course-meta">
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ syllabus.course_info.semester }}</span>
                 </div>
-                <div class="module-content">
-                    <h4>Topics:</h4>
-                    <ul>
-                        {% for topic in module.topics %}
-                            <li>{{ topic }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% if module.assignment %}
-                    <div class="assignment">
-                        <p>{{ module.assignment }}</p>
-                    </div>
-                    {% endif %}
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ syllabus.course_info.meeting_times }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ syllabus.course_info.location }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-user"></i>
+                    <span>{{ syllabus.course_info.instructor }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ syllabus.course_info.contact }}</span>
                 </div>
             </div>
-            {% endfor %}
+        </header>
+
+        <!-- Enrollment Quiz Banner -->
+        <div class="enrollment-quiz-banner">
+            <div class="quiz-info">
+                <h2>Is this course a good fit for you?</h2>
+            </div>
+            <a href="{% url 'ses598_quiz' %}" class="quiz-button">
+                <i class="fas fa-pencil-alt"></i>
+                Take Quiz
+            </a>
         </div>
-    </section>
 
-    <!-- Grading -->
-    <section id="grading" class="grading">
-        <h2>Grading Distribution</h2>
-        <style>
-        .grading-chart {
-            margin-top: 1.5rem;
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .grading-item {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 2rem;
-        }
-
-        .grading-row {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: background-color 0.2s;
-        }
-
-        .grading-row:hover {
-            background: #f8f9fa;
-        }
-
-        .grading-label {
-            flex: 0 0 200px;
-            font-weight: 500;
-            color: #2c3e50;
-            font-size: 1.1rem;
-        }
-
-        .grading-bar-container {
-            flex: 1;
-            height: 24px;
-            background: #e3f2fd;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .grading-bar {
-            height: 100%;
-            background: #1565c0;
-            border-radius: 12px;
-            transition: width 1s ease-in-out;
-        }
-
-        .grading-percentage {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .grading-description {
-            font-size: 0.95rem;
-            color: #546e7a;
-            margin-left: 200px;
-            margin-top: 0.5rem;
-            padding-right: 1rem;
-        }
-        </style>
-
-        <div class="grading-chart">
-            <div class="grading-item">
-                <div class="grading-row">
-                    <div class="grading-label">Assignments</div>
-                    <div class="grading-bar-container">
-                        <div class="grading-bar" style="width: 20%">
-                            <span class="grading-percentage">20%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grading-description">
-                    Regular assignments throughout the semester to reinforce learning concepts and practical skills.
-                </div>
-            </div>
-            <div class="grading-item">
-                <div class="grading-row">
-                    <div class="grading-label">Midterm Project</div>
-                    <div class="grading-bar-container">
-                        <div class="grading-bar" style="width: 20%">
-                            <span class="grading-percentage">20%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grading-description">
-                    A comprehensive project due mid-semester that integrates core concepts covered in the first half.
-                </div>
-            </div>
-            <div class="grading-item">
-                <div class="grading-row">
-                    <div class="grading-label">Final Project</div>
-                    <div class="grading-bar-container">
-                        <div class="grading-bar" style="width: 50%">
-                            <span class="grading-percentage">50%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grading-description">
-                    A major project that demonstrates mastery of course concepts, including implementation and documentation.
-                </div>
-            </div>
-            <div class="grading-item">
-                <div class="grading-row">
-                    <div class="grading-label">Class Participation</div>
-                    <div class="grading-bar-container">
-                        <div class="grading-bar" style="width: 10%">
-                            <span class="grading-percentage">10%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grading-description">
-                    Active participation in class discussions, group activities, and engagement with course material.
-                </div>
-            </div>
+        <!-- Course Description -->
+        <div class="course-description">
+            <p>{{ syllabus.course_info.description }}</p>
         </div>
-    </section>
 
-    <!-- Interactive Tutorials Section -->
-    <section id="tutorials" class="tutorials-section">
-        <h2 class="section-title">Interactive Learning Resources</h2>
-        
-        <style>
-        .tutorials-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 1.5rem;
-        }
-        
-        .tutorial-category {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .tutorial-category h3 {
-            color: #1565c0;
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e3f2fd;
-        }
-        
-        .tutorial-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .tutorial-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .tutorial-link {
-            color: #1565c0;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-        }
-        
-        .tutorial-link:hover {
-            color: #0d47a1;
-            transform: translateX(4px);
-        }
-        
-        .tutorial-description {
-            font-size: 0.9rem;
-            color: #546e7a;
-            margin: 0;
-        }
-        
-        .difficulty-tag {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
-            font-weight: 500;
-            margin-left: auto;
-        }
-        
-        .difficulty-tag.beginner { background: #e8f5e9; color: #2e7d32; }
-        .difficulty-tag.intermediate { background: #fff3e0; color: #ef6c00; }
-        .difficulty-tag.advanced { background: #fce4ec; color: #c2185b; }
-        
-        @media (max-width: 1200px) {
-            .tutorials-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .tutorials-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        </style>
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+            <h2>Prerequisites</h2>
+            <div class="prerequisites-list">
+                {% for prereq in syllabus.prerequisites %}
+                <div class="prerequisite-item">
+                    <h4>{{ prereq.category }}</h4>
+                    <p>{{ prereq.requirement }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
 
-        <div class="tutorials-grid">
-            {% for category, tutorials in syllabus.tutorials.items %}
-            <div class="tutorial-category">
-                <h3>{{ category }}</h3>
-                <div class="tutorial-list">
-                    {% for tutorial in tutorials %}
-                    <div class="tutorial-item">
-                        <a href="{% url tutorial.url %}" class="tutorial-link">
-                            {{ tutorial.title }}
-                            <span class="difficulty-tag {{ tutorial.difficulty|lower }}">{{ tutorial.difficulty }}</span>
-                        </a>
-                        <p class="tutorial-description">{{ tutorial.description }}</p>
-                    </div>
+        <!-- Course Modules -->
+        <section id="modules">
+            <h2>Course Schedule</h2>
+            <table class="course-schedule-table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Topics</th>
+                        <th>Assignment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in syllabus.modules %}
+                    <tr>
+                        <td>
+                            <strong>{{ module.week }}</strong><br>
+                            {{ module.title }}
+                        </td>
+                        <td>
+                            <ul>
+                                {% for topic in module.topics %}
+                                <li>{{ topic }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            {% if module.assignment %}
+                            {{ module.assignment }}
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Grading -->
+        <section id="grading">
+            <h2>Grading</h2>
+            <div class="grading-chart">
+                {% for component, details in syllabus.grading.items %}
+                <div class="grading-item">
+                    <h4>{{ component }} ({{ details.percentage }}%)</h4>
+                    <p>{{ details.description }}</p>
                 </div>
+                {% endfor %}
             </div>
+        </section>
+
+        <!-- Tutorials -->
+        <section id="tutorials">
+            <h2>Interactive Tutorials</h2>
+            {% for category, tutorials in syllabus.tutorials.items %}
+            <h3>{{ category }}</h3>
+            <table class="tutorials-table">
+                <thead>
+                    <tr>
+                        <th>Tutorial</th>
+                        <th>Description</th>
+                        <th>Difficulty</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tutorial in tutorials %}
+                    <tr>
+                        <td><h4>{{ tutorial.title }}</h4></td>
+                        <td>{{ tutorial.description }}</td>
+                        <td><span class="difficulty">{{ tutorial.difficulty }}</span></td>
+                        <td>
+                            <a href="{% url tutorial.url %}" class="start-link">
+                                Start Tutorial <span>→</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             {% endfor %}
-        </div>
-    </section>
-</div>
+        </section>
+    </div>
+{% endblock %}
 
-<script>
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
-});
-
-// Highlight current section in navigation
-window.addEventListener('scroll', () => {
-    let current = '';
-    document.querySelectorAll('section[id]').forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (pageYOffset >= sectionTop - 60) {
-            current = section.getAttribute('id');
-        }
-    });
-
-    document.querySelectorAll('.quick-nav a').forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href').slice(1) === current) {
-            link.classList.add('active');
-        }
-    });
-});
-
-function generatePDF() {
-    // Show loading state
-    const button = document.querySelector('.pdf-button');
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
-    button.disabled = true;
-
-    // Configure PDF options
-    const options = {
-        margin: [0.5, 0.5],
-        filename: 'SES598_Course_Syllabus.pdf',
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { 
-            scale: 1.5,
-            useCORS: true,
-            logging: false
-        },
-        jsPDF: { 
-            unit: 'in', 
-            format: 'letter', 
-            orientation: 'portrait',
-            compress: true
-        },
-        pagebreak: { 
-            mode: ['avoid-all', 'css', 'legacy'],
-            before: '.page-break',
-            avoid: ['tr', 'li', '.module-card']
-        }
-    };
-
-    // Get the content element
-    const element = document.querySelector('.syllabus-container');
-
-    // Generate PDF
-    html2pdf().set(options).from(element).save()
-        .then(() => {
-            console.log('PDF generated successfully');
-            button.innerHTML = '<i class="fas fa-check"></i> PDF Generated!';
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }, 2000);
-        })
-        .catch(err => {
-            console.error('PDF generation failed:', err);
-            button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to generate PDF';
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }, 2000);
-        });
-}
-
-// Add print button to browser's print dialog
-window.addEventListener('beforeprint', function() {
-    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
-});
-
-window.addEventListener('afterprint', function() {
-    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-});
-</script>
-{% endblock %} 
+{% block footer %}{% endblock %} 

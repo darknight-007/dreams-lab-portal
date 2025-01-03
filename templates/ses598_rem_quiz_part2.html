@@ -1,8 +1,17 @@
 {% extends "quiz_base.html" %}
 
-{% block quiz_title %}SES 598: Tutorial Concepts Quiz{% endblock %}
+{% block quiz_title %}SES 598: Advanced Concepts Quiz{% endblock %}
 
-{% block mcq_section_title %}Part 2: Interactive Tutorial Concepts{% endblock %}
+{% block mcq_section_title %}
+<div class="quiz-intro mb-4">
+    <p class="text-muted" style="font-size: 0.95rem;">
+        Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. 
+        A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.
+    </p>
+    <hr class="my-4">
+    <h5>Part 2: Advanced Concepts</h5>
+</div>
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -76,6 +85,18 @@
     .tutorial-link a:hover {
         text-decoration: underline;
     }
+    .success-message {
+        background: #f0f7f0;
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: center;
+    }
+    .success-message h2 {
+        color: #2c662d;
+        margin: 0;
+        font-size: 1.5rem;
+    }
 </style>
 {% endblock %}
 
@@ -122,27 +143,36 @@
 
                 {% if score >= 60 %}
                     <div class="mission-success">
+                        {% csrf_token %}
                         <h3><i class="fas fa-check-circle"></i> Mission Status: ACCOMPLISHED</h3>
                         <div class="clearance-level">
                             {% if score >= 90 %}
                                 <div class="clearance elite">
                                     <span class="badge">ELITE</span>
-                                    <p>Outstanding performance! You've demonstrated exceptional mastery of robotics and AI concepts. You're cleared for advanced space exploration missions.</p>
+                                    <p>Outstanding performance! You've demonstrated exceptional mastery of the enrollment quiz concepts. You're well-prepared to begin the space robotics course.</p>
                                 </div>
                             {% elif score >= 80 %}
                                 <div class="clearance advanced">
                                     <span class="badge">ADVANCED</span>
-                                    <p>Excellent work! Your understanding of core concepts is strong. You're well-prepared for challenging space robotics missions.</p>
+                                    <p>Excellent work! Your understanding of the enrollment quiz concepts is strong. You're ready to start your journey in space robotics.</p>
                                 </div>
                             {% else %}
                                 <div class="clearance qualified">
                                     <span class="badge">QUALIFIED</span>
-                                    <p>Mission accomplished! You've demonstrated good grasp of fundamental concepts. You're cleared for basic space operations.</p>
+                                    <p>Enrollment quiz completed successfully! You've demonstrated sufficient understanding of the fundamental concepts to begin the course.</p>
                                 </div>
                             {% endif %}
                         </div>
                         <div class="next-steps">
-                            <p>Proceed to course enrollment and prepare for your journey into space robotics and AI.</p>
+                            {% if eligible_for_certificate %}
+                                <p class="completion-time" style="color: #4a9eff; font-family: monospace; margin-bottom: 1rem;">
+                                    <i class="fas fa-clock"></i> Quiz completed on <span id="completionTime"></span>
+                                </p>
+                                <button onclick="generateCertificate()" class="certificate-button" id="certBtn">
+                                    <i class="fas fa-certificate"></i> Download Enrollment Certificate
+                                </button>
+                            {% endif %}
+                            <p>You've successfully completed the enrollment quiz. You can now proceed with course registration.</p>
                             <a href="https://registrar.asu.edu/register-for-classes" class="proceed-button" target="_blank">
                                 <i class="fas fa-rocket"></i> Register for Course
                             </a>
@@ -152,14 +182,6 @@
                     <div class="mission-retry">
                         <h3><i class="fas fa-exclamation-triangle"></i> Mission Status: RECALIBRATION NEEDED</h3>
                         <p>Additional training recommended before proceeding with space operations.</p>
-                        <div class="retry-options">
-                            <a href="{% url 'ses598_quiz_part2' %}" class="retry-button">
-                                <i class="fas fa-redo"></i> Retake Assessment
-                            </a>
-                            <a href="#answer-explanations" class="review-button">
-                                <i class="fas fa-book"></i> Review Materials
-                            </a>
-                        </div>
                     </div>
                 {% endif %}
             </div>
@@ -283,6 +305,32 @@
             .clearance.elite .badge { background: #00ff9d; color: #1a1a2e; }
             .clearance.advanced .badge { background: #4a9eff; color: #1a1a2e; }
             .clearance.qualified .badge { background: #ffb800; color: #1a1a2e; }
+
+            .certificate-button {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.8rem 1.5rem;
+                border-radius: 25px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: transform 0.2s;
+                margin: 0.5rem;
+                background: linear-gradient(135deg, #ffd700, #ffa500);
+                color: #1a1a2e;
+                border: none;
+                cursor: pointer;
+            }
+
+            .certificate-button:hover {
+                transform: translateY(-2px);
+            }
+
+            .certificate-button:disabled {
+                background: #666;
+                cursor: not-allowed;
+                transform: none;
+            }
 
             .proceed-button, .retry-button, .review-button {
                 display: inline-flex;
@@ -484,9 +532,13 @@
             <div class="user-info">
                 <h4>Student Information</h4>
                 <div class="form-group">
-                    <label for="email">Enter your email (optional):</label>
+                    <label for="email">Email:</label>
                     <input type="email" class="form-control" id="email" name="email" 
+                           value="{{ email }}" {% if email and email != 'Anonymous' %}readonly{% endif %}
                            placeholder="username@asu.edu">
+                    {% if email and email != 'Anonymous' %}
+                        <small class="text-muted">Email carried over from Part 1</small>
+                    {% endif %}
                 </div>
             </div>
 
@@ -504,6 +556,7 @@
                     <label class="option"><input type="radio" name="q1" value="2"> 0.5 meters (balanced parallax and matching with good depth resolution)</label>
                     <label class="option"><input type="radio" name="q1" value="3"> 1.0 meters (strong depth resolution but challenging feature matching)</label>
                     <label class="option"><input type="radio" name="q1" value="4"> 2.0 meters (optimal depth resolution but impractical for feature matching)</label>
+                    <label class="option"><input type="radio" name="q1" value="0"> I am not sure</label>
                 </div>
                 <p class="tutorial-link mt-2">
                     <a href="{% url 'multiview_geometry' %}" target="_blank">Open Multi-view Geometry Tutorial ↗</a>
@@ -523,6 +576,7 @@
                     <label class="option"><input type="radio" name="q2" value="2"> To reduce accumulated drift by recognizing previously visited locations (global consistency)</label>
                     <label class="option"><input type="radio" name="q2" value="3"> To plan the shortest path (navigation optimization)</label>
                     <label class="option"><input type="radio" name="q2" value="4"> To calibrate sensors (hardware optimization)</label>
+                    <label class="option"><input type="radio" name="q2" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -539,6 +593,7 @@
                     <label class="option"><input type="radio" name="q3" value="2"> High process noise, low measurement noise (trust sensors more than model)</label>
                     <label class="option"><input type="radio" name="q3" value="3"> High process noise, high measurement noise (conservative estimation)</label>
                     <label class="option"><input type="radio" name="q3" value="4"> Low process noise, low measurement noise (aggressive estimation)</label>
+                    <label class="option"><input type="radio" name="q3" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -556,6 +611,7 @@
                     <label class="option"><input type="radio" name="q4" value="2"> Grid-based sampling (systematic but rigid coverage)</label>
                     <label class="option"><input type="radio" name="q4" value="3"> Information gain-based sampling (adaptive and efficient)</label>
                     <label class="option"><input type="radio" name="q4" value="4"> Uniform sampling (consistent but inflexible coverage)</label>
+                    <label class="option"><input type="radio" name="q4" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -574,6 +630,7 @@
                     <label class="option"><input type="radio" name="q5" value="2"> Type II Error (False Negatives) - missing potential discoveries is more costly</label>
                     <label class="option"><input type="radio" name="q5" value="3"> Both errors are equally important to minimize</label>
                     <label class="option"><input type="radio" name="q5" value="4"> Neither error matters as long as some samples are collected</label>
+                    <label class="option"><input type="radio" name="q5" value="0"> I am not sure</label>
                 </div>
             </div>
 
@@ -582,6 +639,104 @@
             </div>
         </form>
     {% endif %}
+
+    {% if score >= 70 %}
+        <div class="success-message">
+            <h2>Congratulations! You've passed Part 2</h2>
+        </div>
+    {% elif show_results %}
+        <div class="alert alert-warning">
+            <h5>Quiz Results</h5>
+            <p>Your score indicates that some foundational concepts may need strengthening. However, if you believe you have the necessary background and experience in robotics and AI, please:</p>
+            <ul>
+                <li>Contact the instructor at jdas5@asu.edu to discuss your background and experience, or</li>
+                <li>Attend the first day of class (if the course is not at capacity) to evaluate if the course aligns with your preparation</li>
+            </ul>
+            <p class="text-muted mt-2">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add completion time display
+document.addEventListener('DOMContentLoaded', function() {
+    const timeElement = document.getElementById('completionTime');
+    if (timeElement) {
+        const now = new Date();
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZoneName: 'short'
+        };
+        timeElement.textContent = now.toLocaleString(undefined, options);
+    }
+});
+
+function generateCertificate() {
+    const button = document.getElementById('certBtn');
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Certificate...';
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    fetch('{% url "generate_certificate" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Certificate generation failed');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'SES598_Certificate.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        button.innerHTML = '<i class="fas fa-check"></i> Certificate Generated!';
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to Generate';
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+    });
+}
+</script>
 {% endblock %}
 
 {% block interactive_section %}{% endblock %} 
