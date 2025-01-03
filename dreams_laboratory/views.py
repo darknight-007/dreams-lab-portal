@@ -558,7 +558,8 @@ def generate_certificate(request):
         }, status=400)
     
     email = request.session.get('quiz_email', 'Anonymous')
-    timestamp = timezone.now().strftime('%Y-%m-%d')
+    # Format timestamp to match web interface with timezone
+    timestamp = timezone.localtime().strftime('%Y-%m-%d %H:%M:%S %Z')
     
     # Create PDF certificate
     buffer = BytesIO()
@@ -576,7 +577,7 @@ def generate_certificate(request):
     p.drawCentredString(width/2, height-3.5*inch, email)
     
     p.setFont("Helvetica", 16)
-    p.drawCentredString(width/2, height-4*inch, "has successfully completed")
+    p.drawCentredString(width/2, height-4*inch, "has successfully completed the enrollment quiz for")
     
     p.setFont("Helvetica-Bold", 18)
     p.drawCentredString(width/2, height-4.5*inch, "SES 598: Space Robotics and AI")
@@ -587,7 +588,7 @@ def generate_certificate(request):
     p.drawCentredString(width/2, height-6.5*inch, f"Part 2: {round(request.session.get('quiz_part2_score', 0), 1)}%")
     
     p.setFont("Helvetica-Oblique", 12)
-    p.drawCentredString(width/2, height-7.5*inch, f"Issued on {timestamp}")
+    p.drawCentredString(width/2, height-7.5*inch, f"Quiz completed on {timestamp}")
     
     p.setFont("Helvetica", 12)
     p.drawCentredString(width/2, height-8*inch, "DREAMS Laboratory - Arizona State University")
@@ -629,6 +630,8 @@ def ses598_quiz(request):
             student_ans = request.POST.get(q, '')
             if student_ans == correct_ans:
                 score += 1
+            # Store answer in session
+            request.session[f'quiz_part1_{q}'] = student_ans
 
         # Calculate total score percentage
         total_score = (score / len(mcq_answers)) * 100
@@ -706,6 +709,39 @@ def ses598_quiz_part2(request):
 
         # Check certificate eligibility
         eligible, final_score = get_certificate_eligibility(request)
+
+        # Save quiz results to database if eligible for certificate
+        if eligible:
+            # Get answers from both parts
+            part1_answers = {
+                'q1': request.session.get('quiz_part1_q1', ''),
+                'q2': request.session.get('quiz_part1_q2', ''),
+                'q3': request.session.get('quiz_part1_q3', ''),
+                'q4': request.session.get('quiz_part1_q4', ''),
+                'q5': request.session.get('quiz_part1_q5', '')
+            }
+            part2_answers = {
+                'q6': request.POST.get('q1', ''),
+                'q7': request.POST.get('q2', ''),
+                'q8': request.POST.get('q3', ''),
+                'q9': request.POST.get('q4', ''),
+                'q10': request.POST.get('q5', '')
+            }
+
+            # Create quiz submission
+            quiz_submission = QuizSubmission(
+                quiz_id='SES598',
+                session_id=request.session.session_key,
+                email=email,
+                total_score=final_score,
+                # Store individual scores
+                cv_score=request.session.get('quiz_part1_score', 0),  # Part 1 score
+                slam_score=total_score,  # Part 2 score
+                # Store individual answers
+                **part1_answers,
+                **part2_answers
+            )
+            quiz_submission.save()
 
         context = {
             'show_results': True,
