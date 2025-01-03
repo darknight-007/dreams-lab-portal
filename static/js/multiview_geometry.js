@@ -24,9 +24,9 @@ class MultiviewGeometry {
         };
 
         this.views = {
-            top: new THREE.Vector3(0, 10, 0),
-            front: new THREE.Vector3(0, 0, 10),
-            isometric: new THREE.Vector3(5, 5, 5)
+            top: new THREE.Vector3(0, 5, 0),
+            front: new THREE.Vector3(0, 0, 5),
+            isometric: new THREE.Vector3(2.5, 2.5, 2.5)
         };
 
         this.features = [];
@@ -71,7 +71,7 @@ class MultiviewGeometry {
         this.controls.dampingFactor = 0.05;
 
         // Add grid helper
-        this.gridHelper = new THREE.GridHelper(10, 10);
+        this.gridHelper = new THREE.GridHelper(5, 5);
         this.scene.add(this.gridHelper);
 
         // Create stereo cameras
@@ -80,14 +80,20 @@ class MultiviewGeometry {
         this.scene.add(this.camera1);
         this.scene.add(this.camera2);
 
-        // Create 3D point
-        const pointGeometry = new THREE.SphereGeometry(0.1);
-        const pointMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-        this.point3D = new THREE.Mesh(pointGeometry, pointMaterial);
-        this.scene.add(this.point3D);
+        // Create target object (sphere)
+        const targetGeometry = new THREE.SphereGeometry(0.3);
+        const targetMaterial = new THREE.MeshPhongMaterial({
+            color: 0x808080,
+            transparent: true,
+            opacity: 0.7,
+            wireframe: true
+        });
+        this.targetObject = new THREE.Mesh(targetGeometry, targetMaterial);
+        this.targetObject.position.set(0, 0, -2); // Position it in front of cameras
+        this.scene.add(this.targetObject);
 
-        // Add convergence point sphere
-        const sphereGeometry = new THREE.SphereGeometry(0.15);
+        // Create convergence point sphere
+        const sphereGeometry = new THREE.SphereGeometry(0.05);
         const sphereMaterial = new THREE.MeshPhongMaterial({ 
             color: 0xffff00,
             transparent: true,
@@ -179,6 +185,9 @@ class MultiviewGeometry {
             this.convergencePoint.position.set(0, 0, -pointDepth/100);
             this.convergencePoint.visible = false;
         }
+
+        // Update target object position based on point depth
+        this.targetObject.position.z = -pointDepth/100;
 
         // Update feature projections
         this.updateFeatureProjections();
@@ -668,15 +677,15 @@ class MultiviewGeometry {
     setupEventListeners() {
         // Add input event listeners for all controls
         const inputs = {
-            focalLength: 'focalLengthValue',
-            baseline: 'baselineValue',
-            pointDepth: 'pointDepthValue',
-            toeIn: 'toeInValue',
-            principalX: 'principalXValue',
-            principalY: 'principalYValue'
+            focalLength: { id: 'focalLengthValue', unit: 'mm' },
+            baseline: { id: 'baselineValue', unit: 'cm' },
+            pointDepth: { id: 'pointDepthValue', unit: 'cm' },
+            toeIn: { id: 'toeInValue', unit: '°' },
+            principalX: { id: 'principalXValue', unit: 'mm' },
+            principalY: { id: 'principalYValue', unit: 'mm' }
         };
 
-        Object.entries(inputs).forEach(([id, valueId]) => {
+        Object.entries(inputs).forEach(([id, { id: valueId, unit }]) => {
             const input = document.getElementById(id);
             const value = document.getElementById(valueId);
             if (input && value) {
@@ -686,9 +695,11 @@ class MultiviewGeometry {
                     } else {
                         this.params[id] = parseFloat(e.target.value);
                     }
-                    value.textContent = e.target.value;
+                    value.textContent = `${e.target.value}${unit}`;
                     this.updateScene();
                 });
+                // Set initial values
+                value.textContent = `${input.value}${unit}`;
             }
         });
 
@@ -741,12 +752,7 @@ class MultiviewGeometry {
             baselineSlider.step = 1;   // 1cm steps
             baselineSlider.value = 50;  // Set default to 50 cm
             this.params.baseline = 50;  // Ensure param is synced
-            document.getElementById('baselineValue').textContent = '50 cm';  // Update display
-            baselineSlider.addEventListener('input', (e) => {
-                this.params.baseline = Math.max(this.params.minBaseline, parseFloat(e.target.value));
-                document.getElementById('baselineValue').textContent = `${this.params.baseline} cm`;
-                this.updateScene();
-            });
+            document.getElementById('baselineValue').textContent = '50cm';  // Update display
         }
 
         // Update point depth slider for centimeter units
@@ -756,11 +762,7 @@ class MultiviewGeometry {
             depthSlider.max = 2000;  // 20m in cm
             depthSlider.step = 50;   // 50cm steps
             depthSlider.value = this.params.pointDepth;
-            depthSlider.addEventListener('input', (e) => {
-                this.params.pointDepth = parseFloat(e.target.value);
-                document.getElementById('pointDepthValue').textContent = `${this.params.pointDepth} cm`;
-                this.updateScene();
-            });
+            document.getElementById('pointDepthValue').textContent = `${this.params.pointDepth}cm`;
         }
     }
 
@@ -801,19 +803,60 @@ class MultiviewGeometry {
     }
 
     createRandomFeatures(count) {
-        const featureGeometry = new THREE.SphereGeometry(0.05);
-        const featureMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+        // Clear existing features
+        this.features.forEach(feature => {
+            this.scene.remove(feature);
+            if (feature.geometry) feature.geometry.dispose();
+            if (feature.material) feature.material.dispose();
+        });
+        this.features = [];
+
+        // Create new features
+        const featureGeometry = new THREE.SphereGeometry(0.03);
         
         for (let i = 0; i < count; i++) {
+            // Create feature with unique color
+            const featureMaterial = new THREE.MeshPhongMaterial({ 
+                color: new THREE.Color().setHSL(i * 0.1, 1, 0.5),
+                emissive: new THREE.Color().setHSL(i * 0.1, 1, 0.2)
+            });
             const feature = new THREE.Mesh(featureGeometry, featureMaterial);
-            // Random position in a reasonable volume
+
+            // Position features on or near the target object surface
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const radius = 0.3 + (Math.random() - 0.5) * 0.1; // Slightly vary distance from center
+
             feature.position.set(
-                (Math.random() - 0.5) * 4,
-                (Math.random() - 0.5) * 2,
-                -(Math.random() * 4 + 2)
+                radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.sin(phi) * Math.sin(theta),
+                -2 + radius * Math.cos(phi)
             );
+
+            // Add feature number as sprite
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.font = '48px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(i + 1, 32, 32);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ 
+                map: texture,
+                sizeAttenuation: false
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(0.05, 0.05, 1);
+            sprite.position.copy(feature.position);
+            sprite.position.y += 0.05; // Offset slightly above feature
+
             this.features.push(feature);
             this.scene.add(feature);
+            this.scene.add(sprite);
         }
     }
 
@@ -888,69 +931,65 @@ class MultiviewGeometry {
     updateCameraViews() {
         try {
             Object.entries(this.projectionPlanes).forEach(([side, plane]) => {
-                // Store references to important objects
-                const lights = plane.scene.children.filter(child => 
-                    child instanceof THREE.AmbientLight || 
-                    child instanceof THREE.DirectionalLight
-                );
-                const grid = plane.scene.children.find(child => 
-                    child instanceof THREE.GridHelper
-                );
+                if (!plane || !plane.canvas) {
+                    console.warn(`Missing projection plane elements for ${side} camera`);
+                    return;
+                }
 
-                // Clear previous features from scene, keeping lights and grid
-                plane.scene.children.forEach(child => {
-                    if (!lights.includes(child) && child !== grid) {
-                        plane.scene.remove(child);
-                        if (child.geometry) child.geometry.dispose();
-                        if (child.material) child.material.dispose();
+                const ctx = plane.canvas.getContext('2d');
+                if (!ctx) {
+                    console.warn(`Could not get 2D context for ${side} camera`);
+                    return;
+                }
+
+                // Clear canvas
+                ctx.clearRect(0, 0, plane.canvas.width, plane.canvas.height);
+
+                // Draw grid
+                ctx.strokeStyle = '#cccccc';
+                ctx.lineWidth = 1;
+                const gridSize = 20;
+                for (let i = 0; i <= plane.canvas.width; i += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, plane.canvas.height);
+                    ctx.stroke();
+                }
+                for (let i = 0; i <= plane.canvas.height; i += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(plane.canvas.width, i);
+                    ctx.stroke();
+                }
+
+                // Draw features
+                this.features.forEach((feature, index) => {
+                    const featurePos = feature.position;
+                    const camera = side === 'left' ? this.camera1 : this.camera2;
+                    const proj = this.projectToCamera(featurePos, camera, plane);
+                    
+                    if (proj) {
+                        const { sensorSize } = this.params;
+                        const x = (proj.x / sensorSize.width + 0.5) * plane.canvas.width;
+                        const y = (proj.y / sensorSize.height + 0.5) * plane.canvas.height;
+
+                        // Draw feature point
+                        ctx.fillStyle = `hsl(${(index * 30) % 360}, 100%, 50%)`;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Draw feature ID
+                        ctx.fillStyle = '#000000';
+                        ctx.font = '12px Arial';
+                        ctx.fillText(index + 1, x + 5, y - 5);
                     }
                 });
 
-                // Add lights and grid if they don't exist
-                if (lights.length === 0) {
-                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                    directionalLight.position.set(5, 5, 5);
-                    plane.scene.add(ambientLight);
-                    plane.scene.add(directionalLight);
+                // Update texture
+                if (plane.mesh && plane.mesh.material && plane.mesh.material.map) {
+                    plane.mesh.material.map.needsUpdate = true;
                 }
-                if (!grid) {
-                    plane.scene.add(new THREE.GridHelper(10, 10));
-                }
-
-                // Add features to camera scene
-                this.features.forEach((feature, index) => {
-                    const featureClone = feature.clone();
-                    featureClone.material = feature.material.clone();
-                    plane.scene.add(featureClone);
-                });
-
-                // Add convergence point to scene
-                const convergenceClone = this.convergencePoint.clone();
-                convergenceClone.material = this.convergencePoint.material.clone();
-                plane.scene.add(convergenceClone);
-
-                // Update camera parameters
-                const { focalLength, sensorSize } = this.params;
-                const aspect = sensorSize.width / sensorSize.height;
-                const fov = 2 * Math.atan(sensorSize.height / (2 * focalLength)) * (180 / Math.PI);
-                
-                plane.camera.fov = fov;
-                plane.camera.aspect = aspect;
-                plane.camera.updateProjectionMatrix();
-
-                // Position camera for rendering
-                if (side === 'left') {
-                    plane.camera.position.copy(this.camera1.position);
-                    plane.camera.rotation.copy(this.camera1.rotation);
-                } else {
-                    plane.camera.position.copy(this.camera2.position);
-                    plane.camera.rotation.copy(this.camera2.rotation);
-                }
-
-                // Render the scene
-                plane.renderer.render(plane.scene, plane.camera);
-                plane.mesh.material.map.needsUpdate = true;
             });
         } catch (error) {
             console.error('Error in updateCameraViews:', error);
