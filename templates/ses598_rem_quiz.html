@@ -68,13 +68,70 @@
         border-radius: 0.25rem;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    .feedback-item {
+        border-left: 4px solid;
+    }
+    .feedback-item.bg-success-light {
+        border-left-color: #28a745;
+    }
+    .feedback-item.bg-danger-light {
+        border-left-color: #dc3545;
+    }
+    .options-review {
+        margin-top: 1rem;
+    }
+    .options-review .question-text {
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+    .options-review .option {
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        position: relative;
+    }
+    .options-review .option.chosen {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+    .options-review .option.correct {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    .options-review .option.chosen.correct {
+        background-color: #d4edda;
+        border-color: #28a745;
+    }
+    .options-review .option.chosen:not(.correct) {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+    }
+    .explanation {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-top: 1rem;
+    }
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+    }
+    .bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
 </style>
 {% endblock %}
 
 {% block mcq_questions %}
     {% if show_results %}
         <div class="alert alert-info">
-            <h4>Quiz Results</h4>
+            <h4>Quiz Results - Part 1: Fundamentals</h4>
             <p>Email: {{ email }}</p>
             <div class="mb-3">
                 <p class="mb-2">Score: {{ score|floatformat:1 }}%</p>
@@ -83,8 +140,63 @@
                 </div>
             </div>
 
+            <!-- Question Feedback -->
+            <div class="question-feedback mt-4">
+                <h5>Detailed Analysis</h5>
+                {% for q_num, q_feedback in feedback.items %}
+                    <div class="feedback-item mb-4 p-3 {% if q_feedback.is_correct %}bg-success-light{% else %}bg-danger-light{% endif %}" style="border-radius: 8px;">
+                        <h6>Question {{ q_num|slice:"1:" }}</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge {% if q_feedback.is_correct %}bg-success{% else %}bg-danger{% endif %} me-2">
+                                {% if q_feedback.is_correct %}
+                                    <i class="fas fa-check"></i> Correct
+                                {% else %}
+                                    <i class="fas fa-times"></i> Incorrect
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="options-review">
+                            {% if q_num == 'q1' %}
+                                <p class="question-text">What is the primary purpose of SLAM (Simultaneous Localization and Mapping) in robotics?</p>
+                                <div class="option {% if '1' == q_feedback.student_answer %}chosen{% endif %} {% if '1' == q_feedback.correct_answer %}correct{% endif %}">To control robot movements and avoid obstacles</div>
+                                <div class="option {% if '2' == q_feedback.student_answer %}chosen{% endif %} {% if '2' == q_feedback.correct_answer %}correct{% endif %}">To detect and track moving objects in the environment</div>
+                                <div class="option {% if '3' == q_feedback.student_answer %}chosen{% endif %} {% if '3' == q_feedback.correct_answer %}correct{% endif %}">To build a map of an unknown environment while tracking the robot's position</div>
+                                <div class="option {% if '4' == q_feedback.student_answer %}chosen{% endif %} {% if '4' == q_feedback.correct_answer %}correct{% endif %}">To optimize battery usage during navigation</div>
+                            {% elif q_num == 'q2' %}
+                                <p class="question-text">Which sensor is most commonly used for accurate 3D mapping in robotics?</p>
+                                <div class="option {% if '1' == q_feedback.student_answer %}chosen{% endif %} {% if '1' == q_feedback.correct_answer %}correct{% endif %}">Ultrasonic sensors</div>
+                                <div class="option {% if '2' == q_feedback.student_answer %}chosen{% endif %} {% if '2' == q_feedback.correct_answer %}correct{% endif %}">LiDAR (Light Detection and Ranging)</div>
+                                <div class="option {% if '3' == q_feedback.student_answer %}chosen{% endif %} {% if '3' == q_feedback.correct_answer %}correct{% endif %}">Infrared sensors</div>
+                                <div class="option {% if '4' == q_feedback.student_answer %}chosen{% endif %} {% if '4' == q_feedback.correct_answer %}correct{% endif %}">GPS receivers</div>
+                            {% elif q_num == 'q3' %}
+                                <p class="question-text">In occupancy grid mapping, what does a probability value of 0.8 for a cell indicate?</p>
+                                <div class="option {% if '1' == q_feedback.student_answer %}chosen{% endif %} {% if '1' == q_feedback.correct_answer %}correct{% endif %}">The cell is likely to contain an obstacle</div>
+                                <div class="option {% if '2' == q_feedback.student_answer %}chosen{% endif %} {% if '2' == q_feedback.correct_answer %}correct{% endif %}">The cell is likely to be free space</div>
+                                <div class="option {% if '3' == q_feedback.student_answer %}chosen{% endif %} {% if '3' == q_feedback.correct_answer %}correct{% endif %}">The cell has not been observed yet</div>
+                                <div class="option {% if '4' == q_feedback.student_answer %}chosen{% endif %} {% if '4' == q_feedback.correct_answer %}correct{% endif %}">The robot is currently in this cell</div>
+                            {% elif q_num == 'q4' %}
+                                <p class="question-text">What is the main challenge of using GPS for robot navigation in urban environments?</p>
+                                <div class="option {% if '1' == q_feedback.student_answer %}chosen{% endif %} {% if '1' == q_feedback.correct_answer %}correct{% endif %}">Lack of precision in densely populated environments</div>
+                                <div class="option {% if '2' == q_feedback.student_answer %}chosen{% endif %} {% if '2' == q_feedback.correct_answer %}correct{% endif %}">High power consumption</div>
+                                <div class="option {% if '3' == q_feedback.student_answer %}chosen{% endif %} {% if '3' == q_feedback.correct_answer %}correct{% endif %}">Slow update rate</div>
+                                <div class="option {% if '4' == q_feedback.student_answer %}chosen{% endif %} {% if '4' == q_feedback.correct_answer %}correct{% endif %}">Limited coverage area</div>
+                            {% elif q_num == 'q5' %}
+                                <p class="question-text">Which algorithm is commonly used for finding the shortest path in a weighted graph representation of a robot's environment?</p>
+                                <div class="option {% if '1' == q_feedback.student_answer %}chosen{% endif %} {% if '1' == q_feedback.correct_answer %}correct{% endif %}">Breadth-First Search</div>
+                                <div class="option {% if '2' == q_feedback.student_answer %}chosen{% endif %} {% if '2' == q_feedback.correct_answer %}correct{% endif %}">Dijkstra's Algorithm</div>
+                                <div class="option {% if '3' == q_feedback.student_answer %}chosen{% endif %} {% if '3' == q_feedback.correct_answer %}correct{% endif %}">Gradient Descent</div>
+                                <div class="option {% if '4' == q_feedback.student_answer %}chosen{% endif %} {% if '4' == q_feedback.correct_answer %}correct{% endif %}">Genetic Algorithm</div>
+                            {% endif %}
+                        </div>
+                        <div class="explanation mt-3">
+                            <strong>Explanation:</strong> {{ q_feedback.explanation }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
             {% if score >= 60 %}
-                <div class="alert alert-success">
+                <div class="alert alert-success mt-4">
                     <h5>Congratulations! You've passed Part 1</h5>
                     <p>You can now proceed to Part 2 to test your understanding of advanced robotics concepts.</p>
                     <div class="mt-3">
@@ -92,7 +204,7 @@
                     </div>
                 </div>
             {% else %}
-                <div class="alert alert-warning">
+                <div class="alert alert-warning mt-4">
                     <h5>Quiz Results</h5>
                     <p>Your score indicates that some foundational concepts may need strengthening. However, if you believe you have the necessary background and experience in robotics and AI, please:</p>
                     <ul>
@@ -102,120 +214,6 @@
                     <p class="text-muted mt-2">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
                 </div>
             {% endif %}
-
-            <div id="answer-explanations" class="answer-explanations mt-4">
-                <h4>Detailed Analysis:</h4>
-                <p class="text-muted mb-3">Review your understanding of these fundamental concepts:</p>
-                <div class="explanation">
-                    <h5>1. SLAM Purpose</h5>
-                    <p>Correct Answer: To build a map of an unknown environment while tracking the robot's position</p>
-                    <p>Rationale:</p>
-                    <ul>
-                        <li>Core SLAM Functionality:
-                            <ul>
-                                <li>Simultaneous mapping and localization</li>
-                                <li>Real-time environment understanding</li>
-                                <li>Position tracking relative to map</li>
-                            </ul>
-                        </li>
-                        <li>Common Misconceptions:
-                            <ul>
-                                <li>Control algorithms are separate from SLAM</li>
-                                <li>Object detection is a complementary but different task</li>
-                                <li>Obstacle avoidance uses SLAM data but isn't its primary purpose</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="explanation">
-                    <h5>2. 3D Mapping Sensors</h5>
-                    <p>Correct Answer: LiDAR</p>
-                    <p>Rationale:</p>
-                    <ul>
-                        <li>LiDAR Advantages:
-                            <ul>
-                                <li>Direct 3D point cloud measurements</li>
-                                <li>High accuracy and precision</li>
-                                <li>Large field of view and range</li>
-                            </ul>
-                        </li>
-                        <li>Other Sensors' Limitations:
-                            <ul>
-                                <li>Ultrasonic: Limited range and resolution</li>
-                                <li>Infrared: Affected by ambient light</li>
-                                <li>GPS: Position only, no mapping capability</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="explanation">
-                    <h5>3. Occupancy Grid Mapping</h5>
-                    <p>Correct Answer: The cell is likely to contain an obstacle</p>
-                    <p>Rationale:</p>
-                    <ul>
-                        <li>Probability Interpretation:
-                            <ul>
-                                <li>High probability (>0.5) indicates obstacle presence</li>
-                                <li>Low probability (<0.5) indicates free space</li>
-                                <li>0.5 typically represents unknown space</li>
-                            </ul>
-                        </li>
-                        <li>Map Building Process:
-                            <ul>
-                                <li>Updates based on sensor measurements</li>
-                                <li>Accounts for sensor uncertainty</li>
-                                <li>Integrates multiple observations over time</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="explanation">
-                    <h5>4. GPS Navigation Challenges</h5>
-                    <p>Correct Answer: Lack of precision in densely populated environments</p>
-                    <p>Rationale:</p>
-                    <ul>
-                        <li>Urban Environment Issues:
-                            <ul>
-                                <li>Signal multipath effects</li>
-                                <li>Satellite visibility limitations</li>
-                                <li>Building interference</li>
-                            </ul>
-                        </li>
-                        <li>Impact on Navigation:
-                            <ul>
-                                <li>Position accuracy degradation</li>
-                                <li>Unreliable height measurements</li>
-                                <li>Need for complementary sensors</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="explanation">
-                    <h5>5. Path Planning Algorithms</h5>
-                    <p>Correct Answer: Dijkstra's Algorithm</p>
-                    <p>Rationale:</p>
-                    <ul>
-                        <li>Algorithm Characteristics:
-                            <ul>
-                                <li>Guarantees optimal path</li>
-                                <li>Handles weighted edges (cost considerations)</li>
-                                <li>Efficient for grid-based maps</li>
-                            </ul>
-                        </li>
-                        <li>Comparison with Alternatives:
-                            <ul>
-                                <li>BFS: Unweighted paths only</li>
-                                <li>Gradient Descent: Local optimization</li>
-                                <li>Genetic Algorithm: Global but non-deterministic</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
     {% else %}
         <form method="post" id="quizForm">
@@ -223,60 +221,64 @@
             <div class="user-info">
                 <h4>Student Information</h4>
                 <div class="form-group">
-                    <label for="email">Enter your email:</label>
+                    <label for="email">Email:</label>
                     <input type="email" class="form-control" id="email" name="email" 
-                           placeholder="username@asu.edu" required>
+                           value="{{ email }}" {% if email and email != 'Anonymous' %}readonly{% endif %}
+                           placeholder="username@asu.edu">
+                    {% if email and email != 'Anonymous' %}
+                        <small class="text-muted">Email will be used for both quiz parts</small>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="question">
-                <h3>1. What is the primary purpose of Simultaneous Localization and Mapping (SLAM) in robotics?</h3>
+                <h3>1. What is the primary purpose of SLAM (Simultaneous Localization and Mapping) in robotics?</h3>
                 <div class="options">
-                    <label class="option"><input type="radio" name="q1" value="1" required> To create a robot's control algorithm</label>
-                    <label class="option"><input type="radio" name="q1" value="2"> To detect objects in the robot's environment</label>
+                    <label class="option"><input type="radio" name="q1" value="1" required> To control robot movements and avoid obstacles</label>
+                    <label class="option"><input type="radio" name="q1" value="2"> To detect and track moving objects in the environment</label>
                     <label class="option"><input type="radio" name="q1" value="3"> To build a map of an unknown environment while tracking the robot's position</label>
-                    <label class="option"><input type="radio" name="q1" value="4"> To program robot behaviors for obstacle avoidance</label>
+                    <label class="option"><input type="radio" name="q1" value="4"> To optimize battery usage during navigation</label>
                     <label class="option"><input type="radio" name="q1" value="0"> I am not sure</label>
                 </div>
             </div>
 
             <div class="question">
-                <h3>2. Which sensor is most commonly used for 3D mapping in robotic systems?</h3>
+                <h3>2. Which sensor is most commonly used for accurate 3D mapping in robotics?</h3>
                 <div class="options">
-                    <label class="option"><input type="radio" name="q2" value="1" required> Ultrasonic sensor</label>
-                    <label class="option"><input type="radio" name="q2" value="2"> LiDAR</label>
-                    <label class="option"><input type="radio" name="q2" value="3"> Infrared sensor</label>
-                    <label class="option"><input type="radio" name="q2" value="4"> GPS</label>
+                    <label class="option"><input type="radio" name="q2" value="1" required> Ultrasonic sensors</label>
+                    <label class="option"><input type="radio" name="q2" value="2"> LiDAR (Light Detection and Ranging)</label>
+                    <label class="option"><input type="radio" name="q2" value="3"> Infrared sensors</label>
+                    <label class="option"><input type="radio" name="q2" value="4"> GPS receivers</label>
                     <label class="option"><input type="radio" name="q2" value="0"> I am not sure</label>
                 </div>
             </div>
 
             <div class="question">
-                <h3>3. In occupancy grid mapping, what does a high probability value in a grid cell represent?</h3>
+                <h3>3. In occupancy grid mapping, what does a probability value of 0.8 for a cell indicate?</h3>
                 <div class="options">
                     <label class="option"><input type="radio" name="q3" value="1" required> The cell is likely to contain an obstacle</label>
-                    <label class="option"><input type="radio" name="q3" value="2"> The cell is unexplored</label>
-                    <label class="option"><input type="radio" name="q3" value="3"> The cell is part of free space</label>
-                    <label class="option"><input type="radio" name="q3" value="4"> The cell is a probable goal location</label>
+                    <label class="option"><input type="radio" name="q3" value="2"> The cell is likely to be free space</label>
+                    <label class="option"><input type="radio" name="q3" value="3"> The cell has not been observed yet</label>
+                    <label class="option"><input type="radio" name="q3" value="4"> The robot is currently in this cell</label>
                     <label class="option"><input type="radio" name="q3" value="0"> I am not sure</label>
                 </div>
             </div>
 
             <div class="question">
-                <h3>4. What is a common challenge in using GPS for outdoor robotic navigation?</h3>
+                <h3>4. What is the main challenge of using GPS for robot navigation in urban environments?</h3>
                 <div class="options">
                     <label class="option"><input type="radio" name="q4" value="1" required> Lack of precision in densely populated environments</label>
-                    <label class="option"><input type="radio" name="q4" value="2"> High energy consumption</label>
-                    <label class="option"><input type="radio" name="q4" value="3"> Difficulty in avoiding static obstacles</label>
-                    <label class="option"><input type="radio" name="q4" value="4"> Difficulty in path planning</label>
+                    <label class="option"><input type="radio" name="q4" value="2"> High power consumption</label>
+                    <label class="option"><input type="radio" name="q4" value="3"> Slow update rate</label>
+                    <label class="option"><input type="radio" name="q4" value="4"> Limited coverage area</label>
                     <label class="option"><input type="radio" name="q4" value="0"> I am not sure</label>
                 </div>
             </div>
 
             <div class="question">
-                <h3>5. Which algorithm is typically used for path planning in robotic mapping?</h3>
+                <h3>5. Which algorithm is commonly used for finding the shortest path in a weighted graph representation of a robot's environment?</h3>
                 <div class="options">
-                    <label class="option"><input type="radio" name="q5" value="1" required> Breadth-First Search (BFS)</label>
+                    <label class="option"><input type="radio" name="q5" value="1" required> Breadth-First Search</label>
                     <label class="option"><input type="radio" name="q5" value="2"> Dijkstra's Algorithm</label>
                     <label class="option"><input type="radio" name="q5" value="3"> Gradient Descent</label>
                     <label class="option"><input type="radio" name="q5" value="4"> Genetic Algorithm</label>

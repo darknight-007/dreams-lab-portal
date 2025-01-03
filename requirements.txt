@@ -11,3 +11,4 @@ whitenoise>=6.0.0
 docker-py>=1.10.6
 django-cors-headers>=4.3.1
 psutil==6.1.1
+reportlab==4.0.8

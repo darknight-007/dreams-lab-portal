@@ -97,6 +97,114 @@
         margin: 0;
         font-size: 1.5rem;
     }
+    .feedback-container {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    .feedback-item {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 1.5rem;
+        border-left: 4px solid;
+    }
+    .feedback-item.optimal {
+        border-color: #00ff9d;
+    }
+    .feedback-item.critical {
+        border-color: #ff4444;
+    }
+    .feedback-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-family: monospace;
+        font-size: 1.1rem;
+    }
+    .feedback-content {
+        margin-top: 0.5rem;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        font-family: monospace;
+    }
+    .status-badge.success {
+        background: #00ff9d;
+        color: #1a1a2e;
+    }
+    .status-badge.failure {
+        background: #ff4444;
+        color: white;
+    }
+    .feedback-explanation {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #e1e1e1;
+    }
+    .question-details {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 8px;
+    }
+    .question-text {
+        color: #4a9eff;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+    .options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .option-item {
+        padding: 0.8rem 1rem;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .option-item.chosen {
+        border-color: #4a9eff;
+        background: rgba(74,158,255,0.1);
+    }
+    .option-item.correct {
+        border-color: #00ff9d;
+        background: rgba(0,255,157,0.1);
+    }
+    .option-item.chosen.correct {
+        border-color: #00ff9d;
+        background: rgba(0,255,157,0.15);
+    }
+    .option-item.chosen:not(.correct) {
+        border-color: #ff4444;
+        background: rgba(255,68,68,0.1);
+    }
+    .status-icon {
+        margin-left: 1rem;
+        font-size: 0.9rem;
+    }
+    .status-icon.correct {
+        color: #00ff9d;
+    }
+    .status-icon.incorrect {
+        color: #ff4444;
+    }
+    .analysis-explanation {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 8px;
+        border-left: 4px solid #4a9eff;
+    }
 </style>
 {% endblock %}
 
@@ -112,78 +220,101 @@
             </div>
 
             <div class="telemetry-data">
-                <div class="score-display">
-                    <div class="score-ring" style="--score: {{ score }}">
-                        <div class="score-value">{{ score|floatformat:1 }}%</div>
-                        <div class="score-label">Mission Success Rate</div>
+                <!-- Overall Mission Status First -->
+                <div class="mission-status-panel">
+                    <div class="status-grid">
+                        <div class="main-status {% if any_correct %}status-acceptable{% else %}status-critical{% endif %}">
+                            <div class="status-icon">
+                                <i class="fas {% if any_correct %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                            </div>
+                            <div class="status-details">
+                                <h3>Mission Status: 
+                                    {% if any_correct %}READY FOR ADVANCED TRAINING{% else %}RECALIBRATION NEEDED{% endif %}
+                                </h3>
+                                <div class="mission-assessment">
+                                    {% if any_correct %}
+                                        <p>Demonstrated potential in advanced robotics concepts. Ready to proceed with specialized training.</p>
+                                    {% else %}
+                                        <p>Additional preparation recommended before proceeding with advanced operations.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="systems-overview">
+                            <div class="system-item {% if feedback.q1.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-camera"></i>
+                                <span>Multi-view Geometry</span>
+                                <div class="system-status">{% if feedback.q1.is_correct %}READY{% else %}NEEDS REVIEW{% endif %}</div>
+                            </div>
+                            <div class="system-item {% if feedback.q2.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>SLAM Loop Closure</span>
+                                <div class="system-status">{% if feedback.q2.is_correct %}READY{% else %}NEEDS REVIEW{% endif %}</div>
+                            </div>
+                            <div class="system-item {% if feedback.q3.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-filter"></i>
+                                <span>Kalman Filtering</span>
+                                <div class="system-status">{% if feedback.q3.is_correct %}READY{% else %}NEEDS REVIEW{% endif %}</div>
+                            </div>
+                            <div class="system-item {% if feedback.q4.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-search"></i>
+                                <span>Exploration Strategy</span>
+                                <div class="system-status">{% if feedback.q4.is_correct %}READY{% else %}NEEDS REVIEW{% endif %}</div>
+                            </div>
+                            <div class="system-item {% if feedback.q5.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Error Analysis</span>
+                                <div class="system-status">{% if feedback.q5.is_correct %}READY{% else %}NEEDS REVIEW{% endif %}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Rest of the content remains the same -->
                 <div class="systems-check">
-                    <h3><i class="fas fa-microchip"></i> Systems Analysis</h3>
-                    <div class="systems-grid">
-                        <div class="system-item {% if score >= 80 %}optimal{% elif score >= 60 %}nominal{% else %}critical{% endif %}">
-                            <i class="fas fa-brain"></i>
-                            <span>AI Systems</span>
-                        </div>
-                        <div class="system-item {% if score >= 80 %}optimal{% elif score >= 60 %}nominal{% else %}critical{% endif %}">
-                            <i class="fas fa-robot"></i>
-                            <span>Robotics Control</span>
-                        </div>
-                        <div class="system-item {% if score >= 80 %}optimal{% elif score >= 60 %}nominal{% else %}critical{% endif %}">
-                            <i class="fas fa-camera"></i>
-                            <span>Vision Systems</span>
-                        </div>
-                        <div class="system-item {% if score >= 80 %}optimal{% elif score >= 60 %}nominal{% else %}critical{% endif %}">
-                            <i class="fas fa-project-diagram"></i>
-                            <span>SLAM Operations</span>
-                        </div>
+                    <h3><i class="fas fa-microchip"></i> Detailed Systems Analysis</h3>
+                    <div class="feedback-container">
+                        {% for q_num, q_feedback in feedback.items %}
+                            <div class="feedback-item {% if q_feedback.is_correct %}optimal{% else %}critical{% endif %}">
+                                <div class="feedback-header">
+                                    <i class="fas {% if q_feedback.is_correct %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                                    <span>System {{ q_num|slice:"1:" }} Status</span>
+                                </div>
+                                <div class="feedback-content">
+                                    <div class="status-badge {% if q_feedback.is_correct %}success{% else %}failure{% endif %}">
+                                        {% if q_feedback.is_correct %}
+                                            OPTIMAL
+                                        {% else %}
+                                            NEEDS ATTENTION
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="question-details">
+                                        <p class="question-text">{{ q_feedback.question_text }}</p>
+                                        <div class="options-list">
+                                            {% for option in q_feedback.options %}
+                                                <div class="option-item {% if option.value == q_feedback.student_answer %}chosen{% endif %} {% if option.value == q_feedback.correct_answer %}correct{% endif %}">
+                                                    {{ option.text }}
+                                                    {% if option.value == q_feedback.student_answer and option.value == q_feedback.correct_answer %}
+                                                        <span class="status-icon correct"><i class="fas fa-check"></i></span>
+                                                    {% elif option.value == q_feedback.student_answer %}
+                                                        <span class="status-icon incorrect"><i class="fas fa-times"></i></span>
+                                                    {% elif option.value == q_feedback.correct_answer %}
+                                                        <span class="status-icon correct"><i class="fas fa-check"></i></span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="analysis-explanation">
+                                        <p class="feedback-explanation">{{ q_feedback.explanation }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
-
-                {% if score >= 60 %}
-                    <div class="mission-success">
-                        {% csrf_token %}
-                        <h3><i class="fas fa-check-circle"></i> Mission Status: ACCOMPLISHED</h3>
-                        <div class="clearance-level">
-                            {% if score >= 90 %}
-                                <div class="clearance elite">
-                                    <span class="badge">ELITE</span>
-                                    <p>Outstanding performance! You've demonstrated exceptional mastery of the enrollment quiz concepts. You're well-prepared to begin the space robotics course.</p>
-                                </div>
-                            {% elif score >= 80 %}
-                                <div class="clearance advanced">
-                                    <span class="badge">ADVANCED</span>
-                                    <p>Excellent work! Your understanding of the enrollment quiz concepts is strong. You're ready to start your journey in space robotics.</p>
-                                </div>
-                            {% else %}
-                                <div class="clearance qualified">
-                                    <span class="badge">QUALIFIED</span>
-                                    <p>Enrollment quiz completed successfully! You've demonstrated sufficient understanding of the fundamental concepts to begin the course.</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="next-steps">
-                            {% if eligible_for_certificate %}
-                                <p class="completion-time" style="color: #4a9eff; font-family: monospace; margin-bottom: 1rem;">
-                                    <i class="fas fa-clock"></i> Quiz completed on <span id="completionTime"></span>
-                                </p>
-                                <button onclick="generateCertificate()" class="certificate-button" id="certBtn">
-                                    <i class="fas fa-certificate"></i> Download Enrollment Certificate
-                                </button>
-                            {% endif %}
-                            <p>You've successfully completed the enrollment quiz. You can now proceed with course registration.</p>
-                            <a href="https://registrar.asu.edu/register-for-classes" class="proceed-button" target="_blank">
-                                <i class="fas fa-rocket"></i> Register for Course
-                            </a>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="mission-retry">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Mission Status: RECALIBRATION NEEDED</h3>
-                        <p>Additional training recommended before proceeding with space operations.</p>
-                    </div>
-                {% endif %}
             </div>
         </div>
 
@@ -197,335 +328,86 @@
                 box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             }
 
-            .mission-header {
-                text-align: center;
+            .mission-status-panel {
+                background: rgba(255,255,255,0.05);
+                border-radius: 15px;
+                padding: 2rem;
                 margin-bottom: 2rem;
-                position: relative;
             }
 
-            .mission-badge {
-                font-size: 3rem;
-                color: #4a9eff;
-                margin-bottom: 1rem;
+            .status-grid {
+                display: grid;
+                gap: 2rem;
             }
 
-            .mission-id {
-                color: #4a9eff;
-                font-family: monospace;
-                font-size: 1.1rem;
-            }
-
-            .score-display {
-                text-align: center;
-                margin: 2rem 0;
-            }
-
-            .score-ring {
-                width: 200px;
-                height: 200px;
-                border-radius: 50%;
-                margin: 0 auto;
-                position: relative;
-                background: conic-gradient(
-                    #4a9eff calc(var(--score) * 1%),
-                    #2a3950 calc(var(--score) * 1%)
-                );
+            .main-status {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                flex-direction: column;
-            }
-
-            .score-ring::before {
-                content: '';
-                position: absolute;
-                width: 160px;
-                height: 160px;
-                border-radius: 50%;
-                background: #1a1a2e;
-            }
-
-            .score-value {
-                font-size: 2.5rem;
-                font-weight: bold;
-                color: #4a9eff;
-                position: relative;
-                z-index: 1;
-            }
-
-            .score-label {
-                font-size: 0.9rem;
-                color: #8a8a9a;
-                position: relative;
-                z-index: 1;
-            }
-
-            .systems-check {
+                gap: 2rem;
+                padding: 2rem;
+                border-radius: 12px;
                 background: rgba(255,255,255,0.05);
-                border-radius: 10px;
-                padding: 1.5rem;
-                margin: 2rem 0;
             }
 
-            .systems-grid {
+            .status-icon {
+                font-size: 3rem;
+            }
+
+            .status-details {
+                flex-grow: 1;
+            }
+
+            .mission-assessment {
+                margin-top: 1rem;
+                font-size: 0.9rem;
+                opacity: 0.9;
+            }
+
+            .systems-overview {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 1rem;
-                margin-top: 1rem;
             }
 
             .system-item {
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 1rem;
                 padding: 1rem;
                 border-radius: 8px;
-                background: rgba(255,255,255,0.03);
-            }
-
-            .system-item.optimal { color: #00ff9d; }
-            .system-item.nominal { color: #ffb800; }
-            .system-item.critical { color: #ff4444; }
-
-            .clearance-level {
-                margin: 2rem 0;
-                padding: 1.5rem;
-                border-radius: 10px;
                 background: rgba(255,255,255,0.05);
-            }
-
-            .badge {
-                display: inline-block;
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
-                font-weight: bold;
-                margin-bottom: 1rem;
-            }
-
-            .clearance.elite .badge { background: #00ff9d; color: #1a1a2e; }
-            .clearance.advanced .badge { background: #4a9eff; color: #1a1a2e; }
-            .clearance.qualified .badge { background: #ffb800; color: #1a1a2e; }
-
-            .certificate-button {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.8rem 1.5rem;
-                border-radius: 25px;
-                text-decoration: none;
-                font-weight: bold;
                 transition: transform 0.2s;
-                margin: 0.5rem;
-                background: linear-gradient(135deg, #ffd700, #ffa500);
-                color: #1a1a2e;
-                border: none;
-                cursor: pointer;
             }
 
-            .certificate-button:hover {
+            .system-item:hover {
                 transform: translateY(-2px);
             }
 
-            .certificate-button:disabled {
-                background: #666;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-            .proceed-button, .retry-button, .review-button {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.8rem 1.5rem;
-                border-radius: 25px;
-                text-decoration: none;
+            .system-status {
+                margin-left: auto;
                 font-weight: bold;
-                transition: transform 0.2s;
-                margin: 0.5rem;
+                font-family: monospace;
             }
 
-            .proceed-button {
-                background: linear-gradient(135deg, #00ff9d, #00b8ff);
-                color: #1a1a2e;
+            /* Simplified Status Colors */
+            .status-optimal {
+                background: linear-gradient(135deg, rgba(0,255,157,0.15), rgba(0,255,157,0.05));
+                border-left: 4px solid #00ff9d;
+                color: #00ff9d;
             }
 
-            .retry-button {
-                background: #ff4444;
-                color: white;
+            .status-critical {
+                background: linear-gradient(135deg, rgba(255,68,68,0.15), rgba(255,68,68,0.05));
+                border-left: 4px solid #ff4444;
+                color: #ff4444;
             }
 
-            .review-button {
-                background: #4a9eff;
-                color: white;
-            }
-
-            .proceed-button:hover, .retry-button:hover, .review-button:hover {
-                transform: translateY(-2px);
-            }
-
-            @media (max-width: 768px) {
-                .systems-grid {
-                    grid-template-columns: 1fr;
-                }
+            .status-acceptable {
+                background: linear-gradient(135deg, rgba(0,255,157,0.15), rgba(0,255,157,0.05));
+                border-left: 4px solid #00ff9d;
+                color: #00ff9d;
             }
         </style>
-
-        <div id="answer-explanations" class="answer-explanations">
-            <h4>Detailed Mission Analysis:</h4>
-            <div class="answer-explanations">
-                <div class="explanation">
-                    <h5>1. Multi-view Geometry (Baseline)</h5>
-                    <p>Correct Answer: 0.5 meters (balanced parallax and matching with good depth resolution)</p>
-                    <p>Rationale: For a 35mm focal length camera at 10m distance:</p>
-                    <ul>
-                        <li>Depth Resolution Analysis:
-                            <ul>
-                                <li>Error ∝ Z²/(B×f) where Z=depth, B=baseline, f=focal length</li>
-                                <li>With f=35mm, Z=10m, B=0.5m gives practical resolution</li>
-                                <li>Larger baselines improve resolution but complicate matching</li>
-                            </ul>
-                        </li>
-                        <li>Feature Matching Considerations:
-                            <ul>
-                                <li>0.2m: Too small, poor depth resolution despite easy matching</li>
-                                <li>0.5m: Optimal balance (about 1/20 of depth)</li>
-                                <li>1.0m: Matching becomes difficult due to perspective changes</li>
-                                <li>2.0m: Excessive, feature matching highly unreliable</li>
-                            </ul>
-                        </li>
-                        <li>Practical Constraints:
-                            <ul>
-                                <li>Field of view overlap must be maintained</li>
-                                <li>Feature appearance changes with baseline</li>
-                                <li>Triangulation accuracy vs. matching reliability trade-off</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>Common misconception: While larger baselines mathematically improve depth resolution, practical stereo systems are limited by feature matching reliability. The optimal baseline must balance these competing factors.</p>
-                </div>
-
-                <div class="explanation">
-                    <h5>2. SLAM Loop Closure</h5>
-                    <p>Correct Answer: To reduce accumulated drift by recognizing previously visited locations (global consistency)</p>
-                    <p>Rationale: Loop closure is fundamental to robust SLAM because:</p>
-                    <ul>
-                        <li>Error Accumulation:
-                            <ul>
-                                <li>Wheel odometry drifts over time (wheel slip, uneven terrain)</li>
-                                <li>IMU integration accumulates errors</li>
-                                <li>Visual odometry can have scale drift</li>
-                            </ul>
-                        </li>
-                        <li>Global Consistency:
-                            <ul>
-                                <li>Recognizing revisited locations provides absolute references</li>
-                                <li>Allows correction of accumulated drift</li>
-                                <li>Enables creation of globally consistent maps</li>
-                            </ul>
-                        </li>
-                        <li>Common Misconceptions:
-                            <ul>
-                                <li>Moving object detection is important but handled separately</li>
-                                <li>Path planning uses the map but isn't part of SLAM</li>
-                                <li>Sensor calibration is a prerequisite, not a SLAM function</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>Real-world impact: Without loop closure, a robot might create multiple inconsistent maps of the same location, leading to navigation failures.</p>
-                </div>
-
-                <div class="explanation">
-                    <h5>3. Kalman Filter Parameters</h5>
-                    <p>Correct Answer: High process noise, high measurement noise (conservative estimation)</p>
-                    <p>Rationale: For fast-moving robots, both noise parameters need careful consideration:</p>
-                    <ul>
-                        <li>High process noise is needed because:
-                            <ul>
-                                <li>Robot state changes rapidly and may be unpredictable</li>
-                                <li>Dynamic model might not capture all motion complexities</li>
-                                <li>Acceleration and deceleration effects are significant</li>
-                            </ul>
-                        </li>
-                        <li>High measurement noise is also necessary because:
-                            <ul>
-                                <li>Sensors suffer from motion blur and vibrations</li>
-                                <li>Rapid movement can reduce sensor reliability</li>
-                                <li>Environmental factors affect measurements more at speed</li>
-                            </ul>
-                        </li>
-                        <li>This conservative approach:
-                            <ul>
-                                <li>Prevents overconfidence in both model and measurements</li>
-                                <li>Provides more robust state estimation</li>
-                                <li>Better handles the uncertainties in high-speed operation</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>Common misconception: Trusting sensors more (low measurement noise) might seem intuitive for quick updates, but sensor reliability actually decreases with speed.</p>
-                </div>
-
-                <div class="explanation">
-                    <h5>4. Sampling Strategy</h5>
-                    <p>Correct Answer: Information gain-based sampling (adaptive and efficient)</p>
-                    <p>Rationale: In resource-constrained exploration:</p>
-                    <ul>
-                        <li>Strategy Comparison:
-                            <ul>
-                                <li>Random: Simple but wastes resources on already-known areas</li>
-                                <li>Grid-based: Systematic but rigid coverage</li>
-                                <li>Information gain: Adapts to findings and uncertainty</li>
-                                <li>Uniform: Predictable but ignores environment structure</li>
-                            </ul>
-                        </li>
-                        <li>Information Gain Benefits:
-                            <ul>
-                                <li>Prioritizes high-uncertainty regions</li>
-                                <li>Adapts sampling density to information content</li>
-                                <li>Optimizes resource usage (energy, time, memory)</li>
-                            </ul>
-                        </li>
-                        <li>Practical Applications:
-                            <ul>
-                                <li>Planetary rovers choosing sampling locations</li>
-                                <li>Environmental monitoring with limited sensors</li>
-                                <li>Search and rescue operations</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>Common misconception: While random sampling ensures unbiased coverage, it's inefficient for resource-limited scenarios where intelligent decision-making is crucial.</p>
-                </div>
-
-                <div class="explanation">
-                    <h5>5. Error Types in Rock Mapping</h5>
-                    <p>Correct Answer: Type I Error (False Positives) - wasting resources on wrong samples is more costly</p>
-                    <p>Rationale: In resource-constrained planetary exploration:</p>
-                    <ul>
-                        <li>Cost Analysis:
-                            <ul>
-                                <li>Sample collection requires significant energy and time</li>
-                                <li>Storage capacity for samples is extremely limited</li>
-                                <li>Each false positive wastes irreplaceable resources</li>
-                            </ul>
-                        </li>
-                        <li>Mission Impact:
-                            <ul>
-                                <li>False positives lead to wasted collection attempts</li>
-                                <li>Storage space filled with non-target samples</li>
-                                <li>Opportunity cost of missing better samples later</li>
-                            </ul>
-                        </li>
-                        <li>Trade-off Considerations:
-                            <ul>
-                                <li>While missing targets (Type II) is undesirable, more targets can be found later</li>
-                                <li>Resources wasted on false positives (Type I) cannot be recovered</li>
-                                <li>Conservative identification preserves resources for high-confidence targets</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>Common misconception: While finding all potential targets seems important, in resource-constrained scenarios, avoiding resource waste on false positives takes precedence over catching every possible target.</p>
-                </div>
-            </div>
-        </div>
     {% else %}
         <form method="post" id="quizForm">
             {% csrf_token %}
@@ -655,6 +537,139 @@
             <p class="text-muted mt-2">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
         </div>
     {% endif %}
+
+    <!-- Mission Results Summary -->
+    <div class="mission-results">
+        <div class="results-header">
+            <i class="fas fa-flag-checkered"></i>
+            <h3>Mission Results Summary</h3>
+        </div>
+
+        {% if any_correct %}
+        <div class="status-message success">
+            <i class="fas fa-check-circle"></i>
+            <div class="message-content">
+                <h4>Ready for Advanced Training</h4>
+                <p>You have demonstrated understanding of key robotics and AI concepts. You are qualified to proceed with the advanced coursework.</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="status-message warning">
+            <i class="fas fa-exclamation-circle"></i>
+            <div class="message-content">
+                <h4>Additional Preparation Recommended</h4>
+                <p>Consider reviewing the fundamental concepts before proceeding with advanced topics.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="next-steps">
+            <h4>Next Steps:</h4>
+            <ul>
+                <li>Contact the instructor at jdas5@asu.edu to discuss your background and experience, or</li>
+                <li>Attend the first day of class to evaluate if the course aligns with your preparation</li>
+            </ul>
+            <p class="note">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
+        </div>
+    </div>
+
+    <style>
+        .mission-results {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            color: #4a9eff;
+        }
+
+        .results-header i {
+            font-size: 1.5rem;
+        }
+
+        .status-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-message i {
+            font-size: 2rem;
+        }
+
+        .status-message.success {
+            background: linear-gradient(135deg, rgba(0,255,157,0.15), rgba(0,255,157,0.05));
+            border-left: 4px solid #00ff9d;
+        }
+
+        .status-message.success i {
+            color: #00ff9d;
+        }
+
+        .status-message.warning {
+            background: linear-gradient(135deg, rgba(255,68,68,0.15), rgba(255,68,68,0.05));
+            border-left: 4px solid #ff4444;
+        }
+
+        .status-message.warning i {
+            color: #ff4444;
+        }
+
+        .message-content h4 {
+            margin: 0 0 0.5rem 0;
+            color: #e1e1e1;
+        }
+
+        .message-content p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .next-steps {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .next-steps h4 {
+            color: #4a9eff;
+            margin-top: 0;
+        }
+
+        .next-steps ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .next-steps li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .next-steps li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #4a9eff;
+        }
+
+        .next-steps .note {
+            margin-top: 1rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+    </style>
 {% endblock %}
 
 {% block extra_js %}
@@ -677,63 +692,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Certificate generation function
 function generateCertificate() {
-    const button = document.getElementById('certBtn');
-    const originalText = button.innerHTML;
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Certificate...';
+    const certBtn = document.getElementById('certBtn');
+    certBtn.disabled = true;
+    certBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    fetch('{% url "generate_certificate" %}', {
+    fetch('/dreamslab/ses598/quiz/certificate/', {
         method: 'POST',
         headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        }
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        credentials: 'same-origin'
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Certificate generation failed');
+            return response.json().then(data => {
+                throw new Error(data.error || 'Failed to generate certificate');
+            });
         }
         return response.blob();
     })
     .then(blob => {
+        // Create a URL for the blob
         const url = window.URL.createObjectURL(blob);
+        // Create a temporary link and click it
         const a = document.createElement('a');
         a.href = url;
         a.download = 'SES598_Certificate.pdf';
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
+        // Cleanup
         window.URL.revokeObjectURL(url);
-        
-        button.innerHTML = '<i class="fas fa-check"></i> Certificate Generated!';
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }, 2000);
+        document.body.removeChild(a);
+        // Reset button
+        certBtn.disabled = false;
+        certBtn.innerHTML = '<i class="fas fa-certificate"></i> Download Enrollment Certificate';
     })
     .catch(error => {
         console.error('Error:', error);
-        button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to Generate';
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }, 2000);
+        alert(error.message);
+        // Reset button
+        certBtn.disabled = false;
+        certBtn.innerHTML = '<i class="fas fa-certificate"></i> Download Enrollment Certificate';
     });
 }
 </script>

@@ -534,16 +534,20 @@ def get_certificate_eligibility(request):
     part2_completed = request.session.get('quiz_part2_completed', False)
     
     if not (part1_completed and part2_completed):
-        return False, 0
+        return False, 0.0
     
-    part1_score = request.session.get('quiz_part1_score', 0)
-    part2_score = request.session.get('quiz_part2_score', 0)
+    part1_score = float(request.session.get('quiz_part1_score', 0.0))
+    part2_score = float(request.session.get('quiz_part2_score', 0.0))
     
-    # Calculate weighted average (part 1: 60%, part 2: 40%)
+    # Calculate weighted average (part 1: 60%, part 2: 40%) using floating-point
     final_score = (part1_score * 0.6) + (part2_score * 0.4)
     
-    # Eligible if final score is 70% or higher
-    return final_score >= 70, final_score
+    # Check if at least one question was answered correctly in each part
+    part1_any_correct = any(request.session.get(f'quiz_part1_q{i}_correct', False) for i in range(1, 6))
+    part2_any_correct = any(request.session.get(f'quiz_part2_q{i}_correct', False) for i in range(1, 6))
+    
+    # Eligible if at least one question was answered correctly in each part
+    return (part1_any_correct and part2_any_correct), final_score
 
 @csrf_exempt
 def generate_certificate(request):
@@ -566,32 +570,107 @@ def generate_certificate(request):
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
 
-    # Certificate styling
+    # Add background gradient
+    p.setFillColorRGB(0.1, 0.1, 0.18)  # Dark blue background
+    p.rect(0, 0, width, height, fill=1)
+    
+    # Add decorative header
+    p.setFillColorRGB(0.29, 0.62, 1)  # #4a9eff in RGB
+    p.rect(0, height-3*inch, width, 3*inch, fill=1)
+    
+    # Certificate styling with new space theme
+    p.setFillColorRGB(1, 1, 1)  # White text
     p.setFont("Helvetica-Bold", 24)
     p.drawCentredString(width/2, height-2*inch, "Certificate of Completion")
     
     p.setFont("Helvetica", 16)
     p.drawCentredString(width/2, height-3*inch, "This is to certify that")
     
+    # Draw email in a highlighted box
+    p.setFillColorRGB(0, 1, 0.62)  # #00ff9d in RGB
     p.setFont("Helvetica-Bold", 20)
     p.drawCentredString(width/2, height-3.5*inch, email)
     
+    p.setFillColorRGB(1, 1, 1)  # Back to white text
     p.setFont("Helvetica", 16)
     p.drawCentredString(width/2, height-4*inch, "has successfully completed the enrollment quiz for")
     
     p.setFont("Helvetica-Bold", 18)
     p.drawCentredString(width/2, height-4.5*inch, "SES 598: Space Robotics and AI")
     
-    p.setFont("Helvetica", 14)
-    p.drawCentredString(width/2, height-5.5*inch, f"Final Score: {round(final_score, 1)}%")
-    p.drawCentredString(width/2, height-6*inch, f"Part 1: {round(request.session.get('quiz_part1_score', 0), 1)}%")
-    p.drawCentredString(width/2, height-6.5*inch, f"Part 2: {round(request.session.get('quiz_part2_score', 0), 1)}%")
+    # Performance level with color coding
+    p.setFont("Helvetica-Bold", 14)
+    if final_score >= 90:
+        p.setFillColorRGB(0, 1, 0.62)  # Elite - Green
+        level = "ELITE PERFORMANCE"
+    elif final_score >= 80:
+        p.setFillColorRGB(0.29, 0.62, 1)  # Advanced - Blue
+        level = "ADVANCED LEVEL"
+    else:
+        p.setFillColorRGB(1, 0.72, 0)  # Qualified - Gold
+        level = "QUALIFIED LEVEL"
     
-    p.setFont("Helvetica-Oblique", 12)
-    p.drawCentredString(width/2, height-7.5*inch, f"Quiz completed on {timestamp}")
+    p.drawCentredString(width/2, height-5.2*inch, level)
     
+    # Detailed scores section
+    p.setFillColorRGB(1, 1, 1)  # White text
     p.setFont("Helvetica", 12)
-    p.drawCentredString(width/2, height-8*inch, "DREAMS Laboratory - Arizona State University")
+    part1_score = round(request.session.get('quiz_part1_score', 0), 1)
+    part2_score = round(request.session.get('quiz_part2_score', 0), 1)
+    
+    # Draw scores with weighted calculation explanation
+    y_position = height-6*inch
+    p.drawString(2*inch, y_position, f"Part 1 (Fundamentals): {part1_score}% × 0.6 = {round(part1_score * 0.6, 1)}%")
+    p.drawString(2*inch, y_position-0.4*inch, f"Part 2 (Advanced): {part2_score}% × 0.4 = {round(part2_score * 0.4, 1)}%")
+    
+    # Final score with color coding
+    p.setFont("Helvetica-Bold", 14)
+    if final_score >= 90:
+        p.setFillColorRGB(0, 1, 0.62)  # Elite - Green
+    elif final_score >= 80:
+        p.setFillColorRGB(0.29, 0.62, 1)  # Advanced - Blue
+    else:
+        p.setFillColorRGB(1, 0.72, 0)  # Qualified - Gold
+    p.drawString(2*inch, y_position-0.8*inch, f"Final Score: {round(final_score, 1)}%")
+    
+    # Add systems status
+    p.setFillColorRGB(1, 1, 1)  # White text
+    p.setFont("Helvetica", 12)
+    systems = ["AI Systems", "Robotics Control", "Vision Systems", "SLAM Operations", "Error Handling"]
+    y_position = y_position-1.5*inch
+    
+    for system in systems:
+        if final_score >= 90:
+            status = "ELITE"
+            p.setFillColorRGB(0, 1, 0.62)
+        elif final_score >= 80:
+            status = "EXCELLENT"
+            p.setFillColorRGB(0.29, 0.62, 1)
+        elif final_score >= 70:
+            status = "GOOD"
+            p.setFillColorRGB(1, 0.72, 0)
+        elif final_score >= 60:
+            status = "ACCEPTABLE"
+            p.setFillColorRGB(1, 0.53, 0)
+        else:
+            status = "CRITICAL"
+            p.setFillColorRGB(1, 0.27, 0.27)
+        
+        p.drawString(2*inch, y_position, f"{system}: {status}")
+        y_position -= 0.3*inch
+    
+    # Timestamp and footer
+    p.setFillColorRGB(0.29, 0.62, 1)  # #4a9eff in RGB
+    p.setFont("Helvetica-Oblique", 12)
+    p.drawCentredString(width/2, 2*inch, f"Quiz completed on {timestamp}")
+    
+    p.setFillColorRGB(1, 1, 1)  # White text
+    p.setFont("Helvetica", 12)
+    p.drawCentredString(width/2, 1.5*inch, "DREAMS Laboratory - Arizona State University")
+    
+    # Add decorative footer
+    p.setFillColorRGB(0.29, 0.62, 1)  # #4a9eff in RGB
+    p.rect(0, 0, width, inch, fill=1)
     
     p.showPage()
     p.save()
@@ -607,13 +686,28 @@ def generate_certificate(request):
 
 def ses598_quiz(request):
     """Render the SES598 quiz page with user identification and MCQs"""
-    # MCQ answers
+    # MCQ answers with explanations
     mcq_answers = {
-        'q1': '3',  # SLAM purpose
-        'q2': '2',  # LiDAR
-        'q3': '1',  # Occupancy grid
-        'q4': '1',  # GPS challenge
-        'q5': '2',  # Path planning
+        'q1': {
+            'correct': '3',  # SLAM purpose
+            'explanation': 'SLAM (Simultaneous Localization and Mapping) is primarily used for robot navigation and mapping in unknown environments. It combines sensor data to build a map while simultaneously tracking the robot\'s position.'
+        },
+        'q2': {
+            'correct': '2',  # LiDAR
+            'explanation': 'LiDAR (Light Detection and Ranging) uses laser pulses to measure distances. It provides accurate 3D point clouds of the environment, making it ideal for mapping and obstacle detection.'
+        },
+        'q3': {
+            'correct': '1',  # Occupancy grid
+            'explanation': 'Occupancy grid mapping represents the environment as a grid where each cell has a probability of being occupied. This probabilistic approach helps handle sensor uncertainty.'
+        },
+        'q4': {
+            'correct': '1',  # GPS challenge
+            'explanation': 'GPS signals are significantly attenuated by buildings and terrain, making indoor and urban canyon navigation challenging. Alternative localization methods are often needed.'
+        },
+        'q5': {
+            'correct': '2',  # Path planning
+            'explanation': 'Path planning algorithms must balance multiple objectives including path length, safety margins, energy efficiency, and kinematic constraints.'
+        }
     }
 
     if request.method == 'POST':
@@ -626,19 +720,28 @@ def ses598_quiz(request):
         else:
             email = 'Anonymous'
         
-        # Calculate score
-        score = 0
+        # Calculate score and track answers
+        score = 0.0
         part1_answers = {}
-        for q, correct_ans in mcq_answers.items():
+        feedback = {}
+        for q, ans_data in mcq_answers.items():
             student_ans = request.POST.get(q, '')
+            correct_ans = ans_data['correct']
             if student_ans == correct_ans:
-                score += 1
-            # Store answer in session and answers dict
-            request.session[f'quiz_part1_{q}'] = student_ans
+                score += 1.0
+            # Store answer and feedback
             part1_answers[q] = student_ans
+            feedback[q] = {
+                'student_answer': student_ans,
+                'correct_answer': correct_ans,
+                'is_correct': student_ans == correct_ans,
+                'explanation': ans_data['explanation']
+            }
+            # Store answer in session
+            request.session[f'quiz_part1_{q}'] = student_ans
 
-        # Calculate total score percentage
-        total_score = (score / len(mcq_answers)) * 100
+        # Calculate total score percentage using floating-point division
+        total_score = (score / float(len(mcq_answers))) * 100.0
 
         # Store the part 1 results in session
         request.session['quiz_part1_score'] = total_score
@@ -652,7 +755,7 @@ def ses598_quiz(request):
             email=email,
             total_score=total_score,
             cv_score=total_score,  # Part 1 score
-            slam_score=0,  # Part 2 not completed yet
+            slam_score=0.0,  # Part 2 not completed yet
             q1=part1_answers.get('q1', ''),
             q2=part1_answers.get('q2', ''),
             q3=part1_answers.get('q3', ''),
@@ -669,8 +772,9 @@ def ses598_quiz(request):
             'score': total_score,
             'email': email,
             'eligible_for_certificate': eligible,
-            'final_score': round(final_score, 1) if eligible else None,
-            'part2_completed': request.session.get('quiz_part2_completed', False)
+            'final_score': final_score,
+            'part2_completed': request.session.get('quiz_part2_completed', False),
+            'feedback': feedback  # Add feedback to context
         }
         return render(request, 'ses598_rem_quiz.html', context)
 
@@ -685,12 +789,63 @@ def ses598_quiz(request):
 
 def ses598_quiz_part2(request):
     """Render Part 2 of the SES598 quiz focusing on tutorial concepts"""
-    # Tutorial concept MCQ answers
+    # Tutorial concept MCQ answers with explanations
     mcq_answers = {
-        'q1': '2',  # Stereo vision baseline
-        'q2': '2',  # SLAM loop closure
-        'q3': '2',  # Kalman filter parameters
-        'q4': '3',  # Sampling strategy
+        'q1': {
+            'correct': '2',  # Stereo vision baseline
+            'explanation': 'A 0.5m baseline provides the optimal balance between depth resolution and feature matching reliability. Larger baselines improve depth resolution but make feature matching more difficult due to perspective changes.',
+            'question_text': 'In the multi-view geometry tutorial with a 35mm focal length camera observing a rock formation at 10 meters, what baseline setting provides the best balance between feature matching confidence and depth estimation accuracy?',
+            'options': [
+                {'value': '1', 'text': '0.2 meters (minimal parallax, easy matching but poor depth resolution)'},
+                {'value': '2', 'text': '0.5 meters (balanced parallax and matching with good depth resolution)'},
+                {'value': '3', 'text': '1.0 meters (strong depth resolution but challenging feature matching)'},
+                {'value': '4', 'text': '2.0 meters (optimal depth resolution but impractical for feature matching)'}
+            ]
+        },
+        'q2': {
+            'correct': '2',  # SLAM loop closure
+            'explanation': 'Loop closure in SLAM is crucial for reducing accumulated drift by recognizing previously visited locations. This helps maintain global map consistency and improves localization accuracy.',
+            'question_text': 'In SLAM, what is the primary purpose of loop closure detection?',
+            'options': [
+                {'value': '1', 'text': 'To detect moving objects (dynamic environment handling)'},
+                {'value': '2', 'text': 'To reduce accumulated drift by recognizing previously visited locations (global consistency)'},
+                {'value': '3', 'text': 'To plan the shortest path (navigation optimization)'},
+                {'value': '4', 'text': 'To calibrate sensors (hardware optimization)'}
+            ]
+        },
+        'q3': {
+            'correct': '3',  # Kalman filter parameters
+            'explanation': 'For fast-moving robots, high process and measurement noise settings provide more robust estimation. This accounts for rapid state changes and potential sensor reliability issues at high speeds.',
+            'question_text': 'For a fast-moving robot using sensor fusion with a Kalman filter, which noise parameter configuration would provide the most robust state estimation?',
+            'options': [
+                {'value': '1', 'text': 'Low process noise, high measurement noise (trust model more than sensors)'},
+                {'value': '2', 'text': 'High process noise, low measurement noise (trust sensors more than model)'},
+                {'value': '3', 'text': 'High process noise, high measurement noise (conservative estimation)'},
+                {'value': '4', 'text': 'Low process noise, low measurement noise (aggressive estimation)'}
+            ]
+        },
+        'q4': {
+            'correct': '3',  # Sampling strategy
+            'explanation': 'Information gain-based sampling is most efficient as it adaptively focuses resources on areas that provide the most valuable information, optimizing exploration in resource-constrained scenarios.',
+            'question_text': 'Which sampling strategy is most efficient for exploring an unknown environment with limited resources?',
+            'options': [
+                {'value': '1', 'text': 'Random sampling (unbiased but inefficient coverage)'},
+                {'value': '2', 'text': 'Grid-based sampling (systematic but rigid coverage)'},
+                {'value': '3', 'text': 'Information gain-based sampling (adaptive and efficient)'},
+                {'value': '4', 'text': 'Uniform sampling (consistent but inflexible coverage)'}
+            ]
+        },
+        'q5': {
+            'correct': '1',  # Error type in rock mapping
+            'explanation': 'Type I errors (false positives) are more critical to minimize because they waste limited resources on incorrect samples. In resource-constrained scenarios like Mars exploration, wasting collection opportunities on wrong samples is more costly than missing some potential targets.',
+            'question_text': 'In automated rock mapping for planetary exploration, which error type would be more critical to minimize when identifying potential sample collection sites?',
+            'options': [
+                {'value': '1', 'text': 'Type I Error (False Positives) - wasting resources on wrong samples is more costly'},
+                {'value': '2', 'text': 'Type II Error (False Negatives) - missing potential discoveries is more costly'},
+                {'value': '3', 'text': 'Both errors are equally important to minimize'},
+                {'value': '4', 'text': 'Neither error matters as long as some samples are collected'}
+            ]
+        }
     }
 
     # Get email from session, ensure it's properly retrieved
@@ -712,18 +867,27 @@ def ses598_quiz_part2(request):
         elif not email:
             email = 'Anonymous'
         
-        # Calculate score
-        score = 0
+        # Calculate score and track answers
+        score = 0.0
         part2_answers = {}
-        for q, correct_ans in mcq_answers.items():
+        feedback = {}
+        for q, ans_data in mcq_answers.items():
             student_ans = request.POST.get(q, '')
+            correct_ans = ans_data['correct']
             if student_ans == correct_ans:
-                score += 1
-            # Store answer in answers dict
-            part2_answers[q] = student_ans
+                score += 1.0
+            # Store answer and feedback with question text and options
+            feedback[q] = {
+                'student_answer': student_ans,
+                'correct_answer': correct_ans,
+                'is_correct': student_ans == correct_ans,
+                'explanation': ans_data['explanation'],
+                'question_text': ans_data['question_text'],
+                'options': ans_data['options']
+            }
 
-        # Calculate total score percentage
-        total_score = (score / len(mcq_answers)) * 100
+        # Calculate total score percentage using floating-point division
+        total_score = (score / float(len(mcq_answers))) * 100.0
 
         # Store the part 2 results in session
         request.session['quiz_part2_score'] = total_score
@@ -733,18 +897,36 @@ def ses598_quiz_part2(request):
         # Check certificate eligibility
         eligible, final_score = get_certificate_eligibility(request)
 
+        # Track if any questions were answered correctly
+        any_correct = False
+        for q, ans_data in mcq_answers.items():
+            student_ans = request.POST.get(q, '')
+            correct_ans = ans_data['correct']
+            is_correct = student_ans == correct_ans
+            if is_correct:
+                any_correct = True
+            # Store individual question correctness in session
+            request.session[f'quiz_part2_{q}_correct'] = is_correct
+
         # Create a fresh submission for Part 2
         quiz_submission = QuizSubmission(
             quiz_id='SES598_Part2',  # Distinct quiz_id for Part 2
             session_id=request.session.session_key,
             email=email,
             total_score=total_score,  # Just Part 2 score
-            cv_score=0,  # Not applicable for Part 2
+            cv_score=0.0,  # Not applicable for Part 2
             slam_score=total_score,  # Part 2 score
-            q6=part2_answers.get('q1', ''),
-            q7=part2_answers.get('q2', ''),
-            q8=part2_answers.get('q3', ''),
-            q9=part2_answers.get('q4', '')
+            # Store all Part 2 answers in their respective fields
+            q1=part2_answers.get('q1', ''),  # Stereo vision baseline
+            q2=part2_answers.get('q2', ''),  # SLAM loop closure
+            q3=part2_answers.get('q3', ''),  # Kalman filter parameters
+            q4=part2_answers.get('q4', ''),  # Sampling strategy
+            q5=part2_answers.get('q5', ''),  # Error type in rock mapping
+            q6=part2_answers.get('q1', ''),  # Duplicate for consistency
+            q7=part2_answers.get('q2', ''),  # Duplicate for consistency
+            q8=part2_answers.get('q3', ''),  # Duplicate for consistency
+            q9=part2_answers.get('q4', ''),  # Duplicate for consistency
+            q10=part2_answers.get('q5', '')  # Duplicate for consistency
         )
         quiz_submission.save()
 
@@ -753,7 +935,9 @@ def ses598_quiz_part2(request):
             'score': total_score,
             'email': email,
             'eligible_for_certificate': eligible,
-            'final_score': round(final_score, 1) if eligible else None
+            'final_score': final_score,
+            'feedback': feedback,
+            'any_correct': any_correct  # Add this to context
         }
         return render(request, 'ses598_rem_quiz_part2.html', context)
 
@@ -762,7 +946,7 @@ def ses598_quiz_part2(request):
         'show_results': False,
         'email': email if email else 'Anonymous',
         'part1_completed': True,
-        'part1_score': request.session.get('quiz_part1_score', 0),
+        'part1_score': request.session.get('quiz_part1_score', 0.0),
         'eligible_for_certificate': False
     }
     return render(request, 'ses598_rem_quiz_part2.html', context)

@@ -38,14 +38,18 @@ class AssetAdmin(admin.ModelAdmin):
 
 @admin.register(QuizSubmission)
 class QuizSubmissionAdmin(admin.ModelAdmin):
-    list_display = ('quiz_id', 'submission_date', 'total_score')
-    list_filter = ('submission_date',)
+    list_display = ('get_submission_title', 'submission_date', 'total_score')
+    list_filter = ('submission_date', 'quiz_id')
     readonly_fields = ('quiz_id', 'submission_date', 'total_score', 
                       'cv_score', 'slam_score', 'estimation_score', 
                       'sensing_score', 'motion_score', 'neural_score',
                       'q1', 'q2', 'q3', 'q4', 'q5', 
                       'q6', 'q7', 'q8', 'q9', 'q10',
                       'q11', 'q12', 'q13', 'q14', 'q15')
+    
+    def get_submission_title(self, obj):
+        return f"{obj.email} - {obj.submission_date.strftime('%Y-%m-%d %H:%M:%S %Z')}"
+    get_submission_title.short_description = 'Submission Info'
     
     def has_add_permission(self, request):
         return False

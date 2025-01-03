@@ -16,7 +16,8 @@ from dreams_laboratory.views import (
     sampling_buddy_view, gp_ucb_buddy_view,
     bundle_adjustment_buddy_view, tutorials_home,
     stereo_buddy, slam_buddy, sensor_fusion_buddy,
-    multiview_geometry, ses598_quiz_part2
+    multiview_geometry, ses598_quiz_part2, generate_certificate,
+    reset_quiz
 )
 from django.http import HttpResponse
 
@@ -30,6 +31,8 @@ urlpatterns = [
     path('dreamslab/ses598/', ses598_course_view, name='ses598_course'),
     path('dreamslab/ses598/quiz/', ses598_quiz, name='ses598_quiz'),
     path('dreamslab/ses598/quiz/part2/', ses598_quiz_part2, name='ses598_quiz_part2'),
+    path('dreamslab/ses598/quiz/certificate/', generate_certificate, name='generate_certificate'),
+    path('dreamslab/ses598/quiz/reset/', reset_quiz, name='reset_quiz'),
     path('tutorials/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
     path('tutorials/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
     path('tutorials/slam-buddy/', slam_buddy_view, name='slam_buddy'),
