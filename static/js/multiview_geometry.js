@@ -16,8 +16,8 @@ class MultiviewGeometry {
         
         this.params = {
             focalLength: 35,
-            baseline: 50,
-            pointDepth: 3,
+            baseline: 0.5,
+            pointDepth: 10,
             toeIn: 0,
             principalPoint: { x: 0, y: 0 },
             sensorSize: { width: 36, height: 24 } // 35mm format
@@ -166,10 +166,9 @@ class MultiviewGeometry {
     updateScene() {
         const { focalLength, baseline, pointDepth, toeIn } = this.params;
 
-        // Update camera positions
-        const baselineMeters = baseline / 100;
-        this.camera1.position.set(-baselineMeters/2, 0, 0);
-        this.camera2.position.set(baselineMeters/2, 0, 0);
+        // Update camera positions (baseline now in meters)
+        this.camera1.position.set(-baseline/2, 0, 0);
+        this.camera2.position.set(baseline/2, 0, 0);
 
         // Update camera rotations using toe-in angle
         const toeInRad = (toeIn * Math.PI) / 180;
@@ -178,7 +177,7 @@ class MultiviewGeometry {
 
         // Update convergence point
         if (toeInRad !== 0) {
-            const convergenceDistance = (baselineMeters/2) / Math.tan(Math.abs(toeInRad));
+            const convergenceDistance = (baseline/2) / Math.tan(Math.abs(toeInRad));
             this.convergencePoint.position.set(0, 0, -convergenceDistance);
         } else {
             this.convergencePoint.position.set(0, 0, -pointDepth);
