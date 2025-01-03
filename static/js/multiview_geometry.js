@@ -24,9 +24,9 @@ class MultiviewGeometry {
         };
 
         this.views = {
-            top: new THREE.Vector3(0, 5, 0),
-            front: new THREE.Vector3(0, 0, 5),
-            isometric: new THREE.Vector3(2.5, 2.5, 2.5)
+            top: new THREE.Vector3(0, 10, 0),
+            front: new THREE.Vector3(0, 0, 10),
+            isometric: new THREE.Vector3(7, 7, 7)
         };
 
         this.features = [];
@@ -53,25 +53,33 @@ class MultiviewGeometry {
         directionalLight.position.set(5, 5, 5);
         this.scene.add(directionalLight);
 
-        // Setup camera
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // Setup camera with proper aspect ratio
+        const container = document.getElementById('three-container');
+        const aspect = container.clientWidth / container.clientHeight;
+        this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
         this.camera.position.copy(this.views.isometric);
         this.camera.lookAt(0, 0, 0);
 
         // Setup renderer
-        const container = document.getElementById('three-container');
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(container.clientWidth, container.clientHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         container.appendChild(this.renderer.domElement);
 
-        // Add orbit controls
+        // Add orbit controls with proper damping
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
+        this.controls.screenSpacePanning = true;
 
-        // Add grid helper
-        this.gridHelper = new THREE.GridHelper(5, 5);
+        // Add axes helper for scale reference
+        const axesHelper = new THREE.AxesHelper(5);
+        this.scene.add(axesHelper);
+
+        // Add grid helper with uniform scale
+        this.gridHelper = new THREE.GridHelper(10, 10);
+        this.gridHelper.material.opacity = 0.5;
+        this.gridHelper.material.transparent = true;
         this.scene.add(this.gridHelper);
 
         // Create stereo cameras
@@ -89,7 +97,7 @@ class MultiviewGeometry {
             wireframe: true
         });
         this.targetObject = new THREE.Mesh(targetGeometry, targetMaterial);
-        this.targetObject.position.set(0, 0, -2); // Position it in front of cameras
+        this.targetObject.position.set(0, 0, -2);
         this.scene.add(this.targetObject);
 
         // Create convergence point sphere
@@ -803,16 +811,33 @@ class MultiviewGeometry {
     }
 
     createRandomFeatures(count) {
-        // Clear existing features
+        // Clear existing features and their labels
         this.features.forEach(feature => {
+            // Remove feature from scene
             this.scene.remove(feature);
-            if (feature.geometry) feature.geometry.dispose();
-            if (feature.material) feature.material.dispose();
+            // Remove label sprite from scene
+            if (feature.sprite) {
+                this.scene.remove(feature.sprite);
+                // Dispose of sprite resources
+                if (feature.sprite.material.map) {
+                    feature.sprite.material.map.dispose();
+                }
+                if (feature.sprite.material) {
+                    feature.sprite.material.dispose();
+                }
+            }
+            // Dispose of feature resources
+            if (feature.geometry) {
+                feature.geometry.dispose();
+            }
+            if (feature.material) {
+                feature.material.dispose();
+            }
         });
         this.features = [];
 
         // Create new features
-        const featureGeometry = new THREE.SphereGeometry(0.03);
+        const featureGeometry = new THREE.SphereGeometry(0.05); // Slightly larger for visibility
         
         for (let i = 0; i < count; i++) {
             // Create feature with unique color
@@ -822,26 +847,33 @@ class MultiviewGeometry {
             });
             const feature = new THREE.Mesh(featureGeometry, featureMaterial);
 
-            // Position features on or near the target object surface
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(2 * Math.random() - 1);
-            const radius = 0.3 + (Math.random() - 0.5) * 0.1; // Slightly vary distance from center
+            // Position features in a volume between cameras and max depth
+            const maxDepth = 20; // 20 meters
+            const minDepth = 2;  // 2 meters
+            const spreadXY = 3;  // Spread in X and Y directions
 
             feature.position.set(
-                radius * Math.sin(phi) * Math.cos(theta),
-                radius * Math.sin(phi) * Math.sin(theta),
-                -2 + radius * Math.cos(phi)
+                (Math.random() - 0.5) * spreadXY,
+                (Math.random() - 0.5) * spreadXY,
+                -(Math.random() * (maxDepth - minDepth) + minDepth)
             );
 
-            // Add feature number as sprite
+            // Create label sprite
             const canvas = document.createElement('canvas');
             canvas.width = 64;
             canvas.height = 64;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = 'white';
-            ctx.font = '48px Arial';
+            ctx.fillStyle = 'black';
+            ctx.font = 'bold 48px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+            
+            // Draw white background with black text for better visibility
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(32, 32, 24, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'black';
             ctx.fillText(i + 1, 32, 32);
 
             const texture = new THREE.CanvasTexture(canvas);
@@ -850,10 +882,13 @@ class MultiviewGeometry {
                 sizeAttenuation: false
             });
             const sprite = new THREE.Sprite(spriteMaterial);
-            sprite.scale.set(0.05, 0.05, 1);
+            sprite.scale.set(0.1, 0.1, 1);
             sprite.position.copy(feature.position);
-            sprite.position.y += 0.05; // Offset slightly above feature
+            sprite.position.y += 0.1; // Offset above feature
 
+            // Store sprite reference with feature
+            feature.sprite = sprite;
+            
             this.features.push(feature);
             this.scene.add(feature);
             this.scene.add(sprite);
@@ -997,15 +1032,37 @@ class MultiviewGeometry {
     }
 
     regenerateFeatures() {
-        // Remove existing features
-        this.features.forEach(feature => {
+        // First remove all features and their sprites from the scene
+        while (this.features.length > 0) {
+            const feature = this.features.pop();
+            // Remove feature from scene
             this.scene.remove(feature);
-        });
-        this.features = [];
+            // Remove label sprite from scene
+            if (feature.sprite) {
+                this.scene.remove(feature.sprite);
+                // Dispose of sprite resources
+                if (feature.sprite.material.map) {
+                    feature.sprite.material.map.dispose();
+                }
+                if (feature.sprite.material) {
+                    feature.sprite.material.dispose();
+                }
+            }
+            // Dispose of feature resources
+            if (feature.geometry) {
+                feature.geometry.dispose();
+            }
+            if (feature.material) {
+                feature.material.dispose();
+            }
+        }
 
         // Create new random features
         this.createRandomFeatures(10);
+        
+        // Force scene update
         this.updateScene();
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
