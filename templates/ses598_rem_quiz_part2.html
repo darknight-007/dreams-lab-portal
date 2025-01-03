@@ -378,6 +378,67 @@
         background: rgba(0,255,157,0.1);
         border-radius: 8px;
     }
+    /* Detailed Analysis Styles */
+    .systems-check {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+    }
+    .systems-check h3 {
+        color: #4a9eff;
+        margin-bottom: 1.5rem;
+    }
+    .feedback-container {
+        display: grid;
+        gap: 1.5rem;
+    }
+    .feedback-item {
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+    .feedback-item.optimal {
+        border-left: 4px solid #00ff9d;
+    }
+    .feedback-item.critical {
+        border-left: 4px solid #ff4444;
+    }
+    .feedback-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-family: monospace;
+        font-size: 1.1rem;
+    }
+    .feedback-content {
+        margin-top: 1rem;
+    }
+    .improvement-tips {
+        background: rgba(74,158,255,0.1);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    .improvement-tips h5 {
+        color: #4a9eff;
+        margin-bottom: 0.8rem;
+    }
+    .tutorial-link {
+        display: inline-block;
+        margin-top: 0.8rem;
+        color: #4a9eff;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .tutorial-link:hover {
+        text-decoration: underline;
+        color: #00ff9d;
+    }
+    .tutorial-link i {
+        margin-right: 0.4rem;
+    }
 </style>
 {% endblock %}
 
@@ -479,16 +540,16 @@
                 <!-- Overall Mission Status -->
                 <div class="mission-status-panel">
                     <div class="status-grid">
-                        <div class="main-status {% if score >= 70 and any_correct %}status-optimal{% else %}status-critical{% endif %}">
+                        <div class="main-status {% if final_score >= 50 %}status-optimal{% else %}status-critical{% endif %}">
                             <div class="status-icon">
-                                <i class="fas {% if score >= 70 and any_correct %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                                <i class="fas {% if final_score >= 50 %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
                             </div>
                             <div class="status-details">
                                 <h3>Mission Status: 
-                                    {% if score >= 70 and any_correct %}SYSTEMS NOMINAL{% else %}RECALIBRATION NEEDED{% endif %}
+                                    {% if final_score >= 50 %}SYSTEMS NOMINAL{% else %}RECALIBRATION NEEDED{% endif %}
                                 </h3>
                                 <div class="mission-assessment">
-                                    {% if score >= 70 and any_correct %}
+                                    {% if final_score >= 50 %}
                                         <p>All critical systems operational. Advanced training protocols cleared for activation.</p>
                                     {% else %}
                                         <p>System diagnostics indicate need for additional baseline calibration.</p>
@@ -503,6 +564,14 @@
                                 <h4><i class="fas fa-chart-bar"></i> Performance Metrics</h4>
                                 <div class="score-grid">
                                     <div class="score-item">
+                                        <span class="score-label">Part 2 Score</span>
+                                        <div class="score-value">{{ score|floatformat:1 }}%</div>
+                                        <div class="progress">
+                                            <div class="progress-bar {% if score >= 50 %}bg-success{% else %}bg-danger{% endif %}" 
+                                                 style="width: {{ score }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="score-item">
                                         <span class="score-label">Part 1 Score</span>
                                         <div class="score-value">{{ part1_score|floatformat:1 }}%</div>
                                         <div class="progress">
@@ -510,19 +579,11 @@
                                                  style="width: {{ part1_score }}%"></div>
                                         </div>
                                     </div>
-                                    <div class="score-item">
-                                        <span class="score-label">Part 2 Score</span>
-                                        <div class="score-value">{{ score|floatformat:1 }}%</div>
-                                        <div class="progress">
-                                            <div class="progress-bar {% if score >= 70 %}bg-success{% else %}bg-danger{% endif %}" 
-                                                 style="width: {{ score }}%"></div>
-                                        </div>
-                                    </div>
                                     <div class="score-item total-score">
                                         <span class="score-label">Final Score</span>
                                         <div class="score-value">{{ final_score|floatformat:1 }}%</div>
                                         <div class="progress">
-                                            <div class="progress-bar {% if final_score >= 70 %}bg-success{% else %}bg-danger{% endif %}" 
+                                            <div class="progress-bar {% if final_score >= 50 %}bg-success{% else %}bg-danger{% endif %}" 
                                                  style="width: {{ final_score }}%"></div>
                                         </div>
                                     </div>
@@ -534,71 +595,147 @@
                         <div class="systems-overview">
                             <h4><i class="fas fa-microchip"></i> Systems Diagnostic</h4>
                             <div class="systems-grid">
-                                <div class="system-item {% if feedback.q1.is_correct %}status-optimal{% else %}status-critical{% endif %}">
-                                    <i class="fas fa-camera"></i>
-                                    <span>Multi-view Geometry</span>
+                            <div class="system-item {% if feedback.q1.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-camera"></i>
+                                <span>Multi-view Geometry</span>
                                     <div class="system-status">{% if feedback.q1.is_correct %}OPTIMAL{% else %}ATTENTION REQUIRED{% endif %}</div>
-                                </div>
-                                <div class="system-item {% if feedback.q2.is_correct %}status-optimal{% else %}status-critical{% endif %}">
-                                    <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="system-item {% if feedback.q2.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-project-diagram"></i>
                                     <span>SLAM Systems</span>
                                     <div class="system-status">{% if feedback.q2.is_correct %}OPTIMAL{% else %}ATTENTION REQUIRED{% endif %}</div>
-                                </div>
-                                <div class="system-item {% if feedback.q3.is_correct %}status-optimal{% else %}status-critical{% endif %}">
-                                    <i class="fas fa-filter"></i>
+                            </div>
+                            <div class="system-item {% if feedback.q3.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-filter"></i>
                                     <span>Kalman Filter</span>
                                     <div class="system-status">{% if feedback.q3.is_correct %}OPTIMAL{% else %}ATTENTION REQUIRED{% endif %}</div>
-                                </div>
-                                <div class="system-item {% if feedback.q4.is_correct %}status-optimal{% else %}status-critical{% endif %}">
-                                    <i class="fas fa-search"></i>
+                            </div>
+                            <div class="system-item {% if feedback.q4.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                                <i class="fas fa-search"></i>
                                     <span>Exploration Systems</span>
                                     <div class="system-status">{% if feedback.q4.is_correct %}OPTIMAL{% else %}ATTENTION REQUIRED{% endif %}</div>
-                                </div>
-                                <div class="system-item {% if feedback.q5.is_correct %}status-optimal{% else %}status-critical{% endif %}">
+                            </div>
+                            <div class="system-item {% if feedback.q5.is_correct %}status-optimal{% else %}status-critical{% endif %}">
                                     <i class="fas fa-microscope"></i>
                                     <span>Sample Analysis</span>
                                     <div class="system-status">{% if feedback.q5.is_correct %}OPTIMAL{% else %}ATTENTION REQUIRED{% endif %}</div>
                                 </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Mission Recommendations -->
-                {% if score >= 70 and any_correct %}
-                    <div class="status-message success">
-                        <i class="fas fa-check-circle"></i>
-                        <div class="message-content">
-                            <h4>Mission Status: GO FOR LAUNCH</h4>
-                            <p>All systems are within operational parameters. You are cleared for advanced training protocols.</p>
-                            {% if eligible_for_certificate %}
-                                <div class="certificate-section mt-3">
-                                    <p>🏆 Mission Certification Available</p>
-                                    <button id="certBtn" class="btn btn-success" onclick="generateCertificate()">
-                                        <i class="fas fa-award"></i> Generate Certificate
-                                    </button>
+                        <!-- Detailed Question Analysis -->
+                <div class="systems-check">
+                    <h3><i class="fas fa-microchip"></i> Detailed Systems Analysis</h3>
+                    <div class="feedback-container">
+                        {% for q_num, q_feedback in feedback.items %}
+                            <div class="feedback-item {% if q_feedback.is_correct %}optimal{% else %}critical{% endif %}">
+                                <div class="feedback-header">
+                                    <i class="fas {% if q_feedback.is_correct %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                                            <span>System {{ q_num|slice:"1:" }} Analysis</span>
                                 </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="status-message warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <div class="message-content">
-                            <h4>Mission Status: HOLD FOR REVIEW</h4>
-                            <p>System calibration recommended before proceeding with advanced operations.</p>
-                            <div class="next-steps mt-3">
-                                <p>Recommended Actions:</p>
-                                <ul>
-                                    <li>Contact Mission Control (jdas5@asu.edu) for system evaluation</li>
-                                    <li>Attend initial mission briefing (first day of class)</li>
-                                    <li>Review training materials for identified subsystems</li>
-                                </ul>
-                                <p class="note">Mission Control can assess if your field experience qualifies for advanced clearance.</p>
+                                <div class="feedback-content">
+                                    <div class="status-badge {% if q_feedback.is_correct %}success{% else %}failure{% endif %}">
+                                        {% if q_feedback.is_correct %}
+                                                    OPTIMAL PERFORMANCE
+                                        {% else %}
+                                                    REQUIRES CALIBRATION
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="question-details">
+                                        <p class="question-text">{{ q_feedback.question_text }}</p>
+                                        <div class="options-list">
+                                            {% for option in q_feedback.options %}
+                                                <div class="option-item {% if option.value == q_feedback.student_answer %}chosen{% endif %} {% if option.value == q_feedback.correct_answer %}correct{% endif %}">
+                                                    {{ option.text }}
+                                                    {% if option.value == q_feedback.student_answer and option.value == q_feedback.correct_answer %}
+                                                        <span class="status-icon correct"><i class="fas fa-check"></i></span>
+                                                    {% elif option.value == q_feedback.student_answer %}
+                                                        <span class="status-icon incorrect"><i class="fas fa-times"></i></span>
+                                                    {% elif option.value == q_feedback.correct_answer %}
+                                                        <span class="status-icon correct"><i class="fas fa-check"></i></span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="analysis-explanation">
+                                        <p class="feedback-explanation">{{ q_feedback.explanation }}</p>
+                                                {% if not q_feedback.is_correct %}
+                                                    <div class="improvement-tips mt-3">
+                                                        <h5><i class="fas fa-lightbulb"></i> System Optimization Tips</h5>
+                                                        {% if q_num == 'q1' %}
+                                                            <p>Review the multi-view geometry tutorial to understand the trade-offs between baseline distance, depth resolution, and feature matching reliability.</p>
+                                                            <a href="{% url 'multiview_geometry' %}" target="_blank" class="tutorial-link">
+                                                                <i class="fas fa-external-link-alt"></i> Open Multi-view Geometry Tutorial
+                                                            </a>
+                                                        {% elif q_num == 'q2' %}
+                                                            <p>Study the SLAM tutorial to understand how loop closure detection helps maintain global map consistency and reduces drift.</p>
+                                                            <a href="{% url 'slam_buddy' %}" target="_blank" class="tutorial-link">
+                                                                <i class="fas fa-external-link-alt"></i> Open SLAM Tutorial
+                                                            </a>
+                                                        {% elif q_num == 'q3' %}
+                                                            <p>Explore the sensor fusion tutorial to understand how process and measurement noise parameters affect state estimation.</p>
+                                                            <a href="{% url 'sensor_fusion_buddy' %}" target="_blank" class="tutorial-link">
+                                                                <i class="fas fa-external-link-alt"></i> Open Sensor Fusion Tutorial
+                                                            </a>
+                                                        {% elif q_num == 'q4' %}
+                                                            <p>Review the sampling strategies tutorial to understand the benefits of information-driven exploration.</p>
+                                                            <a href="{% url 'sampling_buddy' %}" target="_blank" class="tutorial-link">
+                                                                <i class="fas fa-external-link-alt"></i> Open Sampling Tutorial
+                                                            </a>
+                                                        {% elif q_num == 'q5' %}
+                                                            <p>Consider the resource constraints and mission objectives when evaluating error types in planetary exploration.</p>
+                                                            <a href="{% url 'ransac_buddy' %}" target="_blank" class="tutorial-link">
+                                                                <i class="fas fa-external-link-alt"></i> Open RANSAC Tutorial
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        {% endfor %}
                     </div>
-                {% endif %}
+                </div>
+
+                        <!-- Mission Recommendations -->
+                        {% if final_score >= 50 %}
+                            <div class="status-message success">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="message-content">
+                                    <h4>Mission Status: GO FOR LAUNCH</h4>
+                                    <p>All systems are within operational parameters. You are cleared for advanced training protocols.</p>
+                                    {% if eligible_for_certificate %}
+                                        <div class="certificate-section mt-3">
+                                            <p>🏆 Mission Certification Available</p>
+                                            <button id="certBtn" class="btn btn-success" onclick="generateCertificate()">
+                                                <i class="fas fa-award"></i> Generate Certificate
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="status-message warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div class="message-content">
+                                    <h4>Mission Status: HOLD FOR REVIEW</h4>
+                                    <p>System calibration recommended before proceeding with advanced operations.</p>
+                                    <div class="next-steps mt-3">
+                                        <p>Recommended Actions:</p>
+                                        <ul>
+                                            <li>Contact Mission Control (jdas5@asu.edu) for system evaluation</li>
+                                            <li>Attend initial mission briefing (first day of class)</li>
+                                            <li>Review training materials for identified subsystems</li>
+                                        </ul>
+                                        <p class="note">Mission Control can assess if your field experience qualifies for advanced clearance.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+            </div>
+                </div>
             </div>
         </div>
     {% endif %}
