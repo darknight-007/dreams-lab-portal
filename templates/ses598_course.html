@@ -430,7 +430,7 @@ function generatePDF() {
 
         <!-- Course Description -->
         <div class="course-description">
-            <p>{{ syllabus.course_info.description }}</p>
+            <p>{{ syllabus.course_info.description|safe }}</p>
         </div>
 
         <!-- Prerequisites -->
