@@ -1,265 +1,754 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block content %}
-<script>
-MathJax = {
-    tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-    },
-    svg: {
-        fontCache: 'global'
-    }
-};
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Least Squares</title>
+    <!-- Add MathJax for LaTeX rendering -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #2962ff;
+            --hover-color: #0039cb;
+            --text-color: #333;
+            --grid-color: #f5f5f5;
+            --border-color: #e0e0e0;
+            --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-<div class="param-estimation-container">
-    <div class="intro-section">
-        <h2>Parameter Estimation Tutorial</h2>
-        <p>Interactive demonstration comparing Least Squares and Bayesian approaches to parameter estimation.</p>
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fafafa;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            grid-template-rows: auto 1fr;
+            gap: 1rem;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .math-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .math-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .math-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .math-block {
+            background: var(--grid-color);
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .math-block h3 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .visualization {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .plot-container {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .legend {
+            background: var(--grid-color);
+            padding: 1rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 3px;
+            border-radius: 1.5px;
+        }
+
+        .controls {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .control-group h3 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .parameter {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--grid-color);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--hover-color);
+        }
+
+        .value {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+        }
+
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Linear Least Squares Fitting</h1>
+            <p>Interactive demonstration of linear regression using matrix pseudo-inverse and linear combinations.</p>
+        </div>
+
+        <div class="left-panel">
         <div class="math-section">
-            <h3>Key Equations</h3>
-            <div class="equations-grid">
-                <div class="equation-block">
-                    <h4>Least Squares</h4>
-                    <p>Minimizing squared error:</p>
-                    $$\hat{\theta}_{LS} = \arg\min_{\theta} \sum_{i=1}^n (y_i - f(x_i; \theta))^2$$
-                    $$\hat{\theta}_{LS} = (X^TX)^{-1}X^Ty$$
+                <h2>Mathematical Background</h2>
+                <div class="math-grid">
+                    <div class="math-block">
+                        <h3>Linear Combinations</h3>
+                        <p>Each point on the line is a linear combination of basis vectors:</p>
+                        <p>\[ y_i = \beta_0 \cdot 1 + \beta_1 \cdot x_i + \epsilon_i \]</p>
+                        <p>where \(\epsilon_i\) is Gaussian noise with variance \(\sigma^2\).</p>
+                        <p>In matrix form, for all points:</p>
+                        <p>\[ \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{bmatrix} = 
+                        \begin{bmatrix} 1 & x_1 \\ 1 & x_2 \\ \vdots & \vdots \\ 1 & x_n \end{bmatrix}
+                        \begin{bmatrix} \beta_0 \\ \beta_1 \end{bmatrix} +
+                        \begin{bmatrix} \epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n \end{bmatrix} \]</p>
+                    </div>
+                    
+                    <div class="math-block">
+                        <h3>Basis Vectors</h3>
+                        <p>The design matrix \(\mathbf{X}\) consists of two basis vectors:</p>
+                        <p>\[ \mathbf{x}_0 = \begin{bmatrix} 1 \\ 1 \\ \vdots \\ 1 \end{bmatrix} \quad \text{(intercept)} \]</p>
+                        <p>\[ \mathbf{x}_1 = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix} \quad \text{(slope)} \]</p>
+                        <p>The fitted line lies in the span of these vectors.</p>
+                    </div>
+
+                    <div class="math-block">
+                        <h3>Least Squares Solution</h3>
+                        <p>We find weights \(\beta_0, \beta_1\) that minimize:</p>
+                        <p>\[ \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta}\|^2 = \sum_{i=1}^n (y_i - (\beta_0 + \beta_1x_i))^2 \]</p>
+                        <p>The solution is the projection onto span\((\mathbf{X})\):</p>
+                        <p>\[ \hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y} \]</p>
+                    </div>
+
+                    <div class="math-block">
+                        <h3>Geometric Interpretation</h3>
+                        <p>The fitted line is a linear combination of basis vectors that:</p>
+                        <ol>
+                            <li>Spans a plane in \(\mathbb{R}^n\)</li>
+                            <li>Minimizes distance to data point vector \(\mathbf{y}\)</li>
+                            <li>Makes residual \(\mathbf{y} - \mathbf{X}\hat{\boldsymbol{\beta}}\) orthogonal to \(\mathbf{X}\)</li>
+                        </ol>
                 </div>
-                <div class="equation-block">
-                    <h4>Bayesian Regression</h4>
-                    <p>Posterior distribution:</p>
-                    $$p(\theta|D) \propto p(D|\theta)p(\theta)$$
-                    $$\theta|D \sim \mathcal{N}(\mu_N, \Sigma_N)$$
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <h3>Line Parameters (β)</h3>
+                    <div class="parameter">
+                        <label for="slope">True Slope (β₁):</label>
+                        <input type="range" id="slope" min="-5" max="5" step="0.1" value="1">
+                        <span class="value">1.00</span>
+                    </div>
+                    <div class="parameter">
+                        <label for="intercept">True Intercept (β₀):</label>
+                        <input type="range" id="intercept" min="-5" max="5" step="0.1" value="0.5">
+                        <span class="value">0.50</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Data Generation</h3>
+                    <div class="parameter">
+                        <label for="noiseLevel">Noise Level (σ):</label>
+                        <input type="range" id="noiseLevel" min="-3" max="0" step="0.1" value="0">
+                        <span class="value">1.000</span>
+                    </div>
+                    <div class="parameter">
+                        <label for="numPoints">Number of Points (n):</label>
+                        <input type="range" id="numPoints" min="10" max="200" step="10" value="50">
+                        <span class="value">50</span>
+                </div>
+                    <button id="generateData">Generate New Data</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="visualization">
+            <div class="plot-container">
+                    <canvas id="plotCanvas"></canvas>
+                    <div class="stats"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>True Line: y = β₁x + β₀</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f44336;"></div>
+                        <span>Fitted Line: ŷ = β̂₁x + β̂₀</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(33, 150, 243, 0.6);"></div>
+                        <span>Data: y = β₁x + β₀ + ε</span>
+                </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="visualization-section">
-        <div class="view-controls">
-            <h3>View Options</h3>
-            <div class="radio-group">
-                <input type="radio" id="functionSpace" name="viewType" value="function" checked>
-                <label for="functionSpace">Function Space</label>
-                <input type="radio" id="weightSpace" name="viewType" value="weight">
-                <label for="weightSpace">Weight Space</label>
-            </div>
-            <div class="checkbox-group">
-                <div class="checkbox">
-                    <input type="checkbox" id="showLS" checked>
-                    <label for="showLS">Show Least Squares</label>
-                </div>
-                <div class="checkbox">
-                    <input type="checkbox" id="showBayes" checked>
-                    <label for="showBayes">Show Bayesian</label>
-                </div>
-                <div class="checkbox">
-                    <input type="checkbox" id="showUncertainty" checked>
-                    <label for="showUncertainty">Show Uncertainty</label>
-                </div>
-            </div>
-        </div>
+    <div id="tooltip"></div>
 
-        <div class="plot-grid">
-            <div class="plot-container">
-                <h4>Function Space View</h4>
-                <canvas id="functionCanvas" width="600" height="300"></canvas>
-            </div>
-            <div class="plot-container">
-                <h4>Weight Space View</h4>
-                <canvas id="weightCanvas" width="600" height="300"></canvas>
-            </div>
-            <div class="plot-container">
-                <h4>Parameter Evolution</h4>
-                <canvas id="evolutionCanvas" width="600" height="300"></canvas>
-            </div>
-            <div class="plot-container">
-                <h4>Comparative Results</h4>
-                <canvas id="comparisonCanvas" width="600" height="300"></canvas>
-            </div>
-        </div>
+    <script>
+        class ParameterEstimation {
+            constructor() {
+                this.data = [];
+                this.trueSlope = 1.0;
+                this.trueIntercept = 0.5;
+                this.noiseLevel = 1.0;
+                this.numPoints = 50;
+                this.xRange = [0, 7];
+                this.yRange = [0, 7];
+                
+                // Colors matching Material Design
+                this.colors = {
+                    trueLine: '#4CAF50',    // Green
+                    fittedLine: '#f44336',  // Red
+                    points: 'rgba(33, 150, 243, 0.6)', // Blue with transparency
+                    grid: '#f5f5f5',
+                    axes: '#9e9e9e',
+                    text: '#333333'
+                };
+                
+                this.initializeCanvases();
+                this.initializeControls();
+                this.setupEventListeners();
+                this.setupTooltips();
+            }
 
-        <div class="parameter-controls">
-            <h3>Model Parameters</h3>
-            <div class="parameter-grid">
-                <div class="parameter">
-                    <label for="polynomialOrder">Polynomial Order:</label>
-                    <input type="range" id="polynomialOrder" min="1" max="10" value="3">
-                    <span class="value">3</span>
-                </div>
-                <div class="parameter">
-                    <label for="priorVariance">Prior Variance:</label>
-                    <input type="range" id="priorVariance" min="-2" max="2" step="0.1" value="0">
-                    <span class="value">1.0</span>
-                </div>
-                <div class="parameter">
-                    <label for="noiseLevel">Noise Level:</label>
-                    <input type="range" id="noiseLevel" min="-4" max="0" step="0.1" value="-2">
-                    <span class="value">0.01</span>
-                </div>
-            </div>
-        </div>
+            initializeCanvases() {
+                this.plotCanvas = document.getElementById('plotCanvas');
+                this.plotCtx = this.plotCanvas.getContext('2d');
+                
+                // Make canvas responsive
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
 
-        <div class="data-controls">
-            <button id="generateData">Generate Random Data</button>
-            <button id="clearData">Clear Data</button>
-            <button id="optimizeParams">Optimize Parameters</button>
-            <div class="example-buttons">
-                <button class="example-btn" data-example="linear">Linear</button>
-                <button class="example-btn" data-example="quadratic">Quadratic</button>
-                <button class="example-btn" data-example="sinusoidal">Sinusoidal</button>
-                <button class="example-btn" data-example="outliers">With Outliers</button>
-            </div>
-        </div>
-    </div>
-</div>
+            resizeCanvas() {
+                const container = this.plotCanvas.parentElement;
+                const width = container.clientWidth;
+                // Set a fixed aspect ratio of 4:3
+                const height = width * 0.75;
+                
+                // Set canvas size with higher resolution for sharper rendering
+                this.plotCanvas.width = width * 2;
+                this.plotCanvas.height = height * 2;
+                
+                // Set display size
+                this.plotCanvas.style.width = width + 'px';
+                this.plotCanvas.style.height = height + 'px';
+                
+                // Scale all drawing operations
+                this.plotCtx.scale(2, 2);
+                
+                this.updateVisualization();
+            }
 
-<style>
-.param-estimation-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
+            initializeControls() {
+                this.slopeInput = document.getElementById('slope');
+                this.interceptInput = document.getElementById('intercept');
+                this.noiseLevelInput = document.getElementById('noiseLevel');
+                this.numPointsInput = document.getElementById('numPoints');
+            }
 
-.equations-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 15px;
-}
+            setupEventListeners() {
+                // Parameter controls with debouncing
+                const updateWithDebounce = this.debounce(() => this.generateData(), 50);
 
-.equation-block {
-    background: white;
-    padding: 15px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+                this.slopeInput.addEventListener('input', () => {
+                    this.trueSlope = parseFloat(this.slopeInput.value);
+                    this.slopeInput.nextElementSibling.textContent = this.trueSlope.toFixed(2);
+                    updateWithDebounce();
+                });
 
-.visualization-section {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+                this.interceptInput.addEventListener('input', () => {
+                    this.trueIntercept = parseFloat(this.interceptInput.value);
+                    this.interceptInput.nextElementSibling.textContent = this.trueIntercept.toFixed(2);
+                    updateWithDebounce();
+                });
 
-.view-controls {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 4px;
-}
+                this.noiseLevelInput.addEventListener('input', () => {
+                    this.noiseLevel = Math.pow(10, parseFloat(this.noiseLevelInput.value));
+                    this.noiseLevelInput.nextElementSibling.textContent = this.noiseLevel.toFixed(3);
+                    updateWithDebounce();
+                });
 
-.radio-group {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-}
+                this.numPointsInput.addEventListener('input', () => {
+                    this.numPoints = parseInt(this.numPointsInput.value);
+                    this.numPointsInput.nextElementSibling.textContent = this.numPoints;
+                    this.generateData();
+                });
 
-.checkbox-group {
-    display: flex;
-    gap: 20px;
-}
+                // Generate data button
+                document.getElementById('generateData').addEventListener('click', () => this.generateData());
 
-.plot-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
-}
+                // Canvas interaction
+                this.plotCanvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.plotCanvas.addEventListener('mouseout', () => this.hideTooltip());
+            }
 
-.plot-container {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 4px;
-}
+            setupTooltips() {
+                this.tooltip = document.getElementById('tooltip');
+            }
 
-.plot-container h4 {
-    margin: 0 0 10px 0;
-    text-align: center;
-}
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
 
-.parameter-controls {
-    margin: 20px 0;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 4px;
-}
+            handleMouseMove(event) {
+                const rect = this.plotCanvas.getBoundingClientRect();
+                const x = (event.clientX - rect.left) * (this.plotCanvas.width / rect.width);
+                const y = (event.clientY - rect.top) * (this.plotCanvas.height / rect.height);
+                
+                // Convert to data coordinates
+                const dataX = this.pixelToDataX(x);
+                const dataY = this.pixelToDataY(y);
+                
+                // Find nearest point
+                const nearestPoint = this.findNearestPoint(dataX, dataY);
+                if (nearestPoint) {
+                    this.showTooltip(event.pageX, event.pageY, nearestPoint);
+                } else {
+                    this.hideTooltip();
+                }
+            }
 
-.parameter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-}
+            findNearestPoint(x, y) {
+                const threshold = 0.5;
+                let nearest = null;
+                let minDist = Infinity;
+                
+                for (const point of this.data) {
+                    const dist = Math.sqrt(Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2));
+                    if (dist < minDist && dist < threshold) {
+                        minDist = dist;
+                        nearest = point;
+                    }
+                }
+                
+                return nearest;
+            }
 
-.data-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
+            showTooltip(x, y, point) {
+                this.tooltip.style.display = 'block';
+                this.tooltip.style.left = (x + 10) + 'px';
+                this.tooltip.style.top = (y + 10) + 'px';
+                this.tooltip.textContent = `(${point.x.toFixed(2)}, ${point.y.toFixed(2)})`;
+            }
 
-.example-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
+            hideTooltip() {
+                this.tooltip.style.display = 'none';
+            }
 
-canvas {
-    width: 100%;
-    height: 100%;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-}
+            generateData() {
+                this.data = [];
+                
+                // Generate x values between 0 and 10
+                for (let i = 0; i < this.numPoints; i++) {
+                    const x = i * (this.xRange[1] - this.xRange[0]) / (this.numPoints - 1) + this.xRange[0];
+                    const trueY = this.trueSlope * x + this.trueIntercept;
+                    // Use Box-Muller transform for better normal distribution
+                    const noise = this.noiseLevel * this.generateGaussianNoise();
+                    const y = trueY + noise;
+                    this.data.push({ x, y });
+                }
+                
+                this.updateVisualization();
+            }
 
-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s;
-}
+            generateGaussianNoise() {
+                let u = 0, v = 0;
+                while (u === 0) u = Math.random();
+                while (v === 0) v = Math.random();
+                return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            }
 
-button:hover {
-    background: #0056b3;
-}
+            leastSquares() {
+                if (this.data.length < 2) return null;
 
-.example-btn {
-    background: #6c757d;
-}
+                const n = this.data.length;
+                let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+                
+                for (const point of this.data) {
+                    sumX += point.x;
+                    sumY += point.y;
+                    sumXY += point.x * point.y;
+                    sumX2 += point.x * point.x;
+                }
+                
+                const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+                
+                // Calculate R-squared
+                const yMean = sumY / n;
+                let ssTotal = 0, ssResidual = 0;
+                
+                for (const point of this.data) {
+                    const yPred = slope * point.x + intercept;
+                    ssTotal += Math.pow(point.y - yMean, 2);
+                    ssResidual += Math.pow(point.y - yPred, 2);
+                }
+                
+                const rSquared = 1 - (ssResidual / ssTotal);
+                
+                return { slope, intercept, rSquared };
+            }
 
-.example-btn:hover {
-    background: #545b62;
-}
+            dataToPixelX(x) {
+                const margin = 50;
+                return margin + (x - this.xRange[0]) * (this.plotCanvas.width / 2 - 2 * margin) / (this.xRange[1] - this.xRange[0]);
+            }
 
-input[type="range"] {
-    width: 100%;
-}
+            dataToPixelY(y) {
+                const margin = 50;
+                return this.plotCanvas.height / 2 - margin - (y - this.yRange[0]) * (this.plotCanvas.height / 2 - 2 * margin) / (this.yRange[1] - this.yRange[0]);
+            }
 
-.parameter {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
+            pixelToDataX(px) {
+                const margin = 50;
+                return this.xRange[0] + (px - margin) * (this.xRange[1] - this.xRange[0]) / (this.plotCanvas.width / 2 - 2 * margin);
+            }
 
-.value {
-    font-size: 0.9em;
-    color: #666;
-}
-</style>
+            pixelToDataY(py) {
+                const margin = 50;
+                return this.yRange[0] + (this.plotCanvas.height / 2 - margin - py) * (this.yRange[1] - this.yRange[0]) / (this.plotCanvas.height / 2 - 2 * margin);
+            }
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
-<script src="{% static 'js/parameter_estimation.js' %}"></script>
-{% endblock %}
+            updateVisualization() {
+                const ctx = this.plotCtx;
+                const width = ctx.canvas.width / 2;  // Account for the 2x scaling
+                const height = ctx.canvas.height / 2;
+                
+                // Clear canvas with white background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw grid and axes
+                this.drawGridAndAxes(ctx);
+                
+                // Draw data points with noise visualization
+                this.data.forEach(point => {
+                    // Draw vertical line showing noise
+                    const trueY = this.trueSlope * point.x + this.trueIntercept;
+                    
+                    // Draw noise line
+                    ctx.strokeStyle = 'rgba(33, 150, 243, 0.15)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([2, 2]);
+                    ctx.beginPath();
+                    ctx.moveTo(
+                        this.dataToPixelX(point.x),
+                        this.dataToPixelY(trueY)
+                    );
+                    ctx.lineTo(
+                        this.dataToPixelX(point.x),
+                        this.dataToPixelY(point.y)
+                    );
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                });
+
+                // Draw true line
+                this.drawLine(ctx, this.trueSlope, this.trueIntercept, this.colors.trueLine, 3);
+                
+                // Draw fitted line
+                const fit = this.leastSquares();
+                if (fit) {
+                    this.drawLine(ctx, fit.slope, fit.intercept, this.colors.fittedLine, 3);
+                    
+                    // Draw data points on top
+                    this.data.forEach(point => {
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+                        ctx.shadowBlur = 3;
+                        ctx.fillStyle = this.colors.points;
+                        ctx.strokeStyle = 'white';
+                        ctx.lineWidth = 2;
+                        
+                        ctx.beginPath();
+                        ctx.arc(
+                            this.dataToPixelX(point.x),
+                            this.dataToPixelY(point.y),
+                            5,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fill();
+                        ctx.stroke();
+                    });
+                    
+                    // Update stats display
+                    const stats = document.querySelector('.stats');
+                    stats.innerHTML = `
+                        <div style="color: ${this.colors.trueLine}">True: y = ${this.trueSlope.toFixed(2)}·x + ${this.trueIntercept.toFixed(2)}·1</div>
+                        <div style="color: ${this.colors.fittedLine}">Fitted: ŷ = ${fit.slope.toFixed(2)}·x + ${fit.intercept.toFixed(2)}·1</div>
+                        <div>R² = ${fit.rSquared.toFixed(4)}</div>
+                        <div>σ = ${this.noiseLevel.toFixed(3)}</div>
+                    `;
+                }
+            }
+
+            drawGridAndAxes(ctx) {
+                const width = ctx.canvas.width / 2;
+                const height = ctx.canvas.height / 2;
+                
+                // Draw grid
+                ctx.strokeStyle = this.colors.grid;
+                ctx.lineWidth = 1;
+                
+                // Vertical grid lines
+                for (let x = this.xRange[0]; x <= this.xRange[1]; x++) {
+                    const px = this.dataToPixelX(x);
+                    ctx.beginPath();
+                    ctx.moveTo(px, 50);
+                    ctx.lineTo(px, height - 50);
+                    ctx.stroke();
+                    
+                    // X-axis labels
+                    ctx.fillStyle = this.colors.text;
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(x.toString(), px, height - 30);
+                }
+                
+                // Horizontal grid lines
+                for (let y = Math.ceil(this.yRange[0]); y <= this.yRange[1]; y++) {
+                    const py = this.dataToPixelY(y);
+                    ctx.beginPath();
+                    ctx.moveTo(50, py);
+                    ctx.lineTo(width - 50, py);
+                    ctx.stroke();
+                    
+                    // Y-axis labels
+                    ctx.fillStyle = this.colors.text;
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(y.toString(), 40, py + 4);
+                }
+                
+                // Draw axes
+                ctx.strokeStyle = this.colors.axes;
+                ctx.lineWidth = 2;
+                
+                // X-axis
+                ctx.beginPath();
+                ctx.moveTo(50, this.dataToPixelY(0));
+                ctx.lineTo(width - 50, this.dataToPixelY(0));
+                ctx.stroke();
+                
+                // Y-axis
+                ctx.beginPath();
+                ctx.moveTo(this.dataToPixelX(0), 50);
+                ctx.lineTo(this.dataToPixelX(0), height - 50);
+                ctx.stroke();
+            }
+
+            drawLine(ctx, slope, intercept, color, width = 2) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                
+                // Add slight shadow for depth
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetY = 1;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.dataToPixelX(this.xRange[0]), this.dataToPixelY(slope * this.xRange[0] + intercept));
+                ctx.lineTo(this.dataToPixelX(this.xRange[1]), this.dataToPixelY(slope * this.xRange[1] + intercept));
+                ctx.stroke();
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.paramEstimation = new ParameterEstimation();
+            window.paramEstimation.generateData();  // Generate initial data
+        });
+    </script>
+</body>
+</html> 
