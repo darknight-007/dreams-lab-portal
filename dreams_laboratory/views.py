@@ -1010,7 +1010,7 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Cart pole problem and optimal control of inverted pendulum'
                 ],
-                'assignment': 'Assignment 1: State estimation in 2D, Assignment 2: Inverted pendulum stabilization'
+                'assignment': 'Assignment 1: State estimation in 2D using ROS2, Assignment 2: Inverted pendulum stabilization using ROS2'
             },
             {
                 'week': '3-4',
@@ -1022,16 +1022,16 @@ def get_ses598_course_data():
                     'Structure from Motion (SfM)',
                     'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Assignment 3: Offline 3D reconstruction pipeline'
+                'assignment': 'Assignment 3: Offline 3D reconstruction pipeline leveraging OpenCV and COLMAP in ROS2'
             },
             {
                 'week': '5',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
-                    'Scene representation, pointcloud, mesh, voxel grids, and surfels',
-                    'View synthesis, Neural Radiance Fields (NeRF), and Gaussian Splatting',
-                    'Scene analysis, 3D point cloud processing, and semantic segmentation',
-                    'Diffusion models for generative scene modeling'
+                    'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
+                    'View synthesis: Neural Radiance Fields (NeRF), and Gaussian Splatting',
+                    'Scene analysis: Semantic segmentation of images and point clouds leveraging neural networks',
+                    'Generative scenes: Diffusion models'
                 ],
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
@@ -1044,7 +1044,7 @@ def get_ses598_course_data():
                     'Multi-armed bandits and Bayesian optimization',
                     'Information gain in exploration'
                 ],
-                'assignment': 'Assignment 5: Optimal space telescope sampling challenge.'
+                'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST)datasets.'
             },
             {
                 'week': '7-8',
@@ -1092,7 +1092,7 @@ def get_ses598_course_data():
                     'Environmental uncertainty modeling',
                     'Safety-constrained learning'
                 ],
-                'assignment': 'Assignment 8: Robust exploration system involving underwater, space, or extreme planetary environments.'
+                'assignment': 'Assignment 8:  Digital twin exercise on planning under risks and uncertainty.'
             },
             {
                 'week': '15-16',

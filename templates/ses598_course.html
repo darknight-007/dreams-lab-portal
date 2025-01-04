@@ -256,6 +256,61 @@ section h2::after {
     font-size: 1rem;
 }
 
+/* Books List */
+.books-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.book-item {
+    padding: 1.5rem;
+    background: var(--color-subtle);
+    border-radius: var(--radius);
+    transition: transform 0.2s;
+}
+
+.book-item:hover {
+    transform: translateY(-3px);
+}
+
+.book-item h4 {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.book-item p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.book-item .book-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #444;
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+/* Resources Section */
+#resources h3 {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    margin: 3rem 0 1.5rem;
+    text-align: center;
+}
+
+#resources h4 {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    margin: 2rem 0 1rem;
+    text-align: center;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     :root {
@@ -327,7 +382,7 @@ function generatePDF() {
             <li><a href="#prerequisites">Prerequisites</a></li>
             <li><a href="#modules">Modules</a></li>
             <li><a href="#grading">Grading</a></li>
-            <li><a href="#tutorials">Tutorials</a></li>
+            <li><a href="#resources">Resources</a></li>
         </ul>
     </nav>
 
@@ -438,11 +493,39 @@ function generatePDF() {
             </div>
         </section>
 
-        <!-- Tutorials -->
-        <section id="tutorials">
-            <h2>Interactive Tutorials</h2>
+        <!-- Resources -->
+        <section id="resources">
+            <h2>Resources</h2>
+
+            <!-- Recommended Books -->
+            <h3>Recommended Books</h3>
+            <div class="books-list">
+                <div class="book-item">
+                    <h4>Optimal State Estimation: Kalman, H Infinity, and Nonlinear Approaches</h4>
+                    <p>Author: Dan Simon</p>
+                    <p class="book-description">A comprehensive guide to state estimation techniques with practical applications in navigation and control systems.</p>
+                </div>
+                <div class="book-item">
+                    <h4>Pattern Recognition and Machine Learning</h4>
+                    <p>Author: Christopher M. Bishop</p>
+                    <p class="book-description">The definitive text on modern pattern recognition methods with a focus on Bayesian techniques and machine learning algorithms.</p>
+                </div>
+                <div class="book-item">
+                    <h4>Multiple View Geometry in Computer Vision</h4>
+                    <p>Authors: Richard Hartley and Andrew Zisserman</p>
+                    <p class="book-description">The foundational text for understanding geometric relationships between multiple views and 3D reconstruction techniques.</p>
+                </div>
+                <div class="book-item">
+                    <h4>Optimal Control and Estimation</h4>
+                    <p>Author: Robert F. Stengel</p>
+                    <p class="book-description">A classic text bridging theory and practice in optimal control, estimation, and stochastic systems analysis.</p>
+                </div>
+            </div>
+
+            <!-- Interactive Tutorials -->
+            <h3>Interactive Tutorials</h3>
             {% for category, tutorials in syllabus.tutorials.items %}
-            <h3>{{ category }}</h3>
+            <h4>{{ category }}</h4>
             <table class="tutorials-table">
                 <thead>
                     <tr>
