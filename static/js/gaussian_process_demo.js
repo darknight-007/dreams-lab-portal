@@ -17,6 +17,10 @@ class GPDemo {
         this.cachedL = null;
         this.cachedAlpha = null;
         
+        // True function parameters
+        this.trueFunctionType = null;
+        this.trueFunctionParams = null;
+        
         this.setupEventListeners();
         this.draw();
     }
@@ -170,18 +174,23 @@ class GPDemo {
         // Generate test points
         const xTest = Array.from({length: 200}, (_, i) => -5 + 10 * i/199);
         
-        // Draw prior samples if no data
-        if(this.data.x.length === 0) {
-            this.drawPriorSamples(xTest);
-        }
-        
-        // Draw uncertainty region
+        // Draw uncertainty region first (background)
         this.drawUncertaintyRegion(xTest);
         
         // Draw mean function
         this.drawMeanFunction(xTest);
         
-        // Draw data points
+        // Draw true function if available (on top of mean and uncertainty)
+        if (this.trueFunctionType) {
+            this.drawTrueFunction(xTest);
+        }
+        
+        // Draw prior samples if no data
+        if(this.data.x.length === 0) {
+            this.drawPriorSamples(xTest);
+        }
+        
+        // Draw data points (always on top)
         this.drawDataPoints();
     }
     
@@ -361,6 +370,10 @@ class GPDemo {
         this.data = { x: [], y: [] };
         const numPoints = 5 + Math.floor(Math.random() * 5);
         
+        // Clear true function since we're generating random data
+        this.trueFunctionType = null;
+        this.trueFunctionParams = null;
+        
         for(let i = 0; i < numPoints; i++) {
             const x = -4 + Math.random() * 8;
             let y;
@@ -400,6 +413,9 @@ class GPDemo {
         const slope = 0.5;
         const intercept = 1.0;
         
+        this.trueFunctionType = 'linear';
+        this.trueFunctionParams = { slope, intercept };
+        
         for(let i = 0; i < 5; i++) {
             const x = -4 + 2 * i;
             const y = slope * x + intercept + 0.2 * (Math.random() - 0.5);
@@ -417,6 +433,9 @@ class GPDemo {
     generatePeriodicExample() {
         this.data = { x: [], y: [] };
         
+        this.trueFunctionType = 'periodic';
+        this.trueFunctionParams = { period: 4.0 };
+        
         for(let i = 0; i < 10; i++) {
             const x = -4 + 8 * i/9;
             const y = Math.sin(2 * Math.PI * x / 4) + 0.2 * (Math.random() - 0.5);
@@ -433,6 +452,9 @@ class GPDemo {
     
     generateNonlinearExample() {
         this.data = { x: [], y: [] };
+        
+        this.trueFunctionType = 'nonlinear';
+        this.trueFunctionParams = {};
         
         for(let i = 0; i < 10; i++) {
             const x = -4 + 8 * i/9;
@@ -458,6 +480,46 @@ class GPDemo {
         
         this.updateModel();
         this.draw();
+    }
+    
+    drawTrueFunction(xTest) {
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        
+        this.ctx.strokeStyle = '#ff6b6b';  // Coral red color for true function
+        this.ctx.lineWidth = 2.5;  // Make line thicker
+        this.ctx.setLineDash([6, 3]);  // Larger dash pattern
+        this.ctx.beginPath();
+        
+        let x = 50;
+        for(let i = 0; i < xTest.length; i++) {
+            const trueY = this.getTrueFunctionValue(xTest[i]);
+            const y = height/2 - (height - 100) * trueY / 10;
+            
+            if(i === 0) this.ctx.moveTo(x, y);
+            else this.ctx.lineTo(x, y);
+            
+            x += (width - 100) / (xTest.length - 1);
+        }
+        
+        this.ctx.stroke();
+        this.ctx.setLineDash([]);  // Reset to solid line
+    }
+    
+    getTrueFunctionValue(x) {
+        if (!this.trueFunctionType) return 0;
+
+        switch(this.trueFunctionType) {
+            case 'linear':
+                const {slope, intercept} = this.trueFunctionParams;
+                return slope * x + intercept;
+            case 'periodic':
+                return Math.sin(2 * Math.PI * x / 4);
+            case 'nonlinear':
+                return Math.exp(-0.5 * x * x);
+            default:
+                return 0;
+        }
     }
 }
 
