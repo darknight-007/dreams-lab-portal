@@ -983,12 +983,12 @@ def get_ses598_course_data():
         'course_info': {
             'title': 'SES 598: Space Robotics and AI',
             'semester': 'Spring 2025',
-            'meeting_times': 'Tu/Th 10:30-11:45pm',
+            'meeting_times': 'Tu/Th 10:30-11:45am',
             'location': 'ASU Tempe Campus, Room TBD',
             'instructor': 'Dr. Jnaneshwar Das',
-            'office_hours': 'By appointment',
-            'contact': 'jdas@asu.edu',
-            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping techniques, tailored for planetary and environmental applications. Students will gain expertise in state estimation, path planning, machine learning, and control systems, with a strong emphasis on real-world implementation. Topics include computer vision, SLAM, multi-robot coordination, and extreme environment operations. The curriculum combines lectures with hands-on projects, culminating in a final project where students design an end-to-end robotics system for planetary exploration. Prerequisites include proficiency in Python, linear algebra, and probability, alongside experience with Linux systems and basic computer vision.',
+            'office_hours': 'Friday 11am-12pm, and by appointment',
+            'contact': 'jdas5@asu.edu',
+            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments using advanced AI tools. The curriculum emphasizes real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the DREAMS Laboratory. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
             'quiz_info': 'Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.'
         },
         'prerequisites': [
@@ -1004,11 +1004,11 @@ def get_ses598_course_data():
                 'week': '1-2',
                 'title': 'State estimation and Controls',
                 'topics': [
-                    'Least squares and maximum likelihood',
+                    'Least squares and maximum likelihood estimation (MLE)',
                     'State space models and linear dynamical systems',
-                    'Kalman and Particle Filters',
-                    'PID control, LQR, MPC',
-                    'Cart pole problem and inverted pendulum'
+                    'Kalman and particle filters',
+                    'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
+                    'Cart pole problem and optimal control of inverted pendulum'
                 ],
                 'assignment': 'Assignment 1: State estimation in 2D, Assignment 2: Inverted pendulum stabilization'
             },
@@ -1068,7 +1068,7 @@ def get_ses598_course_data():
                     'Exploration-exploitation trade-offs',
                     'Resource-constrained planning'
                 ],
-                'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge'
+                'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
                 'week': '11-12',
@@ -1080,7 +1080,7 @@ def get_ses598_course_data():
                     'Decentralized decision making',
                     'Communication-aware sampling'
                 ],
-                'assignment': 'Assignment 7: Multi-robot exploration system'
+                'assignment': 'Assignment 7: Multi-robot exploration system in digital twins.'
             },
             {
                 'week': '13-14',
@@ -1104,7 +1104,7 @@ def get_ses598_course_data():
                     'Integrated perception-planning-learning',
                     'Real-world deployment strategies'
                 ],
-                'assignment': 'Final Project: End-to-end planetary (earth or space) robotics system'
+                'assignment': 'Final (group) Project: End-to-end autonomous robotic system themed around space exploration, planetary science, or earth observation.'
             }
         ],
         'grading': {
