@@ -462,6 +462,9 @@
                         <label class="option"><input type="radio" name="q1" value="4"> 2.0 meters (optimal depth resolution but impractical for feature matching)</label>
                         <label class="option"><input type="radio" name="q1" value="0"> I am not sure</label>
                     </div>
+                    <div class="tutorial-link">
+                        <a href="/tutorials/multiview-geometry/" target="_blank"><i class="fas fa-external-link-alt"></i>View Multi-view Geometry Tutorial</a>
+                    </div>
                 </div>
 
                 <!-- Question 2 -->
@@ -686,9 +689,6 @@
                                                             </a>
                                                         {% elif q_num == 'q5' %}
                                                             <p>Consider the resource constraints and mission objectives when evaluating error types in planetary exploration.</p>
-                                                            <a href="{% url 'ransac_buddy' %}" target="_blank" class="tutorial-link">
-                                                                <i class="fas fa-external-link-alt"></i> Open RANSAC Tutorial
-                                                            </a>
                                                         {% endif %}
                                                     </div>
                                                 {% endif %}
