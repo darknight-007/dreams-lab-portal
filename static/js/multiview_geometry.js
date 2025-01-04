@@ -1007,46 +1007,70 @@ class MultiviewGeometry {
                     const x = (targetProj.x / sensorSize.width + 0.5) * plane.canvas.width;
                     const y = (targetProj.y / sensorSize.height + 0.5) * plane.canvas.height;
 
-                    // Calculate target object size based on depth
-                    const depth = -targetProj.z;
-                    const baseRadius = 0.3; // Matches the sphere geometry radius
-                    const projectedRadius = (baseRadius * this.params.focalLength) / depth;
-                    const screenRadius = (projectedRadius / sensorSize.width) * plane.canvas.width;
+                    // Calculate target object size based on depth with safety check
+                    const depth = Math.abs(targetProj.z); // Use absolute value to prevent negative radius
+                    if (depth > 0.1) { // Only draw if depth is meaningful
+                        const baseRadius = 0.3; // Matches the sphere geometry radius
+                        const projectedRadius = (baseRadius * this.params.focalLength) / depth;
+                        // Ensure minimum screen radius of 2 pixels
+                        const minScreenRadius = 2;
+                        const screenRadius = Math.max(minScreenRadius, (projectedRadius / sensorSize.width) * plane.canvas.width);
 
-                    // Draw target object as a circle with depth-dependent size
-                    ctx.strokeStyle = '#808080';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(x, y, screenRadius, 0, Math.PI * 2);
-                    ctx.stroke();
+                        // Draw target object as a circle with depth-dependent size
+                        ctx.strokeStyle = '#808080';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(x, y, screenRadius, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
                 }
 
-                // Draw features
+                // Draw features with improved error handling and minimum size
                 this.features.forEach((feature, index) => {
-                    const featurePos = feature.position;
+                    if (!feature || !feature.position) return;
+                    
+                    const featurePos = feature.position.clone();
                     const proj = this.projectToCamera(featurePos, camera, plane);
                     
-                    if (proj) {
+                    if (proj && Math.abs(proj.z) > 0.1) { // Only draw if projection is valid and in front of camera
                         const { sensorSize } = this.params;
                         const x = (proj.x / sensorSize.width + 0.5) * plane.canvas.width;
                         const y = (proj.y / sensorSize.height + 0.5) * plane.canvas.height;
 
-                        // Draw feature point
-                        ctx.fillStyle = `hsl(${(index * 30) % 360}, 100%, 50%)`;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 4, 0, Math.PI * 2);
-                        ctx.fill();
+                        // Check if point is within canvas bounds
+                        if (x >= 0 && x <= plane.canvas.width && y >= 0 && y <= plane.canvas.height) {
+                            // Draw feature point with minimum radius of 2 pixels
+                            const minPointRadius = 2;
+                            const pointRadius = Math.max(minPointRadius, 4 / (Math.abs(proj.z) + 1));
+                            
+                            ctx.fillStyle = `hsl(${(index * 30) % 360}, 100%, 50%)`;
+                            ctx.beginPath();
+                            ctx.arc(x, y, pointRadius, 0, Math.PI * 2);
+                            ctx.fill();
 
-                        // Draw feature ID
-                        ctx.fillStyle = '#000000';
-                        ctx.font = '12px Arial';
-                        ctx.fillText(index + 1, x + 5, y - 5);
+                            // Draw feature ID with adjusted offset based on point size
+                            ctx.fillStyle = '#000000';
+                            ctx.font = '12px Arial';
+                            ctx.fillText(index + 1, x + pointRadius + 3, y - pointRadius - 3);
+                        }
                     }
                 });
 
-                // Update texture
-                if (plane.mesh && plane.mesh.material && plane.mesh.material.map) {
-                    plane.mesh.material.map.needsUpdate = true;
+                // Update texture with error handling
+                try {
+                    if (plane.mesh && plane.mesh.material && plane.mesh.material.map) {
+                        plane.mesh.material.map.needsUpdate = true;
+                    } else {
+                        console.warn(`Missing material or texture for ${side} camera view`);
+                        // Attempt to recreate texture if missing
+                        const texture = new THREE.CanvasTexture(plane.canvas);
+                        if (plane.mesh && plane.mesh.material) {
+                            plane.mesh.material.map = texture;
+                            plane.mesh.material.needsUpdate = true;
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error updating ${side} camera texture:`, error);
                 }
             });
         } catch (error) {
