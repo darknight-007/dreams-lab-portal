@@ -187,7 +187,7 @@ class RansacComponent(InteractiveComponent):
 
         super().__init__(
             component_id=component_id,
-            title='RANSAC Model Fitting',
+            title='Random Sample Consensus (RANSAC)',
             description=self._get_description(mode, difficulty),
             widget_type='ransac-buddy',
             parameters=params,

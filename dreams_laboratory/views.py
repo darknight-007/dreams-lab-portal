@@ -1,3 +1,4 @@
+# views.py 
 import os
 import json
 import logging
@@ -880,15 +881,19 @@ def ses598_quiz_part2(request):
         part2_answers = {}
         feedback = {}
         for q, ans_data in mcq_answers.items():
-            student_ans = request.POST.get(q, '')
-            correct_ans = ans_data['correct']
-            if student_ans == correct_ans:
+            student_ans = str(request.POST.get(q, ''))  # Ensure string type
+            correct_ans = str(ans_data['correct'])      # Ensure string type
+            # Store answer first
+            part2_answers[q] = student_ans
+            # Then check correctness
+            is_correct = student_ans == correct_ans
+            if is_correct:
                 score += 1.0
-            # Store answer and feedback with question text and options
+            # Store feedback with question text and options
             feedback[q] = {
                 'student_answer': student_ans,
                 'correct_answer': correct_ans,
-                'is_correct': student_ans == correct_ans,
+                'is_correct': is_correct,
                 'explanation': ans_data['explanation'],
                 'question_text': ans_data['question_text'],
                 'options': ans_data['options']
@@ -907,10 +912,8 @@ def ses598_quiz_part2(request):
 
         # Track if any questions were answered correctly
         any_correct = False
-        for q, ans_data in mcq_answers.items():
-            student_ans = request.POST.get(q, '')
-            correct_ans = ans_data['correct']
-            is_correct = student_ans == correct_ans
+        for q in mcq_answers.keys():
+            is_correct = feedback[q]['is_correct']
             if is_correct:
                 any_correct = True
             # Store individual question correctness in session
@@ -924,17 +927,12 @@ def ses598_quiz_part2(request):
             total_score=total_score,  # Just Part 2 score
             cv_score=0.0,  # Not applicable for Part 2
             slam_score=total_score,  # Part 2 score
-            # Store all Part 2 answers in their respective fields
+            # Store Part 2 answers sequentially in q1-q5
             q1=part2_answers.get('q1', ''),  # Stereo vision baseline
             q2=part2_answers.get('q2', ''),  # SLAM loop closure
             q3=part2_answers.get('q3', ''),  # Kalman filter parameters
             q4=part2_answers.get('q4', ''),  # Sampling strategy
-            q5=part2_answers.get('q5', ''),  # Error type in rock mapping
-            q6=part2_answers.get('q1', ''),  # Duplicate for consistency
-            q7=part2_answers.get('q2', ''),  # Duplicate for consistency
-            q8=part2_answers.get('q3', ''),  # Duplicate for consistency
-            q9=part2_answers.get('q4', ''),  # Duplicate for consistency
-            q10=part2_answers.get('q5', '')  # Duplicate for consistency
+            q5=part2_answers.get('q5', '')   # Error type in rock mapping
         )
         quiz_submission.save()
 
@@ -1134,19 +1132,11 @@ def get_ses598_course_data():
                     'url': 'multiview_geometry'
                 },
                 {
-                    'title': 'Stereo Vision',
-                    'description': 'Stereo vision concepts and depth estimation',
-                    'difficulty': 'Beginner',
-                    'url': 'stereo_buddy'
-                },
-                {
                     'title': 'Bundle Adjustment',
                     'description': 'Interactive demo of bundle adjustment with multiple cameras',
                     'difficulty': 'Advanced',
                     'url': 'bundle_adjustment_buddy'
-                }
-            ],
-            'SLAM and Mapping': [
+                },
                 {
                     'title': 'SLAM Tutorial',
                     'description': 'Simultaneous Localization and Mapping fundamentals',
@@ -1177,12 +1167,12 @@ def get_ses598_course_data():
             'Estimation': [
                 {
                     'title': 'Parameter Estimation',
-                    'description': 'Interactive exploration of parameter estimation techniques with real-time visualization of uncertainty',
+                    'description': 'Least-squares estimation for linear regression',
                     'difficulty': 'Intermediate',
                     'url': 'param_estimation_buddy'
                 },
                 {
-                    'title': 'RANSAC Tutorial',
+                    'title': 'Random Sample Consensus (RANSAC)',
                     'description': 'Hands-on implementation of RANSAC for robust model fitting with outlier rejection',
                     'difficulty': 'Beginner',
                     'url': 'ransac_buddy'
@@ -1195,7 +1185,7 @@ def get_ses598_course_data():
                 },
                 {
                     'title': 'Information-based Sampling',
-                    'description': 'Explore different sampling strategies (random, grid-based, information gain) with real-time performance metrics',
+                    'description': 'Cross-Entropy Sampling',
                     'difficulty': 'Intermediate',
                     'url': 'sampling_buddy'
                 },
