@@ -270,7 +270,7 @@
                 <div class="course grid-item">
                     <h3>{{ course.title }}</h3>
                     <p><strong>{{ course.semester }}</strong> | {{ course.meeting_times }} | {{ course.location }}</p>
-                    <p>{{ course.description }}</p>
+                    <p>{{ course.description|safe }}</p>
                     <a href="{% url 'ses598_course' %}" class="course-link">View Course Details →</a>
                 </div>
             </div>

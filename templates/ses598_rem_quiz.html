@@ -140,6 +140,26 @@
                 </div>
             </div>
 
+            {% if score >= 60 %}
+                <div class="alert alert-success">
+                    <h5>Congratulations! You've passed Part 1</h5>
+                    <p>You can now proceed to Part 2 to test your understanding of advanced robotics concepts.</p>
+                    <div class="mt-3">
+                        <a href="{% url 'ses598_quiz_part2' %}" class="btn btn-primary">Continue to Part 2</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <h5>Quiz Results</h5>
+                    <p>Your score indicates that some foundational concepts may need strengthening. However, if you believe you have the necessary background and experience in robotics and AI, please:</p>
+                    <ul>
+                        <li>Contact the instructor at jdas5@asu.edu to discuss your background and experience, or</li>
+                        <li>Attend the first day of class (if the course is not at capacity) to evaluate if the course aligns with your preparation</li>
+                    </ul>
+                    <p class="text-muted mt-2">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
+                </div>
+            {% endif %}
+
             <!-- Question Feedback -->
             <div class="question-feedback mt-4">
                 <h5>Detailed Analysis</h5>
@@ -194,26 +214,6 @@
                     </div>
                 {% endfor %}
             </div>
-
-            {% if score >= 60 %}
-                <div class="alert alert-success mt-4">
-                    <h5>Congratulations! You've passed Part 1</h5>
-                    <p>You can now proceed to Part 2 to test your understanding of advanced robotics concepts.</p>
-                    <div class="mt-3">
-                        <a href="{% url 'ses598_quiz_part2' %}" class="btn btn-primary">Continue to Part 2</a>
-                    </div>
-                </div>
-            {% else %}
-                <div class="alert alert-warning mt-4">
-                    <h5>Quiz Results</h5>
-                    <p>Your score indicates that some foundational concepts may need strengthening. However, if you believe you have the necessary background and experience in robotics and AI, please:</p>
-                    <ul>
-                        <li>Contact the instructor at jdas5@asu.edu to discuss your background and experience, or</li>
-                        <li>Attend the first day of class (if the course is not at capacity) to evaluate if the course aligns with your preparation</li>
-                    </ul>
-                    <p class="text-muted mt-2">The instructor can help assess if your practical experience or other coursework provides equivalent preparation for the advanced topics covered in this course.</p>
-                </div>
-            {% endif %}
         </div>
     {% else %}
         <form method="post" id="quizForm">
