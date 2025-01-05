@@ -439,6 +439,9 @@
     .tutorial-link i {
         margin-right: 0.4rem;
     }
+    .question-hints .sub-item {
+        margin-left: 20px;
+    }
 </style>
 {% endblock %}
 
@@ -505,18 +508,19 @@
 
                 <!-- Question 5 -->
                 <div class="question">
-                    <h3>5. In automated rock mapping for planetary exploration, which error type would be more critical to minimize when identifying potential sample collection sites?</h3>
-                    <p class="question-context">Consider a Mars rover scenario where:</p>
+                    <h3>5. Balancing Error Trade-offs in Automated Rock Mapping for Planetary Exploration</h3>
+                    <p class="question-context">In the context of a Mars rover mission where the rover can cache up to 30 samples (batch size k=30), consider the following:</p>
                     <ul class="question-hints">
-                        <li>Resources for sample collection are limited</li>
-                        <li>Each sample collection attempt is costly</li>
-                        <li>Mission success depends on collecting specific rock types</li>
-                        <li>Type I Error (False Positive): Incorrectly identifying a non-target rock as target</li>
-                        <li>Type II Error (False Negative): Missing a target rock by classifying it as non-target</li>
+                        <li>Resource Constraints: Each sample collection attempt is costly, and storage is limited to 30 samples.</li>
+                        <li>Mission Objectives: Success depends on collecting scientifically valuable rock samples.</li>
+                        <li>Error Scenarios:</li>
+                        <li class="sub-item">Type I Error (False Positive): Incorrectly identifying a non-target rock as a target, wasting resources and storage space.</li>
+                        <li class="sub-item">Type II Error (False Negative): Missing a target rock by classifying it as non-target, potentially losing valuable discoveries.</li>
                     </ul>
+                    <p>Given these considerations, which error type would be more critical to minimize when identifying potential sample collection sites?</p>
                     <div class="options">
-                        <label class="option"><input type="radio" name="q5" value="1" required> Type I Error (False Positives) - wasting resources on wrong samples is more costly</label>
-                        <label class="option"><input type="radio" name="q5" value="2"> Type II Error (False Negatives) - missing potential discoveries is more costly</label>
+                        <label class="option"><input type="radio" name="q5" value="1" required> Type I Error (False Positives) – Wasting resources on non-target samples is more costly</label>
+                        <label class="option"><input type="radio" name="q5" value="2"> Type II Error (False Negatives) – Missing potential discoveries is more costly</label>
                         <label class="option"><input type="radio" name="q5" value="3"> Both errors are equally important to minimize</label>
                         <label class="option"><input type="radio" name="q5" value="4"> Neither error matters as long as some samples are collected</label>
                         <label class="option"><input type="radio" name="q5" value="0"> I am not sure</label>
