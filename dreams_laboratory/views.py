@@ -1119,10 +1119,16 @@ def get_ses598_course_data():
                     'url': 'https://ieeexplore.ieee.org/abstract/document/9802523'
                 },
                 {
-                    'title': 'A Comparative Study of Nonlinear MPC and Differential-Flatness-Based Control for Quadrotor Agile Flight',
-                    'authors': 'Sun, S., Romero, A., Foehn, P., Kaufmann, E., Scaramuzza, D.',
-                    'venue': 'IEEE Transactions on Robotics 2022',
-                    'url': 'https://ieeexplore.ieee.org/abstract/document/9794477'
+                    'title': 'Assessment of the Mars 2020 Entry, Descent, and Landing Simulation',
+                    'authors': 'Way, D.W., Dutta, S., Zumwalt, C., Blette, D.',
+                    'venue': 'AIAA SciTech 2022',
+                    'url': 'https://arc.aiaa.org/doi/abs/10.2514/6.2022-0421'
+                },
+                {
+                    'title': 'Psyche Mission System Level Guidance, Navigation, and Control Off-Nominal Testing',
+                    'authors': 'Arthur, P., Navarro, J., Sover, K., Sternberg, D., Twu, P.',
+                    'venue': 'IEEE Aerospace Conference 2024',
+                    'url': 'https://ieeexplore.ieee.org/document/10521063'
                 }
             ],
             'Computer Vision and 3D Reconstruction': [
