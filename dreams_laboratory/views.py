@@ -1006,7 +1006,7 @@ def get_ses598_course_data():
                     'State space models and linear dynamical systems',
                     'State-estimation with Kalman and particle filters',
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
-                    'Entry, descent and landing (EDL), guidance, navigation, and control (GNC),  attitude determination and control system (ADCS)'
+                    'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
                 'assignment': 'Assignment 1: State estimation in 2D using ROS2, Assignment 2: Inverted pendulum stabilization using ROS2'
             },
