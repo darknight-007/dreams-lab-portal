@@ -1372,7 +1372,17 @@ def dreamslab_home_view(request):
         'publications': Publication.objects.all(),
         'funding_source': FundingSource.objects.all(),
         'assets': Asset.objects.all(),
-        'course': get_ses598_course_data()['course_info']  # Only pass the course info section
+        'course': {
+            'title': 'RAS/SES 598: Space Robotics and AI',
+            'semester': 'Spring 2025\nRAS #39245\nSES #39153',
+            'meeting_times': 'Tu/Th 10:30-11:45am',
+            'location': 'ASU Tempe Campus, Room <a href="https://maps.app.goo.gl/2qaUKUa66rQvqr7r9" target="_blank">PSF 647</a>',
+            'instructor': 'Dr. Jnaneshwar Das',
+            'office_hours': 'Friday 11am-12pm, and by appointment',
+            'contact': 'jdas5@asu.edu',
+            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments using advanced AI tools. The curriculum emphasizes real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
+            'quiz_info': 'Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.'
+        }
     }
     return render(request, 'home.html', context)
 
