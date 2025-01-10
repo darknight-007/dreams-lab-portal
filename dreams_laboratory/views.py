@@ -980,7 +980,11 @@ def get_ses598_course_data():
     return {
         'course_info': {
             'title': 'RAS/SES 598: Space Robotics and AI',
-            'semester': 'Spring 2025\nRAS #39245\nSES #39153',
+            'semester': [
+                'Spring 2025',
+                'RAS #39245',
+                'SES <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?keywords=39153&searchType=all&term=2251#detailsOpen=39153-126724" target="_blank">#39153</a>'
+            ],
             'meeting_times': 'Tu/Th 10:30-11:45am',
             'location': 'ASU Tempe Campus, Room <a href="https://maps.app.goo.gl/2qaUKUa66rQvqr7r9" target="_blank">PSF 647</a>',
             'instructor': 'Dr. Jnaneshwar Das',
@@ -1374,7 +1378,11 @@ def dreamslab_home_view(request):
         'assets': Asset.objects.all(),
         'course': {
             'title': 'RAS/SES 598: Space Robotics and AI',
-            'semester': 'Spring 2025\nRAS #39245\nSES #39153',
+            'semester': [
+                'Spring 2025',
+                'RAS #39245',
+                'SES <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?keywords=39153&searchType=all&term=2251#detailsOpen=39153-126724" target="_blank">#39153</a>'
+            ],
             'meeting_times': 'Tu/Th 10:30-11:45am',
             'location': 'ASU Tempe Campus, Room <a href="https://maps.app.goo.gl/2qaUKUa66rQvqr7r9" target="_blank">PSF 647</a>',
             'instructor': 'Dr. Jnaneshwar Das',

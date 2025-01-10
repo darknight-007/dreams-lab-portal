@@ -466,7 +466,11 @@ function generatePDF() {
             <div class="course-meta">
                 <div class="meta-item">
                     <i class="fas fa-calendar"></i>
-                    <span>{{ syllabus.course_info.semester|linebreaksbr }}</span>
+                    <span>
+                        {% for line in syllabus.course_info.semester %}
+                            {{ line|safe }}<br>
+                        {% endfor %}
+                    </span>
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-clock"></i>
