@@ -357,6 +357,76 @@ section h2::after {
         margin: 2rem 0;
     }
 }
+
+/* Recommended Papers */
+.papers-section {
+    margin: 4rem 0;
+}
+
+.papers-category {
+    margin-bottom: 3rem;
+}
+
+.papers-category h3 {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.papers-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.paper-card {
+    padding: 1.5rem;
+    background: var(--color-subtle);
+    border-radius: var(--radius);
+    transition: transform 0.2s;
+}
+
+.paper-card:hover {
+    transform: translateY(-2px);
+}
+
+.paper-card h4 {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.paper-card .authors {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.paper-card .venue {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--color-bg);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+}
+
+.paper-card a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.paper-card a:hover {
+    opacity: 0.7;
+}
 </style>
 
 <script>
@@ -385,6 +455,7 @@ function generatePDF() {
             <li><a href="#modules">Modules</a></li>
             <li><a href="#grading">Grading</a></li>
             <li><a href="#resources">Resources</a></li>
+            <li><a href="#recommended-papers">Recommended Papers</a></li>
         </ul>
     </nav>
 
@@ -446,55 +517,6 @@ function generatePDF() {
             </div>
         </section>
 
-        <!-- Course Modules -->
-        <section id="modules">
-            <h2>Course Schedule</h2>
-            <table class="course-schedule-table">
-                <thead>
-                    <tr>
-                        <th>Week</th>
-                        <th>Topics</th>
-                        <th>Assignment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for module in syllabus.modules %}
-                    <tr>
-                        <td>
-                            <strong>{{ module.week }}</strong><br>
-                            {{ module.title }}
-                        </td>
-                        <td>
-                            <ul>
-                                {% for topic in module.topics %}
-                                <li>{{ topic }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td>
-                            {% if module.assignment %}
-                            {{ module.assignment }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Grading -->
-        <section id="grading">
-            <h2>Grading</h2>
-            <div class="grading-chart">
-                {% for component, details in syllabus.grading.items %}
-                <div class="grading-item">
-                    <h4>{{ component }} ({{ details.percentage }}%)</h4>
-                    <p>{{ details.description }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-
         <!-- Resources -->
         <section id="resources">
             <h2>Resources</h2>
@@ -523,6 +545,27 @@ function generatePDF() {
                     <p class="book-description">A classic text bridging theory and practice in optimal control, estimation, and stochastic systems analysis.</p>
                 </div>
             </div>
+
+            <!-- Recommended Papers -->
+            <h3>Recommended Papers</h3>
+            {% for category, papers in syllabus.recommended_papers.items %}
+            <div class="papers-category">
+                <h3>{{ category }}</h3>
+                <div class="papers-list">
+                    {% for paper in papers %}
+                    <div class="paper-card" id="paper-{{ paper.title|slugify }}">
+                        <h4>{{ paper.title }}</h4>
+                        <div class="authors">{{ paper.authors }}</div>
+                        <div class="venue">{{ paper.venue }}</div>
+                        <a href="{{ paper.url }}" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            Read Paper
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
 
             <!-- Interactive Tutorials -->
             <h3>Interactive Tutorials</h3>
@@ -553,6 +596,87 @@ function generatePDF() {
                 </tbody>
             </table>
             {% endfor %}
+        </section>
+
+        <!-- Course Modules -->
+        <section id="modules">
+            <h2>Course Schedule</h2>
+            <table class="course-schedule-table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Topics</th>
+                        <th>Assignment</th>
+                        <th>Related Papers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in syllabus.modules %}
+                    <tr>
+                        <td>
+                            <strong>{{ module.week }}</strong><br>
+                            {{ module.title }}
+                        </td>
+                        <td>
+                            <ul>
+                                {% for topic in module.topics %}
+                                <li>{{ topic }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            {% if module.assignment %}
+                            {{ module.assignment }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if module.title == 'Scene Representation, View Synthesis, and Scene Analysis' %}
+                                <ul>
+                                    <li><a href="#paper-gaussian-splatting-slam">Gaussian Splatting SLAM</a></li>
+                                    <li><a href="#paper-nerf-representing-scenes-as-neural-radiance-fields-for-view-synthesis">NeRF</a></li>
+                                    <li><a href="#paper-diffusion-models-in-vision-a-survey">Diffusion Models Survey</a></li>
+                                </ul>
+                            {% elif module.title == 'SLAM and Active Perception' %}
+                                <ul>
+                                    <li><a href="#paper-structure-invariant-range-visual-inertial-odometry">Range-Visual-Inertial Odometry</a></li>
+                                    <li><a href="#paper-receding-horizon-next-best-view-planner-for-3d-exploration">Next-Best-View Planning</a></li>
+                                    <li><a href="#paper-active-semantic-mapping-and-pose-graph-spectral-analysis-for-robot-exploration">Active Semantic Mapping</a></li>
+                                </ul>
+                            {% elif module.title == 'Extreme Environment Operations' %}
+                                <ul>
+                                    <li><a href="#paper-autonomous-robotics-is-driving-perseverance-rovers-progress-on-mars">Perseverance Progress</a></li>
+                                    <li><a href="#paper-precise-pose-estimation-of-the-nasa-mars-2020-perseverance-rover-through-a-stereo-vision-based-approach">Perseverance Pose Estimation</a></li>
+                                    <li><a href="#paper-ingenuity-mars-helicopter-from-technology-demonstration-to-extraterrestrial-scout">Ingenuity Mars Helicopter</a></li>
+                                </ul>
+                            {% elif module.title == 'Sampling Strategies and Information Theory' %}
+                                <ul>
+                                    <li><a href="#paper-a-3d-drizzle-algorithm-for-jwst-and-practical-application-to-the-miri-medium-resolution-spectrometer">JWST 3D Drizzle</a></li>
+                                    <li><a href="#paper-an-information-theoretic-approach-to-optimize-jwst-observations-and-retrievals-of-transiting-exoplanet-atmospheres">JWST Observations Optimization</a></li>
+                                </ul>
+                            {% elif module.title == 'Multi-Robot Coordination and Distributed Learning' %}
+                                <ul>
+                                    <li><a href="#paper-distributed-exploration-in-multi-armed-bandits">Distributed Multi-Armed Bandits</a></li>
+                                    <li><a href="#paper-decentralized-cooperative-stochastic-bandits">Decentralized Cooperative Bandits</a></li>
+                                </ul>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Grading -->
+        <section id="grading">
+            <h2>Grading</h2>
+            <div class="grading-chart">
+                {% for component, details in syllabus.grading.items %}
+                <div class="grading-item">
+                    <h4>{{ component }} ({{ details.percentage }}%)</h4>
+                    <p>{{ details.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
         </section>
     </div>
 {% endblock %}

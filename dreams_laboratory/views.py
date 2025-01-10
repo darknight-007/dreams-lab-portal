@@ -997,6 +997,97 @@ def get_ses598_course_data():
             {'category': 'Recommended', 'requirement': 'Prior exposure to ROS (Robot Operating System), CUDA programming, or parallel computing'},
             {'category': 'Required Software', 'requirement': 'Students must have a computer capable of running Linux and processing 3D graphics'}
         ],
+        'recommended_papers': {
+            'Scene Representation and View Synthesis': [
+                {
+                    'title': 'Gaussian Splatting SLAM',
+                    'authors': 'Matsuki, H., Murai, R., Kelly, P.H.J., Davison, A.J.',
+                    'venue': 'CVPR 2024',
+                    'url': 'https://openaccess.thecvf.com/content/CVPR2024/papers/Matsuki_Gaussian_Splatting_SLAM_CVPR_2024_paper.pdf',
+                    'citation': '@InProceedings{Matsuki_2024_CVPR, author = {Matsuki, Hidenobu and Murai, Riku and Kelly, Paul H.J. and Davison, Andrew J.}, title = {Gaussian Splatting SLAM}, booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, month = {June}, year = {2024}, pages = {18039-18048} }'
+                },
+                {
+                    'title': 'NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis',
+                    'authors': 'Mildenhall, B., Srinivasan, P.P., Tancik, M., Barron, J.T., Ramamoorthi, R., Ng, R.',
+                    'venue': 'Communications of the ACM 2021',
+                    'url': 'https://dl.acm.org/doi/abs/10.1145/3503250'
+                },
+                {
+                    'title': 'Diffusion Models in Vision: A Survey',
+                    'authors': 'Croitoru, F.A., Hondru, V., Ionescu, R.T., Shah, M.',
+                    'venue': 'IEEE TPAMI 2023',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/10081412'
+                }
+            ],
+            'SLAM and Active Perception': [
+                {
+                    'title': 'Structure-Invariant Range-Visual-Inertial Odometry',
+                    'authors': 'Alberico, I., Delaune, J., Cioffi, G., Scaramuzza, D.',
+                    'venue': 'IROS 2024',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/10801775'
+                },
+                {
+                    'title': 'Receding Horizon "Next-Best-View" Planner for 3D Exploration',
+                    'authors': 'Bircher, A., Kamel, M., Alexis, K., Oleynikova, H., Siegwart, R.',
+                    'venue': 'ICRA 2016',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/7487281'
+                },
+                {
+                    'title': 'Active Semantic Mapping and Pose Graph Spectral Analysis for Robot Exploration',
+                    'authors': 'Zhang, R., Bong, H.M., Beltrame, G.',
+                    'venue': 'IROS 2024',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/10802821'
+                }
+            ],
+            'Extreme Environment Operations': [
+                {
+                    'title': 'Autonomous robotics is driving Perseverance rover\'s progress on Mars',
+                    'authors': 'Verma, V., et al.',
+                    'venue': 'Science Robotics 2023',
+                    'url': 'https://www.science.org/doi/full/10.1126/scirobotics.adi3099'
+                },
+                {
+                    'title': 'Precise pose estimation of the NASA Mars 2020 Perseverance rover through a stereo‐vision‐based approach',
+                    'authors': 'Andolfo, S., Petricca, F., Genova, A.',
+                    'venue': 'Journal of Field Robotics 2023',
+                    'url': 'https://onlinelibrary.wiley.com/doi/epdf/10.1002/rob.22138'
+                },
+                {
+                    'title': 'Ingenuity Mars Helicopter: From Technology Demonstration to Extraterrestrial Scout',
+                    'authors': 'Tzanetos, T., et al.',
+                    'venue': 'IEEE Aerospace Conference 2022',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/9843428'
+                }
+            ],
+            'Sampling Strategies and Information Theory': [
+                {
+                    'title': 'A 3D drizzle algorithm for JWST and practical application to the MIRI Medium Resolution Spectrometer',
+                    'authors': 'Law, D.D., et al.',
+                    'venue': 'The Astronomical Journal 2023',
+                    'url': 'https://iopscience.iop.org/article/10.3847/1538-3881/acdddc/pdf'
+                },
+                {
+                    'title': 'An information-theoretic approach to optimize JWST observations and retrievals of transiting exoplanet atmospheres',
+                    'authors': 'Howe, A.R., Burrows, A., Deming, D.',
+                    'venue': 'The Astrophysical Journal 2017',
+                    'url': 'https://iopscience.iop.org/article/10.3847/1538-4357/835/1/96/pdf'
+                }
+            ],
+            'Multi-Robot Coordination': [
+                {
+                    'title': 'Distributed exploration in multi-armed bandits',
+                    'authors': 'Hillel, E., Karnin, Z.S., Koren, T., Lempel, R., Somekh, O.',
+                    'venue': 'NeurIPS 2013',
+                    'url': 'https://proceedings.neurips.cc/paper_files/paper/2013/file/598b3e71ec378bd83e0a727608b5db01-Paper.pdf'
+                },
+                {
+                    'title': 'Decentralized cooperative stochastic bandits',
+                    'authors': 'Martínez-Rubio, D., Kanade, V., Rebeschini, P.',
+                    'venue': 'NeurIPS 2019',
+                    'url': 'https://proceedings.neurips.cc/paper/2019/file/85353d3b2f39b9c9b5ee3576578c04b7-Paper.pdf'
+                }
+            ]
+        },
         'modules': [
             {
                 'week': '1-2',
