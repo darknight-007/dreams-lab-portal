@@ -982,7 +982,7 @@ def get_ses598_course_data():
             'title': 'SES 598: Space Robotics and AI',
             'semester': 'Spring 2025',
             'meeting_times': 'Tu/Th 10:30-11:45am',
-            'location': 'ASU Tempe Campus, Room TBD',
+            'location': 'ASU Tempe Campus, Room PSF647',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'Friday 11am-12pm, and by appointment',
             'contact': 'jdas5@asu.edu',
