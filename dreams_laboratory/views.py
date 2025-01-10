@@ -1017,6 +1017,12 @@ def get_ses598_course_data():
                     'authors': 'Croitoru, F.A., Hondru, V., Ionescu, R.T., Shah, M.',
                     'venue': 'IEEE TPAMI 2023',
                     'url': 'https://ieeexplore.ieee.org/abstract/document/10081412'
+                },
+                {
+                    'title': 'PIN-SLAM: LiDAR SLAM Using a Point-Based Implicit Neural Representation for Achieving Global Map Consistency',
+                    'authors': 'Pan, Y., Zhong, X., Wiesmann, L., Posewsky, T., Behley, J., Stachniss, C.',
+                    'venue': 'IEEE Transactions on Robotics 2024',
+                    'url': 'https://www.ipb.uni-bonn.de/wp-content/papercite-data/pdf/pan2024tro.pdf'
                 }
             ],
             'SLAM and Active Perception': [
@@ -1037,6 +1043,18 @@ def get_ses598_course_data():
                     'authors': 'Zhang, R., Bong, H.M., Beltrame, G.',
                     'venue': 'IROS 2024',
                     'url': 'https://ieeexplore.ieee.org/abstract/document/10802821'
+                },
+                {
+                    'title': 'Ultimate SLAM? Combining Events, Images, and IMU for Robust Visual SLAM in HDR and High-Speed Scenarios',
+                    'authors': 'Vidal, A.R., Rebecq, H., Horstschaefer, T., Scaramuzza, D.',
+                    'venue': 'IEEE Robotics and Automation Letters 2018',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/8258997'
+                },
+                {
+                    'title': 'Data-Efficient Collaborative Decentralized Thermal-Inertial Odometry',
+                    'authors': 'Polizzi, V., Hewitt, R., Hidalgo-Carrió, J., Delaune, J., Scaramuzza, D.',
+                    'venue': 'IEEE Robotics and Automation Letters 2022',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/9844233'
                 }
             ],
             'Extreme Environment Operations': [
@@ -1085,6 +1103,40 @@ def get_ses598_course_data():
                     'authors': 'Martínez-Rubio, D., Kanade, V., Rebeschini, P.',
                     'venue': 'NeurIPS 2019',
                     'url': 'https://proceedings.neurips.cc/paper/2019/file/85353d3b2f39b9c9b5ee3576578c04b7-Paper.pdf'
+                }
+            ],
+            'Control and Planning': [
+                {
+                    'title': 'Model Predictive Contouring Control for Time-Optimal Quadrotor Flight',
+                    'authors': 'Romero, A., Sun, S., Foehn, P., Scaramuzza, D.',
+                    'venue': 'IEEE Transactions on Robotics 2022',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/9802523'
+                },
+                {
+                    'title': 'A Comparative Study of Nonlinear MPC and Differential-Flatness-Based Control for Quadrotor Agile Flight',
+                    'authors': 'Sun, S., Romero, A., Foehn, P., Kaufmann, E., Scaramuzza, D.',
+                    'venue': 'IEEE Transactions on Robotics 2022',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/9794477'
+                }
+            ],
+            'Computer Vision and 3D Reconstruction': [
+                {
+                    'title': 'Past, Present, and Future of Simultaneous Localization and Mapping: Toward the Robust-Perception Age',
+                    'authors': 'Cadena, C., et al.',
+                    'venue': 'IEEE Transactions on Robotics 2016',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/7747236'
+                },
+                {
+                    'title': 'Structure-From-Motion Revisited',
+                    'authors': 'Schonberger, J.L., Frahm, J.M.',
+                    'venue': 'CVPR 2016',
+                    'url': 'https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Schonberger_Structure-From-Motion_Revisited_CVPR_2016_paper.pdf'
+                },
+                {
+                    'title': 'ORB-SLAM: A Versatile and Accurate Monocular SLAM System',
+                    'authors': 'Mur-Artal, R., Montiel, J.M.M., Tardós, J.D.',
+                    'venue': 'IEEE Transactions on Robotics 2015',
+                    'url': 'https://ieeexplore.ieee.org/abstract/document/7219438'
                 }
             ]
         },

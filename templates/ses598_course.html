@@ -455,7 +455,6 @@ function generatePDF() {
             <li><a href="#modules">Modules</a></li>
             <li><a href="#grading">Grading</a></li>
             <li><a href="#resources">Resources</a></li>
-            <li><a href="#recommended-papers">Recommended Papers</a></li>
         </ul>
     </nav>
 
@@ -512,6 +511,101 @@ function generatePDF() {
                 <div class="prerequisite-item">
                     <h4>{{ prereq.category }}</h4>
                     <p>{{ prereq.requirement }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Course Modules -->
+        <section id="modules">
+            <h2>Course Schedule</h2>
+            <table class="course-schedule-table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Topics</th>
+                        <th>Assignment</th>
+                        <th>Related Papers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in syllabus.modules %}
+                    <tr>
+                        <td>
+                            <strong>{{ module.week }}</strong><br>
+                            {{ module.title }}
+                        </td>
+                        <td>
+                            <ul>
+                                {% for topic in module.topics %}
+                                <li>{{ topic }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>
+                            {% if module.assignment %}
+                            {{ module.assignment }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if module.title == 'Scene Representation, View Synthesis, and Scene Analysis' %}
+                                <ul>
+                                    <li><a href="#paper-gaussian-splatting-slam">Gaussian Splatting SLAM</a></li>
+                                    <li><a href="#paper-nerf-representing-scenes-as-neural-radiance-fields-for-view-synthesis">NeRF</a></li>
+                                    <li><a href="#paper-diffusion-models-in-vision-a-survey">Diffusion Models Survey</a></li>
+                                    <li><a href="#paper-pin-slam-lidar-slam-using-a-point-based-implicit-neural-representation-for-achieving-global-map-consistency">PIN-SLAM</a></li>
+                                </ul>
+                            {% elif module.title == 'Computer Vision and 3D Reconstruction' %}
+                                <ul>
+                                    <li><a href="#paper-past-present-and-future-of-simultaneous-localization-and-mapping-toward-the-robust-perception-age">SLAM Survey</a></li>
+                                    <li><a href="#paper-structure-from-motion-revisited">COLMAP: SfM Revisited</a></li>
+                                    <li><a href="#paper-orb-slam-a-versatile-and-accurate-monocular-slam-system">ORB-SLAM</a></li>
+                                </ul>
+                            {% elif module.title == 'SLAM and Active Perception' %}
+                                <ul>
+                                    <li><a href="#paper-structure-invariant-range-visual-inertial-odometry">Range-Visual-Inertial Odometry</a></li>
+                                    <li><a href="#paper-receding-horizon-next-best-view-planner-for-3d-exploration">Next-Best-View Planning</a></li>
+                                    <li><a href="#paper-active-semantic-mapping-and-pose-graph-spectral-analysis-for-robot-exploration">Active Semantic Mapping</a></li>
+                                    <li><a href="#paper-ultimate-slam-combining-events-images-and-imu-for-robust-visual-slam-in-hdr-and-high-speed-scenarios">Ultimate SLAM</a></li>
+                                    <li><a href="#paper-data-efficient-collaborative-decentralized-thermal-inertial-odometry">Thermal-Inertial Odometry</a></li>
+                                </ul>
+                            {% elif module.title == 'State estimation and Controls' %}
+                                <ul>
+                                    <li><a href="#paper-model-predictive-contouring-control-for-time-optimal-quadrotor-flight">MPC for Quadrotor Flight</a></li>
+                                    <li><a href="#paper-a-comparative-study-of-nonlinear-mpc-and-differential-flatness-based-control-for-quadrotor-agile-flight">MPC vs Differential Flatness Control</a></li>
+                                </ul>
+                            {% elif module.title == 'Extreme Environment Operations' %}
+                                <ul>
+                                    <li><a href="#paper-autonomous-robotics-is-driving-perseverance-rovers-progress-on-mars">Perseverance Progress</a></li>
+                                    <li><a href="#paper-precise-pose-estimation-of-the-nasa-mars-2020-perseverance-rover-through-a-stereo-vision-based-approach">Perseverance Pose Estimation</a></li>
+                                    <li><a href="#paper-ingenuity-mars-helicopter-from-technology-demonstration-to-extraterrestrial-scout">Ingenuity Mars Helicopter</a></li>
+                                </ul>
+                            {% elif module.title == 'Sampling Strategies and Information Theory' %}
+                                <ul>
+                                    <li><a href="#paper-a-3d-drizzle-algorithm-for-jwst-and-practical-application-to-the-miri-medium-resolution-spectrometer">JWST 3D Drizzle</a></li>
+                                    <li><a href="#paper-an-information-theoretic-approach-to-optimize-jwst-observations-and-retrievals-of-transiting-exoplanet-atmospheres">JWST Observations Optimization</a></li>
+                                </ul>
+                            {% elif module.title == 'Multi-Robot Coordination and Distributed Learning' %}
+                                <ul>
+                                    <li><a href="#paper-distributed-exploration-in-multi-armed-bandits">Distributed Multi-Armed Bandits</a></li>
+                                    <li><a href="#paper-decentralized-cooperative-stochastic-bandits">Decentralized Cooperative Bandits</a></li>
+                                </ul>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Grading -->
+        <section id="grading">
+            <h2>Grading</h2>
+            <div class="grading-chart">
+                {% for component, details in syllabus.grading.items %}
+                <div class="grading-item">
+                    <h4>{{ component }} ({{ details.percentage }}%)</h4>
+                    <p>{{ details.description }}</p>
                 </div>
                 {% endfor %}
             </div>
@@ -596,87 +690,6 @@ function generatePDF() {
                 </tbody>
             </table>
             {% endfor %}
-        </section>
-
-        <!-- Course Modules -->
-        <section id="modules">
-            <h2>Course Schedule</h2>
-            <table class="course-schedule-table">
-                <thead>
-                    <tr>
-                        <th>Week</th>
-                        <th>Topics</th>
-                        <th>Assignment</th>
-                        <th>Related Papers</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for module in syllabus.modules %}
-                    <tr>
-                        <td>
-                            <strong>{{ module.week }}</strong><br>
-                            {{ module.title }}
-                        </td>
-                        <td>
-                            <ul>
-                                {% for topic in module.topics %}
-                                <li>{{ topic }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td>
-                            {% if module.assignment %}
-                            {{ module.assignment }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if module.title == 'Scene Representation, View Synthesis, and Scene Analysis' %}
-                                <ul>
-                                    <li><a href="#paper-gaussian-splatting-slam">Gaussian Splatting SLAM</a></li>
-                                    <li><a href="#paper-nerf-representing-scenes-as-neural-radiance-fields-for-view-synthesis">NeRF</a></li>
-                                    <li><a href="#paper-diffusion-models-in-vision-a-survey">Diffusion Models Survey</a></li>
-                                </ul>
-                            {% elif module.title == 'SLAM and Active Perception' %}
-                                <ul>
-                                    <li><a href="#paper-structure-invariant-range-visual-inertial-odometry">Range-Visual-Inertial Odometry</a></li>
-                                    <li><a href="#paper-receding-horizon-next-best-view-planner-for-3d-exploration">Next-Best-View Planning</a></li>
-                                    <li><a href="#paper-active-semantic-mapping-and-pose-graph-spectral-analysis-for-robot-exploration">Active Semantic Mapping</a></li>
-                                </ul>
-                            {% elif module.title == 'Extreme Environment Operations' %}
-                                <ul>
-                                    <li><a href="#paper-autonomous-robotics-is-driving-perseverance-rovers-progress-on-mars">Perseverance Progress</a></li>
-                                    <li><a href="#paper-precise-pose-estimation-of-the-nasa-mars-2020-perseverance-rover-through-a-stereo-vision-based-approach">Perseverance Pose Estimation</a></li>
-                                    <li><a href="#paper-ingenuity-mars-helicopter-from-technology-demonstration-to-extraterrestrial-scout">Ingenuity Mars Helicopter</a></li>
-                                </ul>
-                            {% elif module.title == 'Sampling Strategies and Information Theory' %}
-                                <ul>
-                                    <li><a href="#paper-a-3d-drizzle-algorithm-for-jwst-and-practical-application-to-the-miri-medium-resolution-spectrometer">JWST 3D Drizzle</a></li>
-                                    <li><a href="#paper-an-information-theoretic-approach-to-optimize-jwst-observations-and-retrievals-of-transiting-exoplanet-atmospheres">JWST Observations Optimization</a></li>
-                                </ul>
-                            {% elif module.title == 'Multi-Robot Coordination and Distributed Learning' %}
-                                <ul>
-                                    <li><a href="#paper-distributed-exploration-in-multi-armed-bandits">Distributed Multi-Armed Bandits</a></li>
-                                    <li><a href="#paper-decentralized-cooperative-stochastic-bandits">Decentralized Cooperative Bandits</a></li>
-                                </ul>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Grading -->
-        <section id="grading">
-            <h2>Grading</h2>
-            <div class="grading-chart">
-                {% for component, details in syllabus.grading.items %}
-                <div class="grading-item">
-                    <h4>{{ component }} ({{ details.percentage }}%)</h4>
-                    <p>{{ details.description }}</p>
-                </div>
-                {% endfor %}
-            </div>
         </section>
     </div>
 {% endblock %}
