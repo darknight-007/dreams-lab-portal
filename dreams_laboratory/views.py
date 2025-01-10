@@ -1079,6 +1079,12 @@ def get_ses598_course_data():
             ],
             'Sampling Strategies and Information Theory': [
                 {
+                    'title': 'Data-driven robotic sampling for marine ecosystem monitoring',
+                    'authors': 'Das, J., Py, F., Harvey, J.B.J., Ryan, J.P., Gellene, A., Graham, R., Caron, D.A., Rajan, K., Sukhatme, G.S.',
+                    'venue': 'International Journal of Robotics Research 2015',
+                    'url': 'https://journals.sagepub.com/doi/full/10.1177/0278364915587723'
+                },
+                {
                     'title': 'A 3D drizzle algorithm for JWST and practical application to the MIRI Medium Resolution Spectrometer',
                     'authors': 'Law, D.D., et al.',
                     'venue': 'The Astronomical Journal 2023',
