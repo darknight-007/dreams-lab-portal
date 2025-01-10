@@ -979,10 +979,10 @@ def get_ses598_course_data():
     """Return the SES598 course data that can be used across different views"""
     return {
         'course_info': {
-            'title': 'SES 598: Space Robotics and AI',
-            'semester': 'Spring 2025',
+            'title': 'RAS/SES 598: Space Robotics and AI',
+            'semester': 'Spring 2025\nRAS #39245\nSES #39153',
             'meeting_times': 'Tu/Th 10:30-11:45am',
-            'location': 'ASU Tempe Campus, Room PSF647',
+            'location': 'ASU Tempe Campus, Room <a href="https://maps.app.goo.gl/2qaUKUa66rQvqr7r9" target="_blank">PSF 647</a>',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'Friday 11am-12pm, and by appointment',
             'contact': 'jdas5@asu.edu',
@@ -1132,6 +1132,12 @@ def get_ses598_course_data():
                 }
             ],
             'Computer Vision and 3D Reconstruction': [
+                {
+                    'title': 'DUSt3R: Geometric 3D Vision Made Easy',
+                    'authors': 'Wang, S., Leroy, V., Cabon, Y., Chidlovskii, B., Revaud, J.',
+                    'venue': 'CVPR 2024',
+                    'url': 'https://openaccess.thecvf.com/content/CVPR2024/papers/Wang_DUSt3R_Geometric_3D_Vision_Made_Easy_CVPR_2024_paper.pdf'
+                },
                 {
                     'title': 'Past, Present, and Future of Simultaneous Localization and Mapping: Toward the Robust-Perception Age',
                     'authors': 'Cadena, C., et al.',

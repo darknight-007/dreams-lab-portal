@@ -466,7 +466,7 @@ function generatePDF() {
             <div class="course-meta">
                 <div class="meta-item">
                     <i class="fas fa-calendar"></i>
-                    <span>{{ syllabus.course_info.semester }}</span>
+                    <span>{{ syllabus.course_info.semester|linebreaksbr }}</span>
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-clock"></i>
@@ -474,7 +474,7 @@ function generatePDF() {
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ syllabus.course_info.location }}</span>
+                    <span>{{ syllabus.course_info.location|safe }}</span>
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-user"></i>
@@ -557,6 +557,7 @@ function generatePDF() {
                                 </ul>
                             {% elif module.title == 'Computer Vision and 3D Reconstruction' %}
                                 <ul>
+                                    <li><a href="#paper-dust3r-geometric-3d-vision-made-easy">DUSt3R</a></li>
                                     <li><a href="#paper-past-present-and-future-of-simultaneous-localization-and-mapping-toward-the-robust-perception-age">SLAM Survey</a></li>
                                     <li><a href="#paper-structure-from-motion-revisited">COLMAP: SfM Revisited</a></li>
                                     <li><a href="#paper-orb-slam-a-versatile-and-accurate-monocular-slam-system">ORB-SLAM</a></li>
