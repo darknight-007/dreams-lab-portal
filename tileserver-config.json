@@ -1,13 +1,22 @@
 {
   "options": {
     "paths": {
-      "root": "/data",
-      "styles": "/data/styles",
-      "mbtiles": "/data/mbtiles"
+      "root": "./static/rock-tiles",
+      "styles": "./static/rock-tiles/styles",
+      "mbtiles": "./static/rock-tiles/mbtiles"
     },
     "serveAllFonts": true,
-    "serveStaticMaps": true
+    "serveStaticMaps": true,
+    "domains": ["localhost"],
+    "formatQuality": {
+      "jpeg": 80,
+      "webp": 90
+    }
   },
   "styles": {},
-  "data": {}
+  "data": {
+    "rock-tiles": {
+      "mbtiles": "./static/rock-tiles/mbtiles/rock-tiles.mbtiles"
+    }
+  }
 } 
