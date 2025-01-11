@@ -1366,9 +1366,7 @@ def get_ses598_course_data():
             {
                 'title': 'Probabilistic Robotics',
                 'authors': 'Sebastian Thrun, Wolfram Burgard, Dieter Fox',
-                'series': 'Intelligent Robotics and Autonomous Agents series',
-                'year': '2005',
-                'description': 'A comprehensive introduction to probabilistic algorithms in robotics, covering state estimation, mapping, localization, planning under uncertainty, and other fundamental topics in robot perception and decision-making.'
+                'description': 'A foundational text on probabilistic approaches to robotics, covering core algorithms for perception, estimation, and planning under uncertainty.'
             },
             {
                 'title': 'Optimal State Estimation: Kalman, H Infinity, and Nonlinear Approaches',
