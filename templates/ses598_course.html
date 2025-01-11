@@ -298,6 +298,21 @@ section h2::after {
     font-style: italic;
 }
 
+.book-item .book-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.book-item .book-link:hover {
+    opacity: 0.7;
+}
+
 /* Resources Section */
 #resources h3 {
     font-family: var(--font-mono);
@@ -625,26 +640,21 @@ function generatePDF() {
             <!-- Recommended Books -->
             <h3>Recommended Books</h3>
             <div class="books-list">
+                {% for book in syllabus.recommended_books %}
                 <div class="book-item">
-                    <h4>Optimal State Estimation: Kalman, H Infinity, and Nonlinear Approaches</h4>
-                    <p>Author: Dan Simon</p>
-                    <p class="book-description">A comprehensive guide to state estimation techniques with practical applications in navigation and control systems.</p>
+                    <h4>{{ book.title }}</h4>
+                    <p>Authors: {{ book.authors }}</p>
+                    {% if book.series %}<p>Series: {{ book.series }}</p>{% endif %}
+                    {% if book.year %}<p>Year: {{ book.year }}</p>{% endif %}
+                    <p class="book-description">{{ book.description }}</p>
+                    {% if book.url %}
+                    <a href="{{ book.url }}" target="_blank" class="book-link">
+                        <i class="fas fa-book-reader"></i>
+                        Read Book
+                    </a>
+                    {% endif %}
                 </div>
-                <div class="book-item">
-                    <h4>Pattern Recognition and Machine Learning</h4>
-                    <p>Author: Christopher M. Bishop</p>
-                    <p class="book-description">The definitive text on modern pattern recognition methods with a focus on Bayesian techniques and machine learning algorithms.</p>
-                </div>
-                <div class="book-item">
-                    <h4>Multiple View Geometry in Computer Vision</h4>
-                    <p>Authors: Richard Hartley and Andrew Zisserman</p>
-                    <p class="book-description">The foundational text for understanding geometric relationships between multiple views and 3D reconstruction techniques.</p>
-                </div>
-                <div class="book-item">
-                    <h4>Optimal Control and Estimation</h4>
-                    <p>Author: Robert F. Stengel</p>
-                    <p class="book-description">A classic text bridging theory and practice in optimal control, estimation, and stochastic systems analysis.</p>
-                </div>
+                {% endfor %}
             </div>
 
             <!-- Recommended Papers -->
