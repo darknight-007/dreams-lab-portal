@@ -1361,7 +1361,37 @@ def get_ses598_course_data():
                     'url': 'sensor_fusion_buddy'
                 }
             ]
-        }
+        },
+        'recommended_books': [
+            {
+                'title': 'Probabilistic Robotics',
+                'authors': 'Sebastian Thrun, Wolfram Burgard, Dieter Fox',
+                'series': 'Intelligent Robotics and Autonomous Agents series',
+                'year': '2005',
+                'description': 'A comprehensive introduction to probabilistic algorithms in robotics, covering state estimation, mapping, localization, planning under uncertainty, and other fundamental topics in robot perception and decision-making.'
+            },
+            {
+                'title': 'Optimal State Estimation: Kalman, H Infinity, and Nonlinear Approaches',
+                'authors': 'Dan Simon',
+                'description': 'A comprehensive guide to state estimation techniques with practical applications in navigation and control systems.'
+            },
+            {
+                'title': 'Pattern Recognition and Machine Learning',
+                'authors': 'Christopher M. Bishop',
+                'description': 'The definitive text on modern pattern recognition methods with a focus on Bayesian techniques and machine learning algorithms.',
+                'url': 'https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf'
+            },
+            {
+                'title': 'Multiple View Geometry in Computer Vision',
+                'authors': 'Richard Hartley and Andrew Zisserman',
+                'description': 'The foundational text for understanding geometric relationships between multiple views and 3D reconstruction techniques.'
+            },
+            {
+                'title': 'Optimal Control and Estimation',
+                'authors': 'Robert F. Stengel',
+                'description': 'A classic text bridging theory and practice in optimal control, estimation, and stochastic systems analysis.'
+            }
+        ]
     }
 
 def ses598_course_view(request):
