@@ -1115,6 +1115,15 @@ def get_ses598_course_data():
                     'url': 'https://proceedings.neurips.cc/paper/2019/file/85353d3b2f39b9c9b5ee3576578c04b7-Paper.pdf'
                 }
             ],
+            'Digital and Cyber-Physical Twins': [
+                {
+                    'title': 'Virtual Shake Robot: Simulating Dynamics of Precariously Balanced Rocks for Overturning and Large-displacement Processes',
+                    'authors': 'Chen, Z., Arrowsmith, R., Das, J., Wittich, C., Madugo, C., Kottke, A.',
+                    'venue': 'Seismica 2024',
+                    'url': 'https://seismica.library.mcgill.ca/article/view/692',
+                    'citation': '@article{chen2024virtual, title={Virtual Shake Robot: Simulating Dynamics of Precariously Balanced Rocks for Overturning and Large-displacement Processes}, author={Chen, Z. and Arrowsmith, R. and Das, J. and Wittich, C. and Madugo, C. and Kottke, A.}, journal={Seismica}, volume={3}, number={1}, year={2024}, doi={10.26443/seismica.v3i1.692}}'
+                }
+            ],
             'Control and Planning': [
                 {
                     'title': 'Model Predictive Contouring Control for Time-Optimal Quadrotor Flight',
@@ -1173,7 +1182,11 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: State estimation in 2D using ROS2, Assignment 2: Inverted pendulum stabilization using ROS2'
+                'assignment': 'Assignment 1: State estimation in 2D using ROS2, Assignment 2: Inverted pendulum stabilization using ROS2',
+                'lectures': [
+                    {'title': 'Course Introduction & State Estimation Overview', 'url': '/static/lectures/lecture1.pdf'},
+                    {'title': 'State Estimation Techniques', 'url': '/static/lectures/lecture2.pdf'}
+                ]
             },
             {
                 'week': '3-4',
