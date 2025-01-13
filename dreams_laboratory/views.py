@@ -1,4 +1,3 @@
-# views.py 
 import os
 import json
 import logging
@@ -1173,7 +1172,7 @@ def get_ses598_course_data():
         },
         'modules': [
             {
-                'week': 'Week 1-2 (Jan 14-25)',
+                'week': '1-2',
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood estimation (MLE)',
@@ -1182,14 +1181,14 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/state_estimation_assignment" target="_blank">State estimation in 2D using ROS2</a> (Due: Jan 21, 2025)\nAssignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Inverted pendulum stabilization using ROS2</a> (Due: Jan 28, 2025)',
+                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/state_estimation_assignment" target="_blank">State estimation in 2D using ROS2</a> (Due: Jan 21, 2025)<br>Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Inverted pendulum stabilization using ROS2</a> (Due: Jan 28, 2025)',
                 'lectures': [
                     {'title': 'Course Introduction & State Estimation Overview', 'url': '/static/lectures/lecture1.pdf'},
                     {'title': 'State Estimation Techniques', 'url': '/static/lectures/lecture2.pdf'}
                 ]
             },
             {
-                'week': 'Week 3-4 (Jan 28-Feb 8)',
+                'week': '3-4',
                 'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
@@ -1201,7 +1200,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 3: Offline 3D reconstruction pipeline leveraging OpenCV and COLMAP in ROS2'
             },
             {
-                'week': 'Week 5 (Feb 11-15)',
+                'week': '5',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
                     'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
@@ -1212,7 +1211,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
-                'week': 'Week 6 (Feb 18-22)',
+                'week': '6',
                 'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
@@ -1223,7 +1222,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST)datasets.'
             },
             {
-                'week': 'Week 7-8 (Feb 25-Mar 8)',
+                'week': '7-8',
                 'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
                     'Decision support systems, geographic information systems (GIS), and digital twins',
@@ -1232,10 +1231,10 @@ def get_ses598_course_data():
                     'Case study 2 - ecological digital and physical twins',
                     'Closing the loop on model improvement with cyber-physical twins'
                 ],
-                'assignment': 'Assignment 6: Adaptive digital twin system involving seismic studies with virtual shake robot and ShakeBot.'
+                'assignment': 'Assignment 6: Adaptive digital twin system involving seismic studies with virtual shake robot and ShakeBot. Assignment 1 due Jan 21, 2025. Assignment 2 due Jan 28, 2025.'
             },
             {
-                'week': 'Week 9-10 (Mar 18-29)',  # After spring break
+                'week': '9-10',
                 'title': 'SLAM and Active Perception',
                 'topics': [
                     'Information-theoretic SLAM',
@@ -1247,7 +1246,7 @@ def get_ses598_course_data():
                 'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
-                'week': 'Week 11-12 (Apr 1-12)',
+                'week': '11-12',
                 'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
@@ -1259,7 +1258,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 7: Multi-robot exploration system in digital twins.'
             },
             {
-                'week': 'Week 13-14 (Apr 15-26)',
+                'week': '13-14',
                 'title': 'Extreme Environment Operations',
                 'topics': [
                     'Risk-aware exploration',
@@ -1271,7 +1270,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 8:  Digital twin exercise on planning under risks and uncertainty.'
             },
             {
-                'week': 'Week 15-16 (Apr 29-May 3)',
+                'week': '15-16',
                 'title': 'Integration & Advanced Applications',
                 'topics': [
                     'Meta-learning for exploration',
