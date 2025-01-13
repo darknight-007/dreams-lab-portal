@@ -615,7 +615,7 @@ function generatePDF() {
                             {% endif %}
                             {% if module.assignment %}
                             <div class="assignment">
-                                {{ module.assignment }}
+                                {{ module.assignment|safe }}
                             </div>
                             {% endif %}
                         </td>

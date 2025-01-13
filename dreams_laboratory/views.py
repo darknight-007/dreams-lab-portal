@@ -1182,7 +1182,7 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: State estimation in 2D using ROS2, Assignment 2: Inverted pendulum stabilization using ROS2',
+                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/state_estimation_assignment" target="_blank">State estimation in 2D using ROS2</a>, Assignment 2: Inverted pendulum stabilization using ROS2',
                 'lectures': [
                     {'title': 'Course Introduction & State Estimation Overview', 'url': '/static/lectures/lecture1.pdf'},
                     {'title': 'State Estimation Techniques', 'url': '/static/lectures/lecture2.pdf'}
