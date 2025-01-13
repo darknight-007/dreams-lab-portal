@@ -1172,7 +1172,7 @@ def get_ses598_course_data():
         },
         'modules': [
             {
-                'week': '1-2',
+                'week': '1-2 (Jan 14-25)',
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood estimation (MLE)',
@@ -1188,7 +1188,7 @@ def get_ses598_course_data():
                 ]
             },
             {
-                'week': '3-4',
+                'week': '3-4 (Jan 28-Feb 8)',
                 'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
@@ -1200,7 +1200,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 3: Offline 3D reconstruction pipeline leveraging OpenCV and COLMAP in ROS2'
             },
             {
-                'week': '5',
+                'week': '5 (Feb 11-15)',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
                     'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
@@ -1211,7 +1211,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
-                'week': '6',
+                'week': '6 (Feb 18-22)',
                 'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
@@ -1222,7 +1222,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST)datasets.'
             },
             {
-                'week': '7-8',
+                'week': '7-8 (Feb 25-Mar 8)',
                 'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
                     'Decision support systems, geographic information systems (GIS), and digital twins',
@@ -1231,10 +1231,10 @@ def get_ses598_course_data():
                     'Case study 2 - ecological digital and physical twins',
                     'Closing the loop on model improvement with cyber-physical twins'
                 ],
-                'assignment': 'Assignment 6: Adaptive digital twin system involving seismic studies with virtual shake robot and ShakeBot. Assignment 1 due Jan 21, 2025. Assignment 2 due Jan 28, 2025.'
+                'assignment': 'Assignment 6: Adaptive digital twin system involving seismic studies with virtual shake robot and ShakeBot.'
             },
             {
-                'week': '9-10',
+                'week': '9-10 (Mar 17-29)',
                 'title': 'SLAM and Active Perception',
                 'topics': [
                     'Information-theoretic SLAM',
@@ -1246,7 +1246,7 @@ def get_ses598_course_data():
                 'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
-                'week': '11-12',
+                'week': '11-12 (Apr 1-12)',
                 'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
@@ -1258,7 +1258,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 7: Multi-robot exploration system in digital twins.'
             },
             {
-                'week': '13-14',
+                'week': '13-14 (Apr 15-26)',
                 'title': 'Extreme Environment Operations',
                 'topics': [
                     'Risk-aware exploration',
@@ -1270,7 +1270,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 8:  Digital twin exercise on planning under risks and uncertainty.'
             },
             {
-                'week': '15-16',
+                'week': '15-16 (Apr 29-May 3)',
                 'title': 'Integration & Advanced Applications',
                 'topics': [
                     'Meta-learning for exploration',
@@ -1410,27 +1410,14 @@ def ses598_course_view(request):
 
 def dreamslab_home_view(request):
     """DREAMS Lab home page"""
+    course_data = get_ses598_course_data()
     context = {
         'research_areas': Research.objects.all(),
         'people': People.objects.all(),
         'publications': Publication.objects.all(),
         'funding_source': FundingSource.objects.all(),
         'assets': Asset.objects.all(),
-        'course': {
-            'title': 'RAS/SES 598: Space Robotics and AI',
-            'semester': [
-                'Spring 2025',
-                'RAS #39245',
-                'SES <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?keywords=39153&searchType=all&term=2251#detailsOpen=39153-126724" target="_blank">#39153</a>'
-            ],
-            'meeting_times': 'Tu/Th 10:30-11:45am',
-            'location': 'ASU Tempe Campus, Room <a href="https://maps.app.goo.gl/2qaUKUa66rQvqr7r9" target="_blank">PSF 647</a>',
-            'instructor': 'Dr. Jnaneshwar Das',
-            'office_hours': 'Friday 11am-12pm, and by appointment',
-            'contact': 'jdas5@asu.edu',
-            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments using advanced AI tools. The curriculum emphasizes real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
-            'quiz_info': 'Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.'
-        }
+        'course': course_data['course_info']
     }
     return render(request, 'home.html', context)
 
