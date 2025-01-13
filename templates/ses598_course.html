@@ -592,7 +592,7 @@ function generatePDF() {
                         <td>
                             <ul>
                                 {% for topic in module.topics %}
-                                {% if module.week == '1-2' and topic == 'Least squares and maximum likelihood estimation (MLE)' %}
+                                {% if module.week|slice:":3" == '1-2' and topic == 'Least squares and maximum likelihood estimation (MLE)' %}
                                 <li>{{ topic }} <a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf#[{&quot;num&quot;:1559,&quot;gen&quot;:0},{&quot;name&quot;:&quot;Fit&quot;}]" target="_blank" title="See Bishop's Pattern Recognition and Machine Learning, Chapter 1.2.5 for theoretical foundations"><i class="fas fa-book"></i></a></li>
                                 {% else %}
                                 <li>{{ topic }}</li>
