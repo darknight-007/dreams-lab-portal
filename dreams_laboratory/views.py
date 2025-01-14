@@ -1645,8 +1645,30 @@ def quiz_admin_view(request):
     part1_scores = []
     part2_scores = []
     
+    # Initialize topic statistics
+    part1_topic_stats = [{'correct': 0, 'total': 0} for _ in range(5)]
+    part2_topic_stats = [{'correct': 0, 'total': 0} for _ in range(5)]
+    
+    # Correct answers for each part
+    part1_answers = {
+        'q1': '3',  # SLAM purpose
+        'q2': '2',  # LiDAR
+        'q3': '1',  # Occupancy grid
+        'q4': '1',  # GPS challenge
+        'q5': '2',  # Path planning
+    }
+    
+    part2_answers = {
+        'q1': '2',  # Stereo vision baseline
+        'q2': '2',  # SLAM loop closure
+        'q3': '3',  # Kalman filter parameters
+        'q4': '3',  # Sampling strategy
+        'q5': '1',  # Error type in rock mapping
+    }
+    
     for submission in submissions:
         email = submission['email']
+        
         # Get latest submissions for each part
         part1 = QuizSubmission.objects.filter(
             email=email, 
@@ -1660,27 +1682,62 @@ def quiz_admin_view(request):
         
         if part1 or part2:
             total_submissions += 1
-            part1_score = part1.total_score if part1 else 0
-            part2_score = part2.total_score if part2 else 0
             
-            if part1:
-                part1_scores.append(part1_score)
-            if part2:
-                part2_scores.append(part2_score)
-            
-            # Calculate combined score (60% Part 1, 40% Part 2)
-            combined_score = (part1_score * 0.6) + (part2_score * 0.4) if part1 and part2 else 0
-            
-            results.append({
+            # Initialize result dictionary
+            result = {
                 'email': email,
-                'part1_score': part1_score,
-                'part2_score': part2_score,
-                'combined_score': combined_score,
+                'part1_score': 0,
+                'part2_score': 0,
+                'combined_score': 0,
                 'last_submission': max(
                     part1.submission_date if part1 else timezone.make_aware(timezone.datetime.min),
                     part2.submission_date if part2 else timezone.make_aware(timezone.datetime.min)
                 )
-            })
+            }
+            
+            # Process Part 1
+            if part1:
+                correct_count = 0
+                for i in range(1, 6):
+                    q_key = f'q{i}'
+                    answer = getattr(part1, q_key, '')
+                    is_correct = answer == part1_answers[q_key]
+                    result[f'part1_{q_key}_correct'] = is_correct
+                    if answer:
+                        part1_topic_stats[i-1]['total'] += 1
+                        if is_correct:
+                            part1_topic_stats[i-1]['correct'] += 1
+                            correct_count += 1
+                
+                score = (correct_count / 5) * 100
+                result['part1_score'] = score
+                part1_scores.append(score)
+            
+            # Process Part 2
+            if part2:
+                correct_count = 0
+                for i in range(1, 6):
+                    q_key = f'q{i}'
+                    answer = getattr(part2, q_key, '')
+                    is_correct = answer == part2_answers[q_key]
+                    result[f'part2_{q_key}_correct'] = is_correct
+                    if answer:
+                        part2_topic_stats[i-1]['total'] += 1
+                        if is_correct:
+                            part2_topic_stats[i-1]['correct'] += 1
+                            correct_count += 1
+                
+                score = (correct_count / 5) * 100
+                result['part2_score'] = score
+                part2_scores.append(score)
+            
+            # Calculate combined score
+            result['combined_score'] = (result['part1_score'] * 0.6) + (result['part2_score'] * 0.4)
+            results.append(result)
+    
+    # Calculate percentages for topic statistics
+    for stats in part1_topic_stats + part2_topic_stats:
+        stats['correct_percentage'] = (stats['correct'] / stats['total'] * 100) if stats['total'] > 0 else 0
     
     # Sort results by combined score (descending)
     results.sort(key=lambda x: x['combined_score'], reverse=True)
@@ -1689,7 +1746,9 @@ def quiz_admin_view(request):
         'total_submissions': total_submissions,
         'avg_part1_score': sum(part1_scores) / len(part1_scores) if part1_scores else 0,
         'avg_part2_score': sum(part2_scores) / len(part2_scores) if part2_scores else 0,
-        'results': results
+        'results': results,
+        'part1_topic_stats': part1_topic_stats,
+        'part2_topic_stats': part2_topic_stats
     }
     
     return render(request, 'quiz_admin.html', context)

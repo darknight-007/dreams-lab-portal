@@ -55,6 +55,48 @@
         </div>
     </div>
 
+    <!-- Topic-wise Analysis -->
+    <div class="row mt-5 topic-analysis">
+        <!-- Part 1 Topics -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Part 1 Topic Analysis</h5>
+                    <canvas id="part1TopicsChart"></canvas>
+                    <div class="mt-4">
+                        <h6>Topics Covered:</h6>
+                        <ul class="list-unstyled">
+                            <li>Q1: SLAM Purpose and Applications</li>
+                            <li>Q2: LiDAR Technology and Applications</li>
+                            <li>Q3: Occupancy Grid Mapping</li>
+                            <li>Q4: GPS Navigation Challenges</li>
+                            <li>Q5: Path Planning Optimization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Part 2 Topics -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Part 2 Topic Analysis</h5>
+                    <canvas id="part2TopicsChart"></canvas>
+                    <div class="mt-4">
+                        <h6>Topics Covered:</h6>
+                        <ul class="list-unstyled">
+                            <li>Q1: Multi-view Geometry (Stereo Vision)</li>
+                            <li>Q2: SLAM Loop Closure</li>
+                            <li>Q3: Sensor Fusion (Kalman Filter)</li>
+                            <li>Q4: Sampling Strategies</li>
+                            <li>Q5: Error Analysis in Rock Mapping</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Individual Results Table -->
     <div class="mt-5">
         <h2>Individual Results</h2>
@@ -63,7 +105,9 @@
                 <thead>
                     <tr>
                         <th>Email</th>
+                        <th>Part 1 Topics</th>
                         <th>Part 1 Score</th>
+                        <th>Part 2 Topics</th>
                         <th>Part 2 Score</th>
                         <th>Combined Score</th>
                         <th>Last Submission</th>
@@ -73,7 +117,35 @@
                     {% for result in results %}
                     <tr>
                         <td>{{ result.email|slice:":1" }}***{{ result.email|slice:"-1:" }}</td>
+                        <td>
+                            <div class="topic-indicators" data-bs-toggle="tooltip" data-bs-html="true" 
+                                title="SLAM: {% if result.part1_q1_correct %}✓{% else %}✗{% endif %}
+                                       LiDAR: {% if result.part1_q2_correct %}✓{% else %}✗{% endif %}
+                                       Mapping: {% if result.part1_q3_correct %}✓{% else %}✗{% endif %}
+                                       GPS: {% if result.part1_q4_correct %}✓{% else %}✗{% endif %}
+                                       Path Planning: {% if result.part1_q5_correct %}✓{% else %}✗{% endif %}">
+                                <span class="topic-dot {% if result.part1_q1_correct %}correct{% else %}incorrect{% endif %}" title="SLAM"></span>
+                                <span class="topic-dot {% if result.part1_q2_correct %}correct{% else %}incorrect{% endif %}" title="LiDAR"></span>
+                                <span class="topic-dot {% if result.part1_q3_correct %}correct{% else %}incorrect{% endif %}" title="Mapping"></span>
+                                <span class="topic-dot {% if result.part1_q4_correct %}correct{% else %}incorrect{% endif %}" title="GPS"></span>
+                                <span class="topic-dot {% if result.part1_q5_correct %}correct{% else %}incorrect{% endif %}" title="Path Planning"></span>
+                            </div>
+                        </td>
                         <td>{{ result.part1_score|floatformat:1 }}%</td>
+                        <td>
+                            <div class="topic-indicators" data-bs-toggle="tooltip" data-bs-html="true"
+                                title="Stereo Vision: {% if result.part2_q1_correct %}✓{% else %}✗{% endif %}
+                                       Loop Closure: {% if result.part2_q2_correct %}✓{% else %}✗{% endif %}
+                                       Sensor Fusion: {% if result.part2_q3_correct %}✓{% else %}✗{% endif %}
+                                       Sampling: {% if result.part2_q4_correct %}✓{% else %}✗{% endif %}
+                                       Error Analysis: {% if result.part2_q5_correct %}✓{% else %}✗{% endif %}">
+                                <span class="topic-dot {% if result.part2_q1_correct %}correct{% else %}incorrect{% endif %}" title="Stereo Vision"></span>
+                                <span class="topic-dot {% if result.part2_q2_correct %}correct{% else %}incorrect{% endif %}" title="Loop Closure"></span>
+                                <span class="topic-dot {% if result.part2_q3_correct %}correct{% else %}incorrect{% endif %}" title="Sensor Fusion"></span>
+                                <span class="topic-dot {% if result.part2_q4_correct %}correct{% else %}incorrect{% endif %}" title="Sampling"></span>
+                                <span class="topic-dot {% if result.part2_q5_correct %}correct{% else %}incorrect{% endif %}" title="Error Analysis"></span>
+                            </div>
+                        </td>
                         <td>{{ result.part2_score|floatformat:1 }}%</td>
                         <td>{{ result.combined_score|floatformat:1 }}%</td>
                         <td>{{ result.last_submission|date:"Y-m-d H:i" }}</td>
@@ -89,6 +161,7 @@
 .card {
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 }
 .card-title {
     color: #666;
@@ -99,6 +172,82 @@
     font-weight: bold;
     color: #333;
 }
+
+/* Topic Analysis Styling */
+.topic-analysis .card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.topic-analysis h6 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #444;
+    margin: 1.5rem 0 1rem;
+}
+
+.topic-analysis ul {
+    margin-left: 0.5rem;
+}
+
+.topic-analysis li {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 0.8rem;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.topic-analysis li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #4a90e2;
+}
+
+.topic-analysis .card {
+    border: 1px solid #e0e0e0;
+}
+
+.topic-analysis canvas {
+    margin: 1rem 0;
+}
+
+/* Topic Indicators Styling */
+.topic-indicators {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.topic-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: help;
+}
+
+.topic-dot.correct {
+    background-color: #28a745;
+}
+
+.topic-dot.incorrect {
+    background-color: #dc3545;
+}
+
+/* Tooltip Customization */
+.tooltip-inner {
+    max-width: 300px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    text-align: left;
+    white-space: pre-line;
+}
 </style>
 
 <!-- Chart.js -->
@@ -108,6 +257,25 @@
 // Convert Django template variables to JavaScript arrays
 const part1Scores = [{% for result in results %}{{ result.part1_score }},{% endfor %}];
 const part2Scores = [{% for result in results %}{{ result.part2_score }},{% endfor %}];
+
+// Topic-wise data (to be populated from backend)
+const part1TopicData = {
+    labels: ['SLAM', 'LiDAR', 'Mapping', 'GPS', 'Path Planning'],
+    data: [
+        {% for topic in part1_topic_stats %}
+        {{ topic.correct_percentage }},
+        {% endfor %}
+    ]
+};
+
+const part2TopicData = {
+    labels: ['Stereo Vision', 'Loop Closure', 'Sensor Fusion', 'Sampling', 'Error Analysis'],
+    data: [
+        {% for topic in part2_topic_stats %}
+        {{ topic.correct_percentage }},
+        {% endfor %}
+    ]
+};
 
 // Helper function to generate histogram data
 function generateHistogramData(scores, binCount = 5) {
@@ -173,10 +341,61 @@ function createHistogram(canvasId, scores, label) {
     });
 }
 
-// Create both histograms when the page loads
+// Create topic analysis charts
+function createTopicChart(canvasId, data, title) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Correct Answer Rate (%)',
+                data: data.data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 20
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: title
+                }
+            }
+        }
+    });
+}
+
+// Create all charts when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     createHistogram('part1Histogram', part1Scores, 'Part 1 Scores');
     createHistogram('part2Histogram', part2Scores, 'Part 2 Scores');
+    createTopicChart('part1TopicsChart', part1TopicData, 'Part 1 Topic Performance');
+    createTopicChart('part2TopicsChart', part2TopicData, 'Part 2 Topic Performance');
+});
+
+// Initialize Bootstrap tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 });
 </script>
 {% endblock %} 
