@@ -1630,3 +1630,66 @@ def multiview_geometry(request):
         'tutorial_id': 'multiview'
     }
     return render(request, 'widgets/multiview_geometry.html', context)
+
+from django.db.models import Avg, Max
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def quiz_admin_view(request):
+    """Admin view for quiz statistics"""
+    # Get all unique emails
+    submissions = QuizSubmission.objects.values('email').distinct()
+    
+    results = []
+    total_submissions = 0
+    part1_scores = []
+    part2_scores = []
+    
+    for submission in submissions:
+        email = submission['email']
+        # Get latest submissions for each part
+        part1 = QuizSubmission.objects.filter(
+            email=email, 
+            quiz_id='SES598'
+        ).order_by('-submission_date').first()
+        
+        part2 = QuizSubmission.objects.filter(
+            email=email, 
+            quiz_id='SES598_Part2'
+        ).order_by('-submission_date').first()
+        
+        if part1 or part2:
+            total_submissions += 1
+            part1_score = part1.total_score if part1 else 0
+            part2_score = part2.total_score if part2 else 0
+            
+            if part1:
+                part1_scores.append(part1_score)
+            if part2:
+                part2_scores.append(part2_score)
+            
+            # Calculate combined score (60% Part 1, 40% Part 2)
+            combined_score = (part1_score * 0.6) + (part2_score * 0.4) if part1 and part2 else 0
+            
+            results.append({
+                'email': email,
+                'part1_score': part1_score,
+                'part2_score': part2_score,
+                'combined_score': combined_score,
+                'last_submission': max(
+                    part1.submission_date if part1 else timezone.make_aware(timezone.datetime.min),
+                    part2.submission_date if part2 else timezone.make_aware(timezone.datetime.min)
+                )
+            })
+    
+    # Sort results by combined score (descending)
+    results.sort(key=lambda x: x['combined_score'], reverse=True)
+    
+    context = {
+        'total_submissions': total_submissions,
+        'avg_part1_score': sum(part1_scores) / len(part1_scores) if part1_scores else 0,
+        'avg_part2_score': sum(part2_scores) / len(part2_scores) if part2_scores else 0,
+        'results': results
+    }
+    
+    return render(request, 'quiz_admin.html', context)
