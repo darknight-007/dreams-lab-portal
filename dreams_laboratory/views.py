@@ -975,17 +975,16 @@ def reset_quiz(request):
     return redirect('ses598_quiz')
 
 def get_ses598_course_data():
-    """Return the SES598 course data that can be used across different views"""
     return {
         'course_info': {
             'title': 'RAS/SES 598: Space Robotics and AI',
             'semester': [
                 'Spring 2025',
-                'RAS #39245',
+                'RAS <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?campusOrOnlineSelection=A&honors=F&keywords=39245&promod=F&searchType=all&term=2251#detailsOpen=39245-131738" target="_blank">#39245</a>',
                 'SES <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?keywords=39153&searchType=all&term=2251#detailsOpen=39153-126724" target="_blank">#39153</a>'
             ],
-            'meeting_times': 'Tu/Th 10:30-11:45am',
-            'location': 'ASU Tempe Campus, Room <a href="https://maps.app.goo.gl/2qaUKUa66rQvqr7r9" target="_blank">PSF 647</a>',
+            'meeting_times': ' (UPDATED) Tu/Th 4:30-5:45pm',
+            'location': '(UPDATED) ASU Poly Campus, Room <a href="https://www.google.com/maps?q=33.306167144617966,-111.67643317847114" target="_blank">SANCA</a>-355',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'Friday 11am-12pm, and by appointment',
             'contact': 'jdas5@asu.edu',
@@ -1132,9 +1131,9 @@ def get_ses598_course_data():
                 },
                 {
                     'title': 'Assessment of the Mars 2020 Entry, Descent, and Landing Simulation',
-                    'authors': 'Way, D.W., Dutta, S., Zumwalt, C., Blette, D.',
+                    'authors': 'Way, D.W., Dutta, S., Zumwalt, C.H., Blette, D.J.',
                     'venue': 'AIAA SciTech 2022',
-                    'url': 'https://arc.aiaa.org/doi/abs/10.2514/6.2022-0421'
+                    'url': 'https://ntrs.nasa.gov/api/citations/20210024480/downloads/Mars2020_Flight_Mechanics_Simulation_Paper_v3.pdf'
                 },
                 {
                     'title': 'Psyche Mission System Level Guidance, Navigation, and Control Off-Nominal Testing',
@@ -1752,3 +1751,19 @@ def quiz_admin_view(request):
     }
     
     return render(request, 'quiz_admin.html', context)
+
+def ses598_course(request):
+    # ... other code ...
+    
+    papers = [
+        {
+            'title': 'Assessment of the Mars 2020 Entry, Descent, and Landing Simulation',
+            'url': 'https://ntrs.nasa.gov/api/citations/20210024480/downloads/Mars2020_Flight_Mechanics_Simulation_Paper_v3.pdf',
+            'authors': 'P. D. Burkhart et al.',
+            'year': '2021',
+            'description': 'Comprehensive analysis of Mars 2020 EDL simulation and actual performance'
+        },
+        # ... other papers ...
+    ]
+
+    # ... rest of the function ...
