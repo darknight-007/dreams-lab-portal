@@ -977,14 +977,13 @@ def reset_quiz(request):
 def get_ses598_course_data():
     return {
         'course_info': {
-            'title': 'RAS/SES 598: Space Robotics and AI',
+            'title': 'RAS 598: Space Robotics and AI',
             'semester': [
                 'Spring 2025',
                 'RAS <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?campusOrOnlineSelection=A&honors=F&keywords=39245&promod=F&searchType=all&term=2251#detailsOpen=39245-131738" target="_blank">#39245</a>',
-                'SES <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?keywords=39153&searchType=all&term=2251#detailsOpen=39153-126724" target="_blank">#39153</a>'
             ],
-            'meeting_times': ' (UPDATED) Tu/Th 4:30-5:45pm',
-            'location': '(UPDATED) ASU Poly Campus, Room <a href="https://www.google.com/maps?q=33.306167144617966,-111.67643317847114" target="_blank">SANCA</a>-355',
+            'meeting_times': ' Tu/Th 4:30-5:45pm',
+            'location': 'ASU Poly Campus, Room <a href="https://www.asu.edu/map/interactive/?psCode=SANTN" target="_blank">SANTN</a>339',
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'Friday 11am-12pm, and by appointment',
             'contact': 'jdas5@asu.edu',
