@@ -20,6 +20,8 @@
     --color-text: #1A1A1A;
     --color-subtle: #F2F2F2;
     --color-border: #E5E5E5;
+    --color-link: #0066cc;
+    --color-link-hover: #004499;
     --max-width: 1100px;
     --radius: 3px;
 }
@@ -91,15 +93,17 @@ p {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--color-text);
+    color: var(--color-link);
     text-decoration: none;
     font-family: var(--font-mono);
     font-size: 0.9rem;
-    transition: opacity 0.2s;
+    transition: color 0.2s ease;
 }
 
 .course-schedule-table a:hover {
-    opacity: 0.7;
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
 }
 
 .course-schedule-table i {
@@ -126,15 +130,18 @@ p {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--color-text);
+    color: var(--color-link);
     text-decoration: none;
     font-family: var(--font-mono);
     font-size: 0.9rem;
     margin-top: 1rem;
+    transition: color 0.2s ease;
 }
 
 .tutorials-table .start-link:hover {
-    opacity: 0.7;
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
 }
 
 /* Container */
@@ -331,15 +338,18 @@ section h2::after {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--color-text);
+    color: var(--color-link);
     text-decoration: none;
     font-family: var(--font-mono);
     font-size: 0.9rem;
     margin-top: 1rem;
+    transition: color 0.2s ease;
 }
 
 .book-item .book-link:hover {
-    opacity: 0.7;
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
 }
 
 /* Resources Section */
@@ -462,20 +472,87 @@ section h2::after {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--color-text);
+    color: var(--color-link);
     text-decoration: none;
     font-family: var(--font-mono);
     font-size: 0.9rem;
+    transition: color 0.2s ease;
 }
 
 .paper-card a:hover {
-    opacity: 0.7;
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
 }
 
 .course-schedule-table .assignment {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--color-border);
+}
+
+/* Update link styles */
+a {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+.course-schedule-table a {
+    color: var(--color-link);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.course-schedule-table a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.paper-card a {
+    color: var(--color-link);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.paper-card a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.book-item .book-link {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.book-item .book-link:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.tutorials-table .start-link {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.tutorials-table .start-link:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+    opacity: 1;
 }
 </style>
 

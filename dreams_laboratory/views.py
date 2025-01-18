@@ -1179,7 +1179,7 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2025)<br>Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Optimal control of cart-pole system using ROS2</a> (Due: Feb 10, 2025)'
+                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2025)<br>Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Optimal Control of Cart-Pole System using ROS2</a> (Due: Feb 10, 2025)'
             },
             {
                 'week': '3-4 (Jan 28-Feb 8)',
