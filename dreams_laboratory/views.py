@@ -693,7 +693,7 @@ def generate_certificate(request):
     return response
 
 def ses598_quiz(request):
-    """Render the SES598 quiz page with user identification and MCQs"""
+    """Render the SES598 proficiency quiz page with user identification and MCQs"""
     # MCQ answers with explanations
     mcq_answers = {
         'q1': {
@@ -988,7 +988,7 @@ def get_ses598_course_data():
             'office_hours': 'Friday 11am-12pm, and by appointment',
             'contact': 'jdas5@asu.edu',
             'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments. The curriculum emphasizes a strong theoretical foundation leading up to real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
-            'quiz_info': 'Test your foundation in robotics and AI concepts by completing this quiz. It helps assess if this course aligns with your interests. A timestamped certificate of successful completion will be used to prioritize students if the course reaches capacity.'
+            'quiz_info': 'Try the Space Robotics and AI Proficiency Quiz!'
         },
         'prerequisites': [
             {'category': 'Mathematics', 'requirement': 'Linear algebra (vectors, matrices, eigenvalues), calculus (derivatives, gradients), and probability theory (Bayes rule, distributions)'},
@@ -1170,7 +1170,7 @@ def get_ses598_course_data():
         },
         'modules': [
             {
-                'week': '1-2 (Jan 14-25)',
+                'week': '1-2 (Jan 14-Jan 30)',
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood estimation (MLE)',
@@ -1179,10 +1179,10 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2025)<br>Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Optimal Control of Cart-Pole System using ROS2</a> (Due: Feb 10, 2025)'
+                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2025)'
             },
             {
-                'week': '3-4 (Jan 28-Feb 8)',
+                'week': '3-4 (Feb 1-Feb 15)',
                 'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
@@ -1191,21 +1191,20 @@ def get_ses598_course_data():
                     'Structure from Motion (SfM)',
                     'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Assignment 3: Offline 3D reconstruction pipeline leveraging OpenCV and COLMAP in ROS2'
+                'assignment': 'Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Optimal Control of Cart-Pole System using ROS2</a> (Due: Feb 10, 2025)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 18, 2025)'
             },
             {
-                'week': '5 (Feb 11-15)',
+                'week': '5 (Feb 18-25)',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
                     'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
                     'View synthesis: Neural Radiance Fields (NeRF), and Gaussian Splatting',
-                    'Scene analysis: Semantic segmentation of images and point clouds leveraging neural networks',
-                    'Generative scenes: Diffusion models'
+                    'Scene analysis: Semantic segmentation of images and point clouds leveraging neural networks'
                 ],
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
-                'week': '6 (Feb 18-22)',
+                'week': '6 (Feb 25-March 8)',
                 'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
@@ -1216,19 +1215,18 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST)datasets.'
             },
             {
-                'week': '7-8 (Feb 25-Mar 8)',
+                'week': '7-8 (Mar 17-Mar 29)',
                 'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
                     'Decision support systems, geographic information systems (GIS), and digital twins',
                     'Self-supervised learning of stochastic dynamical processes with physical twins',
-                    'Case study 1 - earthquake geology: Virtual shake robot and particle dynamical studies',
-                    'Case study 2 - ecological digital and physical twins',
+                    'Case study - earthquake geology: Virtual shake robot and particle dynamical studies',
                     'Closing the loop on model improvement with cyber-physical twins'
                 ],
-                'assignment': 'Assignment 6: Adaptive digital twin system involving seismic studies with virtual shake robot and ShakeBot.'
+                'assignment': 'Exercise: Virtual Shake Robot and ShakeBot cyber-physical twin experiments (not graded)'
             },
             {
-                'week': '9-10 (Mar 17-29)',
+                'week': '9-10 (Apr 1-12)',
                 'title': 'SLAM and Active Perception',
                 'topics': [
                     'Information-theoretic SLAM',
@@ -1240,7 +1238,7 @@ def get_ses598_course_data():
                 'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
-                'week': '11-12 (Apr 1-12)',
+                'week': '11-12 (Apr 15-26)',
                 'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
@@ -1252,7 +1250,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 7: Multi-robot exploration system in digital twins.'
             },
             {
-                'week': '13-14 (Apr 15-26)',
+                'week': '13-14 (Apr 29-May 3)',
                 'title': 'Extreme Environment Operations',
                 'topics': [
                     'Risk-aware exploration',
@@ -1261,25 +1259,13 @@ def get_ses598_course_data():
                     'Environmental uncertainty modeling',
                     'Safety-constrained learning'
                 ],
-                'assignment': 'Assignment 8:  Digital twin exercise on planning under risks and uncertainty.'
-            },
-            {
-                'week': '15-16 (Apr 29-May 3)',
-                'title': 'Integration & Advanced Applications',
-                'topics': [
-                    'Meta-learning for exploration',
-                    'Transfer learning in space applications',
-                    'Lifelong learning systems',
-                    'Integrated perception-planning-learning',
-                    'Real-world deployment strategies'
-                ],
                 'assignment': 'Final (group) Project: End-to-end autonomous robotic system themed around space exploration, planetary science, or earth observation.'
             }
         ],
         'grading': {
             'Assignments': {
                 'percentage': 20,
-                'description': 'Eight assignments throughout the semester to reinforce learning concepts and practical skills.'
+                'description': 'Five graded assignments through the semester to reinforce learning concepts and practical skills.'
             },
             'Midterm Project': {
                 'percentage': 20,
