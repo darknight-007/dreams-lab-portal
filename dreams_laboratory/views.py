@@ -1170,7 +1170,7 @@ def get_ses598_course_data():
         },
         'modules': [
             {
-                'week': '1-2 (Jan 14-Jan 30)',
+                'week': '1-3 (Jan 14-Jan 30)',
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood estimation (MLE)',
@@ -1182,7 +1182,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2025)'
             },
             {
-                'week': '3-4 (Feb 1-Feb 15)',
+                'week': '4-5 (Feb 1-Feb 15)',
                 'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
@@ -1191,10 +1191,10 @@ def get_ses598_course_data():
                     'Structure from Motion (SfM)',
                     'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/inverted_pendulum_assignment" target="_blank">Optimal Control of Cart-Pole System using ROS2</a> (Due: Feb 10, 2025)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 18, 2025)'
+                'assignment': 'Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/cart_pole_optimal_control" target="_blank">Optimal Control of Cart-Pole System with LQR</a> (Due: Feb 15, 2025)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 28, 2025)'
             },
             {
-                'week': '5 (Feb 18-25)',
+                'week': '6 (Feb 18-25)',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
                     'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
@@ -1204,7 +1204,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
-                'week': '6 (Feb 25-March 8)',
+                'week': '7 (Feb 25-March 8)',
                 'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
@@ -1215,7 +1215,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST)datasets.'
             },
             {
-                'week': '7-8 (Mar 17-Mar 29)',
+                'week': '8-9 (Mar 17-Mar 29)',
                 'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
                     'Decision support systems, geographic information systems (GIS), and digital twins',
@@ -1226,7 +1226,7 @@ def get_ses598_course_data():
                 'assignment': 'Exercise: Virtual Shake Robot and ShakeBot cyber-physical twin experiments (not graded)'
             },
             {
-                'week': '9-10 (Apr 1-12)',
+                'week': '10-11 (Apr 1-12)',
                 'title': 'SLAM and Active Perception',
                 'topics': [
                     'Information-theoretic SLAM',
@@ -1238,7 +1238,7 @@ def get_ses598_course_data():
                 'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
-                'week': '11-12 (Apr 15-26)',
+                'week': '12-13 (Apr 15-26)',
                 'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
@@ -1246,11 +1246,10 @@ def get_ses598_course_data():
                     'Collaborative information gathering',
                     'Decentralized decision making',
                     'Communication-aware sampling'
-                ],
-                'assignment': 'Assignment 7: Multi-robot exploration system in digital twins.'
+                ]
             },
             {
-                'week': '13-14 (Apr 29-May 3)',
+                'week': '14-15 (Apr 29-May 3)',
                 'title': 'Extreme Environment Operations',
                 'topics': [
                     'Risk-aware exploration',

@@ -674,7 +674,7 @@ function generatePDF() {
                         <th>Week</th>
                         <th>Topics</th>
                         <th>Lectures & Assignments</th>
-                        <th>Related Papers</th>
+                        <th>Related Resources</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -715,21 +715,28 @@ function generatePDF() {
                             {% endif %}
                         </td>
                         <td>
-                            {% if module.title == 'Scene Representation, View Synthesis, and Scene Analysis' %}
-                                <ul>
-                                    <li><a href="#paper-gaussian-splatting-slam">Gaussian Splatting SLAM</a></li>
-                                    <li><a href="#paper-nerf-representing-scenes-as-neural-radiance-fields-for-view-synthesis">NeRF</a></li>
-                                    <li><a href="#paper-diffusion-models-in-vision-a-survey">Diffusion Models Survey</a></li>
-                                    <li><a href="#paper-pin-slam-lidar-slam-using-a-point-based-implicit-neural-representation-for-achieving-global-map-consistency">PIN-SLAM</a></li>
-                                </ul>
-                            {% elif module.title == 'Computer Vision and 3D Reconstruction' %}
+                            {% if module.title == 'Computer Vision and 3D Reconstruction' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-dust3r-geometric-3d-vision-made-easy">DUSt3R</a></li>
                                     <li><a href="#paper-past-present-and-future-of-simultaneous-localization-and-mapping-toward-the-robust-perception-age">SLAM Survey</a></li>
                                     <li><a href="#paper-structure-from-motion-revisited">COLMAP: SfM Revisited</a></li>
                                     <li><a href="#paper-orb-slam-a-versatile-and-accurate-monocular-slam-system">ORB-SLAM</a></li>
                                 </ul>
+                                <strong>Tutorials:</strong>
+                                <ul>
+                                    <li><a href="{% url 'ransac_buddy' %}">Random Sample Consensus (RANSAC) Tutorial</a></li>
+                                    <li><a href="{% url 'multiview_geometry' %}">Multi-View Geometry Tutorial</a></li>
+                                </ul>
+                            {% elif module.title == 'Scene Representation, View Synthesis, and Scene Analysis' %}
+                                <strong>Papers:</strong>
+                                <ul>
+                                    <li><a href="#paper-gaussian-splatting-slam">Gaussian Splatting SLAM</a></li>
+                                    <li><a href="#paper-nerf-representing-scenes-as-neural-radiance-fields-for-view-synthesis">NeRF</a></li>
+                                    <li><a href="#paper-pin-slam-lidar-slam-using-a-point-based-implicit-neural-representation-for-achieving-global-map-consistency">PIN-SLAM</a></li>
+                                </ul>
                             {% elif module.title == 'SLAM and Active Perception' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-structure-invariant-range-visual-inertial-odometry">Range-Visual-Inertial Odometry</a></li>
                                     <li><a href="#paper-receding-horizon-next-best-view-planner-for-3d-exploration">Next-Best-View Planning</a></li>
@@ -737,29 +744,46 @@ function generatePDF() {
                                     <li><a href="#paper-ultimate-slam-combining-events-images-and-imu-for-robust-visual-slam-in-hdr-and-high-speed-scenarios">Ultimate SLAM</a></li>
                                     <li><a href="#paper-data-efficient-collaborative-decentralized-thermal-inertial-odometry">Thermal-Inertial Odometry</a></li>
                                 </ul>
+                                <strong>Tutorials:</strong>
+                                <ul>
+                                    <li><a href="{% url 'path_planning_buddy' %}">Path Planning Tutorial</a></li>
+                                </ul>
                             {% elif module.title == 'State estimation and Controls' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-model-predictive-contouring-control-for-time-optimal-quadrotor-flight">MPC for Quadrotor Flight</a></li>
                                     <li><a href="#paper-assessment-of-the-mars-2020-entry-descent-and-landing-simulation">Mars 2020 EDL</a></li>
                                     <li><a href="#paper-psyche-mission-system-level-guidance-navigation-and-control-off-nominal-testing">Psyche Mission GNC</a></li>
                                 </ul>
+                                <strong>Tutorials:</strong>
+                                <ul>
+                                    <li><a href="{% url 'param_estimation_buddy' %}">Parameter Estimation Tutorial</a></li>
+                                </ul>
                             {% elif module.title == 'Extreme Environment Operations' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-autonomous-robotics-is-driving-perseverance-rovers-progress-on-mars">Perseverance Progress</a></li>
                                     <li><a href="#paper-precise-pose-estimation-of-the-nasa-mars-2020-perseverance-rover-through-a-stereo-vision-based-approach">Perseverance Pose Estimation</a></li>
                                     <li><a href="#paper-ingenuity-mars-helicopter-from-technology-demonstration-to-extraterrestrial-scout">Ingenuity Mars Helicopter</a></li>
                                 </ul>
                             {% elif module.title == 'Digital and Cyber-Physical Twins' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-virtual-shake-robot-simulating-dynamics-of-precariously-balanced-rocks-for-overturning-and-large-displacement-processes">Virtual Shake Robot</a></li>
                                 </ul>
                             {% elif module.title == 'Sampling Strategies and Information Theory' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-data-driven-robotic-sampling-for-marine-ecosystem-monitoring">Marine Ecosystem Sampling</a></li>
                                     <li><a href="#paper-a-3d-drizzle-algorithm-for-jwst-and-practical-application-to-the-miri-medium-resolution-spectrometer">JWST 3D Drizzle</a></li>
                                     <li><a href="#paper-an-information-theoretic-approach-to-optimize-jwst-observations-and-retrievals-of-transiting-exoplanet-atmospheres">JWST Observations Optimization</a></li>
                                 </ul>
+                                <strong>Tutorials:</strong>
+                                <ul>
+                                    <li><a href="{% url 'gaussian_processes_buddy' %}">Gaussian Processes Tutorial</a></li>
+                                </ul>
                             {% elif module.title == 'Multi-Robot Coordination and Distributed Learning' %}
+                                <strong>Papers:</strong>
                                 <ul>
                                     <li><a href="#paper-distributed-exploration-in-multi-armed-bandits">Distributed Multi-Armed Bandits</a></li>
                                     <li><a href="#paper-decentralized-cooperative-stochastic-bandits">Decentralized Cooperative Bandits</a></li>
