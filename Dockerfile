@@ -35,7 +35,7 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     apt-get update && \
     apt-get install -y docker-ce-cli
 
-COPY blender-4.2.3-linux-x64 /opt/blender
+COPY blender-4.2.2-linux-x64 /opt/blender
 RUN chmod +x /opt/blender/blender
 
 # Add Blender to PATH
