@@ -1,0 +1,789 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+</script>
+
+<div class="mab-container">
+    <div class="intro-section">
+        <h2>Multi-Armed Bandit Tutorial</h2>
+        <p>Interactive demonstration of Multi-Armed Bandit algorithms and human decision-making.</p>
+        
+        <div class="math-section">
+            <div class="equation-block">
+                <h4>Multi-Armed Bandit Problem</h4>
+                <p>The Multi-Armed Bandit problem involves sequential decision-making with limited information. Each "arm" (slot machine) has an unknown reward distribution:</p>
+                \[r_i \sim \mathcal{N}(\mu_i, \sigma_i^2)\]
+                <p>where \(\mu_i\) is the mean reward and \(\sigma_i^2\) is the variance for arm \(i\).</p>
+                
+                <h5>Common Strategies</h5>
+                <p>1. ε-Greedy:</p>
+                \[a_t = \begin{cases} 
+                \arg\max_i \hat{\mu}_i & \text{with probability } 1-\varepsilon \\
+                \text{random arm} & \text{with probability } \varepsilon
+                \end{cases}\]
+                
+                <p>2. Upper Confidence Bound (UCB1):</p>
+                \[a_t = \arg\max_i \left(\hat{\mu}_i + \sqrt{\frac{2\ln t}{n_i}}\right)\]
+                <p>where \(t\) is the total number of pulls and \(n_i\) is the number of times arm \(i\) was pulled.</p>
+                
+                <p>3. Thompson Sampling:</p>
+                \[\theta_i \sim \text{Beta}(\alpha_i, \beta_i)\]
+                \[a_t = \arg\max_i \theta_i\]
+            </div>
+        </div>
+    </div>
+
+    <div class="visualization-section">
+        <div class="plots-container">
+            <div class="plot-wrapper">
+                <div id="rewardsPlot"></div>
+            </div>
+            <div class="plot-wrapper" id="distributionsPlotWrapper">
+                <div id="distributionsPlot"></div>
+            </div>
+        </div>
+        <div class="bandit-legend">
+            <div class="legend-item">
+                <span class="color-box human"></span>
+                <span>Your Rewards</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-box random"></span>
+                <span>Random</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-box egreedy"></span>
+                <span>ε-Greedy</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-box ucb"></span>
+                <span>UCB1</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-box thompson"></span>
+                <span>Thompson Sampling</span>
+            </div>
+        </div>
+
+        <div class="parameter-controls">
+            <h3>Experiment Parameters</h3>
+            <div class="parameter-grid">
+                <div class="parameter">
+                    <label for="numArms">Number of Arms:</label>
+                    <input type="range" id="numArms" min="2" max="10" value="5">
+                    <span class="value">5</span>
+                </div>
+                <div class="parameter">
+                    <label for="epsilon">ε-Greedy Exploration (ε):</label>
+                    <input type="range" id="epsilon" min="0" max="1" step="0.1" value="0.1">
+                    <span class="value">0.1</span>
+                </div>
+                <div class="parameter">
+                    <label for="rewardNoise">Reward Noise (σ):</label>
+                    <input type="range" id="rewardNoise" min="0" max="2" step="0.1" value="0.5">
+                    <span class="value">0.5</span>
+                </div>
+                <div class="parameter">
+                    <label for="numPulls">Number of AI Pulls:</label>
+                    <input type="range" id="numPulls" min="10" max="100" step="10" value="20">
+                    <span class="value">20</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <div class="arm-buttons">
+                <!-- Arm buttons will be dynamically added here -->
+            </div>
+            <div class="control-buttons">
+                <button id="resetGame">Reset Game</button>
+                <button id="toggleAI">Start AI Players</button>
+                <button id="showDistributions">Show Distributions</button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card human-stats">
+                <h4>Your Performance</h4>
+                <p>Total Reward: <span id="humanReward">0</span></p>
+                <p>Average Reward: <span id="humanAverage">0</span></p>
+                <p>Best Arm Found: <span id="humanBestArm">-</span></p>
+            </div>
+            <div class="stat-card ai-stats">
+                <h4>AI Performance</h4>
+                <p>Random Reward: <span id="randomReward">0</span></p>
+                <p>ε-Greedy Reward: <span id="egreedyReward">0</span></p>
+                <p>UCB1 Reward: <span id="ucbReward">0</span></p>
+                <p>Thompson Reward: <span id="thompsonReward">0</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.mab-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.math-section {
+    margin: 20px 0;
+}
+
+.equation-block {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.bandit-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    height: 400px;
+}
+
+.bandit-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.color-box {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+}
+
+.color-box.human { background: #2196F3; }
+.color-box.random { background: #FF5722; }
+.color-box.egreedy { background: #4CAF50; }
+.color-box.ucb { background: #FFC107; }
+.color-box.thompson { background: #9C27B0; }
+
+.parameter-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+.parameter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.parameter {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.game-controls {
+    margin: 20px 0;
+}
+
+.arm-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.arm-button {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 8px;
+    background: #e0e0e0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.arm-button:hover {
+    background: #d0d0d0;
+    transform: translateY(-2px);
+}
+
+.arm-button:active {
+    transform: translateY(0);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.control-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #2196F3;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.control-buttons button:hover {
+    background: #1976D2;
+}
+
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+.stat-card h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.stat-card p {
+    margin: 5px 0;
+    color: #666;
+    line-height: 1.4;
+}
+
+.arm-count {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 2px;
+    font-size: 0.9em;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.value {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.plots-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.plot-wrapper {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 400px;
+    flex: 1;
+}
+
+#distributionsPlotWrapper {
+    display: none;
+}
+</style>
+
+<script>
+class MultiArmedBandit {
+    constructor() {
+        this.numArms = 5;
+        this.epsilon = 0.1;
+        this.rewardNoise = 0.5;
+        this.numPulls = 20;
+        this.arms = [];
+        this.history = {
+            human: { pulls: [], rewards: [], cumRewards: [] },
+            random: { pulls: [], rewards: [], cumRewards: [] },
+            egreedy: { pulls: [], rewards: [], cumRewards: [] },
+            ucb: { pulls: [], rewards: [], cumRewards: [] },
+            thompson: { pulls: [], rewards: [], cumRewards: [] }
+        };
+        this.aiRunning = false;
+        this.showingDistributions = false;
+        this.plotInitialized = false;
+
+        // Wait for DOM to be ready before initializing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initialize());
+        } else {
+            this.initialize();
+        }
+    }
+
+    initialize() {
+        this.setupControls();
+        this.setupPlot();
+        this.resetGame(false); // Don't update plot on initial reset
+    }
+
+    setupControls() {
+        // Parameter controls
+        document.getElementById('numArms').addEventListener('input', (e) => {
+            this.numArms = parseInt(e.target.value);
+            e.target.nextElementSibling.textContent = this.numArms;
+            this.resetGame(true);
+        });
+
+        document.getElementById('epsilon').addEventListener('input', (e) => {
+            this.epsilon = parseFloat(e.target.value);
+            e.target.nextElementSibling.textContent = this.epsilon;
+        });
+
+        document.getElementById('rewardNoise').addEventListener('input', (e) => {
+            this.rewardNoise = parseFloat(e.target.value);
+            e.target.nextElementSibling.textContent = this.rewardNoise;
+            this.resetGame(true);
+        });
+
+        document.getElementById('numPulls').addEventListener('input', (e) => {
+            this.numPulls = parseInt(e.target.value);
+            e.target.nextElementSibling.textContent = this.numPulls;
+        });
+
+        // Button controls
+        document.getElementById('resetGame').addEventListener('click', () => this.resetGame(true));
+        document.getElementById('toggleAI').addEventListener('click', () => this.toggleAI());
+        document.getElementById('showDistributions').addEventListener('click', () => this.toggleDistributions());
+    }
+
+    resetGame(updatePlotFlag = true) {
+        // Generate new arms with random means
+        this.arms = Array(this.numArms).fill(0).map(() => ({
+            mean: Math.random(),
+            pulls: 0,
+            totalReward: 0,
+            alpha: 1,  // For Thompson sampling
+            beta: 1    // For Thompson sampling
+        }));
+
+        // Reset history
+        Object.keys(this.history).forEach(player => {
+            this.history[player] = { pulls: [], rewards: [], cumRewards: [] };
+        });
+
+        // Reset AI state
+        this.aiRunning = false;
+        document.getElementById('toggleAI').textContent = 'Start AI Players';
+
+        // Update UI
+        this.updateArmButtons();
+        this.updateStats();
+        
+        // Only update plot if flag is true and plot is initialized
+        if (updatePlotFlag && this.plotInitialized) {
+            this.updatePlot();
+        }
+    }
+
+    updateArmButtons() {
+        const container = document.querySelector('.arm-buttons');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        for (let i = 0; i < this.numArms; i++) {
+            const button = document.createElement('button');
+            button.className = 'arm-button';
+            button.textContent = `Arm ${i + 1}`;
+            button.addEventListener('click', () => this.pullArm('human', i));
+            container.appendChild(button);
+        }
+    }
+
+    pullArm(player, armIndex) {
+        const arm = this.arms[armIndex];
+        arm.pulls++;
+        
+        // Generate reward with noise
+        const reward = arm.mean + this.rewardNoise * (Math.random() * 2 - 1);
+        arm.totalReward += reward;
+        
+        // Update Thompson sampling parameters
+        if (reward > 0.5) {
+            arm.alpha += 1;
+        } else {
+            arm.beta += 1;
+        }
+        
+        // Update history
+        this.history[player].pulls.push(armIndex);
+        this.history[player].rewards.push(reward);
+        const prevCumReward = this.history[player].cumRewards.length > 0 ? 
+            this.history[player].cumRewards[this.history[player].cumRewards.length - 1] : 0;
+        this.history[player].cumRewards.push(prevCumReward + reward);
+        
+        // Update display
+        this.updateStats();
+        this.updatePlot();
+        
+        // Continue AI if running
+        if (this.aiRunning && player === 'human') {
+            this.stepAI();
+        }
+    }
+
+    stepAI() {
+        // Random
+        const randomArm = this.random();
+        this.pullArm('random', randomArm);
+        
+        // ε-Greedy
+        const egreedyArm = this.epsilonGreedy();
+        this.pullArm('egreedy', egreedyArm);
+        
+        // UCB1
+        const ucbArm = this.ucb();
+        this.pullArm('ucb', ucbArm);
+        
+        // Thompson Sampling
+        const thompsonArm = this.thompson();
+        this.pullArm('thompson', thompsonArm);
+    }
+
+    random() {
+        return Math.floor(Math.random() * this.numArms);
+    }
+
+    epsilonGreedy() {
+        if (Math.random() < this.epsilon) {
+            return Math.floor(Math.random() * this.numArms);
+        }
+        return this.arms.reduce((maxIdx, arm, idx, arms) => 
+            arm.totalReward / arm.pulls > arms[maxIdx].totalReward / arms[maxIdx].pulls ? idx : maxIdx
+        , 0);
+    }
+
+    ucb() {
+        const totalPulls = this.arms.reduce((sum, arm) => sum + arm.pulls, 0);
+        return this.arms.reduce((maxIdx, arm, idx, arms) => {
+            if (arm.pulls === 0) return idx;
+            const ucbValue = (arm.totalReward / arm.pulls) + 
+                Math.sqrt(2 * Math.log(totalPulls) / arm.pulls);
+            const maxUcbValue = arms[maxIdx].pulls === 0 ? -Infinity :
+                (arms[maxIdx].totalReward / arms[maxIdx].pulls) + 
+                Math.sqrt(2 * Math.log(totalPulls) / arms[maxIdx].pulls);
+            return ucbValue > maxUcbValue ? idx : maxIdx;
+        }, 0);
+    }
+
+    thompson() {
+        return this.arms.reduce((maxIdx, arm, idx, arms) => {
+            const sample = Math.random() * (arm.alpha + arm.beta);
+            const maxSample = Math.random() * (arms[maxIdx].alpha + arms[maxIdx].beta);
+            return sample > maxSample ? idx : maxIdx;
+        }, 0);
+    }
+
+    toggleAI() {
+        this.aiRunning = !this.aiRunning;
+        document.getElementById('toggleAI').textContent = this.aiRunning ? 'Stop AI Players' : 'Start AI Players';
+        if (this.aiRunning) {
+            // Run specified number of pulls for each AI strategy
+            for (let i = 0; i < this.numPulls; i++) {
+                setTimeout(() => {
+                    if (this.aiRunning) {
+                        this.stepAI();
+                    }
+                }, i * 200); // Add delay between pulls for visualization
+            }
+        }
+    }
+
+    toggleDistributions() {
+        this.showingDistributions = !this.showingDistributions;
+        const distributionsWrapper = document.getElementById('distributionsPlotWrapper');
+        if (distributionsWrapper) {
+            distributionsWrapper.style.display = this.showingDistributions ? 'block' : 'none';
+        }
+        document.getElementById('showDistributions').textContent = 
+            this.showingDistributions ? 'Hide Distributions' : 'Show Distributions';
+        if (this.showingDistributions) {
+            this.updatePlot();
+        }
+    }
+
+    updateStats() {
+        const updatePlayerStats = (player) => {
+            const history = this.history[player];
+            if (history.rewards.length === 0) {
+                return {
+                    total: 0,
+                    avg: 0,
+                    best: '-',
+                    std: 0,
+                    regret: 0,
+                    armCounts: Array(this.numArms).fill(0)
+                };
+            }
+            
+            const total = history.cumRewards[history.cumRewards.length - 1];
+            const rewards = history.rewards;
+            const avg = total / rewards.length;
+            
+            // Calculate standard deviation
+            const std = Math.sqrt(
+                rewards.reduce((sum, r) => sum + Math.pow(r - avg, 2), 0) / rewards.length
+            );
+            
+            // Calculate arm distribution
+            const armCounts = Array(this.numArms).fill(0);
+            history.pulls.forEach(pull => armCounts[pull]++);
+            const best = armCounts.indexOf(Math.max(...armCounts)) + 1;
+            
+            // Calculate regret
+            const optimalArm = this.arms.reduce((max, arm, idx) => 
+                arm.mean > this.arms[max].mean ? idx : max, 0);
+            const optimalMean = this.arms[optimalArm].mean;
+            const regret = (rewards.length * optimalMean) - total;
+            
+            return { total, avg, best, std, regret, armCounts };
+        };
+
+        // Update human stats
+        const humanStats = updatePlayerStats('human');
+        const humanRewardElement = document.getElementById('humanReward');
+        if (humanRewardElement) {
+            humanRewardElement.innerHTML = 
+                `Total: ${humanStats.total.toFixed(2)}<br>` +
+                `Average: ${humanStats.avg.toFixed(2)}<br>` +
+                `Std Dev: ${humanStats.std.toFixed(2)}<br>` +
+                `Regret: ${humanStats.regret.toFixed(2)}`;
+        }
+
+        const humanBestArmElement = document.getElementById('humanBestArm');
+        if (humanBestArmElement) {
+            humanBestArmElement.innerHTML = 
+                `Most Pulled: ${humanStats.best}<br>` +
+                `Distribution: ${humanStats.armCounts.map(c => 
+                    `<span class="arm-count">${c}</span>`).join(' ')}`;
+        }
+
+        // Update AI stats with more detailed information
+        const aiPlayers = ['random', 'egreedy', 'ucb', 'thompson'];
+        aiPlayers.forEach(player => {
+            const stats = updatePlayerStats(player);
+            const elementId = `${player}Reward`;
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = 
+                    `Total: ${stats.total.toFixed(2)}<br>` +
+                    `Average: ${stats.avg.toFixed(2)}<br>` +
+                    `Std Dev: ${stats.std.toFixed(2)}<br>` +
+                    `Regret: ${stats.regret.toFixed(2)}<br>` +
+                    `Arm Distribution: ${stats.armCounts.map(c => 
+                        `<span class="arm-count">${c}</span>`).join(' ')}`;
+            }
+        });
+    }
+
+    setupPlot() {
+        const rewardsDiv = document.getElementById('rewardsPlot');
+        const distributionsDiv = document.getElementById('distributionsPlot');
+        if (!rewardsDiv || !distributionsDiv) return;
+
+        // Setup rewards plot
+        const rewardsLayout = {
+            title: 'Cumulative Rewards',
+            xaxis: { title: 'Pulls', range: [0, 100] },
+            yaxis: { title: 'Cumulative Reward', range: [0, 100] },
+            showlegend: true,
+            margin: { l: 60, r: 60, t: 40, b: 40 },
+            hovermode: 'closest'
+        };
+
+        const rewardsData = [{
+            x: [0],
+            y: [0],
+            name: 'Your Rewards',
+            line: { color: '#2196F3' },
+            type: 'scatter'
+        }];
+
+        // Setup distributions plot
+        const distributionsLayout = {
+            title: 'Reward Distributions and Arm Pulls',
+            xaxis: { title: 'Reward Value', range: [0, 1] },
+            yaxis: { 
+                title: 'Density',
+                rangemode: 'nonnegative'
+            },
+            yaxis2: {
+                title: 'Number of Pulls',
+                overlaying: 'y',
+                side: 'right',
+                rangemode: 'nonnegative'
+            },
+            showlegend: true,
+            margin: { l: 60, r: 60, t: 40, b: 40 },
+            hovermode: 'closest'
+        };
+
+        const distributionsData = [{
+            x: [0],
+            y: [0],
+            name: 'Distribution',
+            type: 'scatter',
+            visible: false
+        }];
+
+        Promise.all([
+            Plotly.newPlot(rewardsDiv, rewardsData, rewardsLayout, {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            }),
+            Plotly.newPlot(distributionsDiv, distributionsData, distributionsLayout, {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            })
+        ]).then(() => {
+            this.plotInitialized = true;
+            this.updatePlot();
+        });
+    }
+
+    updatePlot() {
+        const rewardsDiv = document.getElementById('rewardsPlot');
+        const distributionsDiv = document.getElementById('distributionsPlot');
+        if (!rewardsDiv || !distributionsDiv || !this.plotInitialized) return;
+
+        // Update rewards plot
+        const rewardsData = Object.entries({
+            human: { name: 'Your Rewards', color: '#2196F3' },
+            random: { name: 'Random', color: '#FF5722' },
+            egreedy: { name: 'ε-Greedy', color: '#4CAF50' },
+            ucb: { name: 'UCB1', color: '#FFC107' },
+            thompson: { name: 'Thompson Sampling', color: '#9C27B0' }
+        }).map(([player, info]) => ({
+            x: this.history[player].cumRewards.length > 0 
+                ? Array.from({length: this.history[player].cumRewards.length}, (_, i) => i + 1)
+                : [0],
+            y: this.history[player].cumRewards.length > 0
+                ? this.history[player].cumRewards
+                : [0],
+            name: info.name,
+            line: { color: info.color },
+            type: 'scatter'
+        }));
+
+        // Update distributions plot
+        const distributionsData = [];
+        const x = Array.from({length: 100}, (_, i) => i/99);
+        
+        this.arms.forEach((arm, i) => {
+            // Add distribution curve
+            const y = x.map(x => 
+                Math.exp(-Math.pow(x - arm.mean, 2) / (2 * Math.pow(this.rewardNoise, 2))) / 
+                (this.rewardNoise * Math.sqrt(2 * Math.PI))
+            );
+            distributionsData.push({
+                x, y,
+                name: `Arm ${i + 1} Distribution (μ=${arm.mean.toFixed(2)})`,
+                type: 'scatter',
+                line: { dash: 'solid' }
+            });
+
+            // Add pull markers for each player
+            ['human', 'random', 'egreedy', 'ucb', 'thompson'].forEach((player, playerIdx) => {
+                const playerPulls = this.history[player].pulls.filter(p => p === i).length;
+                if (playerPulls > 0) {
+                    distributionsData.push({
+                        x: [arm.mean],
+                        y: [playerPulls],
+                        name: `${player} pulls (${playerPulls})`,
+                        type: 'scatter',
+                        mode: 'markers',
+                        marker: {
+                            size: 15,
+                            symbol: ['circle', 'square', 'diamond', 'cross', 'star'][playerIdx]
+                        },
+                        yaxis: 'y2'
+                    });
+                }
+            });
+        });
+
+        const rewardsLayout = {
+            title: 'Cumulative Rewards',
+            xaxis: { title: 'Pulls' },
+            yaxis: { title: 'Cumulative Reward' },
+            showlegend: true,
+            margin: { l: 60, r: 60, t: 40, b: 40 }
+        };
+
+        const distributionsLayout = {
+            title: 'Reward Distributions and Arm Pulls',
+            xaxis: { title: 'Reward Value', range: [0, 1] },
+            yaxis: { 
+                title: 'Density',
+                rangemode: 'nonnegative'
+            },
+            yaxis2: {
+                title: 'Number of Pulls',
+                overlaying: 'y',
+                side: 'right',
+                rangemode: 'nonnegative'
+            },
+            showlegend: true,
+            margin: { l: 60, r: 60, t: 40, b: 40 }
+        };
+
+        try {
+            Plotly.react(rewardsDiv, rewardsData, rewardsLayout);
+            Plotly.react(distributionsDiv, distributionsData, distributionsLayout);
+        } catch (error) {
+            console.error('Error updating plots:', error);
+        }
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.bandit = new MultiArmedBandit();
+});
+</script>
+{% endblock %} 
