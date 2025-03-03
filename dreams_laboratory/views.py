@@ -1351,6 +1351,22 @@ def get_ses598_course_data():
                     'difficulty': 'Advanced',
                     'url': 'sensor_fusion_buddy'
                 }
+            ],
+            'Optimization and Learning': [
+                {
+                    'title': 'Multi-Armed Bandit Tutorial',
+                    'description': 'Interactive demonstration of exploration vs. exploitation in Multi-Armed Bandit problems, comparing human performance against common algorithms like ε-Greedy, UCB1, and Thompson Sampling.',
+                    'difficulty': 'Intermediate',
+                    'url': 'multi_armed_bandit_buddy'
+                }
+            ],
+            'Perception and State Estimation': [
+                {
+                    'title': 'Sensor Fusion Tutorial',
+                    'description': 'Learn about sensor fusion techniques through interactive examples.',
+                    'difficulty': 'Intermediate',
+                    'url': 'sensor_fusion_buddy'
+                }
             ]
         },
         'recommended_books': [
@@ -1747,3 +1763,7 @@ def ses598_course(request):
     ]
 
     # ... rest of the function ...
+
+def multi_armed_bandit_buddy_view(request):
+    """Render the Multi-Armed Bandit visualization interface."""
+    return render(request, 'widgets/multi_armed_bandit_buddy.html')

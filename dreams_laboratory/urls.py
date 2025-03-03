@@ -17,7 +17,7 @@ from dreams_laboratory.views import (
     bundle_adjustment_buddy_view, tutorials_home,
     stereo_buddy, slam_buddy, sensor_fusion_buddy,
     multiview_geometry, ses598_quiz_part2, generate_certificate,
-    reset_quiz, quiz_admin_view
+    reset_quiz, quiz_admin_view, multi_armed_bandit_buddy_view
 )
 from django.http import HttpResponse
 
@@ -50,6 +50,7 @@ urlpatterns = [
     path('tutorials/point-cloud-buddy/', point_cloud_buddy, name='point_cloud_buddy'),
     path('tutorials/sensor-fusion-buddy/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
     path('tutorials/drone-buddy/', drone_buddy_view, name='drone_buddy'),
+    path('tutorials/multi-armed-bandit-buddy/', multi_armed_bandit_buddy_view, name='multi_armed_bandit_buddy'),
     path('dreamslab/drone-buddy/save-code', save_drone_code, name='save_drone_code'),
     path('dreamslab/drone-buddy/run-tests', run_drone_tests, name='run_drone_tests'),
     path('openuav/', include('openuav_manager.urls')),
