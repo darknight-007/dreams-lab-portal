@@ -7,72 +7,106 @@
             <h2>OpenUAV Management</h2>
         </div>
         <div class="card-body">
-            {% if messages %}
-            <div class="messages mb-4">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            {% if show_form %}
-                <!-- Initial Login Form -->
-                <form method="POST" class="launch-form mb-4">
-                    {% csrf_token %}
-                    <div class="form-group mb-3">
-                        <label for="username">Username:</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="passcode">Passcode:</label>
-                        <input type="password" class="form-control" id="passcode" name="passcode" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="fas fa-sign-in-alt"></i> Continue
-                    </button>
-                </form>
-            {% else %}
-                <!-- Container Status Display -->
-                <div class="row mb-4">
-                    <div class="col">
-                        <h4>Status: 
-                            {% if status.is_running %}
-                                <span class="badge bg-success">Running</span>
-                            {% else %}
-                                <span class="badge bg-danger">Stopped</span>
-                            {% endif %}
-                        </h4>
-                        <p>Container: {{ container.name }}</p>
-                        {% if vnc_url %}
-                            <a href="{{ vnc_url }}" target="_blank" class="btn btn-primary btn-lg">
-                                <i class="fas fa-desktop"></i> Open VNC Interface
-                            </a>
+            <div class="row mb-4">
+                <div class="col">
+                    <h4>Status: 
+                        {% if status.is_running %}
+                            <span class="badge bg-success">Running</span>
+                        {% else %}
+                            <span class="badge bg-danger">Stopped</span>
                         {% endif %}
-                        
-                        <form action="{% url 'openuav_manager:stop' %}" method="POST" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                <i class="fas fa-stop"></i> Stop Container
-                            </button>
-                        </form>
-                    </div>
+                    </h4>
+                    <p>Instances running: {{ status.instance_count }}</p>
                 </div>
-
-                <!-- Start New Session -->
-                <div class="mt-4">
-                    <form method="POST" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="username" value="{{ username }}">
-                        <input type="hidden" name="passcode" value="liftoff">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-plus"></i> Start New Session
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    {% if not status.is_running %}
+                        <button id="startBtn" class="btn btn-success btn-lg">
+                            <i class="fas fa-play"></i> Start OpenUAV
                         </button>
-                    </form>
+                    {% else %}
+                        <button id="stopBtn" class="btn btn-danger btn-lg">
+                            <i class="fas fa-stop"></i> Stop OpenUAV
+                        </button>
+                    {% endif %}
+                    
+                    {% if status.is_running %}
+                        <a href="{{ vnc_url }}" target="_blank" class="btn btn-primary btn-lg">
+                            <i class="fas fa-desktop"></i> Open VNC Interface
+                        </a>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            fetch('/openuav/launch/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        });
+    }
+    
+    if (stopBtn) {
+        stopBtn.addEventListener('click', function() {
+            fetch('/openuav/stop/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        });
+    }
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
 {% endblock %} 
