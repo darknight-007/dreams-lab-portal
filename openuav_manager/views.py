@@ -16,6 +16,8 @@ from django.conf import settings
 import os
 import random
 import string
+import requests
+
 logger = logging.getLogger(__name__)
 
 def run_command(command):
@@ -204,118 +206,118 @@ def container_action(request, container_id, action):
 @require_http_methods(["POST"])
 def launch_openuav(request):
     """Launch a new OpenUAV container instance."""
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
-
     try:
+        # Try to get data from POST first, then try JSON
+        if request.POST:
+            username = request.POST.get('username', '').strip()
+            passcode = request.POST.get('passcode', '').strip()
+        else:
+            try:
+                data = json.loads(request.body)
+                username = data.get('username', '').strip()
+                passcode = data.get('passcode', '').strip()
+            except json.JSONDecodeError:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid request format'
+                }, status=400)
+
+        # Validate inputs
+        if not username or not passcode:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Username and passcode are required'
+            }, status=400)
+
+        # Validate passcode
+        if passcode != 'liftoff':
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid passcode'
+            }, status=401)
+
         # Clean up old containers first
         stdout, stderr, code = run_command("docker ps -a --filter name=digital-twin --format '{{.ID}}' | xargs -r docker rm -f")
         if code != 0:
             logger.warning(f"Error cleaning up old containers: {stderr}")
 
-        # Generate unique container ID (12 chars)
-        container_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=12))
-        container_name = f'digital-twin-{container_id}'
+        # Generate container name
+        container_name = f'digital-twin-{username}'
         
-        # Get absolute path to run_container.sh in openuav2 folder
-        script_path = '/app/openuav2/run_container.sh'
+        # Launch container with the specified format
+        launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:4.0"""
         
-        if not os.path.exists(script_path):
-            logger.error(f"Container launch script not found at {script_path}")
+        # Print the full command to console
+        logger.info("Launching container with command:")
+        logger.info("=" * 80)
+        logger.info(launch_cmd)
+        logger.info("=" * 80)
+        
+        stdout, stderr, code = run_command(launch_cmd)
+        if code != 0:
+            logger.error(f"Failed to launch container: {stderr}")
             return JsonResponse({
-                'error': 'Container launch script not found',
-                'details': 'Internal server error'
-            }, status=500)
-        
-        # Set environment variables for the script
-        env = os.environ.copy()
-        env['CONTAINER_NAME'] = container_name
-        
-        # Run the container launch script
-        result = subprocess.run(
-            ['bash', script_path],
-            env=env,
-            check=True,
-            capture_output=True,
-            text=True
-        )
-        
-        try:
-            # Parse the JSON output from the script
-            container_info = json.loads(result.stdout)
-            
-            # Wait for container to be running with retries
-            max_retries = 5
-            retry_delay = 1  # seconds
-            container_running = False
-            
-            for attempt in range(max_retries):
-                check_result = subprocess.run(
-                    ['docker', 'ps', '--filter', f'name={container_name}', '--format', '{{.Names}}'],
-                    capture_output=True,
-                    text=True
-                )
-                
-                if container_name in check_result.stdout:
-                    container_running = True
-                    break
-                    
-                logger.info(f"Container not running yet, attempt {attempt + 1}/{max_retries}")
-                time.sleep(retry_delay)
-            
-            if not container_running:
-                logger.error(f"Container {container_name} not running after {max_retries} attempts")
-                return JsonResponse({
-                    'error': 'Container failed to start',
-                    'details': 'Container is not running after launch'
-                }, status=500)
-            
-            # Get full container info using inspect
-            inspect_cmd = f"""docker inspect --format='{{{{.Id}}}}\\t{{{{.Name}}}}\\t{{{{.State.Status}}}}\\t{{{{.Created}}}}\\t{{{{.Config.Image}}}}' {container_info['container_id']}"""
-            stdout, stderr, code = run_command(inspect_cmd)
-            if code == 0:
-                full_id, name, status, created, image = stdout.strip().split('\t')
-                # Remove leading slash from name
-                name = name.lstrip('/')
-                
-                # Create container record
-                Container.objects.create(
-                    container_id=full_id,
-                    short_id=container_info['short_id'],
-                    name=name,
-                    status=status,
-                    image=image,
-                    ports={'vnc': container_info.get('vnc_port', 5901)},
-                    vnc_url=container_info['vnc_url']
-                )
-                
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'OpenUAV instance launched successfully',
-                    'container': {
-                        'id': container_info['container_id'],
-                        'short_id': container_info['short_id'],
-                        'name': container_name,
-                        'url': container_info['url'],
-                        'vnc_url': container_info['vnc_url']
-                    }
-                })
-            else:
-                raise Exception(f"Failed to inspect container: {stderr}")
-            
-        except json.JSONDecodeError:
-            logger.error(f"Failed to parse container launch output: {result.stdout}")
-            return JsonResponse({
-                'error': 'Failed to parse container information',
-                'details': 'Internal server error'
+                'status': 'error',
+                'message': f'Failed to launch container: {stderr}'
             }, status=500)
             
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to launch container: {e.stderr}")
-        return JsonResponse({
-            'error': 'Failed to launch container',
-            'details': e.stderr
-        }, status=500)
+        # Get container ID from stdout
+        container_id = stdout.strip()
+        
+        # Wait for container to be running with retries
+        max_retries = 5
+        retry_delay = 1  # seconds
+        container_running = False
+        
+        for attempt in range(max_retries):
+            check_result = subprocess.run(
+                ['docker', 'ps', '--filter', f'name={container_name}', '--format', '{{.Names}}'],
+                capture_output=True,
+                text=True
+            )
+            
+            if container_name in check_result.stdout:
+                container_running = True
+                break
+                
+            logger.info(f"Container not running yet, attempt {attempt + 1}/{max_retries}")
+            time.sleep(retry_delay)
+        
+        if not container_running:
+            logger.error(f"Container {container_name} not running after {max_retries} attempts")
+            return JsonResponse({
+                'error': 'Container failed to start',
+                'details': 'Container is not running after launch'
+            }, status=500)
+        
+        # Simple container inspection
+        inspect_cmd = f"docker inspect --format='{{{{.Name}}}} {{{{.State.Status}}}}' {container_name}"
+        stdout, stderr, code = run_command(inspect_cmd)
+        if code == 0:
+            # Create container record
+            Container.objects.create(
+                container_id=container_id,
+                short_id=container_id[:12],
+                name=container_name,
+                status='running',
+                image='digital-twin-ras-ses-598:4.0',
+                ports={'vnc': 5901},  # Default VNC port
+                vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'OpenUAV instance launched successfully',
+                'container': {
+                    'id': container_id,
+                    'short_id': container_id[:12],
+                    'name': container_name,
+                    'vnc_url': f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+                }
+            })
+        else:
+            raise Exception(f"Failed to inspect container: {stderr}")
+            
     except Exception as e:
         logger.error(f"Unexpected error launching container: {str(e)}", exc_info=True)
         return JsonResponse({
@@ -326,59 +328,82 @@ def launch_openuav(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def stop_openuav(request):
+    """Stop a running container without removing it"""
     try:
-        # Get container name from request data
-        data = json.loads(request.body) if request.body else {}
-        container_name = data.get('container_name')
+        # Get username from request data
+        username = request.POST.get('username')
         
-        if not container_name:
-            # Try to find the most recent container for this session
-            container = Container.objects.filter(
-                session_type='guest',  # For now, assume guest session
-                status='running'
-            ).order_by('-created').first()
-            
-            if container:
-                container_name = container.name
-            else:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'No running container found'
-                }, status=404)
+        if not username:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Username is required'
+            }, status=400)
         
+        container_name = f'digital-twin-{username}'
+        logger.info(f"Attempting to stop container: {container_name}")
+        
+        # Check if container exists and is running
+        docker_check_cmd = f"docker ps -a --filter name={container_name} --format '{{{{.Names}}}}\\t{{{{.Status}}}}\\t{{{{.ID}}}}'"
+        stdout, stderr, code = run_command(docker_check_cmd)
+        docker_status = stdout.strip().lower() if code == 0 else ''
+        
+        if not docker_status:
+            logger.warning(f"Container {container_name} not found")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Container not found'
+            }, status=404)
+        
+        if 'exited' in docker_status:
+            logger.info(f"Container {container_name} is already stopped")
+            # Update container status in database if needed
+            try:
+                container = Container.objects.get(name=container_name)
+                if container.status != 'stopped':
+                    container.status = 'stopped'
+                    container.save()
+            except Container.DoesNotExist:
+                pass
+                
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Container is already stopped'
+            })
+        
+        # Stop the container
         logger.info(f"Stopping container: {container_name}")
-        
-        # First stop the container
         stdout, stderr, code = run_command(f"docker stop {container_name}")
         if code != 0:
+            logger.error(f"Error stopping container: {stderr}")
             return JsonResponse({
                 'status': 'error',
                 'message': f'Error stopping container: {stderr}'
             }, status=500)
             
-        # Then remove the container
-        stdout, stderr, code = run_command(f"docker rm {container_name}")
-        if code != 0:
-            return JsonResponse({
-                'status': 'error',
-                'message': f'Error removing container: {stderr}'
-            }, status=500)
-            
         # Update container status in database
         try:
             container = Container.objects.get(name=container_name)
-            container.status = 'removed'
+            container.status = 'stopped'
             container.save()
+            logger.info(f"Updated container status to stopped in database: {container_name}")
         except Container.DoesNotExist:
             logger.warning(f"Container {container_name} not found in database")
             
-        # Clean up X11 socket
-        run_command("rm -f /tmp/.X11-unix/X1")
+        # Clean up X11 socket and VNC files since container is stopped
+        try:
+            run_command("rm -f /tmp/.X11-unix/X1")
+            run_command("rm -f /tmp/.X1*")
+            run_command("pkill -f Xvnc || true")
+            run_command("pkill -f vncserver || true")
+            logger.info("Cleaned up X11 and VNC files")
+        except Exception as e:
+            logger.warning(f"Error during cleanup: {str(e)}")
             
         return JsonResponse({
             'status': 'success',
-            'message': 'OpenUAV instance stopped and removed successfully'
+            'message': 'Container stopped successfully'
         })
+        
     except Exception as e:
         logger.error(f"Error in stop_openuav: {str(e)}", exc_info=True)
         return JsonResponse({
@@ -686,3 +711,225 @@ def container_status_update(request):
             'status': 'error',
             'message': str(e)
         }, status=500)
+
+def check_github_fork(username):
+    """Check if user has forked the RAS-SES-598 repository"""
+    try:
+        # GitHub API endpoint for repository forks
+        api_url = f"https://api.github.com/repos/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/forks"
+        
+        # Get list of forks (paginated)
+        page = 1
+        while True:
+            response = requests.get(
+                f"{api_url}?page={page}&per_page=100",
+                headers={'Accept': 'application/vnd.github.v3+json'}
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"GitHub API error: {response.status_code}")
+                return False
+                
+            forks = response.json()
+            if not forks:  # No more forks to check
+                break
+                
+            # Check if username exists in this page of forks
+            for fork in forks:
+                if fork['owner']['login'].lower() == username.lower():
+                    return True
+                    
+            page += 1
+            
+        return False
+    except Exception as e:
+        logger.error(f"Error checking GitHub fork: {str(e)}")
+        return False
+
+def manage_view(request):
+    """Display the OpenUAV launch form and handle container status"""
+    try:
+        if request.method == "POST":
+            username = request.POST.get('username', '').strip()
+            passcode = request.POST.get('passcode', '').strip()
+            
+            # Validate inputs
+            if not username or not passcode:
+                messages.error(request, 'Username and passcode are required')
+                return render(request, 'openuav_manager/manage.html', {
+                    'show_form': True
+                })
+
+            # Validate passcode
+            if passcode != 'liftoff':
+                messages.error(request, 'Invalid passcode')
+                return render(request, 'openuav_manager/manage.html', {
+                    'show_form': True
+                })
+
+            # Check if user has forked the repository
+            if not check_github_fork(username):
+                messages.error(request, 'Access denied: You must fork the RAS-SES-598 repository first')
+                return render(request, 'openuav_manager/manage.html', {
+                    'show_form': True
+                })
+
+            # Generate container name
+            container_name = f'digital-twin-{username}'
+            
+            # Check actual Docker container status first
+            docker_check_cmd = f"docker ps -a --filter name={container_name} --format '{{{{.Names}}}}\\t{{{{.Status}}}}\\t{{{{.ID}}}}'"
+            stdout, stderr, code = run_command(docker_check_cmd)
+            docker_status = stdout.strip().lower() if code == 0 else ''
+            
+            # Clean up database state if Docker state doesn't match
+            existing_container = Container.objects.filter(name=container_name).first()
+            if existing_container and not docker_status:
+                logger.warning(f"Container {container_name} exists in DB but not in Docker, cleaning up")
+                existing_container.delete()
+                existing_container = None
+            
+            if docker_status:
+                # Container exists in Docker
+                if 'up' in docker_status:
+                    # Container is running
+                    if not existing_container:
+                        # Create DB record if missing
+                        inspect_cmd = f"docker inspect {container_name} --format='{{{{.Id}}}}'"
+                        container_id, _, _ = run_command(inspect_cmd)
+                        existing_container = Container.objects.create(
+                            container_id=container_id.strip(),
+                            short_id=container_id.strip()[:12],
+                            name=container_name,
+                            status='running',
+                            image='digital-twin-ras-ses-598:4.0',
+                            ports={'vnc': 5901},
+                            vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+                        )
+                    return render(request, 'openuav_manager/manage.html', {
+                        'show_form': False,
+                        'status': {
+                            'is_running': True,
+                            'instance_count': 1
+                        },
+                        'container': existing_container,
+                        'vnc_url': existing_container.vnc_url,
+                        'username': username
+                    })
+                elif 'exited' in docker_status:
+                    # Try to start the stopped container
+                    logger.info(f"Starting stopped container: {container_name}")
+                    stdout, stderr, code = run_command(f"docker start {container_name}")
+                    if code == 0:
+                        # Verify container is running
+                        verify_cmd = f"docker ps --filter name={container_name} --format '{{{{.Names}}}}\\t{{{{.Status}}}}\\t{{{{.ID}}}}'"
+                        stdout, stderr, code = run_command(verify_cmd)
+                        if code == 0 and 'up' in stdout.strip().lower():
+                            if existing_container:
+                                existing_container.status = 'running'
+                                existing_container.save()
+                            else:
+                                # Create DB record if missing
+                                inspect_cmd = f"docker inspect {container_name} --format='{{{{.Id}}}}'"
+                                container_id, _, _ = run_command(inspect_cmd)
+                                existing_container = Container.objects.create(
+                                    container_id=container_id.strip(),
+                                    short_id=container_id.strip()[:12],
+                                    name=container_name,
+                                    status='running',
+                                    image='digital-twin-ras-ses-598:4.0',
+                                    ports={'vnc': 5901},
+                                    vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+                                )
+                            return render(request, 'openuav_manager/manage.html', {
+                                'show_form': False,
+                                'status': {
+                                    'is_running': True,
+                                    'instance_count': 1
+                                },
+                                'container': existing_container,
+                                'vnc_url': existing_container.vnc_url,
+                                'username': username
+                            })
+                
+                # If we get here, either start failed or container is in an unexpected state
+                logger.warning(f"Container {container_name} in unexpected state or failed to start, removing")
+                run_command(f"docker rm -f {container_name}")
+                if existing_container:
+                    existing_container.delete()
+
+            # Clean up any existing container before launching new one
+            run_command(f"docker rm -f {container_name}")
+            
+            # Launch new container
+            launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:4.0"""
+            
+            # Print the full command to console
+            logger.info("Launching container with command:")
+            logger.info("=" * 80)
+            logger.info(launch_cmd)
+            logger.info("=" * 80)
+            
+            stdout, stderr, code = run_command(launch_cmd)
+            if code != 0:
+                logger.error(f"Failed to launch container: {stderr}")
+                messages.error(request, f'Failed to launch container: {stderr}')
+                return render(request, 'openuav_manager/manage.html', {
+                    'show_form': True
+                })
+            
+            # Get container ID from stdout
+            container_id = stdout.strip()
+            
+            # Verify container is running
+            verify_cmd = f"docker ps --filter name={container_name} --format '{{{{.Names}}}}\\t{{{{.Status}}}}\\t{{{{.ID}}}}'"
+            stdout, stderr, code = run_command(verify_cmd)
+            if code != 0 or 'up' not in stdout.strip().lower():
+                logger.error(f"Container {container_name} failed to start properly")
+                run_command(f"docker rm -f {container_name}")
+                messages.error(request, 'Container failed to start properly')
+                return render(request, 'openuav_manager/manage.html', {
+                    'show_form': True
+                })
+            
+            # Create container record
+            new_container = Container.objects.create(
+                container_id=container_id,
+                short_id=container_id[:12],
+                name=container_name,
+                status='running',
+                image='digital-twin-ras-ses-598:4.0',
+                ports={'vnc': 5901},
+                vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+            )
+            
+            return render(request, 'openuav_manager/manage.html', {
+                'show_form': False,
+                'status': {
+                    'is_running': True,
+                    'instance_count': 1
+                },
+                'container': new_container,
+                'vnc_url': new_container.vnc_url,
+                'username': username
+            })
+
+        # GET request - show the initial form
+        return render(request, 'openuav_manager/manage.html', {
+            'show_form': True,
+            'status': {
+                'is_running': False,
+                'instance_count': 0
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in manage_view: {str(e)}", exc_info=True)
+        messages.error(request, f'Error: {str(e)}')
+        return render(request, 'openuav_manager/manage.html', {
+            'show_form': True,
+            'status': {
+                'is_running': False,
+                'instance_count': 0
+            }
+        })
