@@ -245,7 +245,8 @@ def launch_openuav(request):
         container_name = f'digital-twin-{username}'
         
         # Launch container with the specified format
-        launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:4.0"""
+        launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:5.0"""
+        
         
         # Print the full command to console
         logger.info("Launching container with command:")
@@ -300,7 +301,7 @@ def launch_openuav(request):
                 short_id=container_id[:12],
                 name=container_name,
                 status='running',
-                image='digital-twin-ras-ses-598:4.0',
+                image='digital-twin-ras-ses-598:5.0',
                 ports={'vnc': 5901},  # Default VNC port
                 vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
             )
@@ -802,7 +803,7 @@ def manage_view(request):
                             short_id=container_id.strip()[:12],
                             name=container_name,
                             status='running',
-                            image='digital-twin-ras-ses-598:4.0',
+                            image='digital-twin-ras-ses-598:5.0',
                             ports={'vnc': 5901},
                             vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
                         )
@@ -837,7 +838,7 @@ def manage_view(request):
                                     short_id=container_id.strip()[:12],
                                     name=container_name,
                                     status='running',
-                                    image='digital-twin-ras-ses-598:4.0',
+                                    image='digital-twin-ras-ses-598:5.0',
                                     ports={'vnc': 5901},
                                     vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
                                 )
@@ -862,7 +863,7 @@ def manage_view(request):
             run_command(f"docker rm -f {container_name}")
             
             # Launch new container
-            launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:4.0"""
+            launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:5.0"""
             
             # Print the full command to console
             logger.info("Launching container with command:")
@@ -898,7 +899,7 @@ def manage_view(request):
                 short_id=container_id[:12],
                 name=container_name,
                 status='running',
-                image='digital-twin-ras-ses-598:4.0',
+                image='digital-twin-ras-ses-598:5.0',
                 ports={'vnc': 5901},
                 vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
             )
