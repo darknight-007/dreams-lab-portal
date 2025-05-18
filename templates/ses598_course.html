@@ -592,7 +592,7 @@ function generatePDF() {
 {% endblock %}
 
 {% block content %}
-    <!-- Quick Navigation -->
+    <!-- Navigation -->
     <nav class="quick-nav">
         <ul>
             <li><a href="#overview">Overview</a></li>
@@ -636,15 +636,45 @@ function generatePDF() {
             </div>
         </header>
 
-        <!-- Enrollment Quiz Banner -->
-        <div class="enrollment-quiz-banner">
-            <div class="quiz-info">
-                <h2>Is this course a good fit for you?</h2>
+        <!-- Retrospective Quiz Banner -->
+        <div class="enrollment-quiz-banner" style="background: linear-gradient(135deg, #1e5799 0%, #207cca 35%, #2989d8 50%, #7db9e8 100%); margin-top: 1rem; border-radius: 12px; box-shadow: 0 8px 15px rgba(0,0,0,0.2); overflow: hidden; position: relative;">
+            <!-- Space background elements -->
+            <div style="position: absolute; top: 10px; right: 15px; font-size: 24px; color: white; text-shadow: 0 0 5px rgba(255,255,255,0.8);">
+                <i class="fas fa-rocket" style="animation: float 3s ease-in-out infinite;"></i>
+                <i class="fas fa-star" style="margin-left: 15px; font-size: 12px; animation: twinkle 2s ease-in-out infinite;"></i>
+                <i class="fas fa-star" style="margin-left: 10px; font-size: 16px; animation: twinkle 3s ease-in-out infinite 0.5s;"></i>
+                <i class="fas fa-star" style="margin-left: 10px; font-size: 10px; animation: twinkle 2.5s ease-in-out infinite 1s;"></i>
             </div>
-            <a href="{% url 'ses598_quiz' %}" class="quiz-button">
-                <i class="fas fa-pencil-alt"></i>
-                Take Quiz
+            
+            <div class="quiz-info" style="padding: 25px 20px; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 1;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 10px;">🚀 Mission Complete! Share Your Space Journey</h2>
+                <p style="font-size: 1.1rem; max-width: 80%;">Your feedback is our guidance system for future explorers! Take 5 minutes to help us optimize the next mission trajectory and earn your final mission badge.</p>
+            </div>
+            
+            <a href="http://deepgis.org/dreamslab/ses598/2025-retrospective/" class="quiz-button" style="background-color: #ff6b00; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3); position: relative; z-index: 1; display: inline-flex; align-items: center; margin: 0 0 20px 20px;">
+                <i class="fas fa-satellite" style="margin-right: 10px;"></i>
+                Launch Final Survey
             </a>
+            
+            <!-- Add custom animations -->
+            <style>
+                @keyframes float {
+                    0% { transform: translateY(0px) rotate(0deg); }
+                    50% { transform: translateY(-10px) rotate(5deg); }
+                    100% { transform: translateY(0px) rotate(0deg); }
+                }
+                @keyframes twinkle {
+                    0% { opacity: 0.3; }
+                    50% { opacity: 1; }
+                    100% { opacity: 0.3; }
+                }
+                .quiz-button:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+                    background-color: #ff8124;
+                }
+            </style>
+            <!-- Debug info: {% url 'ses598_2025_retrospective' %} -->
         </div>
 
         <!-- Course Description -->
@@ -813,6 +843,20 @@ function generatePDF() {
         <!-- Resources -->
         <section id="resources">
             <h2>Resources</h2>
+
+            <!-- Lecture Slides -->
+            <h3>Lecture Slides</h3>
+            <div class="course-materials-container" style="background: linear-gradient(to right, #f9f9f9, #f0f0f0); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div class="materials-item" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="materials-icon" style="font-size: 2.5rem; color: #dc3545;">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="materials-content">
+                        <h4 style="margin: 0 0 0.5rem 0; font-size: 1.3rem;">{{ syllabus.course_materials.lecture_slides|safe }}</h4>
+                        <p style="margin: 0; font-size: 1rem; color: #555;">{{ syllabus.course_materials.description }}</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Recommended Books -->
             <h3>Recommended Books</h3>

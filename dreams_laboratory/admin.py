@@ -38,8 +38,9 @@ class AssetAdmin(admin.ModelAdmin):
 
 @admin.register(QuizSubmission)
 class QuizSubmissionAdmin(admin.ModelAdmin):
-    list_display = ('get_submission_title', 'submission_date', 'total_score')
+    list_display = ('get_submission_title', 'quiz_type', 'submission_date', 'total_score')
     list_filter = ('submission_date', 'quiz_id')
+    search_fields = ('email', 'quiz_id', 'session_id')
     readonly_fields = ('quiz_id', 'submission_date', 'total_score', 
                       'cv_score', 'slam_score', 'estimation_score', 
                       'sensing_score', 'motion_score', 'neural_score',
@@ -48,8 +49,18 @@ class QuizSubmissionAdmin(admin.ModelAdmin):
                       'q11', 'q12', 'q13', 'q14', 'q15')
     
     def get_submission_title(self, obj):
-        return f"{obj.email} - {obj.submission_date.strftime('%Y-%m-%d %H:%M:%S %Z')}"
+        return f"{obj.email} - {obj.submission_date.strftime('%Y-%m-%d %H:%M:%S')}"
     get_submission_title.short_description = 'Submission Info'
+    
+    def quiz_type(self, obj):
+        quiz_types = {
+            'SES598': 'Enrollment Quiz P1',
+            'SES598_Part2': 'Enrollment Quiz P2',
+            'SES598_2025_RETRO_P1': 'Retrospective Q1-15',
+            'SES598_2025_RETRO_P2': 'Retrospective Q16-25'
+        }
+        return quiz_types.get(obj.quiz_id, obj.quiz_id)
+    quiz_type.short_description = 'Quiz Type'
     
     def has_add_permission(self, request):
         return False

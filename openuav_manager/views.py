@@ -335,10 +335,8 @@ def stop_openuav(request):
         username = request.POST.get('username')
         
         if not username:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Username is required'
-            }, status=400)
+            messages.error(request, 'Username is required')
+            return redirect('openuav_manager:manage')
         
         container_name = f'digital-twin-{username}'
         logger.info(f"Attempting to stop container: {container_name}")
@@ -350,10 +348,8 @@ def stop_openuav(request):
         
         if not docker_status:
             logger.warning(f"Container {container_name} not found")
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Container not found'
-            }, status=404)
+            messages.warning(request, 'Container not found')
+            return redirect('openuav_manager:manage')
         
         if 'exited' in docker_status:
             logger.info(f"Container {container_name} is already stopped")
@@ -365,21 +361,17 @@ def stop_openuav(request):
                     container.save()
             except Container.DoesNotExist:
                 pass
-                
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Container is already stopped'
-            })
+            
+            messages.info(request, 'Container is already stopped')
+            return redirect('openuav_manager:manage')
         
         # Stop the container
         logger.info(f"Stopping container: {container_name}")
         stdout, stderr, code = run_command(f"docker stop {container_name}")
         if code != 0:
             logger.error(f"Error stopping container: {stderr}")
-            return JsonResponse({
-                'status': 'error',
-                'message': f'Error stopping container: {stderr}'
-            }, status=500)
+            messages.error(request, f'Error stopping container: {stderr}')
+            return redirect('openuav_manager:manage')
             
         # Update container status in database
         try:
@@ -400,17 +392,13 @@ def stop_openuav(request):
         except Exception as e:
             logger.warning(f"Error during cleanup: {str(e)}")
             
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Container stopped successfully'
-        })
+        messages.success(request, 'Container stopped successfully')
+        return redirect('openuav_manager:manage')
         
     except Exception as e:
         logger.error(f"Error in stop_openuav: {str(e)}", exc_info=True)
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e)
-        }, status=500)
+        messages.error(request, f'Error: {str(e)}')
+        return redirect('openuav_manager:manage')
 
 @require_http_methods(["GET"])
 def openuav_status(request):
@@ -934,3 +922,82 @@ def manage_view(request):
                 'instance_count': 0
             }
         })
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def reset_openuav(request):
+    """Reset (remove and restart) a container instance"""
+    try:
+        # Get username and reset confirmation from request data
+        username = request.POST.get('username')
+        reset_confirm = request.POST.get('reset_confirm', '').strip().lower()
+        
+        if not username:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Username is required'
+            }, status=400)
+        
+        if reset_confirm != 'reset':
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid reset confirmation'
+            }, status=400)
+        
+        container_name = f'digital-twin-{username}'
+        logger.info(f"Resetting container: {container_name}")
+        
+        # Force remove the container
+        stdout, stderr, code = run_command(f"docker rm -f {container_name}")
+        if code != 0:
+            logger.warning(f"Error removing container: {stderr}")
+        
+        # Remove container from database if it exists
+        Container.objects.filter(name=container_name).delete()
+        
+      
+        
+        # Launch new container
+        launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged --name={container_name} --hostname={container_name} -d -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw digital-twin-ras-ses-598:5.0"""
+        
+        logger.info("Launching new container with command:")
+        logger.info("=" * 80)
+        logger.info(launch_cmd)
+        logger.info("=" * 80)
+        
+        stdout, stderr, code = run_command(launch_cmd)
+        if code != 0:
+            logger.error(f"Failed to launch container: {stderr}")
+            messages.error(request, f'Failed to launch container: {stderr}')
+            return redirect('openuav_manager:manage')
+        
+        # Get container ID from stdout
+        container_id = stdout.strip()
+        
+        # Verify container is running
+        verify_cmd = f"docker ps --filter name={container_name} --format '{{{{.Names}}}}\\t{{{{.Status}}}}\\t{{{{.ID}}}}'"
+        stdout, stderr, code = run_command(verify_cmd)
+        if code != 0 or 'up' not in stdout.strip().lower():
+            logger.error(f"Container {container_name} failed to start properly")
+            run_command(f"docker rm -f {container_name}")
+            messages.error(request, 'Container failed to start properly')
+            return redirect('openuav_manager:manage')
+        
+        # Create new container record
+        Container.objects.create(
+            container_id=container_id,
+            short_id=container_id[:12],
+            name=container_name,
+            status='running',
+            image='digital-twin-ras-ses-598:5.0',
+            ports={'vnc': 5901},
+            vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+        )
+        
+        messages.success(request, 'Container reset successfully')
+        return redirect('openuav_manager:manage')
+        
+    except Exception as e:
+        logger.error(f"Error in reset_openuav: {str(e)}", exc_info=True)
+        messages.error(request, f'Error: {str(e)}')
+        return redirect('openuav_manager:manage')

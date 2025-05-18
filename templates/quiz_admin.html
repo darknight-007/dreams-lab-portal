@@ -4,155 +4,227 @@
 {% block title %}Quiz Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid mt-4">
     <h1>Quiz Statistics Dashboard</h1>
     
-    <!-- Summary Statistics -->
+    <!-- Quiz ID Filter -->
     <div class="row mt-4">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Total Submissions</h5>
-                    <p class="card-text display-4">{{ total_submissions }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Average Part 1 Score</h5>
-                    <p class="card-text display-4">{{ avg_part1_score|floatformat:1 }}%</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Average Part 2 Score</h5>
-                    <p class="card-text display-4">{{ avg_part2_score|floatformat:1 }}%</p>
+                    <h5 class="card-title">Select Quiz</h5>
+                    <form method="get" class="d-flex align-items-center">
+                        <div class="form-group me-2 flex-grow-1">
+                            <select name="quiz_id" class="form-select">
+                                <option value="">All Quizzes</option>
+                                {% for quiz_id in all_quiz_ids %}
+                                <option value="{{ quiz_id }}" {% if quiz_id == selected_quiz_id %}selected{% endif %}>{{ quiz_id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Summary Statistics for Selected Quiz(zes) -->
+    <div class="row mt-4">
+        {% for quiz_id, stats in quiz_statistics.items %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ quiz_id }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Submissions:</strong> {{ stats.submissions_count }}</p>
+                    <p><strong>Average Score:</strong> {{ stats.average_score|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No quiz statistics available for the selected filters.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Score Distribution Visualization -->
+    {% if quiz_statistics %}
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Score Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="scoreDistributionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Average Performance by Question</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="questionPerformanceChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-    <!-- Score Distribution Charts -->
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Part 1 Score Distribution</h5>
-                    <canvas id="part1Histogram"></canvas>
-                </div>
-            </div>
+    <!-- Detailed Question Analysis -->
+    {% for quiz_id, stats in quiz_statistics.items %}
+    <div class="card mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Question Analysis: {{ quiz_id }}</h5>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Part 2 Score Distribution</h5>
-                    <canvas id="part2Histogram"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Topic-wise Analysis -->
-    <div class="row mt-5 topic-analysis">
-        <!-- Part 1 Topics -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Part 1 Topic Analysis</h5>
-                    <canvas id="part1TopicsChart"></canvas>
-                    <div class="mt-4">
-                        <h6>Topics Covered:</h6>
-                        <ul class="list-unstyled">
-                            <li>Q1: SLAM Purpose and Applications</li>
-                            <li>Q2: LiDAR Technology and Applications</li>
-                            <li>Q3: Occupancy Grid Mapping</li>
-                            <li>Q4: GPS Navigation Challenges</li>
-                            <li>Q5: Path Planning Optimization</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Part 2 Topics -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Part 2 Topic Analysis</h5>
-                    <canvas id="part2TopicsChart"></canvas>
-                    <div class="mt-4">
-                        <h6>Topics Covered:</h6>
-                        <ul class="list-unstyled">
-                            <li>Q1: Multi-view Geometry (Stereo Vision)</li>
-                            <li>Q2: SLAM Loop Closure</li>
-                            <li>Q3: Sensor Fusion (Kalman Filter)</li>
-                            <li>Q4: Sampling Strategies</li>
-                            <li>Q5: Error Analysis in Rock Mapping</li>
-                        </ul>
-                    </div>
-                </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Total Answers</th>
+                            {% if "SES598_2025_RETRO" in quiz_id %}
+                            <th>Correct Answers</th>
+                            <th>Correctness %</th>
+                            <th>Correct Answer</th>
+                            {% endif %}
+                            <th>Answer Distribution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q_key, q_stats in stats.questions_stats.items %}
+                        <tr>
+                            <td>{{ q_key }}</td>
+                            <td>{{ q_stats.total_answers }}</td>
+                            {% if "SES598_2025_RETRO" in quiz_id %}
+                            <td>{{ q_stats.correct_answers }}</td>
+                            <td>{{ q_stats.correct_percentage|floatformat:1 }}%</td>
+                            <td>{{ q_stats.correct_answer }}</td>
+                            {% endif %}
+                            <td>
+                                <div class="answer-distribution">
+                                    {% for answer, count in q_stats.answer_distribution.items %}
+                                    <div class="answer-item">
+                                        <span class="answer-option">{{ answer }}</span>: 
+                                        <span class="answer-count">{{ count }}</span>
+                                        {% if "SES598_2025_RETRO" in quiz_id and answer == q_stats.correct_answer %}
+                                        <span class="badge bg-success">Correct</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+    {% endfor %}
 
     <!-- Individual Results Table -->
-    <div class="mt-5">
-        <h2>Individual Results</h2>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Part 1 Topics</th>
-                        <th>Part 1 Score</th>
-                        <th>Part 2 Topics</th>
-                        <th>Part 2 Score</th>
-                        <th>Combined Score</th>
-                        <th>Last Submission</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for result in results %}
-                    <tr>
-                        <td>{{ result.email|slice:":1" }}***{{ result.email|slice:"-1:" }}</td>
-                        <td>
-                            <div class="topic-indicators" data-bs-toggle="tooltip" data-bs-html="true" 
-                                title="SLAM: {% if result.part1_q1_correct %}✓{% else %}✗{% endif %}
-                                       LiDAR: {% if result.part1_q2_correct %}✓{% else %}✗{% endif %}
-                                       Mapping: {% if result.part1_q3_correct %}✓{% else %}✗{% endif %}
-                                       GPS: {% if result.part1_q4_correct %}✓{% else %}✗{% endif %}
-                                       Path Planning: {% if result.part1_q5_correct %}✓{% else %}✗{% endif %}">
-                                <span class="topic-dot {% if result.part1_q1_correct %}correct{% else %}incorrect{% endif %}" title="SLAM"></span>
-                                <span class="topic-dot {% if result.part1_q2_correct %}correct{% else %}incorrect{% endif %}" title="LiDAR"></span>
-                                <span class="topic-dot {% if result.part1_q3_correct %}correct{% else %}incorrect{% endif %}" title="Mapping"></span>
-                                <span class="topic-dot {% if result.part1_q4_correct %}correct{% else %}incorrect{% endif %}" title="GPS"></span>
-                                <span class="topic-dot {% if result.part1_q5_correct %}correct{% else %}incorrect{% endif %}" title="Path Planning"></span>
-                            </div>
-                        </td>
-                        <td>{{ result.part1_score|floatformat:1 }}%</td>
-                        <td>
-                            <div class="topic-indicators" data-bs-toggle="tooltip" data-bs-html="true"
-                                title="Stereo Vision: {% if result.part2_q1_correct %}✓{% else %}✗{% endif %}
-                                       Loop Closure: {% if result.part2_q2_correct %}✓{% else %}✗{% endif %}
-                                       Sensor Fusion: {% if result.part2_q3_correct %}✓{% else %}✗{% endif %}
-                                       Sampling: {% if result.part2_q4_correct %}✓{% else %}✗{% endif %}
-                                       Error Analysis: {% if result.part2_q5_correct %}✓{% else %}✗{% endif %}">
-                                <span class="topic-dot {% if result.part2_q1_correct %}correct{% else %}incorrect{% endif %}" title="Stereo Vision"></span>
-                                <span class="topic-dot {% if result.part2_q2_correct %}correct{% else %}incorrect{% endif %}" title="Loop Closure"></span>
-                                <span class="topic-dot {% if result.part2_q3_correct %}correct{% else %}incorrect{% endif %}" title="Sensor Fusion"></span>
-                                <span class="topic-dot {% if result.part2_q4_correct %}correct{% else %}incorrect{% endif %}" title="Sampling"></span>
-                                <span class="topic-dot {% if result.part2_q5_correct %}correct{% else %}incorrect{% endif %}" title="Error Analysis"></span>
-                            </div>
-                        </td>
-                        <td>{{ result.part2_score|floatformat:1 }}%</td>
-                        <td>{{ result.combined_score|floatformat:1 }}%</td>
-                        <td>{{ result.last_submission|date:"Y-m-d H:i" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="card mt-5">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Individual Results</h5>
+            <div>
+                <button id="toggleSubmissionsBtn" class="btn btn-sm btn-light" data-show-all="true">
+                    <i class="fas fa-filter me-1"></i> Show Latest Only
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Quiz ID</th>
+                            <th>Score</th>
+                            <th>Submission Date</th>
+                            <th>Attempt</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                            {% with total_attempts=result.quiz_attempts|length %}
+                            {% for attempt in result.quiz_attempts %}
+                            <tr class="submission-row {% if attempt.is_latest %}latest-submission{% else %}previous-submission{% endif %} {% if attempt.is_latest %}table-primary{% endif %}">
+                                <td>
+                                    {% if forloop.first %}
+                                    <span class="email-obfuscated" data-email="{{ result.email }}" style="cursor: pointer;">
+                                        {{ result.email|slice:":3" }}***{{ result.email|slice:"-10:" }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ attempt.quiz_id }}</td>
+                                <td>{{ attempt.score|floatformat:1 }}%</td>
+                                <td>{{ attempt.submission_date|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if attempt.is_latest %}
+                                    <span class="badge bg-success">Latest</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Previous</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse-{{ result.email|slugify }}-{{ attempt.quiz_id|slugify }}-{{ forloop.counter }}" 
+                                            aria-expanded="false">
+                                        Show Answers
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="collapse" id="collapse-{{ result.email|slugify }}-{{ attempt.quiz_id|slugify }}-{{ forloop.counter }}">
+                                <td colspan="6">
+                                    <div class="card card-body bg-light">
+                                        <h6>Student Answers</h6>
+                                        <div class="row">
+                                            {% for q_key, q_data in attempt.questions.items %}
+                                            <div class="col-md-3 mb-2">
+                                                <div class="answer-detail">
+                                                    <strong>{{ q_key }}:</strong> {{ q_data.answer }}
+                                                    {% if "SES598_2025_RETRO" in attempt.quiz_id %}
+                                                        {% for quiz_id, stats in quiz_statistics.items %}
+                                                            {% if quiz_id == attempt.quiz_id %}
+                                                                {% for stat_q_key, q_stats in stats.questions_stats.items %}
+                                                                    {% if stat_q_key == q_key %}
+                                                                        {% if q_data.answer == q_stats.correct_answer %}
+                                                                        <span class="badge bg-success">✓</span>
+                                                                        {% else %}
+                                                                        <span class="badge bg-danger">✗</span>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endwith %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No results found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -164,238 +236,363 @@
     margin-bottom: 20px;
 }
 .card-title {
-    color: #666;
     font-size: 1.1rem;
 }
-.display-4 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #333;
-}
-
-/* Topic Analysis Styling */
-.topic-analysis .card-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 1.5rem;
-}
-
-.topic-analysis h6 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #444;
-    margin: 1.5rem 0 1rem;
-}
-
-.topic-analysis ul {
-    margin-left: 0.5rem;
-}
-
-.topic-analysis li {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 0.8rem;
-    padding-left: 1rem;
-    position: relative;
-}
-
-.topic-analysis li:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #4a90e2;
-}
-
-.topic-analysis .card {
-    border: 1px solid #e0e0e0;
-}
-
-.topic-analysis canvas {
-    margin: 1rem 0;
-}
-
-/* Topic Indicators Styling */
-.topic-indicators {
+.answer-distribution {
     display: flex;
-    gap: 4px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.answer-item {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    display: inline-flex;
     align-items: center;
 }
-
-.topic-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
+.answer-option {
+    font-weight: bold;
+}
+.answer-count {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.answer-detail strong {
     display: inline-block;
-    cursor: help;
+    width: 40px;
 }
-
-.topic-dot.correct {
-    background-color: #28a745;
+.email-obfuscated.revealed {
+    font-weight: bold;
+    color: #0d6efd;
 }
-
-.topic-dot.incorrect {
-    background-color: #dc3545;
+/* Chart tooltip styling */
+.chartjs-tooltip {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
 }
-
-/* Tooltip Customization */
-.tooltip-inner {
-    max-width: 300px;
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    text-align: left;
-    white-space: pre-line;
+/* Enhanced table styling */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+.table-primary {
+    background-color: rgba(0, 123, 255, 0.15) !important;
+    border-left: 3px solid #0d6efd;
+}
+/* Make the latest badge more noticeable */
+.badge.bg-success {
+    font-size: 0.85rem;
+    padding: 0.35em 0.65em;
+}
+/* Group submissions by email */
+tr.table-separator td {
+    border-top: 2px solid #dee2e6;
 }
 </style>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 <script>
-// Convert Django template variables to JavaScript arrays
-const part1Scores = [{% for result in results %}{{ result.part1_score }},{% endfor %}];
-const part2Scores = [{% for result in results %}{{ result.part2_score }},{% endfor %}];
-
-// Topic-wise data (to be populated from backend)
-const part1TopicData = {
-    labels: ['SLAM', 'LiDAR', 'Mapping', 'GPS', 'Path Planning'],
-    data: [
-        {% for topic in part1_topic_stats %}
-        {{ topic.correct_percentage }},
-        {% endfor %}
-    ]
-};
-
-const part2TopicData = {
-    labels: ['Stereo Vision', 'Loop Closure', 'Sensor Fusion', 'Sampling', 'Error Analysis'],
-    data: [
-        {% for topic in part2_topic_stats %}
-        {{ topic.correct_percentage }},
-        {% endfor %}
-    ]
-};
-
-// Helper function to generate histogram data
-function generateHistogramData(scores, binCount = 5) {
-    const min = 0;
-    const max = 100;
-    const binSize = (max - min) / binCount;
-    const bins = Array(binCount).fill(0);
-    
-    scores.forEach(score => {
-        if (score >= 0 && score <= 100) {
-            const binIndex = Math.min(Math.floor(score / binSize), binCount - 1);
-            bins[binIndex]++;
-        }
-    });
-    
-    const labels = Array(binCount).fill(0).map((_, i) => 
-        `${(i * binSize).toFixed(0)}-${((i + 1) * binSize).toFixed(0)}`
-    );
-    
-    return { labels, data: bins };
-}
-
-// Create histograms
-function createHistogram(canvasId, scores, label) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    const histData = generateHistogramData(scores);
-    
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: histData.labels,
-            datasets: [{
-                label: label,
-                data: histData.data,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Number of Students'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Score Range (%)'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-}
-
-// Create topic analysis charts
-function createTopicChart(canvasId, data, title) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    
-    new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: data.labels,
-            datasets: [{
-                label: 'Correct Answer Rate (%)',
-                data: data.data,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 2,
-                pointBackgroundColor: 'rgba(54, 162, 235, 1)'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        stepSize: 20
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                title: {
-                    display: true,
-                    text: title
-                }
-            }
-        }
-    });
-}
-
-// Create all charts when the page loads
+/* eslint-disable */
 document.addEventListener('DOMContentLoaded', function() {
-    createHistogram('part1Histogram', part1Scores, 'Part 1 Scores');
-    createHistogram('part2Histogram', part2Scores, 'Part 2 Scores');
-    createTopicChart('part1TopicsChart', part1TopicData, 'Part 1 Topic Performance');
-    createTopicChart('part2TopicsChart', part2TopicData, 'Part 2 Topic Performance');
-});
-
-// Initialize Bootstrap tooltips
-document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
+    
+    // Handle email obfuscation click events
+    document.querySelectorAll('.email-obfuscated').forEach(function(el) {
+        el.addEventListener('click', function() {
+            const emailEl = this;
+            const fullEmail = emailEl.getAttribute('data-email');
+            
+            if (emailEl.classList.contains('revealed')) {
+                // Hide the email again
+                emailEl.textContent = fullEmail.slice(0, 3) + '***' + fullEmail.slice(-10);
+                emailEl.classList.remove('revealed');
+            } else {
+                // Show the full email
+                emailEl.textContent = fullEmail;
+                emailEl.classList.add('revealed');
+                
+                // Hide it again after 10 seconds
+                setTimeout(function() {
+                    if (emailEl.classList.contains('revealed')) {
+                        emailEl.textContent = fullEmail.slice(0, 3) + '***' + fullEmail.slice(-10);
+                        emailEl.classList.remove('revealed');
+                    }
+                }, 10000);
+            }
+        });
+    });
+    
+    // Handle toggle between all submissions and latest only
+    const toggleBtn = document.getElementById('toggleSubmissionsBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const showAll = toggleBtn.getAttribute('data-show-all') === 'true';
+            
+            // Toggle the state
+            if (showAll) {
+                // Switch to latest only
+                document.querySelectorAll('.previous-submission').forEach(row => {
+                    row.style.display = 'none';
+                });
+                toggleBtn.setAttribute('data-show-all', 'false');
+                toggleBtn.innerHTML = '<i class="fas fa-list me-1"></i> Show All Submissions';
+            } else {
+                // Switch to show all
+                document.querySelectorAll('.previous-submission').forEach(row => {
+                    row.style.display = '';
+                });
+                toggleBtn.setAttribute('data-show-all', 'true');
+                toggleBtn.innerHTML = '<i class="fas fa-filter me-1"></i> Show Latest Only';
+            }
+        });
+    }
+
+    // Chart utilities
+    const chartUtils = {
+        // Common chart colors
+        colors: {
+            blue: 'rgba(54, 162, 235, 0.5)',
+            teal: 'rgba(75, 192, 192, 0.5)',
+            orange: 'rgba(255, 159, 64, 0.5)',
+            purple: 'rgba(153, 102, 255, 0.5)',
+            red: 'rgba(255, 99, 132, 0.5)',
+            green: 'rgba(40, 167, 69, 0.7)',
+            yellow: 'rgba(255, 193, 7, 0.4)'
+        },
+        
+        // Get solid version of color
+        getSolidColor: function(color) {
+            return color.replace(/[0-9].[0-9]/, '1.0');
+        },
+        
+        // Get canvas context safely
+        getContext: function(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error(`Canvas element ${canvasId} not found`);
+                return null;
+            }
+            return canvas.getContext('2d');
+        },
+        
+        // Debug logging for chart data
+        logChartData: function(label, data) {
+            if (console && console.debug) {
+                console.debug(`Chart data [${label}]:`, data);
+            }
+        }
+    };
+
+    {% if quiz_statistics %}
+    // Create score distribution chart
+    const createScoreDistributionChart = function() {
+        const ctx = chartUtils.getContext('scoreDistributionChart');
+        if (!ctx) return;
+        
+        // Define histogram buckets (bins)
+        const bins = [
+            '0-9%', '10-19%', '20-29%', '30-39%', '40-49%', 
+            '50-59%', '60-69%', '70-79%', '80-89%', '90-100%'
+        ];
+        
+        // Initialize dataset for each quiz
+        const datasets = [];
+        const colors = [
+            chartUtils.colors.blue,
+            chartUtils.colors.teal,
+            chartUtils.colors.orange,
+            chartUtils.colors.purple,
+            chartUtils.colors.red
+        ];
+        
+        {% for quiz_id, stats in quiz_statistics.items %}
+        // Create histogram data for this quiz
+        const histogramData = Array(10).fill(0); // 10 bins from 0-100%
+        
+        // Count scores in each bin
+        {% for result in results %}
+            {% for attempt in result.quiz_attempts %}
+                {% if attempt.quiz_id == quiz_id and attempt.is_latest %}
+                    // Calculate which bin this score belongs in
+                    const score = {{ attempt.score }};
+                    const binIndex = Math.min(Math.floor(score / 10), 9); // 0-9 index for bins
+                    histogramData[binIndex]++;
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        
+        // Add dataset for this quiz
+        datasets.push({
+            label: '{{ quiz_id }}',
+            data: histogramData,
+            backgroundColor: colors[datasets.length % colors.length],
+            borderColor: chartUtils.getSolidColor(colors[datasets.length % colors.length]),
+            borderWidth: 1
+        });
+        {% endfor %}
+        
+        // Debug log the datasets
+        chartUtils.logChartData('Score Distribution', datasets);
+        
+        // Create bar chart showing score distribution
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: bins,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw} students`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Score Distribution Histogram'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Students'
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Score Range'
+                        }
+                    }
+                }
+            }
+        });
+    };
+
+    // Create question performance chart
+    const createQuestionPerformanceChart = function() {
+        const ctx = chartUtils.getContext('questionPerformanceChart');
+        if (!ctx) return;
+        
+        // Prepare data for stacked bar chart
+        const datasets = [];
+        const labels = [];
+        
+        {% for quiz_id, stats in quiz_statistics.items %}
+        {% if "SES598_2025_RETRO" in quiz_id %}
+        // Define colors based on quiz part
+        const isP1 = '{{ quiz_id }}'.includes('P1');
+        const correctColor = isP1 ? chartUtils.colors.green : chartUtils.colors.blue;
+        const incorrectColor = isP1 ? chartUtils.colors.red : chartUtils.colors.yellow;
+        
+        // Collect question data
+        const correctData = [];
+        const incorrectData = [];
+        const questionLabels = [];
+        
+        {% for q_key, q_stats in stats.questions_stats.items %}
+        questionLabels.push('{{ q_key }}');
+        correctData.push({{ q_stats.correct_percentage|floatformat:1 }});
+        incorrectData.push(100 - {{ q_stats.correct_percentage|floatformat:1 }});
+        {% endfor %}
+        
+        // Store labels if first quiz
+        if (labels.length === 0) {
+            labels.push(...questionLabels);
+        }
+        
+        // Add datasets for this quiz
+        datasets.push({
+            label: `{{ quiz_id }} - Correct`,
+            data: correctData,
+            backgroundColor: correctColor,
+            borderColor: chartUtils.getSolidColor(correctColor),
+            borderWidth: 1,
+            stack: '{{ quiz_id }}'
+        });
+        
+        datasets.push({
+            label: `{{ quiz_id }} - Incorrect`,
+            data: incorrectData,
+            backgroundColor: incorrectColor,
+            borderColor: chartUtils.getSolidColor(incorrectColor),
+            borderWidth: 1,
+            stack: '{{ quiz_id }}'
+        });
+        {% endif %}
+        {% endfor %}
+        
+        // Debug log the datasets
+        chartUtils.logChartData('Question Performance', datasets);
+        
+        // Create the chart if we have data
+        if (datasets.length > 0) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Question Performance Analysis'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentage of Responses'
+                            }
+                        },
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Question'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    };
+    
+    // Create the charts
+    createScoreDistributionChart();
+    createQuestionPerformanceChart();
+    {% endif %}
 });
 </script>
 {% endblock %} 

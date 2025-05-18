@@ -11,6 +11,7 @@ urlpatterns = [
     path('manage/launch/', views.launch_openuav, name='manage_launch'),
     path('manage/batch-action/', views.batch_action, name='batch_action'),
     path('stop/', views.stop_openuav, name='stop'),
+    path('reset/', views.reset_openuav, name='reset'),
     path('status/', views.openuav_status, name='status'),
     path('status/update/', views.container_status_update, name='container_status_update'),
 ]

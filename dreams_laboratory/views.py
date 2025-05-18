@@ -16,6 +16,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from io import BytesIO
+from dreams_laboratory.quiz_views import get_correct_answers  # Import the get_correct_answers function
 
 import subprocess
 import os
@@ -990,6 +991,10 @@ def get_ses598_course_data():
             'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments. The curriculum emphasizes a strong theoretical foundation leading up to real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
             'quiz_info': 'Try the Space Robotics and AI Proficiency Quiz!'
         },
+        'course_materials': {
+            'lecture_slides': '<a href="https://drive.google.com/drive/folders/1eJyYuxB2T-TKn5vwkTx2hcPif4ICiIE9?usp=sharing" target="_blank" class="link-primary"><i class="fas fa-file-pdf"></i> Lecture Slides (Google Drive)</a>',
+            'description': 'Access all course lecture slides in PDF format. These slides cover the course modules including State Estimation and Controls, Computer Vision, Scene Representation, Sampling Strategies, Digital Twins, SLAM, Multi-Robot Coordination, and Extreme Environment Operations.'
+        },
         'prerequisites': [
             {'category': 'Mathematics', 'requirement': 'Linear algebra (vectors, matrices, eigenvalues), calculus (derivatives, gradients), and probability theory (Bayes rule, distributions)'},
             {'category': 'Programming', 'requirement': 'Strong Python programming skills with experience in scientific computing libraries (NumPy, SciPy, PyTorch/TensorFlow)'},
@@ -1631,119 +1636,210 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 @staff_member_required
 def quiz_admin_view(request):
-    """Admin view for quiz statistics"""
-    # Get all unique emails
-    submissions = QuizSubmission.objects.values('email').distinct()
+    """Admin view for quiz statistics with filtering by quiz ID"""
+    # Get all available quiz IDs from the database
+    all_quiz_ids = QuizSubmission.objects.values_list('quiz_id', flat=True).distinct().order_by('quiz_id')
     
+    # Get selected quiz ID from request parameters or use None (which will show all)
+    selected_quiz_id = request.GET.get('quiz_id', None)
+    
+    # Filter submissions by quiz ID if specified
+    if selected_quiz_id:
+        submissions_filter = {'quiz_id': selected_quiz_id}
+    else:
+        submissions_filter = {}
+    
+    # Get all unique emails with the filter
+    submissions = QuizSubmission.objects.filter(**submissions_filter).values('email').distinct()
+    
+    # Collect all quiz IDs for the emails (could be multiple per email)
+    quiz_ids_per_email = {}
+    for submission in submissions:
+        email = submission['email']
+        quiz_ids_per_email[email] = list(QuizSubmission.objects.filter(
+            email=email
+        ).values_list('quiz_id', flat=True).distinct())
+    
+    # Get question statistics for each quiz ID
+    quiz_statistics = {}
+    for quiz_id in all_quiz_ids:
+        if selected_quiz_id and quiz_id != selected_quiz_id:
+            continue
+            
+        # Get the latest submission for each email for this quiz ID
+        latest_submissions = []
+        for email_obj in submissions:
+            email = email_obj['email']
+            submission = QuizSubmission.objects.filter(
+                email=email, 
+                quiz_id=quiz_id
+            ).order_by('-submission_date').first()
+            
+            if submission:
+                latest_submissions.append(submission)
+        
+        # Skip if no submissions for this quiz ID
+        if not latest_submissions:
+            continue
+        
+        # Analyze question responses
+        questions_stats = {}
+        num_questions = 15  # Default to 15 questions (could be made dynamic)
+        
+        # For retrospective quiz, adjust based on quiz_id
+        if quiz_id == "SES598_2025_RETRO_P1" or quiz_id == "SES598_2025_RETRO_P2":
+            # Get correct answers from quiz_views.py for retrospective quiz
+            correct_answers = json.loads(get_correct_answers())
+            
+            # For part 1, check questions 1-15
+            if quiz_id == "SES598_2025_RETRO_P1":
+                question_range = range(1, 16)
+            # For part 2, check questions 16-25, stored in q1-q10
+            else:
+                question_range = range(1, 11)
+                
+            for i in question_range:
+                q_key = f'q{i}'
+                
+                # For part 2, map to the original question number
+                if quiz_id == "SES598_2025_RETRO_P2":
+                    original_q_num = i + 15
+                    correct_q_key = f'q{original_q_num}'
+                else:
+                    correct_q_key = q_key
+                
+                # Get correct answer
+                correct = correct_answers.get(correct_q_key, '')
+                
+                # Count submissions for this question
+                total_answers = 0
+                correct_answers_count = 0
+                answer_distribution = {}
+                
+                for submission in latest_submissions:
+                    answer = getattr(submission, q_key, '')
+                    if answer:
+                        total_answers += 1
+                        if answer not in answer_distribution:
+                            answer_distribution[answer] = 0
+                        answer_distribution[answer] += 1
+                        
+                        # Check if correct
+                        if answer == correct:
+                            correct_answers_count += 1
+                
+                # Calculate correctness percentage
+                correct_percentage = (correct_answers_count / total_answers * 100) if total_answers > 0 else 0
+                
+                questions_stats[q_key] = {
+                    'total_answers': total_answers,
+                    'correct_answers': correct_answers_count,
+                    'correct_percentage': correct_percentage,
+                    'answer_distribution': answer_distribution,
+                    'correct_answer': correct
+                }
+        else:
+            # For other quizzes, simple count-based analysis
+            for i in range(1, num_questions + 1):
+                q_key = f'q{i}'
+                
+                # Count submissions for this question
+                total_answers = 0
+                answer_distribution = {}
+                
+                for submission in latest_submissions:
+                    answer = getattr(submission, q_key, '')
+                    if answer:
+                        total_answers += 1
+                        if answer not in answer_distribution:
+                            answer_distribution[answer] = 0
+                        answer_distribution[answer] += 1
+                
+                questions_stats[q_key] = {
+                    'total_answers': total_answers,
+                    'answer_distribution': answer_distribution
+                }
+        
+        # Calculate score statistics
+        scores = [submission.total_score for submission in latest_submissions]
+        avg_score = sum(scores) / len(scores) if scores else 0
+        
+        quiz_statistics[quiz_id] = {
+            'submissions_count': len(latest_submissions),
+            'average_score': avg_score,
+            'questions_stats': questions_stats
+        }
+    
+    # Get individual results for all emails
     results = []
-    total_submissions = 0
-    part1_scores = []
-    part2_scores = []
-    
-    # Initialize topic statistics
-    part1_topic_stats = [{'correct': 0, 'total': 0} for _ in range(5)]
-    part2_topic_stats = [{'correct': 0, 'total': 0} for _ in range(5)]
-    
-    # Correct answers for each part
-    part1_answers = {
-        'q1': '3',  # SLAM purpose
-        'q2': '2',  # LiDAR
-        'q3': '1',  # Occupancy grid
-        'q4': '1',  # GPS challenge
-        'q5': '2',  # Path planning
-    }
-    
-    part2_answers = {
-        'q1': '2',  # Stereo vision baseline
-        'q2': '2',  # SLAM loop closure
-        'q3': '3',  # Kalman filter parameters
-        'q4': '3',  # Sampling strategy
-        'q5': '1',  # Error type in rock mapping
-    }
-    
     for submission in submissions:
         email = submission['email']
         
-        # Get latest submissions for each part
-        part1 = QuizSubmission.objects.filter(
-            email=email, 
-            quiz_id='SES598'
-        ).order_by('-submission_date').first()
+        # Create a result entry for each email
+        result = {
+            'email': email,
+            'quiz_attempts': []
+        }
         
-        part2 = QuizSubmission.objects.filter(
-            email=email, 
-            quiz_id='SES598_Part2'
-        ).order_by('-submission_date').first()
+        # Get ALL submissions for this email (not just latest)
+        for quiz_id in all_quiz_ids:
+            if selected_quiz_id and quiz_id != selected_quiz_id:
+                continue
+                
+            # Get ALL submissions for this quiz ID, ordered by date (newest first)
+            quiz_submissions = QuizSubmission.objects.filter(
+                email=email, 
+                quiz_id=quiz_id
+            ).order_by('-submission_date')
+            
+            # Process each submission
+            for quiz_submission in quiz_submissions:
+                # For retrospective quiz parts, adjust the question mapping
+                questions_data = {}
+                if quiz_id == "SES598_2025_RETRO_P1":
+                    # For part 1, questions 1-15 map directly
+                    for i in range(1, 16):
+                        q_key = f'q{i}'
+                        questions_data[q_key] = {
+                            'answer': getattr(quiz_submission, q_key, ''),
+                        }
+                elif quiz_id == "SES598_2025_RETRO_P2":
+                    # For part 2, q1-q10 map to original questions 16-25
+                    for i in range(1, 11):
+                        q_key = f'q{i}'
+                        orig_q_key = f'q{i + 15}'  # Map to original question number
+                        questions_data[orig_q_key] = {
+                            'answer': getattr(quiz_submission, q_key, ''),
+                        }
+                else:
+                    # For other quizzes, map directly
+                    for i in range(1, 16):  # Assuming max 15 questions
+                        q_key = f'q{i}'
+                        if hasattr(quiz_submission, q_key):
+                            questions_data[q_key] = {
+                                'answer': getattr(quiz_submission, q_key, ''),
+                            }
+                
+                # Add submission data to result
+                result['quiz_attempts'].append({
+                    'quiz_id': quiz_id,
+                    'score': quiz_submission.total_score,
+                    'submission_date': quiz_submission.submission_date,
+                    'questions': questions_data,
+                    'is_latest': quiz_submissions.first() == quiz_submission  # Flag to indicate if this is the latest submission
+                })
         
-        if part1 or part2:
-            total_submissions += 1
-            
-            # Initialize result dictionary
-            result = {
-                'email': email,
-                'part1_score': 0,
-                'part2_score': 0,
-                'combined_score': 0,
-                'last_submission': max(
-                    part1.submission_date if part1 else timezone.make_aware(timezone.datetime.min),
-                    part2.submission_date if part2 else timezone.make_aware(timezone.datetime.min)
-                )
-            }
-            
-            # Process Part 1
-            if part1:
-                correct_count = 0
-                for i in range(1, 6):
-                    q_key = f'q{i}'
-                    answer = getattr(part1, q_key, '')
-                    is_correct = answer == part1_answers[q_key]
-                    result[f'part1_{q_key}_correct'] = is_correct
-                    if answer:
-                        part1_topic_stats[i-1]['total'] += 1
-                        if is_correct:
-                            part1_topic_stats[i-1]['correct'] += 1
-                            correct_count += 1
-                
-                score = (correct_count / 5) * 100
-                result['part1_score'] = score
-                part1_scores.append(score)
-            
-            # Process Part 2
-            if part2:
-                correct_count = 0
-                for i in range(1, 6):
-                    q_key = f'q{i}'
-                    answer = getattr(part2, q_key, '')
-                    is_correct = answer == part2_answers[q_key]
-                    result[f'part2_{q_key}_correct'] = is_correct
-                    if answer:
-                        part2_topic_stats[i-1]['total'] += 1
-                        if is_correct:
-                            part2_topic_stats[i-1]['correct'] += 1
-                            correct_count += 1
-                
-                score = (correct_count / 5) * 100
-                result['part2_score'] = score
-                part2_scores.append(score)
-            
-            # Calculate combined score
-            result['combined_score'] = (result['part1_score'] * 0.6) + (result['part2_score'] * 0.4)
-            results.append(result)
+        # Add to results list
+        results.append(result)
     
-    # Calculate percentages for topic statistics
-    for stats in part1_topic_stats + part2_topic_stats:
-        stats['correct_percentage'] = (stats['correct'] / stats['total'] * 100) if stats['total'] > 0 else 0
-    
-    # Sort results by combined score (descending)
-    results.sort(key=lambda x: x['combined_score'], reverse=True)
+    # Sort results by email
+    results.sort(key=lambda x: x['email'])
     
     context = {
-        'total_submissions': total_submissions,
-        'avg_part1_score': sum(part1_scores) / len(part1_scores) if part1_scores else 0,
-        'avg_part2_score': sum(part2_scores) / len(part2_scores) if part2_scores else 0,
-        'results': results,
-        'part1_topic_stats': part1_topic_stats,
-        'part2_topic_stats': part2_topic_stats
+        'all_quiz_ids': all_quiz_ids,
+        'selected_quiz_id': selected_quiz_id,
+        'quiz_statistics': quiz_statistics,
+        'results': results
     }
     
     return render(request, 'quiz_admin.html', context)

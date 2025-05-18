@@ -19,6 +19,7 @@ from dreams_laboratory.views import (
     multiview_geometry, ses598_quiz_part2, generate_certificate,
     reset_quiz, quiz_admin_view, multi_armed_bandit_buddy_view
 )
+from dreams_laboratory.quiz_views import ses598_2025_retrospective
 from django.http import HttpResponse
 
 def health_check(request):
@@ -34,6 +35,7 @@ urlpatterns = [
     path('dreamslab/ses598/quiz/certificate/', generate_certificate, name='generate_certificate'),
     path('dreamslab/ses598/quiz/reset/', reset_quiz, name='reset_quiz'),
     path('dreamslab/ses598/quiz/admin/', quiz_admin_view, name='quiz_admin'),
+    path('dreamslab/ses598/2025-retrospective/', ses598_2025_retrospective, name='ses598_2025_retrospective'),
     path('tutorials/multiview-geometry/', multiview_geometry_view, name='multiview_geometry'),
     path('tutorials/stereo-buddy/', stereo_buddy_view, name='stereo_buddy'),
     path('tutorials/slam-buddy/', slam_buddy_view, name='slam_buddy'),

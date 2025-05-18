@@ -1,0 +1,658 @@
+{% extends "quiz_base.html" %}
+
+{% block quiz_title %}RAS 598: Space Robotics and AI - 2025 Course Retrospective{% endblock %}
+
+{% block mcq_section_title %}
+<div class="quiz-intro mb-4">
+    <div style="background: linear-gradient(to right, #1e3c72, #2a5298); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+        <h4 style="color: #ffcc00; margin-bottom: 15px;">🚀 MISSION DEBRIEF: SPACE ROBOTICS EXPEDITION</h4>
+        
+        <p style="font-size: 1.1rem; line-height: 1.6;">
+            Congratulations, space explorer! You've completed your training at the RAS 598 Space Academy. 
+            Before you embark on your next mission, help us calibrate our training systems by sharing your 
+            experiences and testing your knowledge of advanced robotics concepts.
+        </p>
+        
+        <p style="font-size: 0.95rem; margin-top: 15px; color: #a9d0f5;">
+            Your feedback will be used to optimize future missions and help the next generation of space robotics engineers.
+        </p>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #0056b3;">
+        <h5 style="color: #0056b3;">Mission Parameters:</h5>
+        <ul style="list-style-type: none; padding-left: 0;">
+            <li>📋 25 questions covering key mission concepts</li>
+            <li>⏱️ Estimated completion time: 15-20 minutes</li>
+            <li>🏅 Your responses earn your final mission badge</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @keyframes float {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-8px) rotate(5deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .question {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        background-color: #fff;
+    }
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .option {
+        display: block;
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .option:hover {
+        background-color: #f8f9fa;
+    }
+    .feedback-item {
+        border-left: 4px solid;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border-radius: 0.25rem;
+    }
+    .feedback-item.bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-left-color: #28a745;
+    }
+    .feedback-item.bg-danger-light {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-left-color: #dc3545;
+    }
+    .user-info {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+    .progress-container {
+        margin: 2rem 0;
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+    }
+    .submission-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s;
+    }
+    .submission-message {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        max-width: 90%;
+        width: 400px;
+    }
+    .submission-message h4 {
+        margin-bottom: 1rem;
+    }
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('quizForm');
+    const overlay = document.getElementById('submissionOverlay');
+    
+    if (form) {
+        form.addEventListener('submit', function() {
+            // Validate that all questions have been answered
+            const questions = document.querySelectorAll('.question');
+            let allAnswered = true;
+            
+            questions.forEach(function(question, index) {
+                const questionNumber = index + 1;
+                const radioName = `q${questionNumber}`;
+                const answered = document.querySelector(`input[name="${radioName}"]:checked`);
+                
+                if (!answered) {
+                    allAnswered = false;
+                    question.style.borderColor = '#dc3545';
+                } else {
+                    question.style.borderColor = '#dee2e6';
+                }
+            });
+            
+            if (!allAnswered) {
+                alert('Please answer all questions before submitting.');
+                return false;
+            }
+            
+            // Show submission overlay
+            if (overlay) {
+                overlay.style.visibility = 'visible';
+                overlay.style.opacity = '1';
+            }
+            
+            // Let the form submit normally
+            return true;
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block mcq_questions %}
+    {% if show_results %}
+        <div class="alert alert-info" style="background: linear-gradient(135deg, #1e5799 0%, #207cca 35%, #2989d8 50%, #7db9e8 100%); color: white; border: none; border-radius: 10px;">
+            <h4 style="color: #ffcc00; margin-bottom: 15px;">🏆 Mission Accomplished: Retrospective Complete!</h4>
+            <p>Email: {{ email }}</p>
+            <div class="mb-3">
+                <p class="mb-2">Mission Performance Score: {{ score|floatformat:1 }}%</p>
+                <div class="progress mb-3" style="height: 20px; background-color: rgba(0,0,0,0.2); border-radius: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ score }}%; background-color: #2ecc71; border-radius: 10px;" aria-valuenow="{{ score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            <div class="alert" style="background-color: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 20px; margin-top: 20px;">
+                <h5 style="color: #ffcc00;">🚀 Congratulations, Space Explorer!</h5>
+                <p style="font-size: 1.1rem;">Your mission data has been transmitted successfully to DREAMS Lab Mission Control! Your insights will power the next generation of space robotics training and expand humanity's understanding of AI-driven exploration.</p>
+                <div style="margin-top: 15px; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
+                    <p>The RAS 598 crew thanks you for your dedicated service throughout this training mission. Your contributions will help future explorers navigate the challenges of space robotics.</p>
+                    <p style="font-weight: bold; margin-top: 10px;">New mission opportunities will be transmitted soon. Stay tuned!</p>
+                </div>
+            </div>
+
+            <!-- Question Feedback -->
+            <div class="question-feedback mt-4">
+                <h5 style="color: #ffcc00;">Mission Data Analysis</h5>
+                {% for q_num, q_feedback in feedback.items %}
+                    <div class="feedback-item {% if q_feedback.is_correct %}bg-success-light{% else %}bg-danger-light{% endif %}" style="background-color: rgba(255,255,255,0.1); border-left-color: {% if q_feedback.is_correct %}#2ecc71{% else %}#e74c3c{% endif %};">
+                        <h6 style="color: white;">
+                            Question {{ q_num|slice:"1:" }}
+                            <span class="badge ms-2" style="background-color: {% if q_feedback.is_correct %}#2ecc71{% else %}#e74c3c{% endif %};">
+                                {% if q_feedback.is_correct %}Correct{% else %}Incorrect{% endif %}
+                            </span>
+                        </h6>
+                        <p style="color: #e6f7ff;">{{ q_feedback.explanation }}</p>
+                        {% if not q_feedback.is_correct %}
+                            <p><strong>Correct answer:</strong> 
+                                {% if q_num == "q1" %}
+                                    {% if q_feedback.correct_answer == "A" %}Perception-Action-Control
+                                    {% elif q_feedback.correct_answer == "B" %}Perception-Action-Communication
+                                    {% elif q_feedback.correct_answer == "C" %}Planning-Action-Control
+                                    {% elif q_feedback.correct_answer == "D" %}Planning-Augmentation-Communication
+                                    {% endif %}
+                                {% elif q_num == "q2" %}
+                                    {% if q_feedback.correct_answer == "A" %}A control system without any sensors.
+                                    {% elif q_feedback.correct_answer == "B" %}A system that predicts disturbances and reacts before they occur.
+                                    {% elif q_feedback.correct_answer == "C" %}A system that senses errors and adjusts its actions accordingly.
+                                    {% elif q_feedback.correct_answer == "D" %}A system with no limitations on actuator performance.
+                                    {% endif %}
+                                {% elif q_num == "q3" %}
+                                    {% if q_feedback.correct_answer == "A" %}Classifying categorical data.
+                                    {% elif q_feedback.correct_answer == "B" %}Estimating uncertainty and making predictions for continuous data.
+                                    {% elif q_feedback.correct_answer == "C" %}Solving discrete optimization problems.
+                                    {% elif q_feedback.correct_answer == "D" %}Direct robotic actuator control.
+                                    {% endif %}
+                                {% elif q_num == "q4" %}
+                                    {% if q_feedback.correct_answer == "A" %}Minimizing sensor cost.
+                                    {% elif q_feedback.correct_answer == "B" %}Maximizing battery life.
+                                    {% elif q_feedback.correct_answer == "C" %}Reducing uncertainty about model estimates.
+                                    {% elif q_feedback.correct_answer == "D" %}Simplifying hardware design.
+                                    {% endif %}
+                                {% elif q_num == "q5" %}
+                                    {% if q_feedback.correct_answer == "A" %}Active learning aims to minimize variance, while multi-armed bandits aim to maximize expected rewards.
+                                    {% elif q_feedback.correct_answer == "B" %}Active learning focuses solely on exploration, while multi-armed bandits focus purely on exploitation.
+                                    {% elif q_feedback.correct_answer == "C" %}Multi-armed bandits minimize uncertainty, while active learning maximizes rewards.
+                                    {% elif q_feedback.correct_answer == "D" %}There is no significant difference; they're interchangeable.
+                                    {% endif %}
+                                {% elif q_num == "q6" %}
+                                    {% if q_feedback.correct_answer == "A" %}Particle Filter
+                                    {% elif q_feedback.correct_answer == "B" %}Unscented Kalman Filter (UKF)
+                                    {% elif q_feedback.correct_answer == "C" %}Extended Kalman Filter (EKF)
+                                    {% elif q_feedback.correct_answer == "D" %}Kalman Filter
+                                    {% endif %}
+                                {% elif q_num == "q7" %}
+                                    {% if q_feedback.correct_answer == "A" %}Controllability
+                                    {% elif q_feedback.correct_answer == "B" %}Observability
+                                    {% elif q_feedback.correct_answer == "C" %}Stability
+                                    {% elif q_feedback.correct_answer == "D" %}Optimality
+                                    {% endif %}
+                                {% elif q_num == "q8" %}
+                                    {% if q_feedback.correct_answer == "A" %}State estimation error covariance.
+                                    {% elif q_feedback.correct_answer == "B" %}Relative weights of state deviation and input usage.
+                                    {% elif q_feedback.correct_answer == "C" %}Sensor noise covariance.
+                                    {% elif q_feedback.correct_answer == "D" %}Actuator dynamics.
+                                    {% endif %}
+                                {% elif q_num == "q9" %}
+                                    {% if q_feedback.correct_answer == "A" %}COLMAP
+                                    {% elif q_feedback.correct_answer == "B" %}NeRF
+                                    {% elif q_feedback.correct_answer == "C" %}DUSt3R
+                                    {% elif q_feedback.correct_answer == "D" %}Gaussian Process Regression
+                                    {% endif %}
+                                {% elif q_num == "q10" %}
+                                    {% if q_feedback.correct_answer == "A" %}Real-time robotic control.
+                                    {% elif q_feedback.correct_answer == "B" %}Image-based 3D scene reconstruction and novel view synthesis.
+                                    {% elif q_feedback.correct_answer == "C" %}Satellite path optimization.
+                                    {% elif q_feedback.correct_answer == "D" %}Sensor placement optimization.
+                                    {% endif %}
+                                {% elif q_num == "q11" %}
+                                    {% if q_feedback.correct_answer == "A" %}Accuracy vs. computational expense.
+                                    {% elif q_feedback.correct_answer == "B" %}Accuracy vs. reliability.
+                                    {% elif q_feedback.correct_answer == "C" %}Stability vs. flexibility.
+                                    {% elif q_feedback.correct_answer == "D" %}Simplicity vs. robustness.
+                                    {% endif %}
+                                {% elif q_num == "q12" %}
+                                    {% if q_feedback.correct_answer == "A" %}Euler value.
+                                    {% elif q_feedback.correct_answer == "B" %}Fiedler value.
+                                    {% elif q_feedback.correct_answer == "C" %}Hamiltonian value.
+                                    {% elif q_feedback.correct_answer == "D" %}Laplacian eigenvalue.
+                                    {% endif %}
+                                {% elif q_num == "q13" %}
+                                    {% if q_feedback.correct_answer == "A" %}Multi-Purpose Control.
+                                    {% elif q_feedback.correct_answer == "B" %}Model Predictive Control.
+                                    {% elif q_feedback.correct_answer == "C" %}Maximum Performance Controller.
+                                    {% elif q_feedback.correct_answer == "D" %}Minimal Positioning Cost.
+                                    {% endif %}
+                                {% elif q_num == "q14" %}
+                                    {% if q_feedback.correct_answer == "A" %}Least squares optimization.
+                                    {% elif q_feedback.correct_answer == "B" %}Importance sampling.
+                                    {% elif q_feedback.correct_answer == "C" %}Direct sampling.
+                                    {% elif q_feedback.correct_answer == "D" %}Random sampling.
+                                    {% endif %}
+                                {% elif q_num == "q15" %}
+                                    {% if q_feedback.correct_answer == "A" %}Physical duplicates of robots built for redundancy.
+                                    {% elif q_feedback.correct_answer == "B" %}Real-time simulations replicating physical systems.
+                                    {% elif q_feedback.correct_answer == "C" %}Stereo vision camera setups.
+                                    {% elif q_feedback.correct_answer == "D" %}Backup software that duplicates robotic data.
+                                    {% endif %}
+                                {% elif q_num == "q16" %}
+                                    {% if q_feedback.correct_answer == "A" %}Excessive rover speed.
+                                    {% elif q_feedback.correct_answer == "B" %}Limited rover autonomy.
+                                    {% elif q_feedback.correct_answer == "C" %}Simple lunar terrain navigation.
+                                    {% elif q_feedback.correct_answer == "D" %}Easy human intervention.
+                                    {% endif %}
+                                {% elif q_num == "q17" %}
+                                    {% if q_feedback.correct_answer == "A" %}It allows expressing states and inputs explicitly through outputs and their derivatives.
+                                    {% elif q_feedback.correct_answer == "B" %}Eliminates sensor noise completely.
+                                    {% elif q_feedback.correct_answer == "C" %}Guarantees collision-free paths automatically.
+                                    {% elif q_feedback.correct_answer == "D" %}Significantly reduces battery consumption.
+                                    {% endif %}
+                                {% elif q_num == "q18" %}
+                                    {% if q_feedback.correct_answer == "A" %}Non-linear disturbances.
+                                    {% elif q_feedback.correct_answer == "B" %}Gaussian noise in actuators and sensors.
+                                    {% elif q_feedback.correct_answer == "C" %}Random hardware failures.
+                                    {% elif q_feedback.correct_answer == "D" %}Only external environmental disturbances.
+                                    {% endif %}
+                                {% elif q_num == "q19" %}
+                                    {% if q_feedback.correct_answer == "A" %}Gaussian Splatting
+                                    {% elif q_feedback.correct_answer == "B" %}Chrono Camera Models (within Chrono simulation environment)
+                                    {% elif q_feedback.correct_answer == "C" %}Neural Radiance Fields (NeRF)
+                                    {% elif q_feedback.correct_answer == "D" %}DUSt3R
+                                    {% endif %}
+                                {% elif q_num == "q20" %}
+                                    {% if q_feedback.correct_answer == "A" %}Battery power vs. solar energy use.
+                                    {% elif q_feedback.correct_answer == "B" %}New information gathering vs. leveraging known information.
+                                    {% elif q_feedback.correct_answer == "C" %}Centralized vs. decentralized robotic systems.
+                                    {% elif q_feedback.correct_answer == "D" %}Robot weight vs. capability.
+                                    {% endif %}
+                                {% elif q_num == "q21" %}
+                                    {% if q_feedback.correct_answer == "A" %}Image enhancement techniques
+                                    {% elif q_feedback.correct_answer == "B" %}Estimating the pose of one camera relative to another camera
+                                    {% elif q_feedback.correct_answer == "C" %}Object classification algorithms
+                                    {% elif q_feedback.correct_answer == "D" %}Depth estimation from a single image
+                                    {% endif %}
+                                {% elif q_num == "q22" %}
+                                    {% if q_feedback.correct_answer == "A" %}Requires camera calibration for each reconstruction
+                                    {% elif q_feedback.correct_answer == "B" %}Unifies depth estimation, pose estimation, and 3D reconstruction into one process
+                                    {% elif q_feedback.correct_answer == "C" %}Is based on classical photogrammetry methods
+                                    {% elif q_feedback.correct_answer == "D" %}Exclusively uses LiDAR data
+                                    {% endif %}
+                                {% elif q_num == "q23" %}
+                                    {% if q_feedback.correct_answer == "A" %}Only requires a single image
+                                    {% elif q_feedback.correct_answer == "B" %}Does not support transparency modeling
+                                    {% elif q_feedback.correct_answer == "C" %}Optimizes a neural network to predict scene radiance from any viewpoint
+                                    {% elif q_feedback.correct_answer == "D" %}Cannot handle large-scale scenes
+                                    {% endif %}
+                                {% elif q_num == "q24" %}
+                                    {% if q_feedback.correct_answer == "A" %}Use of a purely geometric, mesh-based approach
+                                    {% elif q_feedback.correct_answer == "B" %}Higher computational cost for offline rendering
+                                    {% elif q_feedback.correct_answer == "C" %}Real-time rendering capabilities using Gaussian blobs
+                                    {% elif q_feedback.correct_answer == "D" %}Dependency on camera intrinsics and extrinsics
+                                    {% endif %}
+                                {% elif q_num == "q25" %}
+                                    {% if q_feedback.correct_answer == "A" %}It uses deep learning exclusively for dense scene reconstruction.
+                                    {% elif q_feedback.correct_answer == "B" %}It does not require camera intrinsics and extrinsics.
+                                    {% elif q_feedback.correct_answer == "C" %}It is less accurate compared to DUSt3R in calibrated conditions.
+                                    {% elif q_feedback.correct_answer == "D" %}It is widely used for precise metric reconstructions like cultural heritage.
+                                    {% endif %}
+                                {% else %}
+                                    {{ q_feedback.correct_answer }}
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <form method="post" id="quizForm">
+            {% csrf_token %}
+            <div class="user-info">
+                <h4>Mission Crew Information</h4>
+                <div class="form-group">
+                    <label for="email">Space Cadet ID (Email):</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           value="{{ email }}" {% if email and email != 'Anonymous' %}readonly{% endif %}
+                           placeholder="username@asu.edu" required>
+                    <small class="text-muted">Your space cadet ID will be used to log your mission feedback in our database.</small>
+                </div>
+            </div>
+
+            <div class="progress-container" style="background: linear-gradient(to right, #1e3c72, #2a5298); color: white; padding: 20px; border-radius: 12px;">
+                <p style="font-size: 1.1rem; margin-bottom: 15px;">🚀 This mission debriefing contains 25 checkpoints covering key space robotics systems.</p>
+                <p>Select your best response for each question based on your training and mission experience.</p>
+                <button type="submit" class="btn btn-lg mt-3" style="background-color: #ff6b00; color: white; border-radius: 30px; padding: 10px 25px; border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+                    <i class="fas fa-satellite" style="margin-right: 10px;"></i>
+                    Transmit Mission Data
+                </button>
+            </div>
+
+            <div class="question">
+                <h3>1. What does PAC stand for in the context of robot swarms?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q1" value="A" required> Perception-Action-Control</label>
+                    <label class="option"><input type="radio" name="q1" value="B"> Perception-Action-Communication</label>
+                    <label class="option"><input type="radio" name="q1" value="C"> Planning-Action-Control</label>
+                    <label class="option"><input type="radio" name="q1" value="D"> Planning-Augmentation-Communication</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>2. Which of the following best describes a closed-loop feedback control system?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q2" value="A" required> A control system without any sensors.</label>
+                    <label class="option"><input type="radio" name="q2" value="B"> A system that predicts disturbances and reacts before they occur.</label>
+                    <label class="option"><input type="radio" name="q2" value="C"> A system that senses errors and adjusts its actions accordingly.</label>
+                    <label class="option"><input type="radio" name="q2" value="D"> A system with no limitations on actuator performance.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>3. Gaussian Process Regression (GPR) is primarily used for:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q3" value="A" required> Classifying categorical data.</label>
+                    <label class="option"><input type="radio" name="q3" value="B"> Estimating uncertainty and making predictions for continuous data.</label>
+                    <label class="option"><input type="radio" name="q3" value="C"> Solving discrete optimization problems.</label>
+                    <label class="option"><input type="radio" name="q3" value="D"> Direct robotic actuator control.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>4. What's the primary advantage of using mutual information for sensor placement?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q4" value="A" required> Minimizing sensor cost.</label>
+                    <label class="option"><input type="radio" name="q4" value="B"> Maximizing battery life.</label>
+                    <label class="option"><input type="radio" name="q4" value="C"> Reducing uncertainty about model estimates.</label>
+                    <label class="option"><input type="radio" name="q4" value="D"> Simplifying hardware design.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>5. What distinguishes active learning from multi-armed bandits?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q5" value="A" required> Active learning aims to minimize variance, while multi-armed bandits aim to maximize expected rewards.</label>
+                    <label class="option"><input type="radio" name="q5" value="B"> Active learning focuses solely on exploration, while multi-armed bandits focus purely on exploitation.</label>
+                    <label class="option"><input type="radio" name="q5" value="C"> Multi-armed bandits minimize uncertainty, while active learning maximizes rewards.</label>
+                    <label class="option"><input type="radio" name="q5" value="D"> There is no significant difference; they're interchangeable.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>6. In state estimation, which filter is optimal for linear systems with Gaussian noise?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q6" value="A" required> Particle Filter</label>
+                    <label class="option"><input type="radio" name="q6" value="B"> Unscented Kalman Filter (UKF)</label>
+                    <label class="option"><input type="radio" name="q6" value="C"> Extended Kalman Filter (EKF)</label>
+                    <label class="option"><input type="radio" name="q6" value="D"> Kalman Filter</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>7. Which criterion describes whether all state variables' current values can be determined from output sensors?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q7" value="A" required> Controllability</label>
+                    <label class="option"><input type="radio" name="q7" value="B"> Observability</label>
+                    <label class="option"><input type="radio" name="q7" value="C"> Stability</label>
+                    <label class="option"><input type="radio" name="q7" value="D"> Optimality</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>8. In Linear Quadratic Regulator (LQR) control, what do the Q and R matrices represent?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q8" value="A" required> State estimation error covariance.</label>
+                    <label class="option"><input type="radio" name="q8" value="B"> Relative weights of state deviation and input usage.</label>
+                    <label class="option"><input type="radio" name="q8" value="C"> Sensor noise covariance.</label>
+                    <label class="option"><input type="radio" name="q8" value="D"> Actuator dynamics.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>9. Which algorithm reconstructs dense 3D point maps directly, requiring no camera calibration?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q9" value="A" required> COLMAP</label>
+                    <label class="option"><input type="radio" name="q9" value="B"> NeRF</label>
+                    <label class="option"><input type="radio" name="q9" value="C"> DUSt3R</label>
+                    <label class="option"><input type="radio" name="q9" value="D"> Gaussian Process Regression</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>10. Neural Radiance Fields (NeRF) are particularly useful for:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q10" value="A" required> Real-time robotic control.</label>
+                    <label class="option"><input type="radio" name="q10" value="B"> Image-based 3D scene reconstruction and novel view synthesis.</label>
+                    <label class="option"><input type="radio" name="q10" value="C"> Satellite path optimization.</label>
+                    <label class="option"><input type="radio" name="q10" value="D"> Sensor placement optimization.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>11. What is a significant trade-off in physics-based terrain simulation models?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q11" value="A" required> Accuracy vs. computational expense.</label>
+                    <label class="option"><input type="radio" name="q11" value="B"> Accuracy vs. reliability.</label>
+                    <label class="option"><input type="radio" name="q11" value="C"> Stability vs. flexibility.</label>
+                    <label class="option"><input type="radio" name="q11" value="D"> Simplicity vs. robustness.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>12. The algebraic connectivity of a graph is also known as:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q12" value="A" required> Euler value.</label>
+                    <label class="option"><input type="radio" name="q12" value="B"> Fiedler value.</label>
+                    <label class="option"><input type="radio" name="q12" value="C"> Hamiltonian value.</label>
+                    <label class="option"><input type="radio" name="q12" value="D"> Laplacian eigenvalue.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>13. In robotic control, MPC stands for:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q13" value="A" required> Multi-Purpose Control.</label>
+                    <label class="option"><input type="radio" name="q13" value="B"> Model Predictive Control.</label>
+                    <label class="option"><input type="radio" name="q13" value="C"> Maximum Performance Controller.</label>
+                    <label class="option"><input type="radio" name="q13" value="D"> Minimal Positioning Cost.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>14. Which technique used in Particle Filtering improves sampling efficiency?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q14" value="A" required> Least squares optimization.</label>
+                    <label class="option"><input type="radio" name="q14" value="B"> Importance sampling.</label>
+                    <label class="option"><input type="radio" name="q14" value="C"> Direct sampling.</label>
+                    <label class="option"><input type="radio" name="q14" value="D"> Random sampling.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>15. Digital Twins in robotics refer to:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q15" value="A" required> Physical duplicates of robots built for redundancy.</label>
+                    <label class="option"><input type="radio" name="q15" value="B"> Real-time simulations replicating physical systems.
+                    <label class="option"><input type="radio" name="q15" value="C"> Stereo vision camera setups.</label>
+                    <label class="option"><input type="radio" name="q15" value="D"> Backup software that duplicates robotic data.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>16. A core challenge in long-duration robotic lunar missions discussed in class is:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q16" value="A" required> Excessive rover speed.</label>
+                    <label class="option"><input type="radio" name="q16" value="B"> Limited rover autonomy.</label>
+                    <label class="option"><input type="radio" name="q16" value="C"> Simple lunar terrain navigation.</label>
+                    <label class="option"><input type="radio" name="q16" value="D"> Easy human intervention.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>17. What's the key benefit of differential flatness in quadrotor trajectory planning?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q17" value="A" required> It allows expressing states and inputs explicitly through outputs and their derivatives.</label>
+                    <label class="option"><input type="radio" name="q17" value="B"> Eliminates sensor noise completely.</label>
+                    <label class="option"><input type="radio" name="q17" value="C"> Guarantees collision-free paths automatically.</label>
+                    <label class="option"><input type="radio" name="q17" value="D"> Significantly reduces battery consumption.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>18. What disturbances do Linear Quadratic Gaussian (LQG) controllers explicitly handle?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q18" value="A" required> Non-linear disturbances.</label>
+                    <label class="option"><input type="radio" name="q18" value="B"> Gaussian noise in actuators and sensors.</label>
+                    <label class="option"><input type="radio" name="q18" value="C"> Random hardware failures.</label>
+                    <label class="option"><input type="radio" name="q18" value="D"> Only external environmental disturbances.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>19. Which framework simulates lens distortion and sensor noise effects for realistic imagery within the Chrono simulation environment?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q19" value="A" required> Gaussian Splatting</label>
+                    <label class="option"><input type="radio" name="q19" value="B"> Chrono Camera Models (within Chrono simulation environment)</label>
+                    <label class="option"><input type="radio" name="q19" value="C"> Neural Radiance Fields (NeRF)</label>
+                    <label class="option"><input type="radio" name="q19" value="D"> DUSt3R</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>20. The exploration-exploitation trade-off in robotics involves balancing:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q20" value="A" required> Battery power vs. solar energy use.</label>
+                    <label class="option"><input type="radio" name="q20" value="B"> New information gathering vs. leveraging known information.</label>
+                    <label class="option"><input type="radio" name="q20" value="C"> Centralized vs. decentralized robotic systems.
+                    <label class="option"><input type="radio" name="q20" value="D"> Robot weight vs. capability.</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>21. What does the term "epipolar geometry" mainly concern?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q21" value="A" required> Image enhancement techniques</label>
+                    <label class="option"><input type="radio" name="q21" value="B"> Estimating the pose of one camera relative to another camera</label>
+                    <label class="option"><input type="radio" name="q21" value="C"> Object classification algorithms</label>
+                    <label class="option"><input type="radio" name="q21" value="D"> Depth estimation from a single image</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>22. DUSt3R is known for which distinctive feature in 3D vision tasks?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q22" value="A" required> Requires camera calibration for each reconstruction</label>
+                    <label class="option"><input type="radio" name="q22" value="B"> Unifies depth estimation, pose estimation, and 3D reconstruction into one process</label>
+                    <label class="option"><input type="radio" name="q22" value="C"> Is based on classical photogrammetry methods</label>
+                    <label class="option"><input type="radio" name="q22" value="D"> Exclusively uses LiDAR data</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>23. What is a primary advantage of Neural Radiance Fields (NeRF) for view synthesis?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q23" value="A" required> Only requires a single image</label>
+                    <label class="option"><input type="radio" name="q23" value="B"> Does not support transparency modeling</label>
+                    <label class="option"><input type="radio" name="q23" value="C"> Optimizes a neural network to predict scene radiance from any viewpoint</label>
+                    <label class="option"><input type="radio" name="q23" value="D"> Cannot handle large-scale scenes</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>24. Gaussian Splatting, compared to traditional NeRF, is characterized primarily by:</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q24" value="A" required> Use of a purely geometric, mesh-based approach</label>
+                    <label class="option"><input type="radio" name="q24" value="B"> Higher computational cost for offline rendering</label>
+                    <label class="option"><input type="radio" name="q24" value="C"> Real-time rendering capabilities using Gaussian blobs</label>
+                    <label class="option"><input type="radio" name="q24" value="D"> Dependency on camera intrinsics and extrinsics</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>25. Which statement about COLMAP is true?</h3>
+                <div class="options">
+                    <label class="option"><input type="radio" name="q25" value="A" required> It uses deep learning exclusively for dense scene reconstruction.</label>
+                    <label class="option"><input type="radio" name="q25" value="B"> It does not require camera intrinsics and extrinsics.</label>
+                    <label class="option"><input type="radio" name="q25" value="C"> It is less accurate compared to DUSt3R in calibrated conditions.</label>
+                    <label class="option"><input type="radio" name="q25" value="D"> It is widely used for precise metric reconstructions like cultural heritage.</label>
+                </div>
+            </div>
+
+            <input type="hidden" name="timestamp" value="{{ timestamp|default:'' }}">
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Feedback</button>
+            </div>
+        </form>
+
+        <!-- Submission overlay -->
+        <div class="submission-overlay" id="submissionOverlay">
+            <div class="submission-message">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h4>Submitting Your Answers</h4>
+                <p>Please wait while we process your submission...</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block interactive_section %}{% endblock %} 

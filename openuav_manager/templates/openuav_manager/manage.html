@@ -58,20 +58,35 @@
                                 <i class="fas fa-stop"></i> Stop Container
                             </button>
                         </form>
+
+                        <!-- Reset Container Form -->
+                        <div class="mt-4">
+                            <form action="{% url 'openuav_manager:reset' %}" method="POST" class="reset-form" onsubmit="return validateReset()">
+                                {% csrf_token %}
+                                <input type="hidden" name="username" value="{{ username }}">
+                                <div class="form-group mb-3">
+                                    <label for="reset_confirm">Type 'reset' to confirm container reset:</label>
+                                    <input type="text" class="form-control" id="reset_confirm" name="reset_confirm" required>
+                                </div>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-sync"></i> Reset Container
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Start New Session -->
-                <div class="mt-4">
-                    <form method="POST" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="username" value="{{ username }}">
-                        <input type="hidden" name="passcode" value="liftoff">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-plus"></i> Start New Session
-                        </button>
-                    </form>
-                </div>
+                <!-- Add JavaScript for reset validation -->
+                <script>
+                function validateReset() {
+                    const resetInput = document.getElementById('reset_confirm').value;
+                    if (resetInput.toLowerCase() !== 'reset') {
+                        alert('Please type "reset" to confirm container reset');
+                        return false;
+                    }
+                    return true;
+                }
+                </script>
             {% endif %}
         </div>
     </div>
