@@ -6,6 +6,8 @@ the MultispectralViT encoder for various tasks:
 1. Reconstruction Decoder - Reconstruct images from latent representations
 2. Segmentation Decoder - Pixel-level classification
 3. Transformer Decoder - Sequence generation/translation
+
+Supports variable-channel imagery (RGB: 3 channels, Multispectral: 5+ channels).
 """
 
 import torch
@@ -18,13 +20,14 @@ from typing import Optional, Tuple
 class ReconstructionDecoder(nn.Module):
     """
     Decoder for reconstructing multispectral images from latent representations.
+    Supports variable-channel imagery (RGB: 3 channels, Multispectral: 5+ channels).
     
     Architecture: CLS token → MLP → Patches → Image
     Memory-efficient version using progressive upsampling.
     """
     
     def __init__(self, embed_dim: int = 512, img_size: int = 960, 
-                 patch_size: int = 16, in_channels: int = 5,
+                 patch_size: int = 16, in_channels: int = 3,
                  num_layers: int = 3, hidden_dim: int = 2048):
         super().__init__()
         self.img_size = img_size
@@ -59,7 +62,7 @@ class ReconstructionDecoder(nn.Module):
         Args:
             latent: (B, embed_dim) latent representation from encoder
         Returns:
-            (B, 5, H, W) reconstructed multispectral image
+            (B, C, H, W) reconstructed multispectral image where C is in_channels
         """
         B = latent.shape[0]
         
@@ -73,10 +76,10 @@ class ReconstructionDecoder(nn.Module):
         )
         
         # Step 2: Decode each patch to pixels (memory efficient)
-        # (B, num_patches, 32) -> (B, num_patches, patch_size^2 * 5)
+        # (B, num_patches, 32) -> (B, num_patches, patch_size^2 * C)
         patches_flat = self.patch_to_pixels(patch_embeddings)
         
-        # Reshape to patches: (B, num_patches, 5, patch_size, patch_size)
+        # Reshape to patches: (B, num_patches, C, patch_size, patch_size)
         patches = patches_flat.view(
             B, self.num_patches, self.in_channels,
             self.patch_size, self.patch_size
@@ -84,12 +87,12 @@ class ReconstructionDecoder(nn.Module):
         
         # Rearrange patches into image
         H_patches = W_patches = int(np.sqrt(self.num_patches))
-        patches = patches.permute(0, 2, 1, 3, 4)  # (B, 5, num_patches, p, p)
+        patches = patches.permute(0, 2, 1, 3, 4)  # (B, C, num_patches, p, p)
         patches = patches.contiguous().view(
             B, self.in_channels, H_patches, self.patch_size,
             W_patches, self.patch_size
         )
-        patches = patches.permute(0, 1, 2, 4, 3, 5)  # (B, 5, H_patches, W_patches, p, p)
+        patches = patches.permute(0, 1, 2, 4, 3, 5)  # (B, C, H_patches, W_patches, p, p)
         img = patches.contiguous().view(
             B, self.in_channels, self.img_size, self.img_size
         )
@@ -102,12 +105,13 @@ class PatchBasedDecoder(nn.Module):
     """
     Decoder that uses transformer decoder architecture.
     Reconstructs images by decoding patch embeddings.
+    Supports variable-channel imagery (RGB: 3 channels, Multispectral: 5+ channels).
     
     Architecture: All patch embeddings → Transformer Decoder → Patches → Image
     """
     
     def __init__(self, embed_dim: int = 512, img_size: int = 960,
-                 patch_size: int = 16, in_channels: int = 5,
+                 patch_size: int = 16, in_channels: int = 3,
                  num_layers: int = 6, num_heads: int = 8,
                  mlp_ratio: float = 4.0, dropout: float = 0.1):
         super().__init__()
@@ -140,7 +144,7 @@ class PatchBasedDecoder(nn.Module):
         Args:
             encoder_output: (B, num_patches+1, embed_dim) from encoder with return_all=True
         Returns:
-            (B, 5, H, W) reconstructed image
+            (B, C, H, W) reconstructed image where C is in_channels
         """
         B = encoder_output.shape[0]
         
@@ -158,7 +162,7 @@ class PatchBasedDecoder(nn.Module):
         )  # (B, num_patches, embed_dim)
         
         # Decode patches to pixels
-        patches_flat = self.patch_to_pixels(decoded_patches)  # (B, num_patches, patch_size^2 * 5)
+        patches_flat = self.patch_to_pixels(decoded_patches)  # (B, num_patches, patch_size^2 * C)
         
         # Reshape to image
         patches = patches_flat.view(
@@ -268,15 +272,15 @@ class MultispectralAutoencoder(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            x: (B, 5, H, W) multispectral image
+            x: (B, C, H, W) multispectral image where C is number of channels
         Returns:
-            (B, 5, H, W) reconstructed image
+            (B, C, H, W) reconstructed image
         """
         # Encode
         latent = self.encoder(x)  # (B, embed_dim)
         
         # Decode
-        reconstructed = self.decoder(latent)  # (B, 5, H, W)
+        reconstructed = self.decoder(latent)  # (B, C, H, W)
         
         return reconstructed
 
@@ -294,7 +298,7 @@ class MultispectralSegmentationModel(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            x: (B, 5, H, W) multispectral image
+            x: (B, C, H, W) multispectral image where C is number of channels
         Returns:
             (B, num_classes, H, W) segmentation logits
         """
@@ -313,7 +317,7 @@ def create_reconstruction_decoder(encoder_config: dict) -> ReconstructionDecoder
         embed_dim=encoder_config.get('embed_dim', 512),
         img_size=encoder_config.get('img_size', 960),
         patch_size=encoder_config.get('patch_size', 16),
-        in_channels=5,
+        in_channels=encoder_config.get('in_channels', 3),  # Default to RGB (3 channels)
         num_layers=3
     )
 
@@ -347,14 +351,14 @@ if __name__ == '__main__':
         embed_dim=512,
         img_size=960,
         patch_size=16,
-        in_channels=5
+        in_channels=3  # RGB example (can be 5 for multispectral)
     )
     
     # Create autoencoder
     autoencoder = MultispectralAutoencoder(encoder, decoder)
     
     # Test forward pass
-    x = torch.randn(2, 5, 960, 960)
+    x = torch.randn(2, 3, 960, 960)  # RGB example (can be 5 for multispectral)
     reconstructed = autoencoder(x)
     print(f"Input shape: {x.shape}")
     print(f"Reconstructed shape: {reconstructed.shape}")

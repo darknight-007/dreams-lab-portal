@@ -1,7 +1,7 @@
 """
 Multispectral Vision Transformer for Bishop Rocky Scarp Dataset
 
-Adapts Vision Transformer to handle 5-band MicaSense RedEdge-MX imagery.
+Adapts Vision Transformer to handle variable-channel imagery (RGB: 3 channels, Multispectral: 5+ channels).
 """
 
 import torch
@@ -19,10 +19,10 @@ from rasterio.windows import Window
 
 
 class MultispectralPatchEmbedding(nn.Module):
-    """Patch embedding for multispectral images (5 bands)."""
+    """Patch embedding for multispectral images (supports variable channels: RGB=3, Multispectral=5+)."""
     
     def __init__(self, img_size: int = 960, patch_size: int = 16, 
-                 in_channels: int = 5, embed_dim: int = 512):
+                 in_channels: int = 3, embed_dim: int = 512):
         super().__init__()
         self.img_size = img_size
         self.patch_size = patch_size
@@ -36,11 +36,11 @@ class MultispectralPatchEmbedding(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            x: (B, 5, H, W) multispectral image tensor
+            x: (B, C, H, W) multispectral image tensor where C is number of channels
         Returns:
             (B, num_patches, embed_dim) patch embeddings
         """
-        # (B, 5, H, W) -> (B, embed_dim, H//patch_size, W//patch_size)
+        # (B, C, H, W) -> (B, embed_dim, H//patch_size, W//patch_size)
         x = self.proj(x)
         # Flatten spatial dimensions
         B, C, H, W = x.shape
@@ -86,10 +86,10 @@ class CrossBandAttention(nn.Module):
 
 
 class MultispectralViT(nn.Module):
-    """Multispectral Vision Transformer for 5-band imagery."""
+    """Multispectral Vision Transformer for variable-channel imagery (RGB: 3, Multispectral: 5+)."""
     
     def __init__(self, img_size: int = 960, patch_size: int = 16, 
-                 in_channels: int = 5, embed_dim: int = 512, 
+                 in_channels: int = 3, embed_dim: int = 512, 
                  num_heads: int = 8, num_layers: int = 6,
                  mlp_ratio: float = 4.0, dropout: float = 0.1,
                  use_cross_band_attention: bool = True):
@@ -150,7 +150,7 @@ class MultispectralViT(nn.Module):
     def forward(self, x: torch.Tensor, return_all: bool = False) -> torch.Tensor:
         """
         Args:
-            x: (B, 5, H, W) multispectral image tensor
+            x: (B, C, H, W) multispectral image tensor where C is number of channels
             return_all: If True, return all patch embeddings; if False, return CLS token
         Returns:
             If return_all=False: (B, embed_dim) latent representation
@@ -158,7 +158,7 @@ class MultispectralViT(nn.Module):
         """
         B = x.shape[0]
         
-        # Patch embedding: (B, 5, H, W) -> (B, num_patches, embed_dim)
+        # Patch embedding: (B, C, H, W) -> (B, num_patches, embed_dim)
         x = self.patch_embed(x)
         
         # Optional cross-band attention
@@ -190,30 +190,71 @@ class MultispectralViT(nn.Module):
 
 
 class MultispectralTileDataset(Dataset):
-    """Dataset for loading multispectral TIFF tiles."""
+    """Dataset for loading multispectral TIFF tiles (supports RGB: 3 channels, Multispectral: 5+ channels)."""
     
     def __init__(self, tile_dir: str, img_size: int = 960, 
                  transform: Optional[transforms.Compose] = None,
-                 normalize: bool = True):
+                 normalize: bool = True, in_channels: Optional[int] = None):
         """
         Args:
             tile_dir: Directory containing TIFF files
             img_size: Target image size (will be resized/cropped)
             transform: Optional torchvision transforms
             normalize: Whether to normalize to [0, 1] or use z-score
+            in_channels: Number of channels to read (None = auto-detect from first file, 3 for RGB, 5 for multispectral)
         """
         self.tile_dir = Path(tile_dir)
         self.img_size = img_size
         self.normalize = normalize
+        self.in_channels = in_channels
         
-        # Find all TIFF files
-        self.tiff_files = sorted(list(self.tile_dir.glob('**/*.tif')))
+        # Find all image files (TIFF, PNG, JPG, etc.)
+        image_extensions = ['.tif', '.tiff', '.png', '.jpg', '.jpeg']
+        self.tiff_files = []
+        for ext in image_extensions:
+            self.tiff_files.extend(sorted(list(self.tile_dir.glob(f'**/*{ext}'))))
         self.tiff_files = [f for f in self.tiff_files if '__MACOSX' not in str(f)]
         
         if len(self.tiff_files) == 0:
-            raise ValueError(f"No TIFF files found in {tile_dir}")
+            raise ValueError(f"No image files found in {tile_dir}")
         
-        print(f"Found {len(self.tiff_files)} TIFF files")
+        print(f"Found {len(self.tiff_files)} image files")
+        
+        # Determine file type from first file
+        first_file = self.tiff_files[0]
+        is_png = first_file.suffix.lower() == '.png'
+        is_rasterio = first_file.suffix.lower() in ['.tif', '.tiff']
+        
+        # Auto-detect number of channels from first file if not specified
+        if self.in_channels is None:
+            try:
+                if is_rasterio:
+                    with rasterio.open(first_file) as src:
+                        self.in_channels = src.count
+                    print(f"Auto-detected {self.in_channels} channels from rasterio file")
+                elif is_png:
+                    # PNG files - check if RGBA (4) or RGB (3)
+                    img = Image.open(first_file)
+                    if img.mode == 'RGBA':
+                        self.in_channels = 4
+                    elif img.mode == 'RGB':
+                        self.in_channels = 3
+                    else:
+                        self.in_channels = 3  # Default to RGB
+                        print(f"Warning: PNG mode {img.mode}, defaulting to 3 channels")
+                    print(f"Auto-detected {self.in_channels} channels from PNG file")
+                else:
+                    self.in_channels = 3  # Default for JPG
+                    print(f"Defaulting to 3 channels for {first_file.suffix}")
+            except Exception as e:
+                print(f"Warning: Could not auto-detect channels, defaulting to 3 (RGB): {e}")
+                self.in_channels = 3
+        else:
+            print(f"Using {self.in_channels} channels (RGB=3, Multispectral=5+)")
+        
+        # Store file type info
+        self.is_png = is_png
+        self.is_rasterio = is_rasterio
         
         # Default transform if none provided
         if transform is None:
@@ -227,41 +268,108 @@ class MultispectralTileDataset(Dataset):
         return len(self.tiff_files)
     
     def __getitem__(self, idx):
-        tiff_path = self.tiff_files[idx]
+        image_path = self.tiff_files[idx]
         
         try:
-            # Read multispectral TIFF (expecting 5 bands)
-            with rasterio.open(tiff_path) as src:
-                # Read all bands
-                bands = []
-                for i in range(1, min(6, src.count + 1)):  # Read up to 5 bands
-                    band = src.read(i)
-                    bands.append(band)
+            # Handle PNG/JPG files with PIL
+            if image_path.suffix.lower() in ['.png', '.jpg', '.jpeg']:
+                img = Image.open(image_path)
                 
-                # If fewer than 5 bands, pad with zeros or repeat last band
-                while len(bands) < 5:
-                    bands.append(bands[-1] if bands else np.zeros_like(bands[0]))
+                # Convert to RGB if needed
+                if img.mode != 'RGB' and img.mode != 'RGBA':
+                    img = img.convert('RGB')
                 
-                # Stack bands: (5, H, W)
-                multispectral = np.stack(bands[:5], axis=0)
+                # Convert to numpy array
+                img_array = np.array(img, dtype=np.float32)
                 
-                # Convert to float32
-                multispectral = multispectral.astype(np.float32)
+                # Handle RGBA -> RGB conversion if needed
+                if img_array.shape[2] == 4 and self.in_channels == 3:
+                    # Convert RGBA to RGB (drop alpha channel)
+                    img_array = img_array[:, :, :3]
+                elif img_array.shape[2] == 3 and self.in_channels == 4:
+                    # Convert RGB to RGBA (add alpha channel)
+                    alpha = np.ones((img_array.shape[0], img_array.shape[1], 1), dtype=np.float32) * 255
+                    img_array = np.concatenate([img_array, alpha], axis=2)
+                
+                # Transpose from (H, W, C) to (C, H, W)
+                multispectral = np.transpose(img_array, (2, 0, 1))
+                
+                # Ensure correct number of channels
+                if multispectral.shape[0] != self.in_channels:
+                    if multispectral.shape[0] < self.in_channels:
+                        # Pad with zeros or repeat last channel
+                        padding = np.zeros((self.in_channels - multispectral.shape[0], 
+                                           multispectral.shape[1], multispectral.shape[2]), 
+                                          dtype=np.float32)
+                        multispectral = np.concatenate([multispectral, padding], axis=0)
+                    else:
+                        # Take first N channels
+                        multispectral = multispectral[:self.in_channels]
                 
                 # Normalize
                 if self.normalize:
-                    # Clip to reasonable range and normalize
-                    # For 16-bit data, typical range is 0-65535
-                    multispectral = np.clip(multispectral, 0, 65535)
-                    multispectral = multispectral / 65535.0  # Normalize to [0, 1]
+                    multispectral = multispectral / 255.0  # Normalize to [0, 1]
                 else:
-                    # Z-score normalization per band
-                    for i in range(5):
-                        band = multispectral[i]
-                        mean = band.mean()
-                        std = band.std()
+                    # Z-score normalization per channel
+                    for i in range(self.in_channels):
+                        channel = multispectral[i]
+                        mean = channel.mean()
+                        std = channel.std()
                         if std > 0:
-                            multispectral[i] = (band - mean) / std
+                            multispectral[i] = (channel - mean) / std
+            
+            # Handle TIFF files with rasterio
+            else:
+                with rasterio.open(image_path) as src:
+                    num_bands_in_file = src.count
+                    num_bands_to_read = min(self.in_channels, num_bands_in_file)
+                    
+                    # Read bands
+                    bands = []
+                    for i in range(1, num_bands_to_read + 1):
+                        band = src.read(i)
+                        bands.append(band)
+                    
+                    # If fewer bands than expected, pad with zeros or repeat last band
+                    while len(bands) < self.in_channels:
+                        if len(bands) > 0:
+                            bands.append(bands[-1])  # Repeat last band
+                        else:
+                            # If no bands read, create zero band
+                            bands.append(np.zeros((src.height, src.width), dtype=src.dtypes[0]))
+                    
+                    # Stack bands: (C, H, W) where C is in_channels
+                    multispectral = np.stack(bands[:self.in_channels], axis=0)
+                    
+                    # Convert to float32
+                    multispectral = multispectral.astype(np.float32)
+                    
+                    # Normalize
+                    if self.normalize:
+                        # Clip to reasonable range and normalize
+                        # For 16-bit data, typical range is 0-65535
+                        # For 8-bit data, typical range is 0-255
+                        try:
+                            # Try to get max value from dtype
+                            dtype = src.dtypes[0] if isinstance(src.dtypes, (list, tuple)) else src.dtypes
+                            max_val = np.iinfo(dtype).max
+                            if max_val <= 255:
+                                max_val = 255
+                            else:
+                                max_val = 65535
+                        except (TypeError, ValueError):
+                            # Fallback: use 255 for uint8, 65535 for others
+                            max_val = 255 if 'uint8' in str(src.dtypes[0]) else 65535
+                        multispectral = np.clip(multispectral, 0, max_val)
+                        multispectral = multispectral / float(max_val)  # Normalize to [0, 1]
+                    else:
+                        # Z-score normalization per band
+                        for i in range(self.in_channels):
+                            band = multispectral[i]
+                            mean = band.mean()
+                            std = band.std()
+                            if std > 0:
+                                multispectral[i] = (band - mean) / std
             
             # Convert to tensor
             multispectral = torch.from_numpy(multispectral)
@@ -276,12 +384,12 @@ class MultispectralTileDataset(Dataset):
                     align_corners=False
                 ).squeeze(0)
             
-            return multispectral, str(tiff_path)
+            return multispectral, str(image_path)
             
         except Exception as e:
-            print(f"Error loading {tiff_path}: {e}")
+            print(f"Error loading {image_path}: {e}")
             # Return zeros on error
-            return torch.zeros(5, self.img_size, self.img_size), str(tiff_path)
+            return torch.zeros(self.in_channels, self.img_size, self.img_size), str(image_path)
 
 
 def train_multispectral_vit(model: nn.Module, dataloader: DataLoader, 
@@ -378,7 +486,9 @@ def main():
     parser.add_argument('--num_layers', type=int, default=6,
                        help='Number of transformer layers (default: 6)')
     parser.add_argument('--batch_size', type=int, default=4,
-                       help='Batch size (default: 4, smaller due to 5-channel input)')
+                       help='Batch size (default: 4)')
+    parser.add_argument('--in_channels', type=int, default=None,
+                       help='Number of input channels (None=auto-detect, 3=RGB, 5=multispectral)')
     parser.add_argument('--epochs', type=int, default=10,
                        help='Number of training epochs (default: 10)')
     parser.add_argument('--lr', type=float, default=1e-4,
@@ -413,8 +523,15 @@ def main():
     dataset = MultispectralTileDataset(
         tile_dir=args.tile_dir,
         img_size=args.img_size,
-        normalize=True
+        normalize=True,
+        in_channels=args.in_channels
     )
+    
+    # Use detected channels from dataset
+    detected_channels = dataset.in_channels
+    if args.in_channels is None:
+        args.in_channels = detected_channels
+        print(f"Using detected {detected_channels} channels")
     
     # Adjust batch size for multi-GPU
     effective_batch_size = args.batch_size
@@ -433,7 +550,7 @@ def main():
     model = MultispectralViT(
         img_size=args.img_size,
         patch_size=args.patch_size,
-        in_channels=5,  # 5 bands from RedEdge-MX
+        in_channels=args.in_channels,  # Variable channels (3 for RGB, 5+ for multispectral)
         embed_dim=args.embed_dim,
         num_heads=args.num_heads,
         num_layers=args.num_layers,
@@ -480,7 +597,7 @@ def main():
             'embed_dim': args.embed_dim,
             'num_heads': args.num_heads,
             'num_layers': args.num_layers,
-            'in_channels': 5
+            'in_channels': args.in_channels
         }
     }, save_path)
     print(f"Model saved to {save_path}")

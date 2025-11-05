@@ -107,7 +107,7 @@ def generate_synthetic_images(decoder: nn.Module, latents: np.ndarray,
         latent_tensor = torch.from_numpy(sampled_latents).float().to(device)
         
         # Generate images
-        synthetic_imgs = decoder(latent_tensor)  # (B, 5, H, W)
+        synthetic_imgs = decoder(latent_tensor)  # (B, C, H, W) where C is number of channels
         
         for i in range(synthetic_imgs.shape[0]):
             generated_images.append(synthetic_imgs[i].cpu())
@@ -246,7 +246,7 @@ def main():
         embed_dim=config['embed_dim'],
         img_size=config['img_size'],
         patch_size=config['patch_size'],
-        in_channels=5
+        in_channels=config.get('in_channels', 3)  # Default to RGB (3 channels) if not in config
     )
     decoder.load_state_dict(torch.load(args.decoder_path, map_location=args.device))
     decoder = decoder.to(args.device)
@@ -257,7 +257,11 @@ def main():
         print("\n" + "="*80)
         print("Testing Reconstruction Quality")
         print("="*80)
-        dataset = MultispectralTileDataset(args.tile_dir, img_size=config['img_size'])
+        dataset = MultispectralTileDataset(
+            args.tile_dir, 
+            img_size=config['img_size'],
+            in_channels=config.get('in_channels', None)  # Auto-detect if not in config
+        )
         dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
         test_reconstruction(encoder, decoder, dataloader, args.device, num_samples=5)
     
@@ -310,7 +314,7 @@ def main():
     
     for idx, img in enumerate(synthetic_images):
         # Save as numpy array (multispectral)
-        img_np = img.numpy()  # (5, H, W)
+        img_np = img.numpy()  # (C, H, W) where C is number of channels
         np.save(output_dir / f"synthetic_{idx:03d}.npy", img_np)
         
         # Save RGB visualization
@@ -319,7 +323,7 @@ def main():
     
     print(f"\nSaved {len(synthetic_images)} synthetic images to {output_dir}/")
     print("Files:")
-    print("  - synthetic_XXX.npy: Multispectral data (5 bands)")
+    print("  - synthetic_XXX.npy: Multispectral data (variable channels)")
     print("  - synthetic_XXX_rgb.png: RGB visualization")
     
     print("\nDone!")

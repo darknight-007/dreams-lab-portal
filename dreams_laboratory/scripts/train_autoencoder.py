@@ -88,6 +88,8 @@ def main():
                        help='Number of transformer layers')
     parser.add_argument('--batch_size', type=int, default=4,
                        help='Batch size')
+    parser.add_argument('--in_channels', type=int, default=None,
+                       help='Number of input channels (None=auto-detect, 3=RGB, 5=multispectral)')
     parser.add_argument('--epochs', type=int, default=20,
                        help='Number of training epochs')
     parser.add_argument('--lr', type=float, default=1e-4,
@@ -116,6 +118,7 @@ def main():
         encoder = MultispectralViT(
             img_size=args.img_size,
             patch_size=args.patch_size,
+            in_channels=args.in_channels or 3,  # Default to RGB (3 channels)
             embed_dim=args.embed_dim,
             num_heads=args.num_heads,
             num_layers=args.num_layers
@@ -126,7 +129,7 @@ def main():
             'embed_dim': args.embed_dim,
             'num_heads': args.num_heads,
             'num_layers': args.num_layers,
-            'in_channels': 5
+            'in_channels': args.in_channels or 3  # Default to RGB (3 channels)
         }
     
     # Create decoder (memory-efficient version)
@@ -135,7 +138,7 @@ def main():
         embed_dim=config['embed_dim'],
         img_size=config['img_size'],
         patch_size=config['patch_size'],
-        in_channels=5,
+        in_channels=config.get('in_channels', 3),  # Use config value, default to RGB (3 channels)
         num_layers=3,
         hidden_dim=512  # Small hidden dimension to save memory
     )
@@ -148,7 +151,8 @@ def main():
     dataset = MultispectralTileDataset(
         tile_dir=args.tile_dir,
         img_size=config['img_size'],
-        normalize=True
+        normalize=True,
+        in_channels=config.get('in_channels', None)  # Auto-detect if not in config
     )
     
     dataloader = DataLoader(
