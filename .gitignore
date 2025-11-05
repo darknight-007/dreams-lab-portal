@@ -86,3 +86,12 @@ data/
 /static/scripts/spinjs/
 /tiles-media/
 /moon-rocks/
+
+# Model files and training artifacts
+*.pth
+*.npy
+*.txt
+checkpoints_*/
+reconstruction_test_*/
+synthetic_*/
+diffusion_synthetic_*/
