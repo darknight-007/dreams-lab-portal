@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}OpenWAV Swarm Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">OpenWAV Swarm Portal</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if show_form %}
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="username" class="form-label">GitHub Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                                <div class="form-text">Enter your GitHub username to access the swarm portal.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="passcode" class="form-label">Passcode</label>
+                                <input type="password" class="form-control" id="passcode" name="passcode" required>
+                                <div class="form-text">Enter the provided passcode to access the swarm portal.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Launch Swarm Instance</button>
+                        </form>
+                    {% else %}
+                        <div class="text-center">
+                            <h5 class="mb-4">Your Swarm Instance is Running!</h5>
+                            <div class="alert alert-success">
+                                <p><strong>Container Name:</strong> {{ container.name }}</p>
+                                <p><strong>Status:</strong> Running</p>
+                                <p><strong>VNC Access:</strong> <a href="{{ container.vnc_url }}" target="_blank" class="alert-link">Open VNC Interface</a></p>
+                            </div>
+                            <div class="mt-4">
+                                <form method="post" action="{% url 'openuav_manager:stop_openuav' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="username" value="{{ username }}">
+                                    <button type="submit" class="btn btn-warning">Stop Instance</button>
+                                </form>
+                                <form method="post" action="{% url 'openuav_manager:reset_openuav' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="username" value="{{ username }}">
+                                    <input type="hidden" name="reset_confirm" value="reset">
+                                    <button type="submit" class="btn btn-danger">Reset Instance</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}
