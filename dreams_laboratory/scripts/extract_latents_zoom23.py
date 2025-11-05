@@ -89,7 +89,18 @@ def main():
     encoder_checkpoint = torch.load(args.encoder_path, map_location=args.device)
     config = encoder_checkpoint['config']
     
-    encoder = MultispectralViT(**config)
+    # Filter out non-MultispectralViT parameters
+    encoder_params = {
+        'img_size': config['img_size'],
+        'patch_size': config['patch_size'],
+        'in_channels': config.get('in_channels', 3),
+        'embed_dim': config['embed_dim'],
+        'num_heads': config['num_heads'],
+        'num_layers': config['num_layers'],
+        'use_cross_band_attention': config.get('use_cross_band_attention', True)
+    }
+    
+    encoder = MultispectralViT(**encoder_params)
     encoder.load_state_dict(encoder_checkpoint['model_state_dict'])
     encoder = encoder.to(args.device)
     encoder.eval()

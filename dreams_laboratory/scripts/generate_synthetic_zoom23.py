@@ -138,6 +138,10 @@ def main():
     encoder_checkpoint = torch.load(args.encoder_path, map_location=args.device)
     config = encoder_checkpoint['config']
     
+    # Filter out non-MultispectralViT parameters (like 'zoom_level')
+    config = {k: v for k, v in config.items() 
+              if k not in ['zoom_level']}
+    
     # Load decoder
     print("Loading decoder...")
     decoder_checkpoint = torch.load(args.decoder_path, map_location=args.device)
