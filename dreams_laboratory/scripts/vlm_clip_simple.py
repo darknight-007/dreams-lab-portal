@@ -12,9 +12,104 @@ import argparse
 from typing import List, Tuple
 import json
 from tqdm import tqdm
+import shutil
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 # Use sentence-transformers CLIP (more stable)
 from sentence_transformers import SentenceTransformer, util
+
+
+def save_search_results(results: List[Tuple[str, float]], query: str, output_dir: Path):
+    """
+    Save search results with images for visual verification.
+    
+    Args:
+        results: List of (image_path, similarity_score) tuples
+        query: Search query text
+        output_dir: Directory to save results
+    """
+    # Create search results subdirectory
+    search_dir = output_dir / 'search_results'
+    search_dir.mkdir(exist_ok=True)
+    
+    # Create query-specific subdirectory (sanitize query for filename)
+    query_safe = "".join(c if c.isalnum() or c in (' ', '_') else '_' for c in query)
+    query_safe = query_safe.replace(' ', '_')[:50]  # Limit length
+    query_dir = search_dir / query_safe
+    query_dir.mkdir(exist_ok=True)
+    
+    print(f"\nSaving search results to: {query_dir}/")
+    
+    # Copy images with scores in filename
+    copied_files = []
+    for i, (img_path, score) in enumerate(results, 1):
+        src_path = Path(img_path)
+        if src_path.exists():
+            # Create descriptive filename with rank and score
+            dst_name = f"{i:02d}_score{score:.3f}_{src_path.name}"
+            dst_path = query_dir / dst_name
+            shutil.copy2(src_path, dst_path)
+            copied_files.append((dst_path, score))
+            print(f"  Saved: {dst_name}")
+    
+    # Create visualization grid
+    try:
+        n_results = len(results)
+        n_cols = min(5, n_results)
+        n_rows = (n_results + n_cols - 1) // n_cols
+        
+        fig = plt.figure(figsize=(n_cols * 3, n_rows * 3.5))
+        gs = gridspec.GridSpec(n_rows, n_cols, figure=fig, hspace=0.3, wspace=0.2)
+        
+        for idx, (img_path, score) in enumerate(results):
+            row = idx // n_cols
+            col = idx % n_cols
+            
+            ax = fig.add_subplot(gs[row, col])
+            
+            # Load and display image
+            img = Image.open(img_path)
+            ax.imshow(img)
+            ax.axis('off')
+            
+            # Add title with rank and score
+            ax.set_title(f"#{idx+1}: {score:.3f}\n{Path(img_path).name}", 
+                        fontsize=8, pad=5)
+        
+        # Add overall title
+        fig.suptitle(f'Search Results for: "{query}"', fontsize=14, y=0.98)
+        
+        # Save visualization
+        viz_path = query_dir / '_search_visualization.png'
+        plt.savefig(viz_path, dpi=150, bbox_inches='tight')
+        plt.close()
+        
+        print(f"\n✓ Saved visualization: {viz_path.name}")
+    except Exception as e:
+        print(f"Warning: Could not create visualization: {e}")
+    
+    # Save results metadata as JSON
+    results_data = {
+        'query': query,
+        'num_results': len(results),
+        'results': [
+            {
+                'rank': i,
+                'image_path': str(img_path),
+                'similarity_score': float(score),
+                'saved_as': f"{i:02d}_score{score:.3f}_{Path(img_path).name}"
+            }
+            for i, (img_path, score) in enumerate(results, 1)
+        ]
+    }
+    
+    json_path = query_dir / '_search_results.json'
+    with open(json_path, 'w') as f:
+        json.dump(results_data, f, indent=2)
+    
+    print(f"✓ Saved metadata: {json_path.name}")
+    print(f"\n📁 All results in: {query_dir}/")
 
 
 class SimpleCLIPEmbedder:
@@ -153,8 +248,8 @@ class SimpleCLIPEmbedder:
 
 def main():
     parser = argparse.ArgumentParser(description='Simple CLIP embeddings for rock tiles')
-    parser.add_argument('--tile_dir', type=str, required=True,
-                       help='Directory containing tile images')
+    parser.add_argument('--tile_dir', type=str, required=False,
+                       help='Directory containing tile images (required for extract mode)')
     parser.add_argument('--model', type=str, default='clip-ViT-B-32',
                        choices=['clip-ViT-B-32', 'clip-ViT-L-14'],
                        help='CLIP model to use')
@@ -178,25 +273,31 @@ def main():
     
     args = parser.parse_args()
     
-    # Find all images
-    tile_dir = Path(args.tile_dir)
-    image_paths = []
-    for ext in ['*.png', '*.jpg', '*.jpeg']:
-        image_paths.extend(list(tile_dir.rglob(ext)))
-    image_paths = [str(p) for p in image_paths]
+    # Check that tile_dir is provided for extract mode
+    if args.mode == 'extract' and not args.tile_dir:
+        parser.error("--tile_dir is required for extract mode")
     
-    print(f"Found {len(image_paths)} images in {tile_dir}")
+    # Find all images (only needed for extract and classify modes)
+    image_paths = []
+    if args.tile_dir:
+        tile_dir = Path(args.tile_dir)
+        for ext in ['*.png', '*.jpg', '*.jpeg']:
+            image_paths.extend(list(tile_dir.rglob(ext)))
+        image_paths = [str(p) for p in image_paths]
+        print(f"Found {len(image_paths)} images in {tile_dir}")
     
     # Create output directory
     output_dir = Path(args.output_dir)
     output_dir.mkdir(exist_ok=True)
     
-    # Initialize CLIP
-    embedder = SimpleCLIPEmbedder(
-        model_name=args.model,
-        device=args.device,
-        multi_gpu=args.multi_gpu
-    )
+    # Initialize CLIP (only when needed)
+    embedder = None
+    if args.mode in ['extract', 'search', 'classify']:
+        embedder = SimpleCLIPEmbedder(
+            model_name=args.model,
+            device=args.device,
+            multi_gpu=args.multi_gpu
+        )
     
     if args.mode == 'extract':
         # Extract embeddings
@@ -248,6 +349,9 @@ def main():
         print("\nTop 10 results:")
         for i, (path, score) in enumerate(results, 1):
             print(f"{i}. {Path(path).name} (similarity: {score:.4f})")
+        
+        # Save results with images for visual verification
+        save_search_results(results, args.query, output_dir)
     
     elif args.mode == 'classify':
         if not args.classes:
