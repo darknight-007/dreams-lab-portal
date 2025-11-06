@@ -978,21 +978,20 @@ def reset_quiz(request):
 def get_ses598_course_data():
     return {
         'course_info': {
-            'title': 'RAS 598: Space Robotics and AI',
+            'title': 'SES 598: Space Robotics and AI',
             'semester': [
-                'Spring 2025',
-                'RAS <a href="https://catalog.apps.asu.edu/catalog/classes/classlist?campusOrOnlineSelection=A&honors=F&keywords=39245&promod=F&searchType=all&term=2251#detailsOpen=39245-131738" target="_blank">#39245</a>',
+                'Spring 2026',
             ],
-            'meeting_times': ' Tu/Th 4:30-5:45pm',
-            'location': 'ASU Poly Campus, Room <a href="https://www.asu.edu/map/interactive/?psCode=SANTN" target="_blank">SANTN</a>339',
+            'meeting_times': ' Tu/Th 1:30-2:45pm',
+            'location': 'ASU Tempe Campus, Room <a href="https://www.asu.edu/map/interactive/?psCode=PSF" target="_blank">PSF</a>501',
             'instructor': 'Dr. Jnaneshwar Das',
-            'office_hours': 'Friday 11am-12pm, and by appointment',
+            'office_hours': 'TBD',
             'contact': 'jdas5@asu.edu',
             'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments. The curriculum emphasizes a strong theoretical foundation leading up to real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
             'quiz_info': 'Try the Space Robotics and AI Proficiency Quiz!'
         },
         'course_materials': {
-            'lecture_slides': '<a href="https://drive.google.com/drive/folders/1eJyYuxB2T-TKn5vwkTx2hcPif4ICiIE9?usp=sharing" target="_blank" class="link-primary"><i class="fas fa-file-pdf"></i> Lecture Slides (Google Drive)</a>',
+            'lecture_slides': '<a href="https://drive.google.com/drive/folders/1eJyYuxB2T-TKn5vwkTx2hcPif4ICiIE9?usp=sharing" target="_blank" class="link-primary"><i class="fas fa-file-pdf"></i> Google Drive</a>',
             'description': 'Access all course lecture slides in PDF format. These slides cover the course modules including State Estimation and Controls, Computer Vision, Scene Representation, Sampling Strategies, Digital Twins, SLAM, Multi-Robot Coordination, and Extreme Environment Operations.'
         },
         'prerequisites': [
@@ -1175,7 +1174,7 @@ def get_ses598_course_data():
         },
         'modules': [
             {
-                'week': '1-3 (Jan 14-Jan 30)',
+                'week': '1-3 (Jan 13-Jan 30)',
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood estimation (MLE)',
@@ -1184,10 +1183,10 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2025)'
+                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2026)'
             },
             {
-                'week': '4-5 (Feb 1-Feb 15)',
+                'week': '4-5 (Feb 3-Feb 20)',
                 'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
@@ -1196,10 +1195,10 @@ def get_ses598_course_data():
                     'Structure from Motion (SfM)',
                     'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/cart_pole_optimal_control" target="_blank">Optimal Control of Cart-Pole System with LQR</a> (Due: Feb 15, 2025)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 28, 2025)'
+                'assignment': 'Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/cart_pole_optimal_control" target="_blank">Optimal Control of Cart-Pole System with LQR</a> (Due: Feb 17, 2026)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 24, 2026)'
             },
             {
-                'week': '6 (Feb 18-25)',
+                'week': '6 (Feb 24-Mar 3)',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
                     'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
@@ -1209,7 +1208,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
-                'week': '7 (Feb 25-March 8)',
+                'week': '7 (Mar 4-Mar 6)',
                 'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
@@ -1217,10 +1216,10 @@ def get_ses598_course_data():
                     'Multi-armed bandits and Bayesian optimization',
                     'Information gain in exploration'
                 ],
-                'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST)datasets.'
+                'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST) datasets.'
             },
             {
-                'week': '8-9 (Mar 17-Mar 29)',
+                'week': '8-9 (Mar 18-Mar 31)',
                 'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
                     'Decision support systems, geographic information systems (GIS), and digital twins',
@@ -1231,7 +1230,7 @@ def get_ses598_course_data():
                 'assignment': 'Exercise: Virtual Shake Robot and ShakeBot cyber-physical twin experiments (not graded)'
             },
             {
-                'week': '10-11 (Apr 1-12)',
+                'week': '10-11 (Apr 1-Apr 14)',
                 'title': 'SLAM and Active Perception',
                 'topics': [
                     'Information-theoretic SLAM',
@@ -1243,7 +1242,7 @@ def get_ses598_course_data():
                 'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
-                'week': '12-13 (Apr 15-26)',
+                'week': '12-13 (Apr 15-Apr 28)',
                 'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
@@ -1254,7 +1253,7 @@ def get_ses598_course_data():
                 ]
             },
             {
-                'week': '14-15 (Apr 29-May 3)',
+                'week': '14-15 (Apr 29-May 1)',
                 'title': 'Extreme Environment Operations',
                 'topics': [
                     'Risk-aware exploration',
@@ -1298,12 +1297,6 @@ def get_ses598_course_data():
                     'difficulty': 'Advanced',
                     'url': 'bundle_adjustment_buddy'
                 },
-                {
-                    'title': 'SLAM Tutorial',
-                    'description': 'Simultaneous Localization and Mapping fundamentals',
-                    'difficulty': 'Advanced',
-                    'url': 'slam_buddy'
-                }
             ],
             'Control and Planning': [
                 {
@@ -1365,14 +1358,6 @@ def get_ses598_course_data():
                     'url': 'multi_armed_bandit_buddy'
                 }
             ],
-            'Perception and State Estimation': [
-                {
-                    'title': 'Sensor Fusion Tutorial',
-                    'description': 'Learn about sensor fusion techniques through interactive examples.',
-                    'difficulty': 'Intermediate',
-                    'url': 'sensor_fusion_buddy'
-                }
-            ]
         },
         'recommended_books': [
             {
@@ -1863,3 +1848,284 @@ def ses598_course(request):
 def multi_armed_bandit_buddy_view(request):
     """Render the Multi-Armed Bandit visualization interface."""
     return render(request, 'widgets/multi_armed_bandit_buddy.html')
+
+
+# ============================================================================
+# SEMI-SUPERVISED LABELING VIEWS
+# Following the pattern from deepgis/label
+# ============================================================================
+
+def semi_supervised_label_view(request):
+    """
+    Main view for semi-supervised labeling interface.
+    Uses Mask2Former and Segment Anything for assisted labeling.
+    """
+    return render(request, 'semi_supervised_label.html', {
+        'page_title': 'Semi-Supervised Labeling Tool',
+        'model_types': ['mask2former', 'segment_anything'],
+    })
+
+
+@csrf_exempt
+def generate_assisted_labels(request):
+    """
+    API endpoint to generate labels using segmentation model.
+    
+    POST data:
+    - image_id: ID of image to label
+    - model_type: 'mask2former' or 'segment_anything'
+    - confidence_threshold: minimum confidence for predictions
+    
+    Returns:
+    - GeoJSON with predicted labels
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        image_id = data.get('image_id')
+        model_type = data.get('model_type', 'mask2former')
+        confidence_threshold = float(data.get('confidence_threshold', 0.5))
+        
+        if not image_id:
+            return JsonResponse({'error': 'image_id required'}, status=400)
+        
+        # Import the segmentation script functions
+        import sys
+        from pathlib import Path
+        scripts_dir = Path(settings.BASE_DIR) / 'dreams_laboratory' / 'scripts'
+        if str(scripts_dir) not in sys.path:
+            sys.path.insert(0, str(scripts_dir))
+        
+        from segmentation_assisted_labeling import (
+            load_segmentation_model, 
+            predict_segmentation,
+            mask_to_geojson
+        )
+        
+        # Get image from deepgis-xr database if available
+        try:
+            deepgis_path = Path(settings.BASE_DIR) / 'deepgis-xr'
+            if deepgis_path.exists():
+                sys.path.insert(0, str(deepgis_path))
+                os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'deepgis_xr.settings')
+                import django
+                django.setup()
+                from deepgis_xr.apps.core.models import Image, CategoryType
+                
+                image = Image.objects.get(id=image_id)
+                image_path = Path(image.path)
+                
+                # Get categories
+                categories = ['background'] + [cat.name for cat in CategoryType.objects.all().order_by('id')]
+                
+                # Load model (you'll need to configure model path)
+                model_path = Path(settings.BASE_DIR) / 'dreams_laboratory' / 'scripts' / 'multispectral_segmentation_model.pth'
+                config_path = Path(settings.BASE_DIR) / 'dreams_laboratory' / 'scripts' / 'multispectral_vit.pth'
+                
+                if not model_path.exists():
+                    return JsonResponse({
+                        'error': 'Model not found. Please train a model first.',
+                        'model_path': str(model_path)
+                    }, status=404)
+                
+                # Load configuration
+                import torch
+                checkpoint = torch.load(config_path, map_location='cpu')
+                config = checkpoint.get('config', checkpoint)
+                config['num_classes'] = len(categories)
+                
+                device = 'cuda' if torch.cuda.is_available() else 'cpu'
+                model = load_segmentation_model(model_path, config, device)
+                
+                # Predict
+                mask = predict_segmentation(model, image_path, device, config['img_size'])
+                
+                # Convert to GeoJSON
+                geojson = mask_to_geojson(
+                    mask, 
+                    categories,
+                    (image.height, image.width),
+                    confidence_threshold
+                )
+                
+                return JsonResponse({
+                    'success': True,
+                    'geojson': geojson,
+                    'image_id': image_id,
+                    'num_predictions': len(geojson['features'])
+                })
+                
+        except ImportError as e:
+            return JsonResponse({
+                'error': f'DeepGIS not available: {str(e)}',
+                'suggestion': 'Make sure deepgis-xr submodule is initialized'
+            }, status=500)
+        except Exception as e:
+            return JsonResponse({
+                'error': f'Error generating labels: {str(e)}',
+                'type': type(e).__name__
+            }, status=500)
+            
+    except Exception as e:
+        logger.error(f"Error in generate_assisted_labels: {e}")
+        return JsonResponse({
+            'error': str(e),
+            'type': type(e).__name__
+        }, status=500)
+
+
+@csrf_exempt
+def save_assisted_labels(request):
+    """
+    API endpoint to save refined labels.
+    
+    POST data:
+    - image_id: ID of image
+    - labels: GeoJSON with refined labels
+    - user_id: ID of user (labeler)
+    
+    Returns:
+    - success status
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        image_id = data.get('image_id')
+        labels_geojson = data.get('labels')
+        user_id = data.get('user_id', 'anonymous')
+        
+        if not image_id or not labels_geojson:
+            return JsonResponse({'error': 'image_id and labels required'}, status=400)
+        
+        # Save to deepgis-xr database
+        try:
+            import sys
+            from pathlib import Path
+            deepgis_path = Path(settings.BASE_DIR) / 'deepgis-xr'
+            if deepgis_path.exists():
+                sys.path.insert(0, str(deepgis_path))
+                os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'deepgis_xr.settings')
+                import django
+                django.setup()
+                from deepgis_xr.apps.core.models import Image, ImageLabel, CategoryType, Labeler
+                
+                image = Image.objects.get(id=image_id)
+                
+                # Get or create labeler
+                labeler, _ = Labeler.objects.get_or_create(
+                    name=user_id,
+                    defaults={'email': f'{user_id}@assisted-labeling.local'}
+                )
+                
+                # Save each label
+                saved_count = 0
+                for feature in labels_geojson.get('features', []):
+                    category_name = feature['properties'].get('category')
+                    geometry = feature['geometry']
+                    
+                    try:
+                        category = CategoryType.objects.get(name=category_name)
+                        
+                        # Create ImageLabel
+                        ImageLabel.objects.create(
+                            image=image,
+                            category=category,
+                            labeler=labeler,
+                            geometry=json.dumps(geometry),
+                            confidence=feature['properties'].get('confidence', 1.0),
+                            auto_generated=feature['properties'].get('auto_generated', False)
+                        )
+                        saved_count += 1
+                    except CategoryType.DoesNotExist:
+                        logger.warning(f"Category {category_name} not found")
+                        continue
+                
+                return JsonResponse({
+                    'success': True,
+                    'saved_count': saved_count,
+                    'image_id': image_id
+                })
+                
+        except ImportError as e:
+            return JsonResponse({
+                'error': f'DeepGIS not available: {str(e)}'
+            }, status=500)
+            
+    except Exception as e:
+        logger.error(f"Error in save_assisted_labels: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def get_label_images(request):
+    """
+    API endpoint to get list of images for labeling.
+    
+    Query params:
+    - limit: max number of images to return
+    - offset: pagination offset
+    - unlabeled_only: if true, return only unlabeled images
+    
+    Returns:
+    - list of images with metadata
+    """
+    try:
+        limit = int(request.GET.get('limit', 50))
+        offset = int(request.GET.get('offset', 0))
+        unlabeled_only = request.GET.get('unlabeled_only', 'false').lower() == 'true'
+        
+        # Get images from deepgis-xr database
+        try:
+            import sys
+            from pathlib import Path
+            deepgis_path = Path(settings.BASE_DIR) / 'deepgis-xr'
+            if deepgis_path.exists():
+                sys.path.insert(0, str(deepgis_path))
+                os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'deepgis_xr.settings')
+                import django
+                django.setup()
+                from deepgis_xr.apps.core.models import Image, ImageLabel
+                
+                queryset = Image.objects.all()
+                
+                if unlabeled_only:
+                    # Filter to images with no labels
+                    queryset = queryset.filter(imagelabel__isnull=True).distinct()
+                
+                total_count = queryset.count()
+                images = queryset[offset:offset+limit]
+                
+                image_list = []
+                for img in images:
+                    label_count = ImageLabel.objects.filter(image=img).count()
+                    image_list.append({
+                        'id': img.id,
+                        'name': img.name,
+                        'path': img.path,
+                        'url': img.url if hasattr(img, 'url') else None,
+                        'width': img.width,
+                        'height': img.height,
+                        'label_count': label_count,
+                        'created_at': img.created_at.isoformat() if hasattr(img, 'created_at') else None
+                    })
+                
+                return JsonResponse({
+                    'success': True,
+                    'images': image_list,
+                    'total': total_count,
+                    'offset': offset,
+                    'limit': limit
+                })
+                
+        except ImportError as e:
+            return JsonResponse({
+                'error': f'DeepGIS not available: {str(e)}'
+            }, status=500)
+            
+    except Exception as e:
+        logger.error(f"Error in get_label_images: {e}")
+        return JsonResponse({'error': str(e)}, status=500)

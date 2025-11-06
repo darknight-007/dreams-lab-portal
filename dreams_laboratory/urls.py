@@ -17,7 +17,10 @@ from dreams_laboratory.views import (
     bundle_adjustment_buddy_view, tutorials_home,
     stereo_buddy, slam_buddy, sensor_fusion_buddy,
     multiview_geometry, ses598_quiz_part2, generate_certificate,
-    reset_quiz, quiz_admin_view, multi_armed_bandit_buddy_view
+    reset_quiz, quiz_admin_view, multi_armed_bandit_buddy_view,
+    # Semi-supervised labeling views
+    semi_supervised_label_view, generate_assisted_labels,
+    save_assisted_labels, get_label_images
 )
 from dreams_laboratory.quiz_views import ses598_2025_retrospective
 from django.http import HttpResponse
@@ -61,6 +64,11 @@ urlpatterns = [
     path('tutorials/slam-buddy/', slam_buddy, name='slam_buddy'),
     path('tutorials/sensor-fusion-buddy/', sensor_fusion_buddy, name='sensor_fusion_buddy'),
     path('tutorials/multiview-geometry/', multiview_geometry, name='multiview_geometry'),
+    # Semi-supervised labeling paths (following deepgis/label pattern)
+    path('label/semi-supervised/', semi_supervised_label_view, name='semi_supervised_label'),
+    path('label/semi-supervised/api/generate-labels/', generate_assisted_labels, name='generate_assisted_labels'),
+    path('label/semi-supervised/api/save-labels/', save_assisted_labels, name='save_assisted_labels'),
+    path('label/semi-supervised/api/get-images/', get_label_images, name='get_label_images'),
 ]
 
 if settings.DEBUG:
