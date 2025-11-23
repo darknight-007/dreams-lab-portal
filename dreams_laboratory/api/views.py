@@ -3,11 +3,13 @@ RESTful API views for telemetry data endpoints.
 Handles POST requests for GPSFixRaw, GPSFixEstimated, and LocalPositionOdom.
 """
 import json
+import traceback
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.db import transaction
+from django.conf import settings
 
 from dreams_laboratory.models import (
     LocalPositionOdom, GPSFixRaw, GPSFixEstimated, DroneTelemetrySession
@@ -89,12 +91,19 @@ def post_local_position_odom(request):
         }, status=400)
     
     # Validate and parse data
-    parsed_data, errors = LocalPositionOdomSerializer.validate_and_parse(data)
+    try:
+        parsed_data, errors = LocalPositionOdomSerializer.validate_and_parse(data)
+    except Exception as e:
+        return JsonResponse({
+            'error': 'Validation error',
+            'message': str(e),
+            'traceback': traceback.format_exc() if settings.DEBUG else None
+        }, status=500)
     
-    if errors:
+    if errors or parsed_data is None:
         return JsonResponse({
             'error': 'Validation failed',
-            'errors': errors
+            'errors': errors or {'general': 'Failed to parse data'}
         }, status=400)
     
     try:
@@ -115,9 +124,12 @@ def post_local_position_odom(request):
         }, status=201)
     
     except Exception as e:
+        import traceback
+        from django.conf import settings
         return JsonResponse({
             'error': 'Failed to create record',
-            'message': str(e)
+            'message': str(e),
+            'traceback': traceback.format_exc() if settings.DEBUG else None
         }, status=500)
 
 
@@ -155,12 +167,19 @@ def post_gps_fix_raw(request):
         }, status=400)
     
     # Validate and parse data
-    parsed_data, errors = GPSFixRawSerializer.validate_and_parse(data)
+    try:
+        parsed_data, errors = GPSFixRawSerializer.validate_and_parse(data)
+    except Exception as e:
+        return JsonResponse({
+            'error': 'Validation error',
+            'message': str(e),
+            'traceback': traceback.format_exc() if settings.DEBUG else None
+        }, status=500)
     
-    if errors:
+    if errors or parsed_data is None:
         return JsonResponse({
             'error': 'Validation failed',
-            'errors': errors
+            'errors': errors or {'general': 'Failed to parse data'}
         }, status=400)
     
     try:
@@ -183,7 +202,8 @@ def post_gps_fix_raw(request):
     except Exception as e:
         return JsonResponse({
             'error': 'Failed to create record',
-            'message': str(e)
+            'message': str(e),
+            'traceback': traceback.format_exc() if settings.DEBUG else None
         }, status=500)
 
 
@@ -222,12 +242,19 @@ def post_gps_fix_estimated(request):
         }, status=400)
     
     # Validate and parse data
-    parsed_data, errors = GPSFixEstimatedSerializer.validate_and_parse(data)
+    try:
+        parsed_data, errors = GPSFixEstimatedSerializer.validate_and_parse(data)
+    except Exception as e:
+        return JsonResponse({
+            'error': 'Validation error',
+            'message': str(e),
+            'traceback': traceback.format_exc() if settings.DEBUG else None
+        }, status=500)
     
-    if errors:
+    if errors or parsed_data is None:
         return JsonResponse({
             'error': 'Validation failed',
-            'errors': errors
+            'errors': errors or {'general': 'Failed to parse data'}
         }, status=400)
     
     try:
@@ -250,7 +277,8 @@ def post_gps_fix_estimated(request):
     except Exception as e:
         return JsonResponse({
             'error': 'Failed to create record',
-            'message': str(e)
+            'message': str(e),
+            'traceback': traceback.format_exc() if settings.DEBUG else None
         }, status=500)
 
 
