@@ -69,6 +69,8 @@ urlpatterns = [
     path('label/semi-supervised/api/generate-labels/', generate_assisted_labels, name='generate_assisted_labels'),
     path('label/semi-supervised/api/save-labels/', save_assisted_labels, name='save_assisted_labels'),
     path('label/semi-supervised/api/get-images/', get_label_images, name='get_label_images'),
+    # Telemetry API endpoints
+    path('api/', include('dreams_laboratory.api.urls')),
 ]
 
 if settings.DEBUG:
