@@ -99,6 +99,8 @@ class LocalPositionOdomSerializer(TelemetrySerializer):
         try:
             session = DroneTelemetrySession.objects.get(session_id=parsed_data['session_id'])
             parsed_data['session'] = session
+            # Remove session_id from parsed_data - the model only has 'session' ForeignKey, not 'session_id'
+            del parsed_data['session_id']
         except DroneTelemetrySession.DoesNotExist:
             errors['session_id'] = f"Session '{parsed_data['session_id']}' not found."
             return None, errors
@@ -199,6 +201,8 @@ class GPSFixRawSerializer(TelemetrySerializer):
         try:
             session = DroneTelemetrySession.objects.get(session_id=parsed_data['session_id'])
             parsed_data['session'] = session
+            # Remove session_id from parsed_data - the model only has 'session' ForeignKey, not 'session_id'
+            del parsed_data['session_id']
         except DroneTelemetrySession.DoesNotExist:
             errors['session_id'] = f"Session '{parsed_data['session_id']}' not found."
             return None, errors
@@ -289,6 +293,8 @@ class GPSFixEstimatedSerializer(TelemetrySerializer):
         try:
             session = DroneTelemetrySession.objects.get(session_id=parsed_data['session_id'])
             parsed_data['session'] = session
+            # Remove session_id from parsed_data - the model only has 'session' ForeignKey, not 'session_id'
+            del parsed_data['session_id']
         except DroneTelemetrySession.DoesNotExist:
             errors['session_id'] = f"Session '{parsed_data['session_id']}' not found."
             return None, errors

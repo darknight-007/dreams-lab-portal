@@ -20,6 +20,7 @@ services:
       - ./db.sqlite3:/app/db.sqlite3
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/jdas/openuav2:/app/openuav2
+      - /mnt/tesseract-store/trike-backup:/mnt/tesseract-store/trike-backup:ro
     ports:
       - "8080:80"
     command: ["bash", "/app/entrypoint.sh"]
