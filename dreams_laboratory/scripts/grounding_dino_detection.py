@@ -104,6 +104,10 @@ class GroundingDINODetector:
         # Load model
         print(f"🔧 Loading Grounding DINO ({model_type})...")
         self.model = load_model(config_path, str(checkpoint_path), device=device)
+        
+        # Set model to evaluation mode to avoid gradient checkpointing issues
+        self.model.eval()
+        
         print(f"✓ Model loaded on {device}")
     
     def _download_checkpoint(self, url: str, save_path: Path):
@@ -140,15 +144,16 @@ class GroundingDINODetector:
             # Returns (numpy_array, tensor) - we need the tensor!
             image_array, image_tensor = load_image(tmp_path)
             
-            # Run detection
-            boxes, logits, phrases = predict(
-                model=self.model,
-                image=image_tensor,  # This is now the actual torch tensor
-                caption=text_prompt,
-                box_threshold=box_threshold,
-                text_threshold=text_threshold,
-                device=self.device
-            )
+            # Run detection with no_grad to avoid gradient computation
+            with torch.no_grad():
+                boxes, logits, phrases = predict(
+                    model=self.model,
+                    image=image_tensor,  # This is now the actual torch tensor
+                    caption=text_prompt,
+                    box_threshold=box_threshold,
+                    text_threshold=text_threshold,
+                    device=self.device
+                )
         finally:
             # Clean up temporary file
             import os
