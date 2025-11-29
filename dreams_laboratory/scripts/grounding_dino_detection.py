@@ -50,15 +50,24 @@ class GroundingDINODetector:
     """Grounding DINO wrapper for text-based object detection."""
     
     # Model configurations
+    # Config files are installed in the groundingdino package
+    @staticmethod
+    def _get_config_path(config_name):
+        """Get the absolute path to a config file in the installed groundingdino package."""
+        import groundingdino
+        import os
+        package_dir = os.path.dirname(groundingdino.__file__)
+        return os.path.join(package_dir, 'config', config_name)
+    
     MODELS = {
         'swin_t': {
-            'config': '/app/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py',
+            'config_name': 'GroundingDINO_SwinT_OGC.py',
             'checkpoint': 'groundingdino_swint_ogc.pth',
             'url': 'https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth',
             'description': 'Swin Transformer Tiny - Faster, good accuracy'
         },
         'swin_b': {
-            'config': '/app/GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py',
+            'config_name': 'GroundingDINO_SwinB_cfg.py',
             'checkpoint': 'groundingdino_swinb_cogcoor.pth',
             'url': 'https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth',
             'description': 'Swin Transformer Base - Best accuracy'
@@ -84,7 +93,7 @@ class GroundingDINODetector:
         
         # Get model config
         model_config = self.MODELS[model_type]
-        config_path = model_config['config']
+        config_path = self._get_config_path(model_config['config_name'])
         checkpoint_path = self.model_dir / model_config['checkpoint']
         
         # Download checkpoint if needed
