@@ -137,12 +137,13 @@ class GroundingDINODetector:
         
         try:
             # Use groundingdino's load_image for proper preprocessing
-            image_tensor, image_array = load_image(tmp_path)
+            # Returns (numpy_array, tensor) - we need the tensor!
+            image_array, image_tensor = load_image(tmp_path)
             
             # Run detection
             boxes, logits, phrases = predict(
                 model=self.model,
-                image=image_tensor,
+                image=image_tensor,  # This is now the actual torch tensor
                 caption=text_prompt,
                 box_threshold=box_threshold,
                 text_threshold=text_threshold,
