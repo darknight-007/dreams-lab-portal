@@ -129,18 +129,30 @@ class GroundingDINODetector:
         Returns:
             Dictionary with boxes, logits, phrases
         """
-        # Convert PIL to format expected by Grounding DINO
-        image_array = np.array(image)
+        # Save PIL image to temporary file for load_image to process
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp_file:
+            image.save(tmp_file.name, format='JPEG')
+            tmp_path = tmp_file.name
         
-        # Run detection
-        boxes, logits, phrases = predict(
-            model=self.model,
-            image=image_array,
-            caption=text_prompt,
-            box_threshold=box_threshold,
-            text_threshold=text_threshold,
-            device=self.device
-        )
+        try:
+            # Use groundingdino's load_image for proper preprocessing
+            image_tensor, image_array = load_image(tmp_path)
+            
+            # Run detection
+            boxes, logits, phrases = predict(
+                model=self.model,
+                image=image_tensor,
+                caption=text_prompt,
+                box_threshold=box_threshold,
+                text_threshold=text_threshold,
+                device=self.device
+            )
+        finally:
+            # Clean up temporary file
+            import os
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
         
         # Convert boxes from normalized [0,1] to pixel coordinates
         h, w = image_array.shape[:2]
