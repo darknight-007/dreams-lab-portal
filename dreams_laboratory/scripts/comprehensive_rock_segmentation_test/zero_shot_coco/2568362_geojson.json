@@ -1,0 +1,9 @@
+{
+  "type": "FeatureCollection",
+  "features": [],
+  "metadata": {
+    "model": "zero_shot_coco",
+    "num_detections": 0,
+    "image_path": "/mnt/dreamslab-store/deepgis/deepgis_rocks2/static-root/rock-tiles/raw/22/717200/2568362.png"
+  }
+}

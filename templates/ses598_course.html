@@ -636,7 +636,7 @@ function generatePDF() {
             </div>
         </header>
 
-        <!-- Retrospective Quiz Banner -->
+        <!-- Pre-Enrollment Quiz Banner -->
         <div class="enrollment-quiz-banner" style="background: linear-gradient(135deg, #1e5799 0%, #207cca 35%, #2989d8 50%, #7db9e8 100%); margin-top: 1rem; border-radius: 12px; box-shadow: 0 8px 15px rgba(0,0,0,0.2); overflow: hidden; position: relative;">
             <!-- Space background elements -->
             <div style="position: absolute; top: 10px; right: 15px; font-size: 24px; color: white; text-shadow: 0 0 5px rgba(255,255,255,0.8);">
@@ -647,13 +647,13 @@ function generatePDF() {
             </div>
             
             <div class="quiz-info" style="padding: 25px 20px; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 1;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 10px;">🚀 Mission Complete! Share Your Space Journey</h2>
-                <p style="font-size: 1.1rem; max-width: 80%;">Your feedback is our guidance system for future explorers! Take 5 minutes to help us optimize the next mission trajectory and earn your final mission badge.</p>
+                <h2 style="font-size: 1.8rem; margin-bottom: 10px;">🚀 Ready for Your Space Mission?</h2>
+                <p style="font-size: 1.1rem; max-width: 80%;">Complete the pre-enrollment quiz to assess your readiness for the Space Robotics and AI journey.</p>
             </div>
             
-            <a href="http://deepgis.org/dreamslab/ses598/2025-retrospective/" class="quiz-button" style="background-color: #ff6b00; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3); position: relative; z-index: 1; display: inline-flex; align-items: center; margin: 0 0 20px 20px;">
-                <i class="fas fa-satellite" style="margin-right: 10px;"></i>
-                Launch Final Survey
+            <a href="{% url 'ses598_quiz' %}" class="quiz-button" style="background-color: #ff6b00; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3); position: relative; z-index: 1; display: inline-flex; align-items: center; margin: 0 0 20px 20px;">
+                <i class="fas fa-clipboard-check" style="margin-right: 10px;"></i>
+                SES 598 Pre-Enrollment Quiz
             </a>
             
             <!-- Add custom animations -->
@@ -845,7 +845,7 @@ function generatePDF() {
             <h2>Resources</h2>
 
             <!-- Lecture Slides -->
-            <h3>Lecture Slides</h3>
+            <h3>2025 Lecture Slides Archive (PDFs)</h3>
             <div class="course-materials-container" style="background: linear-gradient(to right, #f9f9f9, #f0f0f0); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
                 <div class="materials-item" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
                     <div class="materials-icon" style="font-size: 2.5rem; color: #dc3545;">
@@ -853,7 +853,7 @@ function generatePDF() {
                     </div>
                     <div class="materials-content">
                         <h4 style="margin: 0 0 0.5rem 0; font-size: 1.3rem;">{{ syllabus.course_materials.lecture_slides|safe }}</h4>
-                        <p style="margin: 0; font-size: 1rem; color: #555;">{{ syllabus.course_materials.description }}</p>
+                        <p style="margin: 0; font-size: 1rem; color: #555;">Preview lecture slides from the 2025 course offering to explore content and topics covered in Space Robotics and AI.</p>
                     </div>
                 </div>
             </div>

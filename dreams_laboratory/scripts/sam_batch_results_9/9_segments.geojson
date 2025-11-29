@@ -1,0 +1,8 @@
+{
+  "type": "FeatureCollection",
+  "features": [],
+  "metadata": {
+    "model": "segment_anything",
+    "num_segments": 1
+  }
+}

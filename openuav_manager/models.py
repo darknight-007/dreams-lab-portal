@@ -71,3 +71,86 @@ class Container(models.Model):
             'vnc': self.ports.get('5901', '5901'),
             'novnc': self.ports.get('6080', '6080')
         }
+
+
+class RosbagFile(models.Model):
+    """Catalog of available ROS2 rosbags"""
+    path = models.CharField(max_length=512, unique=True)
+    name = models.CharField(max_length=255)
+    size = models.BigIntegerField(default=0, help_text='Size in bytes')
+    duration = models.FloatField(null=True, blank=True, help_text='Duration in seconds')
+    topics = models.JSONField(default=list, help_text='List of topics with message counts')
+    metadata = models.JSONField(default=dict, help_text='Full metadata.yaml contents')
+    created = models.DateTimeField(null=True, blank=True)
+    indexed = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-indexed']
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['indexed']),
+        ]
+    
+    def __str__(self):
+        return f"{self.name} ({self.size / (1024**3):.2f} GB)"
+    
+    def get_size_display(self):
+        """Get human-readable size"""
+        size = float(self.size)
+        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+            if size < 1024.0:
+                return f"{size:.2f} {unit}"
+            size /= 1024.0
+        return f"{size:.2f} PB"
+
+
+class RosbagSession(models.Model):
+    """Track active ROS2 rosbag visualization sessions"""
+    VISUALIZATION_TYPES = [
+        ('rviz2', 'RViz2'),
+        ('foxglove', 'Foxglove Studio'),
+        ('plotjuggler', 'PlotJuggler'),
+        ('rqt_bag', 'rqt_bag'),
+    ]
+    
+    # Container reference (reuse Container model)
+    container = models.ForeignKey(
+        Container,
+        on_delete=models.CASCADE,
+        related_name='rosbag_sessions'
+    )
+    
+    # Rosbag reference
+    rosbag = models.ForeignKey(
+        RosbagFile,
+        on_delete=models.CASCADE,
+        related_name='sessions'
+    )
+    
+    # Session details
+    visualization_type = models.CharField(max_length=50, choices=VISUALIZATION_TYPES, default='rviz2')
+    playback_rate = models.FloatField(default=1.0, help_text='Playback rate multiplier')
+    is_looping = models.BooleanField(default=False)
+    is_playing = models.BooleanField(default=False)
+    
+    # User tracking
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='rosbag_sessions'
+    )
+    
+    created = models.DateTimeField(auto_now_add=True)
+    last_accessed = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created']
+        indexes = [
+            models.Index(fields=['user', 'created']),
+            models.Index(fields=['container', 'is_playing']),
+        ]
+    
+    def __str__(self):
+        return f"{self.rosbag.name} - {self.visualization_type} ({self.container.name})"

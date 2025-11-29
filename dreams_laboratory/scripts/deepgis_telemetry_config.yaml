@@ -1,0 +1,47 @@
+# DeepGIS Telemetry Publisher Configuration
+# 
+# This file can be used with ROS2 parameter loading:
+# ros2 run dreams_laboratory deepgis_telemetry_publisher.py --ros-args --params-file deepgis_telemetry_config.yaml
+
+deepgis_telemetry_publisher:
+  ros__parameters:
+    # DeepGIS API Configuration
+    deepgis_api_url: "http://192.168.0.186:8080"
+    api_key: ""  # Optional: Add your API key if authentication is required
+    
+    # Session Configuration (conforms to DeepGIS API spec)
+    asset_name: "MAVROS Vehicle"  # Name of the vehicle/asset
+    session_id: "mavros_20240101_120000"  # Unique session identifier (auto-generated if not set)
+    project_title: "MAVROS Data Collection"  # Project title
+    flight_mode: "AUTO"  # Flight mode: MANUAL, AUTO, GUIDED, etc.
+    mission_type: "Telemetry Collection"  # Mission type description
+    
+    # MAVROS Configuration
+    mavros_namespace: "/mavros"  # MAVROS topic namespace
+    
+    # Publishing Configuration
+    publish_rate: 1.0  # Publishing rate in Hz (1.0 = once per second)
+    batch_size: 10  # Number of telemetry samples to accumulate before sending batch
+    enable_batch_mode: true  # Enable batch mode (recommended for efficiency)
+    
+    # Advanced Options
+    # publish_rate: 5.0  # Higher rate for more frequent updates
+    # batch_size: 50  # Larger batch for less frequent network requests
+    # enable_batch_mode: false  # Disable batch mode for real-time updates
+
+# Example configurations for different scenarios:
+
+# High-frequency real-time streaming:
+# publish_rate: 10.0
+# enable_batch_mode: false
+
+# Efficient batched logging:
+# publish_rate: 1.0
+# batch_size: 100
+# enable_batch_mode: true
+
+# Local development/testing:
+# deepgis_api_url: "http://localhost:8000"
+# publish_rate: 0.5
+# batch_size: 5
+

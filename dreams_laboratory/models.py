@@ -441,3 +441,357 @@ class GPSFixEstimated(models.Model):
     
     def __str__(self):
         return f"GPSEst {self.session.session_id} - ({self.latitude}, {self.longitude}) - {self.timestamp}"
+
+
+# ============================================================================
+# World Sampler Models (for DeepGIS-XR geospatial sampling)
+# ============================================================================
+
+class SampledLocation(models.Model):
+    """
+    Stores sampled locations with their scores/feedback.
+    Records (lat, lon, zoom) triples along with user feedback.
+    """
+    # Location data
+    latitude = models.FloatField(help_text="Latitude in degrees [-90, 90]")
+    longitude = models.FloatField(help_text="Longitude in degrees [-180, 180]")
+    altitude = models.FloatField(help_text="Altitude in meters")
+    zoom_level = models.IntegerField(help_text="Cesium zoom level (0-28)")
+    
+    # Scoring data
+    score = models.FloatField(
+        default=0.0,
+        help_text="User feedback score (positive = interesting, negative = avoid)"
+    )
+    weight = models.FloatField(
+        default=1.0,
+        help_text="Sampling weight/probability at time of sampling"
+    )
+    
+    # Metadata
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        help_text="User who provided feedback"
+    )
+    session_id = models.CharField(
+        max_length=255,
+        default='default',
+        help_text="Session identifier for grouping samples"
+    )
+    sampled_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="When this location was sampled"
+    )
+    scored_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When user provided feedback"
+    )
+    
+    # Additional context
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Additional metadata (camera params, terrain info, etc.)"
+    )
+    
+    class Meta:
+        db_table = 'sampled_locations'
+        ordering = ['-sampled_at']
+        indexes = [
+            models.Index(fields=['latitude', 'longitude']),
+            models.Index(fields=['session_id', 'sampled_at']),
+            models.Index(fields=['score']),
+            models.Index(fields=['-sampled_at']),
+        ]
+    
+    def __str__(self):
+        return f"({self.latitude:.4f}, {self.longitude:.4f}, z{self.zoom_level}) score={self.score}"
+
+
+class SamplingSession(models.Model):
+    """
+    Tracks sampling sessions with initialization parameters and statistics.
+    """
+    session_id = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text="Unique session identifier"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="User who created the session"
+    )
+    
+    # Initialization parameters
+    num_points = models.IntegerField(default=1000)
+    initialization_method = models.CharField(
+        max_length=50,
+        choices=[
+            ('uniform', 'Uniform Distribution'),
+            ('gaussian_mixture', 'Gaussian Mixture'),
+            ('population_weighted', 'Population Weighted'),
+        ],
+        default='uniform'
+    )
+    lat_range_min = models.FloatField(default=-90)
+    lat_range_max = models.FloatField(default=90)
+    lon_range_min = models.FloatField(default=-180)
+    lon_range_max = models.FloatField(default=180)
+    alt_range_min = models.FloatField(default=0)
+    alt_range_max = models.FloatField(default=5000)
+    
+    # Session metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Statistics
+    total_samples = models.IntegerField(default=0)
+    total_updates = models.IntegerField(default=0)
+    
+    class Meta:
+        db_table = 'sampling_sessions'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Session {self.session_id} ({self.initialization_method})"
+
+
+class DistributionUpdate(models.Model):
+    """
+    Logs updates to the sampling distribution.
+    """
+    session = models.ForeignKey(
+        SamplingSession,
+        on_delete=models.CASCADE,
+        related_name='updates'
+    )
+    
+    # Update details
+    update_rule = models.CharField(
+        max_length=50,
+        choices=[
+            ('reward', 'Reward'),
+            ('exploration', 'Exploration'),
+            ('concentration', 'Concentration'),
+            ('custom', 'Custom'),
+        ],
+        help_text="Update rule applied"
+    )
+    learning_rate = models.FloatField(help_text="Learning rate used")
+    radius = models.FloatField(
+        null=True,
+        blank=True,
+        help_text="Influence radius in meters"
+    )
+    
+    # Feedback points that triggered this update
+    feedback_locations = models.ManyToManyField(
+        SampledLocation,
+        related_name='caused_updates',
+        blank=True,
+        help_text="Locations whose feedback triggered this update"
+    )
+    
+    # Metadata
+    applied_at = models.DateTimeField(auto_now_add=True)
+    parameters = models.JSONField(
+        default=dict,
+        help_text="Additional update parameters"
+    )
+    
+    class Meta:
+        db_table = 'distribution_updates'
+        ordering = ['-applied_at']
+    
+    def __str__(self):
+        return f"{self.update_rule} update at {self.applied_at}"
+
+
+# ============================================================================
+# Mission Planning Models (from deepgis-xr, using deepgis_xr database)
+# ============================================================================
+
+class VehicleType(models.Model):
+    """Types of vehicles that can be tracked"""
+    VEHICLE_CATEGORIES = [
+        ('DRONE', 'Drone/UAV'),
+        ('GROUND', 'Ground Vehicle'),
+        ('MARINE', 'Marine Vehicle'),
+        ('AIRCRAFT', 'Aircraft'),
+        ('SATELLITE', 'Satellite'),
+        ('PERSON', 'Person/Personnel'),
+        ('ROBOT', 'Robot'),
+        ('OTHER', 'Other')
+    ]
+    
+    name = models.CharField(max_length=100, unique=True)
+    category = models.CharField(max_length=20, choices=VEHICLE_CATEGORIES, default='OTHER')
+    icon_url = models.URLField(max_length=500, blank=True, null=True)
+    icon_symbol = models.CharField(max_length=10, default='📍')
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'core_vehicletype'
+        managed = False  # Table exists in deepgis_xr database
+        ordering = ['category', 'name']
+    
+    def __str__(self):
+        return f'{self.name} ({self.get_category_display()})'
+
+
+class Vehicle(models.Model):
+    """Individual vehicle instances"""
+    STATUS_CHOICES = [
+        ('ACTIVE', 'Active'),
+        ('INACTIVE', 'Inactive'),
+        ('MAINTENANCE', 'Maintenance'),
+        ('LOST', 'Lost Signal'),
+        ('EMERGENCY', 'Emergency')
+    ]
+    
+    vehicle_id = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=200)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='INACTIVE')
+    
+    current_latitude = models.DecimalField(max_digits=17, decimal_places=14, null=True, blank=True)
+    current_longitude = models.DecimalField(max_digits=17, decimal_places=14, null=True, blank=True)
+    current_altitude = models.FloatField(null=True, blank=True)
+    current_heading = models.FloatField(null=True, blank=True)
+    current_speed = models.FloatField(null=True, blank=True)
+    
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    mission_id = models.CharField(max_length=100, blank=True, null=True)
+    last_update = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    max_speed = models.FloatField(null=True, blank=True)
+    max_altitude = models.FloatField(null=True, blank=True)
+    battery_level = models.FloatField(null=True, blank=True)
+    
+    class Meta:
+        db_table = 'core_vehicle'
+        managed = False  # Table exists in deepgis_xr database
+        ordering = ['-last_update']
+    
+    def __str__(self):
+        return f'{self.name} ({self.vehicle_id})'
+    
+    @property
+    def position_age_seconds(self):
+        if self.last_update:
+            return (timezone.now() - self.last_update).total_seconds()
+        return None
+
+
+class Mission(models.Model):
+    """Mission planning for autonomous vehicles"""
+    MISSION_TYPES = [
+        ('SURVEY', 'Survey'),
+        ('PATROL', 'Patrol'),
+        ('DATA_CAPTURE', 'Data Capture'),
+        ('INSPECTION', 'Inspection'),
+        ('MAPPING', 'Mapping'),
+        ('CUSTOM', 'Custom'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('DRAFT', 'Draft'),
+        ('READY', 'Ready'),
+        ('UPLOADED', 'Uploaded to Vehicle'),
+        ('ACTIVE', 'Active'),
+        ('PAUSED', 'Paused'),
+        ('COMPLETED', 'Completed'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+    
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    mission_type = models.CharField(max_length=50, choices=MISSION_TYPES, default='CUSTOM')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')
+    
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='missions', null=True, blank=True)
+    
+    waypoints = models.JSONField(default=list)
+    default_altitude = models.FloatField(default=50.0)
+    default_speed = models.FloatField(null=True, blank=True)
+    return_to_home = models.BooleanField(default=True)
+    
+    # Use IntegerField instead of ForeignKey to avoid cross-database foreign key issues
+    # The actual table has a foreign key to deepgis_auth.User, but we're accessing from dreams_laboratory
+    created_by_id = models.IntegerField(help_text="User ID (references deepgis_auth.User in deepgis_xr database)")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    uploaded_at = models.DateTimeField(null=True, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        db_table = 'core_mission'
+        managed = False  # Table exists in deepgis_xr database
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f'{self.name} ({self.get_status_display()})'
+    
+    @property
+    def num_waypoints(self):
+        if isinstance(self.waypoints, dict) and 'features' in self.waypoints:
+            return len(self.waypoints['features'])
+        elif isinstance(self.waypoints, list):
+            return len(self.waypoints)
+        return self.waypoint_items.count()
+    
+    @property
+    def total_distance(self):
+        return 0.0
+
+
+class MissionWaypoint(models.Model):
+    """Individual waypoints within a mission"""
+    WAYPOINT_TYPES = [
+        ('WAYPOINT', 'Waypoint'),
+        ('TAKEOFF', 'Takeoff'),
+        ('LAND', 'Land'),
+        ('RETURN_TO_LAUNCH', 'Return to Launch'),
+        ('LOITER', 'Loiter'),
+        ('LOITER_TIME', 'Loiter Time'),
+        ('LOITER_TURNS', 'Loiter Turns'),
+        ('LOITER_UNLIM', 'Loiter Unlimited')
+    ]
+    
+    mission = models.ForeignKey(Mission, on_delete=models.CASCADE, related_name='waypoint_items')
+    sequence = models.PositiveIntegerField()
+    
+    latitude = models.DecimalField(max_digits=17, decimal_places=14)
+    longitude = models.DecimalField(max_digits=17, decimal_places=14)
+    altitude = models.FloatField()
+    
+    waypoint_type = models.CharField(max_length=50, choices=WAYPOINT_TYPES, default='WAYPOINT')
+    command = models.IntegerField(default=16)
+    param1 = models.FloatField(default=0.0)
+    param2 = models.FloatField(default=0.0)
+    param3 = models.FloatField(default=0.0)
+    param4 = models.FloatField(default=0.0)
+    
+    speed = models.FloatField(null=True, blank=True)
+    yaw = models.FloatField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'core_missionwaypoint'
+        managed = False  # Table exists in deepgis_xr database
+        ordering = ['mission', 'sequence']
+        unique_together = ('mission', 'sequence')
+    
+    def __str__(self):
+        return f'{self.mission.name} - WP{self.sequence} ({self.latitude:.4f}, {self.longitude:.4f})'

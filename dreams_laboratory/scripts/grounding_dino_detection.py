@@ -52,27 +52,27 @@ class GroundingDINODetector:
     # Model configurations
     MODELS = {
         'swin_t': {
-            'config': 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py',
+            'config': '/app/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py',
             'checkpoint': 'groundingdino_swint_ogc.pth',
             'url': 'https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth',
             'description': 'Swin Transformer Tiny - Faster, good accuracy'
         },
         'swin_b': {
-            'config': 'GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py',
+            'config': '/app/GroundingDINO/groundingdino/config/GroundingDINO_SwinB_cfg.py',
             'checkpoint': 'groundingdino_swinb_cogcoor.pth',
             'url': 'https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth',
             'description': 'Swin Transformer Base - Best accuracy'
         }
     }
     
-    def __init__(self, model_type='swin_t', device='cuda', model_dir='./models'):
+    def __init__(self, model_type='swin_t', device='cuda', model_dir='/app/models'):
         """
         Initialize Grounding DINO detector.
         
         Args:
             model_type: 'swin_t' (faster) or 'swin_b' (more accurate)
             device: 'cuda' or 'cpu'
-            model_dir: Directory to store model weights
+            model_dir: Directory to store model weights (default: /app/models in Docker)
         """
         if not GROUNDING_DINO_AVAILABLE:
             raise ImportError("Grounding DINO is not installed. See instructions above.")

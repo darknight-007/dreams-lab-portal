@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2>My ROS Bag Sessions</h2>
+            <p class="text-muted mb-0">Active rosbag visualization sessions</p>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if sessions %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Rosbag</th>
+                            <th>Visualization</th>
+                            <th>Container</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>
+                                <strong>{{ session.rosbag.name }}</strong><br>
+                                <small class="text-muted">{{ session.rosbag.get_size_display }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ session.get_visualization_type_display }}</span>
+                            </td>
+                            <td>
+                                <code>{{ session.container.short_id }}</code><br>
+                                <small class="text-muted">{{ session.container.name }}</small>
+                            </td>
+                            <td>
+                                {% if session.is_playing %}
+                                <span class="badge bg-success">Playing</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Stopped</span>
+                                {% endif %}
+                                {% if session.container.status == 'running' %}
+                                <span class="badge bg-info">Running</span>
+                                {% else %}
+                                <span class="badge bg-danger">Stopped</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if session.container.status == 'running' %}
+                                <a href="{{ session.container.vnc_url }}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-desktop"></i> Open Viewer
+                                </a>
+                                <div class="btn-group mt-1" role="group">
+                                    <button class="btn btn-sm btn-success" 
+                                            onclick="controlPlayback('{{ session.container.container_id }}', 'play')">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" 
+                                            onclick="controlPlayback('{{ session.container.container_id }}', 'stop')">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">Container stopped</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No active rosbag sessions. 
+                <a href="{% url 'openuav_manager:rosbag_browser' %}">Browse rosbags</a> to start a new session.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function controlPlayback(containerId, action) {
+    fetch(`/openuav-manager/ros/playback/${containerId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            action: action,
+            rate: 1.0,
+            loop: false
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message);
+            // Reload page to update status
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error controlling playback: ' + error.message);
+    });
+}
+</script>
+{% endblock %}
+

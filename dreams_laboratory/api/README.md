@@ -322,6 +322,121 @@ http://deepgis.org/api/telemetry/
 
 ---
 
+### 5. List Telemetry Sessions
+
+**Endpoint:** `GET /api/telemetry/sessions/`
+
+**Description:** Retrieve a list of all telemetry sessions with metadata.
+
+**Query Parameters:**
+- `asset_name` (optional): Filter by asset name (partial match)
+- `project_title` (optional): Filter by project title (partial match)
+- `has_gps` (optional): Set to `true` to only show sessions with GPS data
+
+**Example Request:**
+```bash
+curl "https://deepgis.org/api/telemetry/sessions/?has_gps=true"
+```
+
+**Response (200 OK):**
+```json
+{
+  "sessions": [
+    {
+      "session_id": "test_session_20251123_170411_u39pa9jh",
+      "asset": "RV Karin Valentine",
+      "project": "Tempe Town Lake Survey",
+      "start_time": "2025-11-23T17:04:11.318489Z",
+      "end_time": null,
+      "flight_mode": "AUTO",
+      "mission_type": "Lake Survey",
+      "gps_point_count": 100,
+      "has_gps_data": true,
+      "path_url": "/api/telemetry/sessions/test_session_20251123_170411_u39pa9jh/path/"
+    }
+  ],
+  "count": 1
+}
+```
+
+---
+
+### 6. Get Session GPS Path
+
+**Endpoint:** `GET /api/telemetry/sessions/<session_id>/path/`
+
+**Description:** Retrieve GPS path data for a specific session in GeoJSON format for visualization.
+
+**Query Parameters:**
+- `format` (optional): Response format - `geojson` (default) or `points`
+- `include_properties` (optional): Include detailed properties for each point - `true` (default) or `false`
+
+**Example Request:**
+```bash
+curl "https://deepgis.org/api/telemetry/sessions/test_session_20251123_170411_u39pa9jh/path/"
+```
+
+**Response (200 OK - GeoJSON format):**
+```json
+{
+  "session_id": "test_session_20251123_170411_u39pa9jh",
+  "session_info": {
+    "asset": "RV Karin Valentine",
+    "project": "Tempe Town Lake Survey",
+    "start_time": "2025-11-23T17:04:11.318489Z",
+    "end_time": null,
+    "flight_mode": "AUTO",
+    "mission_type": "Lake Survey",
+    "total_points": 100
+  },
+  "geojson": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [-111.939419941312, 33.4254790767595, 350.19366504993184],
+            ...
+          ]
+        },
+        "properties": {
+          "point_count": 100,
+          "type": "path"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-111.939419941312, 33.4254790767595, 350.19366504993184]
+        },
+        "properties": {
+          "timestamp": "2025-11-23T17:05:00.000Z",
+          "altitude": 350.19,
+          "fix_type": 3,
+          "satellites_visible": 12,
+          "eph": 2.5,
+          "epv": 3.1
+        }
+      }
+    ]
+  }
+}
+```
+
+**Response (404 Not Found):**
+```json
+{
+  "error": "Session \"invalid_session_id\" not found"
+}
+```
+
+**Note:** This endpoint is designed for integration with mapping/GIS frontends like DeepGIS. See `DEEPGIS_INTEGRATION.md` for detailed integration examples.
+
+---
+
 ## Usage Examples
 
 ### Python (using requests)

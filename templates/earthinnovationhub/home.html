@@ -1,0 +1,50 @@
+{% extends 'earthinnovationhub/base.html' %}
+
+{% block title %}Earth Innovation Hub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-4">Welcome to Earth Innovation Hub</h1>
+                <p class="lead">
+                    Cultivating a collaborative ecosystem where innovations in Robotics and AI serve both Earth and Space Sciences.
+                </p>
+            </div>
+
+            <div class="card shadow-sm mb-5">
+                <div class="card-body p-5 text-center" style="background-color: #f8f9fa; border-radius: 30px;">
+                    <h2 class="card-title mb-4">Our Mission</h2>
+                    <p class="lead fst-italic" style="font-size: 1.25rem;">
+                        To foster a community of innovators dedicated to advancing robotics and AI for Earth and space sciences. Through open collaboration and artistic storytelling, we inspire interactions that transcend traditional boundaries, accelerating transformative discoveries.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Key Projects</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <strong><a href="/earthinnovationhub/navagunjara">Navagunjara Reborn</a></strong> - 
+                            Burning Man Honoraria Art Grant Project integrating narrative and spatial data
+                        </li>
+                        <li class="mb-3">
+                            <strong><a href="https://deepgis.org/label/3d/topology/" target="_blank">DeepGIS-XR</a></strong> - 
+                            Blending digital twins with architectural and cartographic layers
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <h3>Read Our Journal</h3>
+                <p>Explore our latest articles on robotics, AI, and digital twin synthesis.</p>
+                <a href="{% url 'earthinnovationhub_journal' %}" class="btn btn-primary btn-lg">Visit Journal</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

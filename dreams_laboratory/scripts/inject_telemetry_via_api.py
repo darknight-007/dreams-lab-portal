@@ -26,7 +26,7 @@ import string
 # CONFIGURATION - Set your API base URL here
 # ============================================================================
 # Default API base URL (can be overridden via command-line argument)
-API_BASE_URL = "https://deepgis.org/api/telemetry"
+API_BASE_URL = "http://192.168.0.186:8080/api/telemetry"
 
 # Alternative URLs (uncomment to use):
 # API_BASE_URL = "http://localhost:8000/api/telemetry"  # Local development
@@ -36,10 +36,68 @@ API_BASE_URL = "https://deepgis.org/api/telemetry"
 
 def generate_random_session_id():
     """Generate a random session ID"""
-    import string
     random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
     timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
     return f"test_session_{timestamp}_{random_suffix}"
+
+
+def create_session_via_api(base_url, session_id, asset_name='RV Karin Valentine'):
+    """
+    Create session via REST API. Works on any remote machine.
+    Returns (success, created) tuple.
+    """
+    try:
+        session_data = {
+            'session_id': session_id,
+            'asset_name': asset_name,
+            'project_title': 'Tempe Town Lake Survey',
+            'flight_mode': 'AUTO',
+            'mission_type': 'Lake Survey',
+            'notes': f'Test data injection via API: 100 GPS raw points along 100m path in Tempe Town Lake, Arizona (Session ID: {session_id})'
+        }
+        
+        url = f"{base_url}/session/create/"
+        response = requests.post(
+            url,
+            json=session_data,
+            headers={'Content-Type': 'application/json'},
+            timeout=10.0
+        )
+        
+        # Try to parse JSON response
+        try:
+            if response.content:
+                result = response.json()
+            else:
+                result = {}
+        except (ValueError, json.JSONDecodeError) as e:
+            # Response is not JSON - might be HTML error page
+            print(f"   ⚠ Non-JSON response received (HTTP {response.status_code})")
+            print(f"   Response preview: {response.text[:200] if response.text else 'Empty response'}")
+            print(f"   URL attempted: {url}")
+            return False, False
+        
+        if response.status_code == 201:
+            return True, result.get('created', True)
+        elif response.status_code == 200:
+            # Session already exists
+            return True, False
+        else:
+            print(f"   ⚠ API error (HTTP {response.status_code}): {result}")
+            return False, False
+            
+    except requests.exceptions.ConnectionError as e:
+        print(f"   ⚠ Connection error - cannot reach API server: {e}")
+        return False, False
+    except requests.exceptions.Timeout:
+        print(f"   ⚠ Request timeout")
+        return False, False
+    except Exception as e:
+        print(f"   ⚠ Error creating session via API: {e}")
+        import traceback
+        if '--debug' in sys.argv or '-d' in sys.argv:
+            print(f"   Traceback: {traceback.format_exc()}")
+        return False, False
 
 
 def generate_path_points(num_points=100, path_length=100.0):
@@ -221,16 +279,66 @@ Examples:
         session_id = generate_random_session_id()
         print(f"   ✓ Generated random session ID: {session_id}")
     
-    print(f"   ⚠ Note: Session '{session_id}' must exist in the database!")
-    print(f"      Create it via Django admin before posting data, or the API will return validation errors.")
+    # Create session via API
+    print(f"\n2. Creating session via API...")
+    print(f"   URL: {base_url}/session/create/")
+    session_created_success, session_was_created = create_session_via_api(base_url, session_id)
+    
+    if session_created_success:
+        if session_was_created:
+            print(f"   ✓ Session created successfully via API")
+        else:
+            print(f"   ✓ Session already exists in database")
+    else:
+        print(f"   ✗ Failed to create session via API")
+        print(f"   ⚠ Cannot proceed - session creation failed")
+        print(f"   💡 Tip: Check that the endpoint exists and the server is running")
+        return
+    
+    # Verify session exists by making a test API call
+    print(f"\n3. Verifying session exists...")
+    try:
+        # Make a minimal test request to verify session
+        test_data = {
+            'session_id': session_id,
+            'timestamp': datetime.utcnow().isoformat() + 'Z',
+            'latitude': 33.4255,
+            'longitude': -111.9400,
+            'altitude': 350.0,
+            'fix_type': 3
+        }
+        test_response = requests.post(
+            f"{base_url}/gps-fix-raw/",
+            json=test_data,
+            headers={'Content-Type': 'application/json'},
+            timeout=5.0
+        )
+        
+        if test_response.status_code == 201:
+            print(f"   ✓ Session verified successfully (test record created)")
+            # Note: The test record will remain in the database
+        elif test_response.status_code == 400:
+            error_data = test_response.json()
+            if 'session_id' in error_data.get('errors', {}):
+                print(f"   ✗ Session verification failed: {error_data['errors']['session_id']}")
+                print(f"   ⚠ Cannot proceed - session does not exist")
+                return
+            else:
+                print(f"   ⚠ Session may exist (other validation error: {error_data})")
+        else:
+            print(f"   ⚠ Could not verify session (HTTP {test_response.status_code})")
+            print(f"   ⚠ Proceeding anyway - data posting may fail if session doesn't exist")
+    except Exception as e:
+        print(f"   ⚠ Could not verify session via API: {e}")
+        print(f"   ⚠ Proceeding anyway - data posting may fail if session doesn't exist")
     
     # Generate points
-    print("\n2. Generating 100 data points along 100m path...")
+    print(f"\n4. Generating 100 data points along 100m path...")
     points = generate_path_points(num_points=100, path_length=100.0)
     print(f"   ✓ Generated {len(points)} points")
     
     # Display API URL being used
-    print(f"\n3. API Configuration:")
+    print(f"\n5. API Configuration:")
     print(f"   Base URL: {base_url}")
     print(f"   Endpoints:")
     print(f"     - {base_url}/local-position-odom/")
@@ -238,7 +346,7 @@ Examples:
     print(f"     - {base_url}/gps-fix-estimated/")
     
     # Test connectivity
-    print(f"\n4. Testing API connectivity...", end='', flush=True)
+    print(f"\n6. Testing API connectivity...", end='', flush=True)
     try:
         # Try to reach the server (just check if it's reachable)
         test_response = requests.get(
@@ -254,7 +362,7 @@ Examples:
         print(f" ⚠ Could not verify connectivity: {e}")
     
     # Post data
-    print(f"\n5. Posting GPS raw data via API...")
+    print(f"\n7. Posting GPS raw data via API...")
     results = post_gps_raw_via_api(base_url, session_id, points)
     
     # Summary

@@ -2,7 +2,9 @@ from django.contrib import admin
 from .models import (
     People, Research, Publication, Project, Role, Photo, Asset, FundingSource, 
     QuizSubmission, QuizProgress,
-    DroneTelemetrySession, LocalPositionOdom, GPSFixRaw, GPSFixEstimated
+    DroneTelemetrySession, LocalPositionOdom, GPSFixRaw, GPSFixEstimated,
+    SampledLocation, SamplingSession, DistributionUpdate,
+    Mission, MissionWaypoint, Vehicle, VehicleType
 )
 from django.utils.html import format_html
 from django.contrib import admin
@@ -225,5 +227,244 @@ class GPSFixEstimatedAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+# ============================================================================
+# World Sampler Admin (for DeepGIS-XR geospatial sampling)
+# ============================================================================
+
+@admin.register(SampledLocation)
+class SampledLocationAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'latitude',
+        'longitude',
+        'zoom_level',
+        'score',
+        'weight',
+        'session_id',
+        'sampled_at',
+        'scored_at'
+    ]
+    list_filter = [
+        'session_id',
+        'zoom_level',
+        'sampled_at',
+        'scored_at',
+    ]
+    search_fields = [
+        'latitude',
+        'longitude',
+        'session_id',
+    ]
+    readonly_fields = [
+        'sampled_at',
+    ]
+    ordering = ['-sampled_at']
+    
+    fieldsets = (
+        ('Location', {
+            'fields': ('latitude', 'longitude', 'altitude', 'zoom_level')
+        }),
+        ('Scoring', {
+            'fields': ('score', 'weight')
+        }),
+        ('Session', {
+            'fields': ('session_id', 'user')
+        }),
+        ('Timestamps', {
+            'fields': ('sampled_at', 'scored_at')
+        }),
+        ('Metadata', {
+            'fields': ('metadata',),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(SamplingSession)
+class SamplingSessionAdmin(admin.ModelAdmin):
+    list_display = [
+        'session_id',
+        'user',
+        'initialization_method',
+        'num_points',
+        'total_samples',
+        'total_updates',
+        'created_at'
+    ]
+    list_filter = [
+        'initialization_method',
+        'created_at',
+    ]
+    search_fields = [
+        'session_id',
+    ]
+    readonly_fields = [
+        'created_at',
+        'updated_at',
+        'total_samples',
+        'total_updates',
+    ]
+    ordering = ['-created_at']
+    
+    fieldsets = (
+        ('Session Info', {
+            'fields': ('session_id', 'user')
+        }),
+        ('Initialization', {
+            'fields': (
+                'num_points',
+                'initialization_method',
+                'lat_range_min',
+                'lat_range_max',
+                'lon_range_min',
+                'lon_range_max',
+                'alt_range_min',
+                'alt_range_max',
+            )
+        }),
+        ('Statistics', {
+            'fields': ('total_samples', 'total_updates')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+
+@admin.register(DistributionUpdate)
+class DistributionUpdateAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'session',
+        'update_rule',
+        'learning_rate',
+        'radius',
+        'applied_at'
+    ]
+    list_filter = [
+        'update_rule',
+        'applied_at',
+    ]
+    search_fields = [
+        'session__session_id',
+    ]
+    readonly_fields = [
+        'applied_at',
+    ]
+    ordering = ['-applied_at']
+    filter_horizontal = ['feedback_locations']
+    
+    fieldsets = (
+        ('Session', {
+            'fields': ('session',)
+        }),
+        ('Update Parameters', {
+            'fields': ('update_rule', 'learning_rate', 'radius')
+        }),
+        ('Feedback', {
+            'fields': ('feedback_locations',)
+        }),
+        ('Metadata', {
+            'fields': ('parameters', 'applied_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+# ============================================================================
+# Mission Planning Admin (using models from dreams_laboratory.models)
+# ============================================================================
+
+class MissionWaypointInline(admin.TabularInline):
+    model = MissionWaypoint
+    fields = ('sequence', 'latitude', 'longitude', 'altitude', 'waypoint_type', 'command', 'speed', 'yaw')
+    extra = 0
+    show_change_link = True
+    can_delete = True
+    ordering = ['sequence']
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).using('deepgis_xr')
+    
+    def save_model(self, request, obj, form, change):
+        obj.save(using='deepgis_xr')
+
+@admin.register(Mission)
+class MissionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'mission_type', 'status', 'vehicle', 'num_waypoints', 'created_by_id', 'created_at')
+    list_filter = ('status', 'mission_type', 'created_at')
+    search_fields = ('name', 'description', 'vehicle__name')
+    readonly_fields = ('num_waypoints', 'total_distance', 'created_at', 'updated_at', 'uploaded_at', 'started_at', 'completed_at')
+    inlines = [MissionWaypointInline]
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'description', 'mission_type', 'status', 'vehicle', 'created_by_id')
+        }),
+        ('Mission Parameters', {
+            'fields': ('default_altitude', 'default_speed', 'return_to_home', 'waypoints')
+        }),
+        ('Statistics', {
+            'fields': ('num_waypoints', 'total_distance'),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at', 'uploaded_at', 'started_at', 'completed_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).using('deepgis_xr')
+    
+    def save_model(self, request, obj, form, change):
+        obj.save(using='deepgis_xr')
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Vehicle is in the same database (deepgis_xr)
+        if db_field.name == 'vehicle':
+            kwargs['queryset'] = db_field.related_model.objects.using('deepgis_xr')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+@admin.register(MissionWaypoint)
+class MissionWaypointAdmin(admin.ModelAdmin):
+    list_display = ('mission', 'sequence', 'latitude', 'longitude', 'altitude', 'waypoint_type', 'command')
+    list_filter = ('waypoint_type', 'mission__status', 'mission__mission_type')
+    search_fields = ('mission__name',)
+    readonly_fields = ('created_at',)
+    ordering = ['mission', 'sequence']
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).using('deepgis_xr')
+    
+    def save_model(self, request, obj, form, change):
+        obj.save(using='deepgis_xr')
+
+@admin.register(Vehicle)
+class VehicleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'vehicle_id', 'vehicle_type', 'status', 'current_latitude', 'current_longitude', 'last_update')
+    list_filter = ('status', 'vehicle_type', 'last_update')
+    search_fields = ('name', 'vehicle_id')
+    readonly_fields = ('last_update', 'created_at', 'position_age_seconds')
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).using('deepgis_xr')
+    
+    def save_model(self, request, obj, form, change):
+        obj.save(using='deepgis_xr')
+
+@admin.register(VehicleType)
+class VehicleTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'icon_symbol')
+    list_filter = ('category',)
+    search_fields = ('name',)
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).using('deepgis_xr')
+    
+    def save_model(self, request, obj, form, change):
+        obj.save(using='deepgis_xr')
 
 

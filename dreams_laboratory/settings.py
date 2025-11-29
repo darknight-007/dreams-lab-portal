@@ -93,8 +93,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'deepgis_xr': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'deepgis-xr' / 'db.sqlite3',
     }
 }
+
+# Database routers
+DATABASE_ROUTERS = ['dreams_laboratory.db_routers.WorldSamplerRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

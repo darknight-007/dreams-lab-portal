@@ -1,0 +1,42 @@
+{
+  "image_path": "/mnt/dreamslab-store/deepgis/deepgis_rocks2/static-root/rock-tiles/raw/23/1434393/5136799.png",
+  "image_size": [
+    256,
+    256
+  ],
+  "num_detections": 2,
+  "detections": [
+    {
+      "class_id": 1,
+      "class_name": "person",
+      "confidence": 0.7770909070968628,
+      "bbox": [
+        202.2791748046875,
+        105.18509674072266,
+        256.0,
+        249.9906463623047
+      ],
+      "mask_shape": [
+        256,
+        256
+      ],
+      "mask_area": 5312.0
+    },
+    {
+      "class_id": 1,
+      "class_name": "person",
+      "confidence": 0.47027716040611267,
+      "bbox": [
+        203.04391479492188,
+        0.74391108751297,
+        249.63430786132812,
+        96.60802459716797
+      ],
+      "mask_shape": [
+        256,
+        256
+      ],
+      "mask_area": 2721.0
+    }
+  ]
+}

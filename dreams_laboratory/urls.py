@@ -20,7 +20,11 @@ from dreams_laboratory.views import (
     reset_quiz, quiz_admin_view, multi_armed_bandit_buddy_view,
     # Semi-supervised labeling views
     semi_supervised_label_view, generate_assisted_labels,
-    save_assisted_labels, get_label_images
+    save_assisted_labels, get_label_images,
+    # Earth Innovation Hub views
+    earthinnovationhub_home, earthinnovationhub_journal,
+    earthinnovationhub_article_mcp, earthinnovationhub_article_welcome,
+    earthinnovationhub_navagunjara
 )
 from dreams_laboratory.quiz_views import ses598_2025_retrospective
 from django.http import HttpResponse
@@ -71,6 +75,14 @@ urlpatterns = [
     path('label/semi-supervised/api/get-images/', get_label_images, name='get_label_images'),
     # Telemetry API endpoints
     path('api/', include('dreams_laboratory.api.urls')),
+    # Earth Innovation Hub paths
+    path('earthinnovationhub/', earthinnovationhub_home, name='earthinnovationhub_home'),
+    path('earthinnovationhub/journal/', earthinnovationhub_journal, name='earthinnovationhub_journal'),
+    path('earthinnovationhub/journal/from-meshes-to-meaning-ai-assisted-digital-twin-synthesis-via-model-context-protocols/', 
+         earthinnovationhub_article_mcp, name='earthinnovationhub_article_mcp'),
+    path('earthinnovationhub/journal/welcome-to-earth-innovation-hub/', 
+         earthinnovationhub_article_welcome, name='earthinnovationhub_article_welcome'),
+    path('earthinnovationhub/navagunjara/', earthinnovationhub_navagunjara, name='earthinnovationhub_navagunjara'),
 ]
 
 if settings.DEBUG:

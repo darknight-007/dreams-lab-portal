@@ -1,0 +1,50 @@
+{% extends 'earthinnovationhub/base.html' %}
+
+{% block title %}Journal — Earth Innovation Hub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="mb-5">Journal</h1>
+            
+            <!-- Article 1 -->
+            <article class="mb-5 pb-5 border-bottom">
+                <h2 class="mb-3">
+                    <a href="{% url 'earthinnovationhub_article_mcp' %}" style="color: #333; text-decoration: none;">
+                        From Meshes to Meaning: AI-Assisted Digital Twin Synthesis
+                    </a>
+                </h2>
+                <div class="blog-meta mb-3">
+                    <span>May 14, 2025</span> &bull; 
+                    <span>Written By <a href="https://github.com/darknight-007">Jnaneshwar Das</a></span>
+                </div>
+                <p class="lead">
+                    STL files might be ubiquitous in the world of 3D modeling, but they're not ideal for precise CAD 
+                    workflows. What they do offer, though, is a convenient on-ramp for sculpting and rapid ideation...
+                </p>
+                <a href="{% url 'earthinnovationhub_article_mcp' %}" class="btn btn-outline-primary">Read More</a>
+            </article>
+            
+            <!-- Article 2 -->
+            <article class="mb-5">
+                <h2 class="mb-3">
+                    <a href="{% url 'earthinnovationhub_article_welcome' %}" style="color: #333; text-decoration: none;">
+                        Welcome to the Earth Innovation Hub!
+                    </a>
+                </h2>
+                <div class="blog-meta mb-3">
+                    <span>May 13, 2025</span> &bull; 
+                    <span>Written By <a href="https://github.com/darknight-007">Jnaneshwar Das</a></span>
+                </div>
+                <p class="lead">
+                    Earth Innovation Hub (EIH) was founded with the vision of cultivating a collaborative ecosystem 
+                    where innovations in Robotics and AI could serve both Earth and Space Sciences...
+                </p>
+                <a href="{% url 'earthinnovationhub_article_welcome' %}" class="btn btn-outline-primary">Read More</a>
+            </article>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

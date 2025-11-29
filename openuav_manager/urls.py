@@ -14,4 +14,14 @@ urlpatterns = [
     path('reset/', views.reset_openuav, name='reset'),
     path('status/', views.openuav_status, name='status'),
     path('status/update/', views.container_status_update, name='container_status_update'),
+    
+    # Swarm management URLs
+    path('swarm/', views.swarm_view, name='swarm'),
+    path('swarm/launch/', views.swarm_view, name='swarm_launch'),
+    
+    # ROS Manager URLs
+    path('ros/browse/', views.rosbag_browser, name='rosbag_browser'),
+    path('ros/visualize/', views.launch_rosbag_viewer, name='launch_rosbag_viewer'),
+    path('ros/playback/<str:container_id>/', views.rosbag_playback_control, name='rosbag_playback_control'),
+    path('ros/sessions/', views.rosbag_sessions, name='rosbag_sessions'),
 ]

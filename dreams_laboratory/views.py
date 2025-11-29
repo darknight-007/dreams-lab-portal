@@ -2129,3 +2129,28 @@ def get_label_images(request):
     except Exception as e:
         logger.error(f"Error in get_label_images: {e}")
         return JsonResponse({'error': str(e)}, status=500)
+
+
+# ==============================================================================
+# Earth Innovation Hub Views
+# ==============================================================================
+
+def earthinnovationhub_home(request):
+    """Earth Innovation Hub home page"""
+    return render(request, 'earthinnovationhub/home.html')
+
+def earthinnovationhub_journal(request):
+    """Earth Innovation Hub journal/blog listing"""
+    return render(request, 'earthinnovationhub/journal.html')
+
+def earthinnovationhub_article_mcp(request):
+    """Article: From Meshes to Meaning - MCP Digital Twin Synthesis"""
+    return render(request, 'earthinnovationhub/article_mcp.html')
+
+def earthinnovationhub_article_welcome(request):
+    """Article: Welcome to Earth Innovation Hub"""
+    return render(request, 'earthinnovationhub/article_welcome.html')
+
+def earthinnovationhub_navagunjara(request):
+    """Navagunjara Reborn project page"""
+    return render(request, 'earthinnovationhub/navagunjara.html')

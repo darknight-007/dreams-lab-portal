@@ -8,7 +8,7 @@ import subprocess
 import json
 import time
 from datetime import datetime
-from .models import Container
+from .models import Container, RosbagFile, RosbagSession
 import logging
 import uuid
 import psutil
@@ -17,6 +17,8 @@ import os
 import random
 import string
 import requests
+from pathlib import Path
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -1001,3 +1003,509 @@ def reset_openuav(request):
         logger.error(f"Error in reset_openuav: {str(e)}", exc_info=True)
         messages.error(request, f'Error: {str(e)}')
         return redirect('openuav_manager:manage')
+
+def swarm_view(request):
+    """Display the OpenWAV swarm launch form and handle container status"""
+    try:
+        if request.method == "POST":
+            username = request.POST.get('username', '').strip()
+            passcode = request.POST.get('passcode', '').strip()
+            
+            # Validate inputs
+            if not username or not passcode:
+                messages.error(request, 'Username and passcode are required')
+                return render(request, 'openuav_manager/swarm.html', {
+                    'show_form': True
+                })
+
+            # Validate passcode
+            if passcode != 'liftoff':
+                messages.error(request, 'Invalid passcode')
+                return render(request, 'openuav_manager/swarm.html', {
+                    'show_form': True
+                })
+
+            # Check if user has forked the repository
+            if not check_github_fork(username):
+                messages.error(request, 'Access denied: You must fork the RAS-SES-598 repository first')
+                return render(request, 'openuav_manager/swarm.html', {
+                    'show_form': True
+                })
+
+            # Generate container name with digital-swarm prefix
+            container_name = f'digital-swarm-{username}'
+            
+            # Check if swarm is initialized
+            stdout, stderr, code = run_command("docker info --format '{{.Swarm.LocalNodeState}}'")
+            if code != 0 or 'active' not in stdout.strip().lower():
+                # Initialize swarm if not active
+                init_cmd = "docker swarm init --advertise-addr eth0"
+                stdout, stderr, code = run_command(init_cmd)
+                if code != 0:
+                    logger.error(f"Failed to initialize swarm: {stderr}")
+                    messages.error(request, 'Failed to initialize Docker swarm')
+                    return render(request, 'openuav_manager/swarm.html', {
+                        'show_form': True
+                    })
+
+            # Create overlay network if it doesn't exist
+            network_name = 'swarm-network'
+            check_network_cmd = f"docker network ls --filter name={network_name} --format '{{{{.Name}}}}'"
+            stdout, stderr, code = run_command(check_network_cmd)
+            if network_name not in stdout:
+                create_network_cmd = f"docker network create -d overlay {network_name}"
+                stdout, stderr, code = run_command(create_network_cmd)
+                if code != 0:
+                    logger.error(f"Failed to create overlay network: {stderr}")
+                    messages.error(request, 'Failed to create swarm network')
+                    return render(request, 'openuav_manager/swarm.html', {
+                        'show_form': True
+                    })
+
+            # Check if service exists
+            service_check_cmd = f"docker service ls --filter name={container_name} --format '{{{{.Name}}}}'"
+            stdout, stderr, code = run_command(service_check_cmd)
+            
+            if container_name in stdout:
+                # Service exists, update it
+                update_cmd = f"""docker service update --force \
+                    --update-parallelism 1 \
+                    --update-delay 10s \
+                    {container_name}"""
+                stdout, stderr, code = run_command(update_cmd)
+                if code != 0:
+                    logger.error(f"Failed to update service: {stderr}")
+                    messages.error(request, f'Failed to update service: {stderr}')
+                    return render(request, 'openuav_manager/swarm.html', {
+                        'show_form': True
+                    })
+            else:
+                # Create new service
+                create_cmd = f"""docker service create \
+                    --name {container_name} \
+                    --network {network_name} \
+                    --mount type=bind,source=/tmp/.X11-unix/X0,target=/tmp/.X11-unix/X0 \
+                    -e VGL_DISPLAY=:0.0 \
+                    -e DISPLAY=:1.0 \
+                    --constraint 'node.role==manager' \
+                    digital-twin-ras-ses-598:5.0"""
+                
+                stdout, stderr, code = run_command(create_cmd)
+                if code != 0:
+                    logger.error(f"Failed to create service: {stderr}")
+                    messages.error(request, f'Failed to create service: {stderr}')
+                    return render(request, 'openuav_manager/swarm.html', {
+                        'show_form': True
+                    })
+
+            # Wait for service to be running
+            time.sleep(5)  # Give some time for the service to start
+
+            # Get service status
+            status_cmd = f"docker service ps {container_name} --format '{{{{.CurrentState}}}}'"
+            stdout, stderr, code = run_command(status_cmd)
+            
+            if code == 0 and 'running' in stdout.lower():
+                # Create container record
+                Container.objects.create(
+                    container_id=container_name,  # Using service name as ID for swarm services
+                    short_id=container_name[:12],
+                    name=container_name,
+                    status='running',
+                    image='digital-twin-ras-ses-598:5.0',
+                    ports={'vnc': 5901},
+                    vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+                )
+
+                return render(request, 'openuav_manager/swarm.html', {
+                    'show_form': False,
+                    'status': {
+                        'is_running': True,
+                        'instance_count': 1
+                    },
+                    'container': {
+                        'name': container_name,
+                        'vnc_url': f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1"
+                    },
+                    'username': username
+                })
+            else:
+                messages.error(request, 'Service failed to start properly')
+                return render(request, 'openuav_manager/swarm.html', {
+                    'show_form': True
+                })
+
+        # GET request - show the initial form
+        return render(request, 'openuav_manager/swarm.html', {
+            'show_form': True,
+            'status': {
+                'is_running': False,
+                'instance_count': 0
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in swarm_view: {str(e)}", exc_info=True)
+        messages.error(request, f'Error: {str(e)}')
+        return render(request, 'openuav_manager/swarm.html', {
+            'show_form': True,
+            'status': {
+                'is_running': False,
+                'instance_count': 0
+            }
+        })
+
+# ============================================================================
+# ROS Manager Views
+# ============================================================================
+
+def get_rosbag_base_path():
+    """Get the base path for rosbags"""
+    return Path('/mnt/tesseract-store/trike-backup')
+
+
+def scan_rosbags():
+    """Scan for available ROS2 rosbags"""
+    rosbag_base = get_rosbag_base_path()
+    rosbags = []
+    
+    if not rosbag_base.exists():
+        logger.warning(f"Rosbag base path does not exist: {rosbag_base}")
+        return rosbags
+    
+    for rosbag_dir in rosbag_base.glob('rosbag2_*'):
+        if not rosbag_dir.is_dir():
+            continue
+            
+        metadata_file = rosbag_dir / 'metadata.yaml'
+        if not metadata_file.exists():
+            continue
+        
+        try:
+            # Parse metadata.yaml
+            with open(metadata_file, 'r') as f:
+                metadata = yaml.safe_load(f)
+            
+            # Get rosbag info
+            bag_info = metadata.get('rosbag2_bagfile_information', {})
+            topics = bag_info.get('topics_with_message_count', [])
+            
+            # Calculate total size
+            total_size = sum(
+                (rosbag_dir / f).stat().st_size 
+                for f in rosbag_dir.iterdir() 
+                if f.is_file()
+            )
+            
+            # Get duration if available
+            duration = bag_info.get('duration', {}).get('nanoseconds', 0) / 1e9
+            
+            rosbags.append({
+                'path': str(rosbag_dir),
+                'name': rosbag_dir.name,
+                'size': total_size,
+                'duration': duration,
+                'topics': topics,
+                'metadata': metadata,
+                'topic_count': len(topics)
+            })
+        except Exception as e:
+            logger.error(f"Error scanning rosbag {rosbag_dir}: {str(e)}")
+            continue
+    
+    return rosbags
+
+
+def get_viz_command(viz_type):
+    """Get command to run visualization tool inside container"""
+    commands = {
+        'rviz2': 'rviz2',
+        'foxglove': 'foxglove-studio',
+        'plotjuggler': 'ros2 run plotjuggler plotjuggler',
+        'rqt_bag': 'ros2 run rqt_bag rqt_bag',
+    }
+    return commands.get(viz_type, 'rviz2')
+
+
+@require_http_methods(["GET"])
+def rosbag_browser(request):
+    """Browse available ROS2 rosbags"""
+    try:
+        rosbags = scan_rosbags()
+        
+        # Update or create database records
+        for rosbag_data in rosbags:
+            RosbagFile.objects.update_or_create(
+                path=rosbag_data['path'],
+                defaults={
+                    'name': rosbag_data['name'],
+                    'size': rosbag_data['size'],
+                    'duration': rosbag_data['duration'],
+                    'topics': rosbag_data['topics'],
+                    'metadata': rosbag_data['metadata'],
+                }
+            )
+        
+        # Get from database for consistent display
+        db_rosbags = RosbagFile.objects.all().order_by('-indexed')
+        
+        return render(request, 'openuav_manager/rosbag_browser.html', {
+            'rosbags': db_rosbags,
+        })
+    except Exception as e:
+        logger.error(f"Error in rosbag_browser: {str(e)}", exc_info=True)
+        messages.error(request, f'Error browsing rosbags: {str(e)}')
+        return render(request, 'openuav_manager/rosbag_browser.html', {
+            'rosbags': [],
+        })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def launch_rosbag_viewer(request):
+    """Launch ROS2 container with rosbag mounted for visualization"""
+    try:
+        # Get request data
+        if request.POST:
+            rosbag_path = request.POST.get('rosbag_path', '').strip()
+            username = request.POST.get('username', request.user.username if request.user.is_authenticated else 'guest').strip()
+            viz_type = request.POST.get('viz_type', 'rviz2').strip()
+        else:
+            try:
+                data = json.loads(request.body)
+                rosbag_path = data.get('rosbag_path', '').strip()
+                username = data.get('username', request.user.username if request.user.is_authenticated else 'guest').strip()
+                viz_type = data.get('viz_type', 'rviz2').strip()
+            except json.JSONDecodeError:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Invalid request format'
+                }, status=400)
+        
+        if not rosbag_path:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Rosbag path is required'
+            }, status=400)
+        
+        # Verify rosbag exists
+        rosbag_path_obj = Path(rosbag_path)
+        if not rosbag_path_obj.exists():
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Rosbag path does not exist: {rosbag_path}'
+            }, status=404)
+        
+        # Get or create rosbag record
+        rosbag, _ = RosbagFile.objects.get_or_create(
+            path=rosbag_path,
+            defaults={'name': rosbag_path_obj.name}
+        )
+        
+        # Check if user already has an active session for this rosbag
+        if request.user.is_authenticated:
+            existing_session = RosbagSession.objects.filter(
+                user=request.user,
+                rosbag=rosbag,
+                container__status='running'
+            ).first()
+            
+            if existing_session:
+                return JsonResponse({
+                    'status': 'exists',
+                    'message': 'Active session already exists',
+                    'vnc_url': existing_session.container.vnc_url,
+                    'container_id': existing_session.container.container_id
+                })
+        
+        # Generate container name using digital-twin-ros-analyze-UID format
+        # UID is the username (or 'guest' if not authenticated)
+        container_name = f'digital-twin-ros-analyze-{username}'
+        
+        # Clean up any existing container with same name
+        run_command(f"docker rm -f {container_name}")
+        
+        # Launch container with rosbag mounted
+        launch_cmd = f"""docker run --init --runtime=nvidia --network=dreamslab --privileged \
+            --name={container_name} --hostname={container_name} -d \
+            -e VGL_DISPLAY=:0.0 -e DISPLAY=:1.0 \
+            -v /tmp/.X11-unix/X0:/tmp/.X11-unix/X0:rw \
+            -v {rosbag_path}:/rosbags:ro \
+            digital-twin-ras-ses-598:5.0 \
+            /bin/bash -c "source /opt/ros/humble/setup.bash && {get_viz_command(viz_type)}"
+        """
+        
+        logger.info("Launching ROS bag viewer container:")
+        logger.info("=" * 80)
+        logger.info(launch_cmd)
+        logger.info("=" * 80)
+        
+        stdout, stderr, code = run_command(launch_cmd)
+        if code != 0:
+            logger.error(f"Failed to launch container: {stderr}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Failed to launch container: {stderr}'
+            }, status=500)
+        
+        container_id = stdout.strip()
+        
+        # Wait for container to be running
+        max_retries = 5
+        retry_delay = 1
+        container_running = False
+        
+        for attempt in range(max_retries):
+            check_result = subprocess.run(
+                ['docker', 'ps', '--filter', f'name={container_name}', '--format', '{{.Names}}'],
+                capture_output=True,
+                text=True
+            )
+            
+            if container_name in check_result.stdout:
+                container_running = True
+                break
+            
+            logger.info(f"Container not running yet, attempt {attempt + 1}/{max_retries}")
+            time.sleep(retry_delay)
+        
+        if not container_running:
+            logger.error(f"Container {container_name} not running after {max_retries} attempts")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Container failed to start'
+            }, status=500)
+        
+        # Create container record
+        container = Container.objects.create(
+            container_id=container_id,
+            short_id=container_id[:12],
+            name=container_name,
+            status='running',
+            image='digital-twin-ras-ses-598:5.0',
+            ports={'vnc': 5901},
+            vnc_url=f"https://{container_name}.deepgis.org/vnc.html?resize=remote&reconnect=1&autoconnect=1",
+            user=request.user if request.user.is_authenticated else None
+        )
+        
+        # Create rosbag session record
+        session = RosbagSession.objects.create(
+            container=container,
+            rosbag=rosbag,
+            visualization_type=viz_type,
+            user=request.user if request.user.is_authenticated else None
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'ROS bag viewer launched successfully',
+            'container': {
+                'id': container_id,
+                'short_id': container_id[:12],
+                'name': container_name,
+                'vnc_url': container.vnc_url
+            },
+            'session_id': session.id
+        })
+        
+    except Exception as e:
+        logger.error(f"Error launching rosbag viewer: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def rosbag_playback_control(request, container_id):
+    """Control rosbag playback (play/pause/stop/rate)"""
+    try:
+        data = json.loads(request.body) if not request.POST else request.POST
+        action = data.get('action', '').strip()
+        rate = float(data.get('rate', 1.0))
+        loop = data.get('loop', 'false').lower() == 'true'
+        
+        # Get container and session
+        try:
+            container = Container.objects.get(container_id=container_id, status='running')
+            session = RosbagSession.objects.get(container=container)
+        except (Container.DoesNotExist, RosbagSession.DoesNotExist):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Container or session not found'
+            }, status=404)
+        
+        rosbag_name = Path(session.rosbag.path).name
+        loop_flag = '--loop' if loop else ''
+        
+        if action == 'play':
+            # Play rosbag
+            play_cmd = f"""docker exec {container_id} /bin/bash -c \
+                "source /opt/ros/humble/setup.bash && \
+                 ros2 bag play /rosbags/{rosbag_name} --rate {rate} {loop_flag} &"
+            """
+            stdout, stderr, code = run_command(play_cmd)
+            if code == 0:
+                session.is_playing = True
+                session.playback_rate = rate
+                session.is_looping = loop
+                session.save()
+                return JsonResponse({'status': 'success', 'message': 'Playing rosbag'})
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Failed to play: {stderr}'
+                }, status=500)
+        
+        elif action == 'stop':
+            # Stop rosbag playback
+            stop_cmd = f"""docker exec {container_id} /bin/bash -c \
+                "pkill -f 'ros2 bag play' || true"
+            """
+            stdout, stderr, code = run_command(stop_cmd)
+            if code == 0:
+                session.is_playing = False
+                session.save()
+                return JsonResponse({'status': 'success', 'message': 'Stopped rosbag'})
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Failed to stop: {stderr}'
+                }, status=500)
+        
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Invalid action: {action}'
+            }, status=400)
+            
+    except Exception as e:
+        logger.error(f"Error in rosbag_playback_control: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+
+@require_http_methods(["GET"])
+def rosbag_sessions(request):
+    """List active rosbag visualization sessions"""
+    try:
+        if request.user.is_authenticated:
+            sessions = RosbagSession.objects.filter(
+                user=request.user,
+                container__status='running'
+            ).select_related('container', 'rosbag').order_by('-created')
+        else:
+            sessions = []
+        
+        return render(request, 'openuav_manager/rosbag_sessions.html', {
+            'sessions': sessions,
+        })
+    except Exception as e:
+        logger.error(f"Error in rosbag_sessions: {str(e)}", exc_info=True)
+        messages.error(request, f'Error: {str(e)}')
+        return render(request, 'openuav_manager/rosbag_sessions.html', {
+            'sessions': [],
+        })
