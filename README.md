@@ -79,12 +79,28 @@ The system is built on a microservices architecture with the following component
    pip install -r requirements.txt
    ```
 
-3. Set up Docker network:
+3. Set up environment variables:
+   ```bash
+   # For dreams_laboratory
+   cp .env.example .env
+   # Edit .env and fill in your actual values
+   # Generate a secure SECRET_KEY with: openssl rand -hex 32
+   
+   # For deepgis-xr
+   cd deepgis-xr
+   cp .env.example .env
+   # Edit .env and fill in your actual values
+   cd ..
+   ```
+   
+   **Important:** Never commit `.env` files to version control. They contain sensitive secrets.
+
+4. Set up Docker network:
    ```bash
    docker network create --subnet=172.20.0.0/16 dreamslab
    ```
 
-4. Build and start services:
+5. Build and start services:
    ```bash
    docker-compose up --build
    ```
@@ -108,11 +124,31 @@ dreams-lab-portal/
 ## Configuration
 
 ### Environment Variables
-- `SECRET_KEY`: Django secret key
-- `DEBUG`: Debug mode flag
+
+Both applications require environment variables to be set. Copy the `.env.example` files to `.env` and fill in your actual values:
+
+**dreams_laboratory (.env):**
+- `SECRET_KEY`: Django secret key (generate with `openssl rand -hex 32`)
+- `DEBUG`: Debug mode flag (`True` for development, `False` for production)
 - `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
-- `TWILIO_*`: Twilio integration settings
-- `NVIDIA_*`: GPU configuration
+- `TWILIO_ACCOUNT_SID`: Twilio account SID for phone authentication
+- `TWILIO_AUTH_TOKEN`: Twilio authentication token
+- `TWILIO_VERIFY_SERVICE_SID`: Twilio Verify service SID
+- `VNC_PASSWORD`: Password for VNC access
+- `DOCKER_GROUP_ID`: Docker group ID (default: 999)
+
+**deepgis-xr (.env):**
+- `SECRET_KEY`: Django secret key (generate with `openssl rand -hex 32`)
+- `DEBUG`: Debug mode flag (`True` for development, `False` for production)
+- `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
+- `TWILIO_ACCOUNT_SID`: Twilio account SID for phone authentication
+- `TWILIO_AUTH_TOKEN`: Twilio authentication token
+- `TWILIO_PHONE_NUMBER`: Twilio phone number
+- `REDIS_URL`: Redis connection URL for Celery (default: `redis://redis:6379/0`)
+- `VECTOR_TILES_URL`: Vector tiles service URL
+- `RASTER_TILES_URL`: Raster tiles service URL
+
+**Security Note:** The `.env` files are gitignored and should never be committed to version control. Always use `.env.example` as a template.
 
 ### Docker Settings
 - Runtime: NVIDIA Container Runtime
@@ -164,11 +200,17 @@ dreams-lab-portal/
 
 ## Production Deployment
 
-1. Update environment variables:
+1. Set up environment variables:
    ```bash
-   DEBUG=False
-   ALLOWED_HOSTS=your-domain.com
-   SECRET_KEY=your-secure-key
+   # Copy example files
+   cp .env.example .env
+   cp deepgis-xr/.env.example deepgis-xr/.env
+   
+   # Edit .env files with production values
+   # Set DEBUG=False
+   # Set ALLOWED_HOSTS to your actual domain
+   # Generate secure SECRET_KEY: openssl rand -hex 32
+   # Configure all Twilio credentials
    ```
 
 2. Configure SSL/TLS:

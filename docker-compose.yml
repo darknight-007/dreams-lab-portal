@@ -4,15 +4,17 @@ services:
   web:
     build:
       context: .
+    env_file:
+      - .env
     environment:
-      - SECRET_KEY=dreamslab2024
-      - DEBUG=True
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG:-False}
       - DJANGO_SETTINGS_MODULE=dreams_laboratory.settings
-      - TWILIO_ACCOUNT_SID=key
-      - TWILIO_AUTH_TOKEN=key
-      - TWILIO_VERIFY_SERVICE_SID=key
-      - ALLOWED_HOSTS=dreamslab.deepgis.org,localhost,127.0.0.1,192.168.0.186,172.20.0.10
-      - VNC_PASSWORD=liftoff
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID:-}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - VNC_PASSWORD=${VNC_PASSWORD:-}
     volumes:
       - .:/app
       - static_volume:/app/staticfiles

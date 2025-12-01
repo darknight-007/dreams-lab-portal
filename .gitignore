@@ -95,3 +95,11 @@ checkpoints_*/
 reconstruction_test_*/
 synthetic_*/
 diffusion_synthetic_*/
+
+# Documentation - exclude all .md files except README.md
+*.md
+!README.md
+
+# Exclude docs folders (may contain sensitive information)
+docs/
+**/docs/
