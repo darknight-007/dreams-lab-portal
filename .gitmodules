@@ -1,0 +1,4 @@
+[submodule "deepgis-xr"]
+	path = deepgis-xr
+	url = https://github.com/Earth-Innovation-Hub/deepgis-xr.git
+

@@ -59,6 +59,15 @@ class GroundingDINODetector:
         package_dir = os.path.dirname(groundingdino.__file__)
         return os.path.join(package_dir, 'config', config_name)
     
+    @staticmethod
+    def _check_cuda_ops_available():
+        """Check if CUDA extensions are compiled and available."""
+        try:
+            from groundingdino.models.GroundingDINO import ms_deform_attn
+            return hasattr(ms_deform_attn, '_C')
+        except Exception:
+            return False
+    
     MODELS = {
         'swin_t': {
             'config_name': 'GroundingDINO_SwinT_OGC.py',
