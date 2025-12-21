@@ -987,7 +987,7 @@ def get_ses598_course_data():
             'instructor': 'Dr. Jnaneshwar Das',
             'office_hours': 'TBD',
             'contact': 'jdas5@asu.edu',
-            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments. The curriculum emphasizes a strong theoretical foundation leading up to real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for future space exploration, planetary science, and earth observation.',
+            'description': 'This course provides a comprehensive introduction to robotic exploration and AI-driven mapping and sampling techniques, tailored for space exploration and earth observation. Students will gain expertise in key areas such as computer vision, Simultaneous Localization and Mapping (SLAM), multi-robot coordination, and operations in extreme environments. The curriculum emphasizes a strong theoretical foundation leading up to real-world implementation, combining lectures with hands-on projects using mobility autonomy systems, including autonomous ground, aerial, and aquatic robots available as digital twins and physically in the <a href="https://deepgis.org/dreamslab/#assets" target="_blank" class="link-primary">DREAMS Laboratory</a>. The course culminates in a group-based final project, where students design and demonstrate end-to-end robotic systems for space exploration, planetary science, and earth observation.',
             'quiz_info': 'Try the Space Robotics and AI Proficiency Quiz!'
         },
         'course_materials': {
@@ -999,7 +999,7 @@ def get_ses598_course_data():
             {'category': 'Programming', 'requirement': 'Strong Python programming skills with experience in scientific computing libraries (NumPy, SciPy, PyTorch/TensorFlow)'},
             {'category': 'Computer Vision', 'requirement': 'Basic understanding of image processing, feature detection, and geometric transformations'},
             {'category': 'Computing Systems', 'requirement': 'Experience with Linux/Unix systems, version control (Git), and command-line tools'},
-            {'category': 'Recommended', 'requirement': 'Prior exposure to ROS (Robot Operating System), CUDA programming, or parallel computing'},
+            {'category': 'Recommended', 'requirement': 'Prior exposure to ROS (Robot Operating System)'},
             {'category': 'Required Software', 'requirement': 'Students must have a computer capable of running Linux and processing 3D graphics'}
         ],
         'recommended_papers': {

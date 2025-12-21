@@ -627,7 +627,7 @@ function generatePDF() {
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-user"></i>
-                    <span>{{ syllabus.course_info.instructor }}</span>
+                    <span><a href="https://search.asu.edu/profile/3327973" target="_blank" style="color: var(--color-link); text-decoration: none; transition: color 0.2s ease;">{{ syllabus.course_info.instructor }}</a></span>
                 </div>
                 <div class="meta-item">
                     <i class="fas fa-envelope"></i>
@@ -637,43 +637,16 @@ function generatePDF() {
         </header>
 
         <!-- Pre-Enrollment Quiz Banner -->
-        <div class="enrollment-quiz-banner" style="background: linear-gradient(135deg, #1e5799 0%, #207cca 35%, #2989d8 50%, #7db9e8 100%); margin-top: 1rem; border-radius: 12px; box-shadow: 0 8px 15px rgba(0,0,0,0.2); overflow: hidden; position: relative;">
-            <!-- Space background elements -->
-            <div style="position: absolute; top: 10px; right: 15px; font-size: 24px; color: white; text-shadow: 0 0 5px rgba(255,255,255,0.8);">
-                <i class="fas fa-rocket" style="animation: float 3s ease-in-out infinite;"></i>
-                <i class="fas fa-star" style="margin-left: 15px; font-size: 12px; animation: twinkle 2s ease-in-out infinite;"></i>
-                <i class="fas fa-star" style="margin-left: 10px; font-size: 16px; animation: twinkle 3s ease-in-out infinite 0.5s;"></i>
-                <i class="fas fa-star" style="margin-left: 10px; font-size: 10px; animation: twinkle 2.5s ease-in-out infinite 1s;"></i>
+        <div class="enrollment-quiz-banner">
+            <div class="quiz-info">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1rem; font-family: var(--font-mono);">Ready for Your Space Mission?</h2>
+                <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto 1.5rem; line-height: 1.7;">Complete the pre-enrollment quiz to assess your readiness.</p>
+                
+                <a href="{% url 'ses598_quiz' %}" class="quiz-button">
+                    <i class="fas fa-clipboard-check"></i>
+                    SES 598 Pre-Enrollment Quiz
+                </a>
             </div>
-            
-            <div class="quiz-info" style="padding: 25px 20px; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; z-index: 1;">
-                <h2 style="font-size: 1.8rem; margin-bottom: 10px;">🚀 Ready for Your Space Mission?</h2>
-                <p style="font-size: 1.1rem; max-width: 80%;">Complete the pre-enrollment quiz to assess your readiness for the Space Robotics and AI journey.</p>
-            </div>
-            
-            <a href="{% url 'ses598_quiz' %}" class="quiz-button" style="background-color: #ff6b00; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3); position: relative; z-index: 1; display: inline-flex; align-items: center; margin: 0 0 20px 20px;">
-                <i class="fas fa-clipboard-check" style="margin-right: 10px;"></i>
-                SES 598 Pre-Enrollment Quiz
-            </a>
-            
-            <!-- Add custom animations -->
-            <style>
-                @keyframes float {
-                    0% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-10px) rotate(5deg); }
-                    100% { transform: translateY(0px) rotate(0deg); }
-                }
-                @keyframes twinkle {
-                    0% { opacity: 0.3; }
-                    50% { opacity: 1; }
-                    100% { opacity: 0.3; }
-                }
-                .quiz-button:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-                    background-color: #ff8124;
-                }
-            </style>
             <!-- Debug info: {% url 'ses598_2025_retrospective' %} -->
         </div>
 
