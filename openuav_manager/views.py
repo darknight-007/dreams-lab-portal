@@ -704,34 +704,43 @@ def container_status_update(request):
         }, status=500)
 
 def check_github_fork(username):
-    """Check if user has forked the RAS-SES-598 repository"""
+    """Check if user has forked either the RAS-SES-598 or ses598-space-robotics-and-ai-2026 repository"""
     try:
-        # GitHub API endpoint for repository forks
-        api_url = f"https://api.github.com/repos/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/forks"
+        # List of repositories to check
+        repositories = [
+            "DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI",
+            "DREAMS-lab/ses598-space-robotics-and-ai-2026"
+        ]
         
-        # Get list of forks (paginated)
-        page = 1
-        while True:
-            response = requests.get(
-                f"{api_url}?page={page}&per_page=100",
-                headers={'Accept': 'application/vnd.github.v3+json'}
-            )
+        # Check each repository
+        for repo in repositories:
+            api_url = f"https://api.github.com/repos/{repo}/forks"
             
-            if response.status_code != 200:
-                logger.error(f"GitHub API error: {response.status_code}")
-                return False
+            # Get list of forks (paginated)
+            page = 1
+            while True:
+                response = requests.get(
+                    f"{api_url}?page={page}&per_page=100",
+                    headers={'Accept': 'application/vnd.github.v3+json'}
+                )
                 
-            forks = response.json()
-            if not forks:  # No more forks to check
-                break
-                
-            # Check if username exists in this page of forks
-            for fork in forks:
-                if fork['owner']['login'].lower() == username.lower():
-                    return True
+                if response.status_code != 200:
+                    logger.error(f"GitHub API error for {repo}: {response.status_code}")
+                    break  # Try next repository instead of returning False
                     
-            page += 1
-            
+                forks = response.json()
+                if not forks:  # No more forks to check
+                    break
+                    
+                # Check if username exists in this page of forks
+                for fork in forks:
+                    if fork['owner']['login'].lower() == username.lower():
+                        logger.info(f"User {username} found with fork of {repo}")
+                        return True
+                        
+                page += 1
+        
+        # User hasn't forked either repository
         return False
     except Exception as e:
         logger.error(f"Error checking GitHub fork: {str(e)}")
@@ -760,7 +769,7 @@ def manage_view(request):
 
             # Check if user has forked the repository
             if not check_github_fork(username):
-                messages.error(request, 'Access denied: You must fork the RAS-SES-598 repository first')
+                messages.error(request, 'Access denied: You must fork the course repository (RAS-SES-598 or ses598-space-robotics-and-ai-2026) first')
                 return render(request, 'openuav_manager/manage.html', {
                     'show_form': True
                 })
