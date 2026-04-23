@@ -448,41 +448,41 @@
         <h1>Stereo Camera Configurator</h1>
         <div class="container">
             <label for="sensorWidth">Sensor Width (mm): <span id="sensorWidthLabel"></span></label>
-            <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth')">
+            <input type="range" id="sensorWidth" min="1" max="20" step="0.01" value="8.44" oninput="syncValues('sensorWidth', 'range')">
             <input type="number" id="sensorWidthValue" value="8.44" step="0.01"
-                   onchange="syncValues('sensorWidth')">
+                   onchange="syncValues('sensorWidth', 'number')">
         </div>
         <div class="container">
             <label for="focalLength">Focal Length (mm): <span id="focalLengthLabel"></span></label>
-            <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength')">
+            <input type="range" id="focalLength" min="5" max="50" step="0.1" value="19.71" oninput="syncValues('focalLength', 'range')">
             <input type="number" id="focalLengthValue" value="19.71" step="0.1"
-                   onchange="syncValues('focalLength')">
+                   onchange="syncValues('focalLength', 'number')">
         </div>
         <div class="container">
             <label for="fieldOfView">Field of View (°): <span id="fieldOfViewLabel"></span></label>
-            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="25.5" oninput="syncValues('fieldOfView')">
+            <input type="range" id="fieldOfView" min="10" max="120" step="0.01" value="25.5" oninput="syncValues('fieldOfView', 'range')">
             <input type="number" id="fieldOfViewValue" value="25.5" step="0.1"
-                   onchange="syncValues('fieldOfView')">
+                   onchange="syncValues('fieldOfView', 'number')">
         </div>
         <div class="container">
             <label for="baseline">Baseline (mm): <span id="baselineLabel"></span></label>
-            <input type="range" id="baseline" min="50" max="500" step="0.1" value="290" oninput="syncValues('baseline')">
+            <input type="range" id="baseline" min="50" max="500" step="0.1" value="290" oninput="syncValues('baseline', 'range')">
             <input type="number" id="baselineValue" value="290" step="1"
-                   onchange="syncValues('baseline')">
+                   onchange="syncValues('baseline', 'number')">
         </div>
 
         <div class="container">
             <label for="toeInAngle">Toe-in Angle (°): <span id="toeInAngleLabel"></span></label>
-            <input type="range" id="toeInAngle" min="0.1" max="15" step="0.001" value="1.25" oninput="syncValues('toeInAngle')">
+            <input type="range" id="toeInAngle" min="0.1" max="15" step="0.001" value="1.25" oninput="syncValues('toeInAngle', 'range')">
             <input type="number" id="toeInAngleValue" value="1.25" step="0.001"
-                   onchange="syncValues('toeInAngle')">
+                   onchange="syncValues('toeInAngle', 'number')">
         </div>
 
         <div class="container">
             <label for="distance">Desired Convergence Distance (m): <span id="distanceLabel"></span></label>
-            <input type="range" id="distance" min="0.5" max="50" step="0.01" oninput="syncValues('distance')">
+            <input type="range" id="distance" min="0.5" max="50" step="0.01" oninput="syncValues('distance', 'range')">
             <input type="number" id="distanceValue" step="0.1"
-                   onchange="syncValues('distance')">
+                   onchange="syncValues('distance', 'number')">
         </div>
     </div>
 
@@ -733,7 +733,7 @@
         }
     }
 
-    function syncValues(id) {
+    function syncValues(id, source) {
         if (isUpdating) return;
         isUpdating = true;
 
@@ -747,26 +747,21 @@
                 throw new Error(`Missing input elements for ${id}`);
             }
 
-            // Validate numerical input
-            value = parseFloat(number.value);
-            if (isNaN(value)) {
-                value = parseFloat(range.value);
-                number.value = value;
-            }
-
-            value = Math.min(Math.max(value, parseFloat(range.min)), parseFloat(range.max));
-            range.value = value;
-            // Determine which element triggered the event
-            const sourceElement = document.activeElement;
-            if (sourceElement === number) {
+            // Determine source first to avoid overwriting the slider value
+            if (source === 'number') {
+                // Triggered from number input - read from number, write to range
                 value = parseFloat(number.value);
-                if (!isNaN(value)) {
-                    value = Math.min(Math.max(value, parseFloat(range.min)), parseFloat(range.max));
-                    range.value = value;
-                    number.value = value;
+                if (isNaN(value)) {
+                    value = parseFloat(range.value);
                 }
+                value = Math.min(Math.max(value, parseFloat(range.min)), parseFloat(range.max));
+                range.value = value;
+                number.value = value;
             } else {
+                // Triggered from range slider - read from range, write to number
                 value = parseFloat(range.value);
+                value = Math.min(Math.max(value, parseFloat(range.min)), parseFloat(range.max));
+                range.value = value;
                 number.value = value;
             }
 

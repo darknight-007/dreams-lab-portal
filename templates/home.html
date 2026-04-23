@@ -384,7 +384,6 @@
                     </thead>
                     <tbody>
                         {% for person in people %}
-                            {% if person.role != 'Alumni' %}
                                 <tr>
                                     <td>
                                         {% if person.profile_pic %}
@@ -397,7 +396,6 @@
                                     <td>{{ person.role }}</td>
                                     <td>{{ person.affiliation }}</td>
                                 </tr>
-                            {% endif %}
                         {% empty %}
                             <tr>
                                 <td colspan="4">No people found.</td>

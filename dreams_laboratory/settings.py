@@ -223,7 +223,13 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-CSRF_TRUSTED_ORIGINS = ['http://deepgis.org', 'http://192.168.0.186', 'https://deepgis.org']
+CSRF_TRUSTED_ORIGINS = [
+    'http://deepgis.org', 
+    'https://deepgis.org',
+    'http://192.168.0.186',  # Local network
+    'http://72.222.2.6',      # Public IPv4
+    'https://72.222.2.6',     # Public IPv4 (SSL)
+]
 
 if DEBUG:
     CSRF_COOKIE_SECURE = False
@@ -238,7 +244,14 @@ else:
     SECURE_HSTS_PRELOAD = True
 
 # Update allowed hosts
-ALLOWED_HOSTS = ['deepgis.org', 'localhost', '127.0.0.1', '192.168.0.186', '.deepgis.org']
+ALLOWED_HOSTS = [
+    'deepgis.org', 
+    '.deepgis.org',
+    'localhost', 
+    '127.0.0.1', 
+    '192.168.0.186',  # Local network IP
+    '72.222.2.6',      # Public IPv4
+]
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # For development, you might want to restrict this in production

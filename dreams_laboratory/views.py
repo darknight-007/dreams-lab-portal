@@ -1183,7 +1183,7 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/first_order_boustrophedon_navigator" target="_blank">First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2</a> (Due: Jan 27, 2026)'
+                'assignment': 'Assignment 1: First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2 (Due: Jan 27, 2026)'
             },
             {
                 'week': '4-5 (Feb 3-Feb 20)',
@@ -1195,7 +1195,7 @@ def get_ses598_course_data():
                     'Structure from Motion (SfM)',
                     'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Assignment 2: <a href="https://github.com/DREAMS-lab/RAS-SES-598-Space-Robotics-and-AI/tree/main/assignments/cart_pole_optimal_control" target="_blank">Optimal Control of Cart-Pole System with LQR</a> (Due: Feb 17, 2026)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 24, 2026)'
+                'assignment': 'Assignment 2: Optimal Control of Cart-Pole System with LQR (Due: Feb 17, 2026)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 24, 2026)'
             },
             {
                 'week': '6 (Feb 24-Mar 3)',
@@ -1398,7 +1398,7 @@ def dreamslab_home_view(request):
     course_data = get_ses598_course_data()
     context = {
         'research_areas': Research.objects.all(),
-        'people': People.objects.all(),
+        'people': People.objects.exclude(role__position__iexact='alumni'),
         'publications': Publication.objects.all(),
         'funding_source': FundingSource.objects.all(),
         'assets': Asset.objects.all(),
