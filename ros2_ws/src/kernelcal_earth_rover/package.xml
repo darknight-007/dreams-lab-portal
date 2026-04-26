@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>kernelcal_earth_rover</name>
+  <version>0.1.0</version>
+  <description>
+    Edge pipeline for the Dreams Lab earth_rover platform: fits compact
+    superquadric primitives to LiDAR/RGB clusters, attributes them with
+    multispectral / hyperspectral / LiDAR-intensity properties via
+    kernelcal.distinction_game.geometry, and streams packed binary
+    payloads to deepgis-xr's POST /api/v1/observe endpoint over a
+    bandwidth-constrained (~100 kbps) link.
+  </description>
+  <maintainer email="dreams-lab@asu.edu">Dreams Lab</maintainer>
+  <license>Apache License 2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>rcl_interfaces</depend>
+  <depend>python3-numpy</depend>
+  <depend>python3-yaml</depend>
+
+  <!-- kernelcal is installed as a Python package (pip / conda); colcon
+       does not manage it.  Also requires `requests` for the HTTP
+       publisher and optionally `pyproj` for UTM/ENU bookkeeping. -->
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

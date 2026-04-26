@@ -1,0 +1,86 @@
+# =============================================================================
+# kernelcal_earth_rover -- shared rclpy parameter file
+# -----------------------------------------------------------------------------
+# This file is loaded by every node in the pipeline through its
+# ``parameter_yaml_file`` argument in ``earth_rover.launch.py``.  Each
+# top-level mapping under the node name is read by that node only.
+# =============================================================================
+
+sq_fit_node:
+  ros__parameters:
+    # Where the clustered LiDAR sweep arrives.  Producers are expected to
+    # publish a ``sensor_msgs/PointCloud2`` with at least ``x``, ``y``, ``z``
+    # float32 fields and an integer ``cluster_id`` field (uint32 / int32).
+    input_topic: /earth_rover/lidar/clustered_points
+    output_topic: /earth_rover/sq_batch
+    cluster_id_field: cluster_id
+
+    # Filtering knobs.  ``min_cluster_points`` rejects spurious clusters; the
+    # ``max_clusters_per_batch`` cap matches the kernelcal codec budget for a
+    # single window (32-byte SQ * 64 = 2 kB per frame).
+    min_cluster_points: 12
+    max_clusters_per_batch: 64
+
+    # Producer identity + frame.  The frame MUST be one whose translations
+    # fit within the kernelcal codec's int32 mm budget (~2,000 km).  Use
+    # ``enu_local`` anchored at a station origin -- NOT raw UTM.
+    stream_id: earth_rover_01
+    frame_kind: enu_local
+    frame_origin_lla: [33.4258, -111.94, 350.0]   # (lat, lon, alt) deg/m
+    frame_name: earth_rover/station_phx
+
+attributor_node:
+  ros__parameters:
+    input_topic: /earth_rover/sq_batch
+    output_topic: /earth_rover/sq_batch_attributed
+
+    # Sensor topics.
+    micasense_topic: /earth_rover/micasense/cube
+    oceanoptics_topic: /earth_rover/oceanoptics/spectrum
+    lidar_xyzi_topic: /earth_rover/lidar/xyzi
+
+    # Sensor enable flags -- flip off when running a regression with only a
+    # subset of payloads installed on the rover.
+    enable_micasense: true
+    enable_oceanoptics: true
+    enable_lidar_intensity: true
+
+    # Staleness tolerances -- if the most recent message in a queue is older
+    # than this, that sensor is treated as offline for the current SQ batch.
+    micasense_max_age_s: 1.0
+    oceanoptics_max_age_s: 2.0
+    lidar_max_age_s: 0.5
+
+    # MicaSense cube layout.  Channel-axis order in the published 32FC{N}
+    # Image -- fewer entries than channels means trailing channels are
+    # ignored.  Names match keys recognised by kernelcal MicaSenseAttributor.
+    micasense_bands: [blue, green, red, red_edge, nir, thermal_C]
+
+    # MicaSense intrinsics (3x3 K, row-major) and rover-frame extrinsics.
+    # Replace with the calibrated values for the actual Altum-PT.
+    micasense_K: [1000.0, 0.0, 320.0,
+                  0.0, 1000.0, 240.0,
+                  0.0, 0.0, 1.0]
+
+    # OceanOptics fiber bore-sight in rover-local frame.
+    ocean_bore_origin: [0.0, 0.0, 0.5]
+    ocean_bore_direction: [1.0, 0.0, 0.0]
+    ocean_lambda_lo_nm: 350.0
+    ocean_lambda_hi_nm: 1100.0
+    ocean_n_channels: 1024
+
+observation_publisher_node:
+  ros__parameters:
+    input_topic: /earth_rover/sq_batch_attributed
+    status_topic: /earth_rover/observe/status
+
+    # deepgis-xr ingest URL.  Override on the launch CLI for staging /
+    # production.
+    endpoint_url: http://localhost:8000/api/v1/observe/
+    source_id: earth_rover_01
+    session_id: ""             # falls back to envelope.stream_id
+    auth_token: ""             # optional Bearer
+
+    http_timeout_s: 5.0
+    max_payload_bytes: 1500000  # 1.5 MB hard cap; should be << link budget
+    status_period_s: 5.0
