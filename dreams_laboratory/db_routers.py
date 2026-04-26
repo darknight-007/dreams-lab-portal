@@ -14,7 +14,11 @@ class WorldSamplerRouter:
     route_app_labels = {'world_sampler'}
     deepgis_xr_models = {
         'SampledLocation', 'SamplingSession', 'DistributionUpdate',
-        'Mission', 'MissionWaypoint', 'Vehicle', 'VehicleType'
+        'Mission', 'MissionWaypoint', 'Vehicle', 'VehicleType',
+        # Distinction-Game SceneGraph orchestrator output (PR-2);
+        # stored alongside the other world-sampler tables in the
+        # deepgis_xr SQLite so cross-FK to SamplingSession works.
+        'SceneGraph',
     }
     
     def db_for_read(self, model, **hints):
