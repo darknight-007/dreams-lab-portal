@@ -4,7 +4,10 @@ FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV SECRET_KEY "temporary-secret-key"
+
+# No SECRET_KEY default here. settings.py raises if it is unset, which is the
+# behaviour we want; baking one in meant any run that missed the env var came
+# up with a key that is public in this image's layers.
 
 # Set the working directory
 WORKDIR /app
@@ -35,11 +38,11 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
     apt-get update && \
     apt-get install -y docker-ce-cli
 
-COPY blender-4.2.2-linux-x64 /opt/blender
-RUN chmod +x /opt/blender/blender
+#COPY blender-4.2.2-linux-x64 /opt/blender
+#RUN chmod +x /opt/blender/blender
 
 # Add Blender to PATH
-ENV PATH="/opt/blender:$PATH"
+#ENV PATH="/opt/blender:$PATH"
 
 # Install Python dependencies
 COPY requirements.txt /app/
@@ -48,8 +51,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code
 COPY . /app/
 
-# Remove symlink and create openuav2 directory
-RUN rm -f /app/openuav2 && mkdir -p /app/openuav2
+# Replace whatever openuav2 came in from the build context with an empty dir.
+# This was `rm -f`, which worked while openuav2 was a symlink but fails with
+# "Is a directory" now that it is a real directory in the repo, taking the
+# whole && chain down with it.
+RUN rm -rf /app/openuav2 && mkdir -p /app/openuav2
 
 # Copy run_container.sh to openuav2
 COPY run_container.sh /app/openuav2/
@@ -64,9 +70,6 @@ RUN groupadd -g 999 docker && \
 
 # Expose port 8000
 EXPOSE 8000
-
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "600", "dreams_laboratory.wsgi:application"]
 
 # Install VNC and X11 dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -88,9 +91,16 @@ RUN curl -fsSL -o turbovnc.deb https://sourceforge.net/projects/turbovnc/files/3
 # Create required directories
 RUN mkdir -p /root/.vnc /tmp/.X11-unix
 
-# Set VNC password
-RUN mkdir -p /root/.vnc && x11vnc -storepasswd liftoff /root/.vnc/passwd
+# The VNC password is set at container start from $VNC_PASSWORD - see
+# entrypoint.sh. It used to be baked in here as a literal, which meant the
+# real password lived in an image layer and setting VNC_PASSWORD in .env had
+# no effect on the actual x11vnc server.
 
 # Expose VNC and noVNC ports
 EXPOSE 5901 6080
+
+# docker-compose.yml overrides this with entrypoint.sh, which is the real
+# start path and binds port 80. This CMD is the fallback for a bare
+# `docker run` and is kept last so it is not shadowed by later layers.
+CMD ["bash", "/app/entrypoint.sh"]
 

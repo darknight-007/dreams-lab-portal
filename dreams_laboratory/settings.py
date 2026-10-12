@@ -207,7 +207,9 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 
 # OpenUAV Manager settings
-VNC_PASSWORD = os.getenv('VNC_PASSWORD', 'liftoff')  # Default VNC password
+# No fallback: the old default ('liftoff') was both committed here and baked
+# into the image, and was also accepted as the launch passcode.
+VNC_PASSWORD = os.getenv('VNC_PASSWORD')
 
 # Add STATIC_FILES configuration
 STATICFILES_DIRS = [
@@ -227,8 +229,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://deepgis.org', 
     'https://deepgis.org',
     'http://192.168.0.186',  # Local network
-    'http://72.222.2.6',      # Public IPv4
-    'https://72.222.2.6',     # Public IPv4 (SSL)
+    'http://10.99.0.3:8080',  # WireGuard overlay (section 3 of ARCHITECTURE.md)
 ]
 
 if DEBUG:
@@ -244,14 +245,26 @@ else:
     SECURE_HSTS_PRELOAD = True
 
 # Update allowed hosts
-ALLOWED_HOSTS = [
-    'deepgis.org', 
+#
+# This used to be a plain reassignment, which silently discarded the
+# env-driven ALLOWED_HOSTS set near the top of this file (and therefore the
+# value passed in from .env / docker-compose). It now unions the two.
+#
+# 72.222.2.6 was dropped: it is a stale public address from a previous
+# hosting arrangement. The current public front door is the EC2 elastic IP,
+# reached by name, and '.deepgis.org' already covers it.
+_baseline_allowed_hosts = [
+    'deepgis.org',
     '.deepgis.org',
-    'localhost', 
-    '127.0.0.1', 
+    'localhost',
+    '127.0.0.1',
     '192.168.0.186',  # Local network IP
-    '72.222.2.6',      # Public IPv4
 ]
+ALLOWED_HOSTS = sorted({
+    host.strip()
+    for host in os.getenv('ALLOWED_HOSTS', '').split(',') + _baseline_allowed_hosts
+    if host.strip()
+})
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # For development, you might want to restrict this in production
