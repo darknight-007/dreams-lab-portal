@@ -327,6 +327,38 @@ def get_models(request):
     return JsonResponse(models, safe=False)
 
 
+# Worlds linked from the DeepGIS home page; each opens in the deepgis-xr 3D viewer
+SOLAR_SYSTEM = [
+    {"title": "Earth and the Moon", "blurb": "Our home planet with live data layers, and the Moon down to the Apollo landing sites.",
+     "bodies": [
+         {"name": "Earth", "url": "/label/3d/search/", "hook": "Search, data layers and 3D terrain", "light": "#7cc4ff", "dark": "#1d4e89"},
+         {"name": "Moon", "url": "/label/3d/moon/", "hook": "Tycho, Mare Imbrium, Apollo sites", "light": "#e6e6e6", "dark": "#6b6b6b"},
+     ]},
+    {"title": "Inner planets", "blurb": "The rocky worlds closest to the Sun.",
+     "bodies": [
+         {"name": "Mercury", "url": "/label/3d/planet/mercury/", "hook": "Caloris Planitia", "light": "#c9bcae", "dark": "#5e5348"},
+         {"name": "Venus", "url": "/label/3d/planet/venus/", "hook": "Maxwell Montes, Aphrodite Terra", "light": "#f5d58a", "dark": "#a8742a"},
+         {"name": "Mars", "url": "/label/3d/planet/mars/", "hook": "Olympus Mons, Valles Marineris, Jezero", "light": "#f08a5d", "dark": "#7a2408"},
+     ]},
+    {"title": "Moons of Jupiter", "blurb": "The Galilean moons: the most volcanic world in the Solar System and icy shells over hidden oceans.",
+     "bodies": [
+         {"name": "Io", "url": "/label/3d/planet/io/", "hook": "Loki Patera, Pele", "light": "#fff3a0", "dark": "#b0902a"},
+         {"name": "Europa", "url": "/label/3d/planet/europa/", "hook": "Pwyll, Conamara Chaos", "light": "#f3eadb", "dark": "#9c8467"},
+         {"name": "Ganymede", "url": "/label/3d/planet/ganymede/", "hook": "Galileo Regio, Osiris", "light": "#c9c2b6", "dark": "#5a544c"},
+         {"name": "Callisto", "url": "/label/3d/planet/callisto/", "hook": "Valhalla, Asgard", "light": "#9e9080", "dark": "#3b332b"},
+     ]},
+    {"title": "Moon of Saturn", "blurb": "Titan, the only moon with a thick atmosphere, and lakes and seas of liquid methane.",
+     "bodies": [
+         {"name": "Titan", "url": "/label/3d/planet/titan/", "hook": "Kraken Mare, Ligeia Mare", "light": "#f2c46d", "dark": "#8a5a1c"},
+     ]},
+    {"title": "Pluto system", "blurb": "The dwarf planet and its largest moon, mapped by New Horizons.",
+     "bodies": [
+         {"name": "Pluto", "url": "/label/3d/planet/pluto/", "hook": "Sputnik Planitia, Tombaugh Regio", "light": "#f1d9b8", "dark": "#8a6440"},
+         {"name": "Charon", "url": "/label/3d/planet/charon/", "hook": "Argo Chasma, Kubrick Mons", "light": "#c7c3bf", "dark": "#5a5652"},
+     ]},
+]
+
+
 def home_view(request):
     # Fetch model objects from database
     people = People.objects.order_by('-role')
@@ -344,6 +376,7 @@ def home_view(request):
         'projects': projects,
         'assets': assets,
         'funding_source': funding_source,
+        'solar_system': SOLAR_SYSTEM,
     }
     return render(request, 'deepgis_home.html', context)
 

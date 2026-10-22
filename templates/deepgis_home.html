@@ -5,240 +5,368 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeepGIS - Robotics and AI enabled Digital and Cyber-Physical Twins for Space Exploration and Earth Observation</title>
+    <link rel="icon" href="https://dreams-lab.github.io/img/logo.png">
     <style>
+        /* Palette and type follow dreams-lab.github.io (css/site.css) */
         :root {
-            --primary-color: #0096e6;
-            --secondary-color: #8B0000;
-            --accent-color: #00bf63;
-            --text-color: #333;
-            --background-color: #f8f9fa;
-            --section-spacing: 4rem;
+            color-scheme: dark;
+            --bg: #0c0d10;
+            --bg-2: #131519;
+            --fg: #e7e4de;
+            --fg-2: #a8a49c;
+            --dim: #6d6a64;
+            --rule: #23262c;
+            --accent: #f0b429;
+            --accent-2: #ffc966;
+            --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --measure: 68ch;
+            --wide: 1140px;
         }
+
+        * { box-sizing: border-box; }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            line-height: 1.6;
             margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--sans);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
         }
+
+        ::selection { background: var(--accent); color: var(--bg); }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+        a {
+            color: var(--accent-2);
+            text-decoration: none;
+            border-bottom: 1px solid color-mix(in srgb, var(--accent-2) 35%, transparent);
+        }
+        a:hover { border-bottom-color: var(--accent-2); }
+
+        img { max-width: 100%; height: auto; display: block; }
+
+        h1, h2, h3, h4 {
+            font-family: var(--mono);
+            font-weight: 500;
+            line-height: 1.25;
+            letter-spacing: -0.015em;
+            margin: 0 0 .6em;
+        }
+
+        p { margin: 0 0 1.1em; }
+
+        .meta, .nav ul, .footer {
+            font-family: var(--mono);
+            font-size: .78rem;
+            letter-spacing: .01em;
+        }
+        .meta { color: var(--dim); }
+
+        .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 1.5rem; }
+
+        /* ---------- nav ---------- */
+
+        .nav {
+            display: flex; align-items: baseline; justify-content: space-between;
+            gap: 1rem 2rem; flex-wrap: wrap;
+            padding: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--rule);
+        }
+        .nav .name {
+            font-family: var(--mono);
+            font-size: .95rem;
+            color: var(--fg);
+            border-bottom: 0;
+        }
+        .nav .name::before { content: "$ "; color: var(--accent); }
+        .nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.4rem; flex-wrap: wrap; }
+        .nav a { color: var(--fg-2); border-bottom: 0; }
+        .nav a:hover { color: var(--fg); }
+
+        /* ---------- hero ---------- */
 
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-                        url('https://assets.science.nasa.gov/dynamicimage/assets/science/psd/lunar-science/2023/08/610213main_S73-22871_full.jpg?w=4096&format=webp&fit=clip&crop=faces%2Cfocalpoint');
+            background:
+                linear-gradient(rgba(12, 13, 16, 0.55), rgba(12, 13, 16, 0.75) 70%, var(--bg)),
+                url('https://assets.science.nasa.gov/dynamicimage/assets/science/psd/lunar-science/2023/08/610213main_S73-22871_full.jpg?w=4096&format=webp&fit=clip&crop=faces%2Cfocalpoint');
             background-size: cover;
             background-position: center;
-            color: white;
-            padding: 8rem 2rem;
-            text-align: center;
+            padding: 7rem 0 5rem;
         }
+        .hero h1 { font-size: 2.6rem; margin-bottom: .5rem; }
+        .hero .lede {
+            font-size: 1.22rem; line-height: 1.45;
+            max-width: 54ch; margin: 0;
+        }
+        .hero .eyebrow {
+            font-family: var(--mono); font-size: .78rem;
+            color: var(--fg-2); letter-spacing: .08em;
+            margin: 0 0 .7rem;
+        }
+        .hero .eyebrow::before { content: "// "; color: var(--accent); }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
+        main { padding: 0 0 4.5rem; }
 
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 800px;
-            margin: 0 auto;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
+        /* ---------- sections ---------- */
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        section { margin: 4rem 0 0; scroll-margin-top: 1.5rem; }
+
+        .section-head {
+            display: flex; align-items: baseline; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap;
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: .6rem; margin-bottom: 2rem;
         }
+        .section-head h2 {
+            margin: 0;
+            font-size: .78rem;
+            letter-spacing: .14em; text-transform: uppercase;
+            color: var(--accent-2);
+        }
+        .section-head .meta { margin: 0; }
+
+        .lead { color: var(--fg-2); max-width: var(--measure); }
+
+        /* ---------- platform cards ---------- */
 
         .platforms {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin-top: 4rem;
+            gap: 1.5rem;
         }
-
-        .platform-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+        .card {
+            background: var(--bg-2);
+            border: 1px solid var(--rule);
+            border-left: 2px solid var(--accent);
+            padding: 1.4rem 1.6rem;
         }
-
-        .platform-card.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .platform-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .platform-card img {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 1rem;
-        }
-
-        .platform-card h3 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
+        .card h3 { margin: 0 0 .5rem; font-size: 1.05rem; color: var(--fg); }
+        .card p { color: var(--fg-2); }
 
         .btn {
             display: inline-block;
-            padding: 1rem 2rem;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
+            font-family: var(--mono);
+            font-size: .85rem;
+            padding: .6rem 1.1rem;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            transition: background-color .2s ease, color .2s ease;
         }
+        .btn:hover { background: var(--accent); color: var(--bg); border-bottom-color: var(--accent); }
 
-        .btn:hover {
-            background-color: var(--secondary-color);
-        }
+        /* ---------- solar system ---------- */
 
-        .features {
-            background: white;
-            padding: 4rem 0;
-            margin-top: 4rem;
-        }
+        .body-group { margin-bottom: 2.5rem; }
+        .body-group h3 { margin: 0 0 .3rem; font-size: 1.05rem; color: var(--fg); }
+        .body-group h3::before { content: "▚ "; color: var(--accent); }
+        .group-blurb { color: var(--fg-2); margin: 0 0 1rem; max-width: var(--measure); }
 
-        .feature-grid {
+        .body-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
         }
-
-        .feature {
+        .body-tile {
+            display: block;
+            background: var(--bg-2);
+            border: 1px solid var(--rule);
+            padding: 1.25rem 1rem;
             text-align: center;
-            padding: 1rem;
+            color: inherit;
+            transition: border-color .2s ease, transform .2s ease;
         }
-
-        .feature i {
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
+        .body-tile:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .body-disc {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            margin: 0 auto .8rem;
+            background: radial-gradient(circle at 35% 30%, var(--light), var(--dark));
+            box-shadow: inset -8px -8px 16px rgba(0, 0, 0, .45), 0 0 18px rgba(240, 180, 41, .08);
         }
+        .body-tile h4 { margin: 0 0 .25rem; font-size: .95rem; color: var(--fg); }
+        .body-tile p { margin: 0; font-family: var(--mono); font-size: .72rem; color: var(--dim); }
 
-        .feature-grid-small {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
+        /* ---------- DREAMS Laboratory ---------- */
+
+        .lab {
+            display: grid; grid-template-columns: 140px minmax(0, 1fr);
+            gap: 2rem; align-items: start;
         }
-
-        .feature-small {
-            text-align: center;
+        .lab img { width: 140px; }
+        .focus {
+            list-style: none; margin: 1.5rem 0; padding: 0;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem 1.8rem;
         }
+        .focus li { padding-left: 1rem; border-left: 1px solid var(--rule); }
+        .focus h4 { margin: 0 0 .25rem; font-size: .9rem; color: var(--fg); }
+        .focus p { margin: 0; font-size: .9rem; color: var(--fg-2); }
 
-        .feature-small i {
-            font-size: 2rem;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
+        /* ---------- acknowledgements ---------- */
+
+        .ack { color: var(--fg-2); max-width: 90ch; font-size: .95rem; }
+
+        /* the source logos arrive with mismatched backgrounds, so each sits on its own plate */
+        .funders {
+            list-style: none; margin: 1.5rem 0; padding: 0;
+            display: flex; flex-wrap: wrap; align-items: stretch; gap: 1.5rem;
         }
-
-        .feature-small h4 {
-            color: var(--primary-color);
-            margin: 0.5rem 0;
-            font-size: 1.1rem;
+        .funders li {
+            display: flex; align-items: center; justify-content: center;
+            background: #fff;
+            border: 1px solid var(--rule);
+            padding: 1rem 1.4rem;
+            min-width: 150px;
         }
+        .funders img { height: 64px; width: auto; }
 
-        .feature-small p {
-            font-size: 0.9rem;
-            margin: 0;
+        .credit { font-family: var(--mono); font-size: .74rem; color: var(--dim); margin: 0; }
+
+        /* ---------- footer ---------- */
+
+        .footer {
+            border-top: 1px solid var(--rule);
+            color: var(--dim);
+            padding: 1.3rem 0 3rem;
+            display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem 2rem;
         }
+        .footer p { margin: 0; }
+        .footer a { color: var(--dim); }
+        .footer a:hover { color: var(--accent-2); }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .platforms {
-                grid-template-columns: 1fr;
-            }
-            .feature-grid-small {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        @media (max-width: 760px) {
+            .wrap { padding: 0 1.1rem; }
+            .nav { flex-direction: column; align-items: flex-start; gap: .7rem; }
+            .hero { padding: 4.5rem 0 3rem; }
+            .hero h1 { font-size: 1.9rem; }
+            .hero .lede { font-size: 1.05rem; }
+            .platforms { grid-template-columns: 1fr; }
+            .body-grid { grid-template-columns: repeat(2, 1fr); }
+            .lab { grid-template-columns: 1fr; gap: 1.2rem; }
+            .lab img { width: 104px; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="hero">
-        <h1>DeepGIS</h1>
-        <p>Robotics and AI enabled Digital and Cyber-Physical Twins<br>for Space Exploration and Earth Observation</p>
+    <div class="wrap">
+        <nav class="nav">
+            <a class="name" href="/">deepgis</a>
+            <ul>
+                <li><a href="#platforms">platforms</a></li>
+                <li><a href="#solar-system">solar system</a></li>
+                <li><a href="#dreams-lab">dreams lab</a></li>
+                <li><a href="#acknowledgements">acknowledgements</a></li>
+            </ul>
+        </nav>
     </div>
 
-    <div class="container">
-        <!-- Acknowledgements Section -->
-        <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(0, 150, 230, 0.05); border-radius: 8px; border-left: 4px solid var(--primary-color);">
-            <p style="margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--text-color);">
-                <strong>Acknowledgements:</strong> DeepGIS‑XR builds on concepts and systems originally developed for the <a href="https://www.mbari.org/data/whats-happening-in-monterey-bay-today/" target="_blank" style="color: var(--primary-color); text-decoration: underline;">Oceanographic Decision Support System (ODSS, MBARI)</a>, the <a href="https://github.com/Trefo/agdss" target="_blank" style="color: var(--primary-color); text-decoration: underline;">Agricultural Decision Support System (AgDSS, University of Pennsylvania)</a>, the <a href="https://github.com/Open-UAV" target="_blank" style="color: var(--primary-color); text-decoration: underline;">OpenUAV Project (University of Pennsylvania, Arizona State University)</a>, and <a href="https://github.com/DREAMS-lab/deepgis" target="_blank" style="color: var(--primary-color); text-decoration: underline;">DeepGIS (Arizona State University)</a>. The DeepGIS project acknowledges support from the National Science Foundation, the United States Department of Agriculture, and the National Aeronautics and Space Administration.
-            </p>
+    <header class="hero">
+        <div class="wrap">
+            <p class="eyebrow">dreams laboratory · arizona state university</p>
+            <h1>DeepGIS</h1>
+            <p class="lede">Robotics and AI enabled Digital and Cyber-Physical Twins for Space Exploration and Earth Observation</p>
         </div>
-        <div class="platforms">
-            <div class="platform-card">
-                <div style="position: relative; display: inline-block;">
-                    <i class="fas fa-chart-line fa-4x" style="color: var(--primary-color)"></i>
-                    <i class="fas fa-cogs fa-2x" style="color: var(--primary-color); position: absolute; bottom: -10px; right: -10px;"></i>
-                </div>
-                <h3>Decision Support System</h3>
-                <p>Advanced geospatial analytics platform enabling data-driven insights for planetary science and Earth observation.</p>
-                <a href="https://deepgis.org/label/3d/search/" target="_blank" class="btn">Launch DSS</a>
+    </header>
+
+    <main class="wrap">
+        <section id="platforms">
+            <div class="section-head">
+                <h2>Platforms</h2>
+                <p class="meta">decision support · digital twins</p>
             </div>
-            <div class="platform-card">
-                <div style="position: relative; display: inline-block;">
-                    <i class="fas fa-robot fa-4x" style="color: var(--primary-color)"></i>
-                    <i class="fas fa-network-wired fa-2x" style="color: var(--primary-color); position: absolute; bottom: -10px; right: -10px;"></i>
+            <div class="platforms">
+                <div class="card">
+                    <h3>Decision Support System</h3>
+                    <p>Advanced geospatial analytics platform enabling data-driven insights for planetary science and Earth observation.</p>
+                    <a href="https://deepgis.org/label/3d/search/" target="_blank" rel="noopener" class="btn">Launch Earth</a>
                 </div>
-                <h3>Digital Twins</h3>
-                <p>High-fidelity simulations and digital replicas for understanding robotic behaviors and environmental processes through interactive experimentation.</p>
-                <a href="{% url 'openuav_manager:manage' %}" class="btn">Explore Digital Twins</a>
+                <div class="card">
+                    <h3>Digital Twins</h3>
+                    <p>High-fidelity simulations and digital replicas for understanding robotic behaviors and environmental processes through interactive experimentation.</p>
+                    <a href="{% url 'openuav_manager:manage' %}" class="btn">Explore Digital Twins</a>
+                </div>
             </div>
-            <div class="platform-card full-width">
-                <div style="text-align: center;">
-                    <img src="https://lh3.googleusercontent.com/pw/AP1GczNPyI0kgpiaTxXRFmjMFGZR31shMfq5qIB4hhaLBTiri7hQbc33fVASZ4xusXyRfzZjfkz_Zr0Y2eOov6v5pekTGvZjd0fdVQFG-wdbQ8I0pG3xpEKKtaUv-QiBODdAS_XLWn5jECL6xFo9rxLsDKQG=w732-h717-s-no?authuser=0" alt="DREAMS Laboratory" style="width: 100px; height: 100px; margin-bottom: 1rem; object-fit: contain;">
-                </div>
-                <h3>DREAMS Laboratory</h3>
-                <p>Pioneering research in robotic exploration, digital twins, and intelligent systems at Arizona State University.</p>
-                <div class="feature-grid-small">
-                    <div class="feature-small">
-                        <i class="fas fa-satellite"></i>
-                        <h4>Space Exploration</h4>
-                        <p>Digital twins for planetary science and robotic exploration missions.</p>
-                    </div>
-                    <div class="feature-small">
-                        <i class="fas fa-robot"></i>
-                        <h4>Autonomous Systems</h4>
-                        <p>Self-learning algorithms for intelligent robotic operations.</p>
-                    </div>
-                    <div class="feature-small">
-                        <i class="fas fa-globe"></i>
-                        <h4>Earth Observation</h4>
-                        <p>Data-driven insights for environmental monitoring and analysis.</p>
-                    </div>
-                    <div class="feature-small">
-                        <i class="fas fa-network-wired"></i>
-                        <h4>Cyber-Physical Twins</h4>
-                        <p>Coupled twins reducing uncertainty in robotic and environmental process modeling.</p>
-                    </div>
-                </div>
-                <a href="/dreamslab" class="btn" target="_blank">Visit DREAMS Laboratory</a>
+        </section>
+
+        <section id="solar-system">
+            <div class="section-head">
+                <h2>Explore the Solar System</h2>
+                <p class="meta">one viewer · camera drone · ai pilot</p>
             </div>
+            <p class="lead">Every world opens in the same 3D viewer, with the camera drone and the AI pilot. Beyond Earth, places go by their official IAU names.</p>
+            {% for group in solar_system %}
+            <div class="body-group">
+                <h3>{{ group.title }}</h3>
+                <p class="group-blurb">{{ group.blurb }}</p>
+                <div class="body-grid">
+                    {% for body in group.bodies %}
+                    <a class="body-tile" href="{{ body.url }}" target="_blank" rel="noopener">
+                        <div class="body-disc" style="--light: {{ body.light }}; --dark: {{ body.dark }};"></div>
+                        <h4>{{ body.name }}</h4>
+                        <p>{{ body.hook }}</p>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <section id="dreams-lab">
+            <div class="section-head">
+                <h2>DREAMS Laboratory</h2>
+                <p class="meta">arizona state university</p>
+            </div>
+            <div class="lab">
+                <img src="https://dreams-lab.github.io/img/logo.png" alt="DREAMS Laboratory logo" width="732" height="717" loading="lazy">
+                <div>
+                    <p class="lead">Pioneering research in robotic exploration, digital twins, and intelligent systems at Arizona State University.</p>
+                    <ul class="focus">
+                        <li>
+                            <h4>Space Exploration</h4>
+                            <p>Digital twins for planetary science and robotic exploration missions.</p>
+                        </li>
+                        <li>
+                            <h4>Autonomous Systems</h4>
+                            <p>Self-learning algorithms for intelligent robotic operations.</p>
+                        </li>
+                        <li>
+                            <h4>Earth Observation</h4>
+                            <p>Data-driven insights for environmental monitoring and analysis.</p>
+                        </li>
+                        <li>
+                            <h4>Cyber-Physical Twins</h4>
+                            <p>Coupled twins reducing uncertainty in robotic and environmental process modeling.</p>
+                        </li>
+                    </ul>
+                    <a href="/dreamslab" class="btn" target="_blank" rel="noopener">Visit DREAMS Laboratory</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="acknowledgements">
+            <div class="section-head">
+                <h2>Acknowledgements</h2>
+                <p class="meta">support and affiliation</p>
+            </div>
+            <p class="ack">DeepGIS‑XR builds on concepts and systems originally developed for the <a href="https://www.mbari.org/data/whats-happening-in-monterey-bay-today/" target="_blank" rel="noopener">Oceanographic Decision Support System (ODSS, MBARI)</a>, the <a href="https://github.com/Trefo/agdss" target="_blank" rel="noopener">Agricultural Decision Support System (AgDSS, University of Pennsylvania)</a>, the <a href="https://github.com/Open-UAV" target="_blank" rel="noopener">OpenUAV Project (University of Pennsylvania, Arizona State University)</a>, and <a href="https://github.com/DREAMS-lab/deepgis" target="_blank" rel="noopener">DeepGIS (Arizona State University)</a>. The DeepGIS project acknowledges support from the National Science Foundation, the United States Department of Agriculture, and the National Aeronautics and Space Administration.</p>
+            <ul class="funders">
+                <li><img loading="lazy" decoding="async" src="https://dreams-lab.github.io/img/funding/asu-sese.png" alt="ASU School of Earth and Space Exploration" width="425" height="119"></li>
+                <li><img loading="lazy" decoding="async" src="https://dreams-lab.github.io/img/funding/asu-gdcs.png" alt="ASU Center for Global Discovery and Conservation Science" width="225" height="225"></li>
+                <li><img loading="lazy" decoding="async" src="https://dreams-lab.github.io/img/funding/nasa.png" alt="NASA" width="300" height="300"></li>
+            </ul>
+            <p class="credit">Banner image courtesy of <a href="https://www.nasa.gov/history/alsj/a17/a17.photocat.html" target="_blank" rel="noopener">NASA Apollo Mission</a> (Image: S73-22871)</p>
+        </section>
+    </main>
+
+    <footer class="wrap">
+        <div class="footer">
+            <p>DeepGIS · DREAMS Laboratory · School of Earth and Space Exploration · Arizona State University</p>
+            <p><a href="https://github.com/DREAMS-lab">github</a> · <a href="https://dreams-lab.github.io/">dreams lab</a> · <a href="/dreamslab">portal</a></p>
         </div>
-        
-        <!-- Image Courtesy -->
-        <div style="margin-top: 3rem; padding: 1rem; text-align: center; font-size: 0.85rem; color: #666;">
-            <p style="margin: 0;">
-                <i class="fas fa-image" style="margin-right: 0.5rem;"></i>
-                Banner image courtesy of <a href="https://www.nasa.gov/history/alsj/a17/a17.photocat.html" target="_blank" style="color: var(--primary-color); text-decoration: underline;">NASA Apollo Mission</a> (Image: S73-22871)
-            </p>
-        </div>
-    </div>
+    </footer>
 </body>
-</html> 
+</html>
