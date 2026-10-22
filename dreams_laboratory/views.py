@@ -1207,7 +1207,7 @@ def get_ses598_course_data():
         },
         'modules': [
             {
-                'week': '1-3 (Jan 13-Jan 30)',
+                'week': '1-3 (Jan 12-Jan 29)',
                 'title': 'State estimation and Controls',
                 'topics': [
                     'Least squares and maximum likelihood estimation (MLE)',
@@ -1216,10 +1216,10 @@ def get_ses598_course_data():
                     'PID control, linear quadratic regulator (LQR), and model predictive control (MPC)',
                     'Entry descent and landing (EDL), guidance navigation and control (GNC), and attitude determination and control system (ADCS)'
                 ],
-                'assignment': 'Assignment 1: First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2 (Due: Jan 27, 2026)'
+                'assignment': 'Assignment 1: First-Order Boustrophedon Navigator (Lawnmower pattern) using ROS2 (Due: Jan 26, 2027)'
             },
             {
-                'week': '4-5 (Feb 3-Feb 20)',
+                'week': '4-5 (Feb 2-Feb 19)',
                 'title': 'Computer Vision and 3D Reconstruction',
                 'topics': [
                     'Image formation and camera models',
@@ -1228,10 +1228,10 @@ def get_ses598_course_data():
                     'Structure from Motion (SfM)',
                     'Multi-View Stereo (MVS)'
                 ],
-                'assignment': 'Assignment 2: Optimal Control of Cart-Pole System with LQR (Due: Feb 17, 2026)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 24, 2026)'
+                'assignment': 'Assignment 2: Optimal Control of Cart-Pole System with LQR (Due: Feb 16, 2027)<br>Assignment 3: ORBSLAM3 with ROS2 on PX4 SITL drone at Bishop Fault Scarp scene (Due: Feb 23, 2027)'
             },
             {
-                'week': '6 (Feb 24-Mar 3)',
+                'week': '6 (Feb 23-Mar 2)',
                 'title': 'Scene Representation, View Synthesis, and Scene Analysis',
                 'topics': [
                     'Scene representation: Orthomaps, pointcloud, mesh models, voxel grids, implicit surface models, and surfels',
@@ -1241,7 +1241,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 4: View synthesis and scene analysis on Apollo 17 and Lunar analog datasets.'
             },
             {
-                'week': '7 (Mar 4-Mar 6)',
+                'week': '7 (Mar 3-Mar 5)',
                 'title': 'Sampling Strategies and Information Theory',
                 'topics': [
                     'Information theory fundamentals',
@@ -1252,7 +1252,7 @@ def get_ses598_course_data():
                 'assignment': 'Assignment 5: Optimal sampling challenge on James Webb Space Telescope (JWST) datasets.'
             },
             {
-                'week': '8-9 (Mar 18-Mar 31)',
+                'week': '8-9 (Mar 17-Mar 30)',
                 'title': 'Digital and Cyber-Physical Twins',
                 'topics': [
                     'Decision support systems, geographic information systems (GIS), and digital twins',
@@ -1263,7 +1263,7 @@ def get_ses598_course_data():
                 'assignment': 'Exercise: Virtual Shake Robot and ShakeBot cyber-physical twin experiments (not graded)'
             },
             {
-                'week': '10-11 (Apr 1-Apr 14)',
+                'week': '10-11 (Mar 31-Apr 13)',
                 'title': 'SLAM and Active Perception',
                 'topics': [
                     'Information-theoretic SLAM',
@@ -1275,7 +1275,7 @@ def get_ses598_course_data():
                 'assignment': 'Midterm Project: Information-driven Robot Autonomy Challenge either in digital twins or physical robots.'
             },
             {
-                'week': '12-13 (Apr 15-Apr 28)',
+                'week': '12-13 (Apr 14-Apr 27)',
                 'title': 'Multi-Robot Coordination and Distributed Learning',
                 'topics': [
                     'Distributed bandit algorithms',
@@ -1286,7 +1286,7 @@ def get_ses598_course_data():
                 ]
             },
             {
-                'week': '14-15 (Apr 29-May 1)',
+                'week': '14-15 (Apr 28-Apr 30)',
                 'title': 'Extreme Environment Operations',
                 'topics': [
                     'Risk-aware exploration',
