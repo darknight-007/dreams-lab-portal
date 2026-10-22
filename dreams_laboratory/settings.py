@@ -244,6 +244,11 @@ else:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
+# TLS ends at the hub, which already redirects http to https. The dreamslab
+# nginx in front of gunicorn does not send X-Forwarded-Proto, so a redirect here
+# would see every request as http and loop.
+SECURE_SSL_REDIRECT = False
+
 # Update allowed hosts
 #
 # This used to be a plain reassignment, which silently discarded the
