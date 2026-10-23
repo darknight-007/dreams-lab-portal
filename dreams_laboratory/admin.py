@@ -17,12 +17,33 @@ class CustomUserAdmin(UserAdmin):
 
 
 # Register your models here.
-admin.site.register(People)
+@admin.register(People)
+class PeopleAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'status', 'role', 'graduation_year', 'affiliation', 'next_position')
+    list_filter = ('status', 'role')
+    list_editable = ('status',)
+    search_fields = ('first_name', 'last_name', 'affiliation', 'focus', 'next_position')
+    ordering = ('status', 'last_name')
+
+
 admin.site.register(Research)
-admin.site.register(Publication)
+
+
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'publication_date', 'doi')
+    search_fields = ('title', 'authors', 'doi')
+    ordering = ('-publication_date',)
+
+
 admin.site.register(Project)
 
-admin.site.register(Role)
+
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('position', 'display_order')
+    list_editable = ('display_order',)
+    ordering = ('display_order', 'position')
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('thumbnail', 'photo_url',)  # Add other fields to display if needed

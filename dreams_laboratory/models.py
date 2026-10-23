@@ -10,13 +10,39 @@ class CustomUser(AbstractUser):
 
 
 class People(models.Model):
+  CURRENT = 'current'
+  ALUMNI = 'alumni'
+  UNLISTED = 'unlisted'
+  STATUS_CHOICES = [
+      (CURRENT, 'Current member'),
+      (ALUMNI, 'Alumni'),
+      (UNLISTED, 'Not listed'),
+  ]
+
   first_name = models.CharField(max_length=100)
   last_name = models.CharField(max_length=100)
-  email = models.EmailField()
-  profile_pic = models.URLField(max_length=300)
+  email = models.EmailField(blank=True)
+  profile_pic = models.URLField(max_length=300, blank=True)
   bio = models.TextField(blank=True)
+  # For alumni, role is the position they held in the lab.
   role = models.ForeignKey('Role', on_delete=models.SET_NULL, null=True, blank=True)
   affiliation = models.CharField(max_length=200, blank=True, null=True)  # New field for affiliation
+  status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=CURRENT, db_index=True)
+  graduation_year = models.PositiveSmallIntegerField(
+      null=True, blank=True, help_text='Expected or actual graduation year.')
+  focus = models.CharField(max_length=200, blank=True, help_text='Research focus, e.g. "Radio astronomy · smart sensing".')
+  next_position = models.CharField(
+      max_length=200, blank=True, help_text='Where an alumnus went next, e.g. "Faculty, University of Utah".')
+
+  class Meta:
+      verbose_name_plural = 'people'
+
+  @property
+  def role_label(self):
+      label = self.role.position if self.role else ''
+      if self.graduation_year:
+          label = f"{label} · {self.graduation_year}" if label else str(self.graduation_year)
+      return label
 
   def __str__(self):
       return f"{self.first_name} {self.last_name}"
@@ -29,6 +55,8 @@ class Role(models.Model):
   stop_date = models.DateField(null=True, blank=True)
   email = models.EmailField()
   # Removed the affiliation field
+  display_order = models.PositiveSmallIntegerField(
+      default=100, help_text='Lower values list first on the People page.')
 
   def __str__(self):
       return self.position

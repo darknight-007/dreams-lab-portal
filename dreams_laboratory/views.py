@@ -361,7 +361,9 @@ SOLAR_SYSTEM = [
 
 def home_view(request):
     # Fetch model objects from database
-    people = People.objects.order_by('-role')
+    people = People.objects.filter(status=People.CURRENT).select_related('role').order_by(
+        'role__display_order', '-graduation_year', 'last_name')
+    alumni = People.objects.filter(status=People.ALUMNI).select_related('role').order_by('last_name', 'first_name')
     research_areas = Research.objects.all().order_by('-effort')
     publications = Publication.objects.exclude(title__iexact='Generic')
     projects = Project.objects.all()
@@ -371,6 +373,7 @@ def home_view(request):
     # Pass data to the template
     context = {
         'people': people,
+        'alumni': alumni,
         'research_areas': research_areas,
         'publications': publications,
         'projects': projects,
@@ -1431,7 +1434,9 @@ def dreamslab_home_view(request):
     course_data = get_ses598_course_data()
     context = {
         'research_areas': Research.objects.all(),
-        'people': People.objects.exclude(role__position__iexact='alumni'),
+        'people': People.objects.filter(status=People.CURRENT).select_related('role').order_by(
+            'role__display_order', '-graduation_year', 'last_name'),
+        'alumni': People.objects.filter(status=People.ALUMNI).select_related('role').order_by('last_name', 'first_name'),
         'publications': Publication.objects.all(),
         'funding_source': FundingSource.objects.all(),
         'assets': Asset.objects.all(),

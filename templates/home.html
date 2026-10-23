@@ -393,8 +393,8 @@
                                         {% endif %}
                                     </td>
                                     <td>{{ person.first_name }} {{ person.last_name }}</td>
-                                    <td>{{ person.role }}</td>
-                                    <td>{{ person.affiliation }}</td>
+                                    <td>{{ person.role_label }}{% if person.focus %}<br><small>{{ person.focus }}</small>{% endif %}</td>
+                                    <td>{{ person.affiliation|default:"" }}</td>
                                 </tr>
                         {% empty %}
                             <tr>
@@ -405,6 +405,34 @@
                 </table>
             </div>
         </section>
+
+        {% if alumni %}
+        <section id="alumni">
+            <h2>Alumni</h2>
+            <div class="table-responsive">
+                <table class="people-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position in the lab</th>
+                            <th>Affiliation</th>
+                            <th>Now</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for person in alumni %}
+                            <tr>
+                                <td>{{ person.first_name }} {{ person.last_name }}</td>
+                                <td>{{ person.role_label }}</td>
+                                <td>{{ person.affiliation|default:"" }}</td>
+                                <td>{{ person.next_position }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
 
         <section id="assets">
             <h2>Assets</h2>
